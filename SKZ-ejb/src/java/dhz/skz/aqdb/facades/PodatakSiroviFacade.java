@@ -117,7 +117,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return rl.get(0);
     }
     
-    public List<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
+    public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
         Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);

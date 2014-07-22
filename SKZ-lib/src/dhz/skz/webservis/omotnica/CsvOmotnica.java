@@ -6,13 +6,14 @@
 
 package dhz.skz.webservis.omotnica;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author kraljevic
  */
-public class CsvOmotnica {
+public class CsvOmotnica implements Serializable{
     
     private String izvor;
 

@@ -14,6 +14,13 @@ import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -39,8 +46,19 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
     
     @Override
     public void prihvatiOmotnicu(final CsvOmotnica  omotnica) {
+        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String fname = df.format(new Date());
+        fname +=".dat";
+        try {
+            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fname))) {
+                os.writeObject(omotnica);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
+        }
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-        
         try {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
@@ -86,6 +104,7 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
         }
         return "Orao pao, orao pao.";
     }
+
     
     
 }

@@ -156,13 +156,13 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-            cal.add(Calendar.HOUR, 1);
 
             while (cal.compareTo(kraj) <= 0) {
-                log.log(Level.FINEST, "ICAL : {0}", cal.getTime());
-                Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodatkeZaSat(program, cal.getTime());
-                obradiSat(program, sirovi, cal.getTime());
+                Date pocetakD = cal.getTime();
                 cal.add(Calendar.HOUR, 1);
+                Date krajD = cal.getTime();
+                Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
+                obradiSat(program, sirovi, pocetakD);
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
@@ -213,6 +213,13 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         }
         podatak.setVrijeme(vrijeme);
         podatak.setNivoValidacijeId(new NivoValidacije((short) 0));
+//        log.log(Level.INFO,"MLU PODATAK: {0}:{1}:{2}:{3}:{4}:{5}:{6}", new Object[]{podatak.getProgramMjerenjaId().getId(), 
+//            podatak.getVrijeme(), 
+//            podatak.getVrijednost(), 
+//            podatak.getStatus(), 
+//            podatak.getObuhvat(), 
+//            count,
+//            podatak.getNivoValidacijeId().getId()});
         podatakFacade.spremiPodatak(podatak);
     }
 
@@ -350,8 +357,8 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //                String pocetniDatumStr = omotnica.getLinije().get(0)[0];
 //                Date pocetak = sdf.parse(pocetniDatumStr);
         parseHeaders(omotnica.getHeaderi());
-
-        Iterator<Long> it = omotnica.getVremena().iterator();
+        
+       Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
             Date vrijeme = new Date(it.next());
 //                if ( vrijeme.after(zadnji)){

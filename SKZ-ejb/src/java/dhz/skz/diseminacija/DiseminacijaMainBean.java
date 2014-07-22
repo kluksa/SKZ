@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.diseminacija;
 
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
@@ -25,7 +24,7 @@ import javax.persistence.PersistenceContext;
  * @author kraljevic
  */
 @Stateless
-public class DiseminacijaMainBean implements DiseminacijaMain  {
+public class DiseminacijaMainBean implements DiseminacijaMain {
 
     private static final Logger log = Logger.getLogger(DiseminacijaMainBean.class.getName());
 
@@ -44,15 +43,17 @@ public class DiseminacijaMainBean implements DiseminacijaMain  {
 
             for (PrimateljiPodataka pr : dao.getAktivniPrimatelji()) {
                 em.refresh(pr);
-                String naziv = str + pr.getTip().trim();
-                log.log(Level.INFO, "JNDI: {0}", naziv);
-                try {
-                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                if (pr.getTip() != null) {
+                    String naziv = str + pr.getTip().trim();
+                    log.log(Level.INFO, "JNDI: {0}", naziv);
+                    try {
+                        DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
 
-                    diseminator.salji(pr);
+                        diseminator.salji(pr);
 
-                } catch (NamingException ex) {
-                    log.log(Level.SEVERE, null, ex);
+                    } catch (NamingException ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         } catch (NamingException ex) {
@@ -66,18 +67,16 @@ public class DiseminacijaMainBean implements DiseminacijaMain  {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
 
-            
-                em.refresh(primatelj);
-                String naziv = str + primatelj.getTip().trim();
-                log.log(Level.INFO, "JNDI: {0}", naziv);
-                try {
-                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+            em.refresh(primatelj);
+            String naziv = str + primatelj.getTip().trim();
+            log.log(Level.INFO, "JNDI: {0}", naziv);
+            try {
+                DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
 
 //                    diseminator.salji(primatelj);
-
-                } catch (NamingException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
+            } catch (NamingException ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
@@ -85,6 +84,7 @@ public class DiseminacijaMainBean implements DiseminacijaMain  {
 
     @Override
     public void nadoknadiPodatke(Long primateljId, Date pocetak, Date kraj) {
+        log.log(Level.INFO, "NADOKNADJUKEM!!!!!!!!!!!!!!!!");
     }
 
 }
