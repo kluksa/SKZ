@@ -30,8 +30,8 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
 
     @EJB
     private PodatakFacade dao;
-    @PersistenceContext(unitName = "LIKZ-ejbPU")
-    private EntityManager em;
+//    @PersistenceContext(unitName = "LIKZ-ejbPU")
+//    private EntityManager em;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @Override
@@ -42,7 +42,7 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
             String str = "java:module/";
 
             for (PrimateljiPodataka pr : dao.getAktivniPrimatelji()) {
-                em.refresh(pr);
+//                em.refresh(pr);
                 if (pr.getTip() != null) {
                     String naziv = str + pr.getTip().trim();
                     log.log(Level.INFO, "JNDI: {0}", naziv);
@@ -67,13 +67,13 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
 
-            em.refresh(primatelj);
+//            em.refresh(primatelj);
             String naziv = str + primatelj.getTip().trim();
             log.log(Level.INFO, "JNDI: {0}", naziv);
             try {
                 DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
 
-//                    diseminator.salji(primatelj);
+                    diseminator.nadoknadi(primatelj, pocetak, kraj);
             } catch (NamingException ex) {
                 log.log(Level.SEVERE, null, ex);
             }

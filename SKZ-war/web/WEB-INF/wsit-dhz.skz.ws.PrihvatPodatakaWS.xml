@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ <definitions 
+ xmlns="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="PrihvatPodatakaWS" targetNamespace="http://ws.skz.dhz/" xmlns:tns="http://ws.skz.dhz/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:fi="http://java.sun.com/xml/ns/wsit/2006/09/policy/fastinfoset/service" xmlns:tcp="http://java.sun.com/xml/ns/wsit/2006/09/policy/soaptcp/service" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:sc="http://schemas.sun.com/2006/03/wss/server" xmlns:wspp="http://java.sun.com/xml/ns/wsit/policy" xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512" 
+ >
+    <message name="prihvatiOmotnicu"/>
+    <message name="prihvatiOmotnicuResponse"/>
+    <message name="getUnixTimeZadnjeg"/>
+    <message name="getUnixTimeZadnjegResponse"/>
+    <message name="test"/>
+    <message name="testResponse"/>
+    <message name="CsvPrihvatException"/>
+    <portType name="PrihvatPodatakaWS">
+        <operation name="prihvatiOmotnicu">
+            <input message="tns:prihvatiOmotnicu"/>
+            <output message="tns:prihvatiOmotnicuResponse"/>
+        </operation>
+        <operation name="getUnixTimeZadnjeg">
+            <input message="tns:getUnixTimeZadnjeg"/>
+            <output message="tns:getUnixTimeZadnjegResponse"/>
+        </operation>
+        <operation name="test">
+            <input message="tns:test"/>
+            <output message="tns:testResponse"/>
+            <fault name="CsvPrihvatException" message="tns:CsvPrihvatException"/>
+        </operation>
+    </portType>
+    <binding name="PrihvatPodatakaWSPortBinding" type="tns:PrihvatPodatakaWS">
+        <operation name="prihvatiOmotnicu">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="getUnixTimeZadnjeg">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="test">
+            <input></input>
+            <output></output>
+            <fault name="CsvPrihvatException"/>
+        </operation>
+    </binding>
+    <service name="PrihvatPodatakaWS">
+        <port name="PrihvatPodatakaWSPort" binding="tns:PrihvatPodatakaWSPortBinding"/>
+    </service>
+</definitions>

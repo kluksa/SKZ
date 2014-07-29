@@ -61,30 +61,9 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
     
     public void spremi(PodatakSirovi podatak){
-        if ( ! postoji(podatak)){
-            create(podatak);
-        } else {
-            log.log(Level.INFO, "Podatak: {0}: {1} vec postoji", new Object[]{
-                podatak.getProgramMjerenjaId().getId(), podatak.getVrijeme()
-            });
-        }
+        create(podatak);
     }
-    
-    public boolean postoji(PodatakSirovi podatak) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
-        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
-
-        Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
-        Expression<ProgramMjerenja> programE = from.get(PodatakSirovi_.programMjerenjaId);
-        
-        cq.where(cb.and(cb.equal(vrijemeE, podatak.getVrijeme()), 
-                        cb.equal(programE, podatak.getProgramMjerenjaId())));
-        cq.select(from);
-        List<PodatakSirovi> resultList = em.createQuery(cq).getResultList();
-        return (resultList != null) && (!resultList.isEmpty());
-    }
-
+  
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -111,7 +90,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         CriteriaQuery<Date> select = cq.select(cb.greatest(vrijeme));
         List<Date> rl = em.createQuery(cq).getResultList();
         if ( rl == null || rl.isEmpty() || rl.get(0) == null) {
-            return new Date(0L);
+            return new Date(1405382400000L);
         }
         
         return rl.get(0);

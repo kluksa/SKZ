@@ -99,12 +99,6 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         }
     }
 
-    @Override
-    public void salji(PrimateljiPodataka primatelj, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-    }
-
     private void otvoriKonekciju() throws SQLException {
         Properties connectionProps = new Properties();
         connectionProps.put("user", "automat");
@@ -164,5 +158,14 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         
         
         
+    }
+
+    public void nadoknadi(PrimateljiPodataka primatelj, ProgramMjerenja program, Date pocetak, Date kraj){
+        
+    }
+    
+    @Override
+    public void nadoknadi(PrimateljiPodataka primatelj, Date pocetak, Date kraj) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
