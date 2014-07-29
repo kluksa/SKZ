@@ -8,6 +8,7 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
+import dhz.skz.aqdb.entity.PrimateljiPodataka_;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
@@ -48,6 +49,17 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
                         cb.equal(primateljE, primatelj)
         );
         cq.select(pmT);
+        return em.createQuery(cq).getResultList();
+    }
+    
+    public Iterable<PrimateljiPodataka> getAktivniPrimatelji() {
+        em.flush();
+        em.clear();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PrimateljiPodataka> cq = cb.createQuery(PrimateljiPodataka.class);
+        Root<PrimateljiPodataka> from = cq.from(PrimateljiPodataka.class);
+        cq.where(cb.equal(from.get(PrimateljiPodataka_.aktivan), true));
+        cq.select(from);
         return em.createQuery(cq).getResultList();
     }
     

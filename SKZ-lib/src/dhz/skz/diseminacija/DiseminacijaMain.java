@@ -7,6 +7,8 @@
 package dhz.skz.diseminacija;
 
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Collection;
 import java.util.Date;
 import javax.ejb.Remote;
 import javax.ejb.TransactionAttribute;
@@ -19,11 +21,9 @@ import javax.ejb.TransactionAttributeType;
 @Remote
 public interface DiseminacijaMain {
 
-    void nadoknadiPodatke(PrimateljiPodataka primatelj, Date pocetak, Date kraj);
+    void nadoknadiPodatke(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj);
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     void pokreniDiseminaciju();
-
-    void nadoknadiPodatke(Long primateljId, Date pocetak, Date kraj);
     
 }

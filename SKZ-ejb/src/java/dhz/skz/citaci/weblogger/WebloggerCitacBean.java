@@ -11,6 +11,8 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PostajaFacade;
+import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -53,6 +55,9 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
     private PodatakFacade dao;
+    
+    @EJB
+    private PostajaFacade posajaFacade;
 
     @EJB
     private FtpKlijent ftp;
@@ -80,7 +85,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         em.refresh(izvor);
-        Collection<Postaja> postajeZaIzvor = dao.getPostajeZaIzvor(izvor);
+        Collection<Postaja> postajeZaIzvor = posajaFacade.getPostajeZaIzvor(izvor);
         for (Postaja p : postajeZaIzvor) {
             log.log(Level.INFO, "Citam: {0}", p.getNazivPostaje());
             pokupiMjerenjaSaPostaje(izvor, p);

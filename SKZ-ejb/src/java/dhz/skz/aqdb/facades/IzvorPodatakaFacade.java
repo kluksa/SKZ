@@ -76,5 +76,14 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
         if (resultList == null || resultList.isEmpty() ) return null;
         return resultList.get(0);
     }
-    
+
+    public Iterable<IzvorPodataka> getAktivniIzvori() {
+        em.flush();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<IzvorPodataka> cq = cb.createQuery(IzvorPodataka.class);
+        Root<IzvorPodataka> from = cq.from(IzvorPodataka.class);
+        cq.where(cb.equal(from.get(IzvorPodataka_.aktivan), true));
+        cq.select(from);
+        return em.createQuery(cq).getResultList();
+    }
 }

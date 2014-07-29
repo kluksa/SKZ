@@ -9,7 +9,8 @@ package dhz.skz.diseminacija;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  *
@@ -17,5 +18,5 @@ import java.util.Map;
  */
 public interface DiseminatorPodataka {
     public void salji(PrimateljiPodataka primatelj);
-    public void salji(PrimateljiPodataka primatelj, Map<ProgramMjerenja, Podatak> zadnjiPodatak);
+    public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj);
 }
