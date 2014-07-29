@@ -1,11 +1,9 @@
 /SKZ-lib/nbproject/private/
 /SKZ-lib/build/
 /SKZ-lib/dist/
-/SKZ-EJBKlijent/nbproject/private/
-/SKZ-EJBKlijent/build/
-/SKZ-EJBKlijent/dist/
-/Test_klijent/nbproject/private/
-/Test_klijent/dist/
-/Test_klijent/build/
-/SKZ2-lib/nbproject/private/
-/SKZ-lib/SKZ2-lib/nbproject/private/
+/SKZ-ejb/nbproject/private/
+/SKZ-ejb/build/
+/SKZ-ejb/dist/
+/SKZ-war/nbproject/private/
+/SKZ-war/build/
+/SKZ-war/dist/
