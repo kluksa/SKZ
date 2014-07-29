@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.9.2
+Created-By: 1.7.0_65-mockbuild_2014_07_17_14_16-b00 (Oracle Corporatio
+ n)
+

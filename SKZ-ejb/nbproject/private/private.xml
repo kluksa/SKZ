@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/MainTimerBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/sirovi/PrihvatPodataka.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/MLULoggerBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ProgramMjerenjaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodatakFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/MrezaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/ValidatorFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/VrstaPostajeIzvorFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/OdgovornoTijeloFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/CitacMainBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/conf/persistence.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WebloggerCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/NivoValidacijeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/AbstractFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ReprezentativnostFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PrometnePostajeSvojstvaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IndustrijskePostajeSvojstvaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/MjerneJediniceFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/VrstaMrezeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PrimateljiPodatakaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KomponentaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/aqdb/AqdbCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/zerospan/WebloggerZeroSpanCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/DEMTransformation.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KorisnikFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IzvorProgramKljuceviMapFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PostajaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ZeroSpanFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/LokalnaZona.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IskazVremenaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodrucjeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlFileFilter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/CitacIzvora.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IzvorPodatakaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodatakSiroviFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/ekonerg/EkonergDiseminator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KomentarFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/DemDiseminator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/FtpKlijent.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/DiseminacijaMainBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlDatotekaParser.java</file>
+        </group>
+    </open-files>
+</project-private>
