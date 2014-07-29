@@ -57,16 +57,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         super(Podatak.class);
     }
 
-    public Iterable<IzvorPodataka> getAktivniIzvori() {
-        em.flush();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<IzvorPodataka> cq = cb.createQuery(IzvorPodataka.class);
-        Root<IzvorPodataka> from = cq.from(IzvorPodataka.class);
-        cq.where(cb.equal(from.get(IzvorPodataka_.aktivan), true));
-        cq.select(from);
-        return em.createQuery(cq).getResultList();
-    }
-
     public Map<ProgramMjerenja, Podatak> getZadnjiPodatakPoProgramu() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -133,29 +123,9 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public Collection<Postaja> getPostajeZaIzvor(IzvorPodataka i) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
-        Root<IzvorPodataka> izvor = cq.from(IzvorPodataka.class);
-        CollectionJoin<IzvorPodataka, ProgramMjerenja> izvorProgram = izvor.join(IzvorPodataka_.programMjerenjaCollection);
-        Join<ProgramMjerenja, Postaja> programPostaja = izvorProgram.join(ProgramMjerenja_.postajaId);
-        Expression<Postaja> postaja = izvorProgram.get(ProgramMjerenja_.postajaId);
-        Expression<String> naziv = programPostaja.get(Postaja_.nazivPostaje);
-        cq.where(cb.equal(izvor, i)).select(postaja).distinct(true).orderBy(cb.asc(naziv));
-        return em.createQuery(cq).getResultList();
-    }
 
 
-    public Iterable<PrimateljiPodataka> getAktivniPrimatelji() {
-        em.flush();
-        em.clear();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<PrimateljiPodataka> cq = cb.createQuery(PrimateljiPodataka.class);
-        Root<PrimateljiPodataka> from = cq.from(PrimateljiPodataka.class);
-        cq.where(cb.equal(from.get(PrimateljiPodataka_.aktivan), true));
-        cq.select(from);
-        return em.createQuery(cq).getResultList();
-    }
+  
 
     public Collection<Podatak> getPodaciZaKomponentu(Date pocetak, Date kraj, Komponenta k, NivoValidacije nv, short usporedno) {
         em.refresh(k);

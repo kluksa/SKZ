@@ -6,7 +6,7 @@
 package dhz.skz.citaci;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -22,21 +22,16 @@ import javax.naming.NamingException;
 public class CitacMainBean implements CitacMain {
 
     private static final Logger log = Logger.getLogger(CitacMainBean.class.getName());
-
     @EJB
-    private PodatakFacade dao;
-//    @PersistenceContext(unitName = "LIKZ-ejbPU")
-//    private EntityManager em;
+    private IzvorPodatakaFacade izvorPodatakaFacade;
 
     @Override
     public void pokreniCitace() {
         log.log(Level.INFO,"Pokrecem citace" );
-//        em.flush();
-//        em.clear();
         try {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
-            for (IzvorPodataka ip : dao.getAktivniIzvori()) {
+            for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
                 String naziv = str + ip.getBean().trim();
                 log.log(Level.INFO, "JNDI: {0}", naziv);
                 try {

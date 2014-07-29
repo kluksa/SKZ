@@ -106,7 +106,7 @@ public class DemDiseminator implements DiseminatorPodataka {
     }
 
     @Override
-    public void nadoknadi(PrimateljiPodataka primatelj, Date pocetak, Date kraj) {
+    public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
