@@ -19,7 +19,7 @@ import javax.naming.NamingException;
  * @author kraljevic
  */
 @Stateless
-public class CitacMainBean implements CitacMain {
+public class CitacMainBean {
 
     private static final Logger log = Logger.getLogger(CitacMainBean.class.getName());
 
@@ -28,7 +28,6 @@ public class CitacMainBean implements CitacMain {
 //    @PersistenceContext(unitName = "LIKZ-ejbPU")
 //    private EntityManager em;
 
-    @Override
     public void pokreniCitace() {
         log.log(Level.INFO,"Pokrecem citace" );
 //        em.flush();

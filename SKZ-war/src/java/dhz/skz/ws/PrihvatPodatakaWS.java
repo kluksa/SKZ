@@ -6,7 +6,6 @@
 
 package dhz.skz.ws;
 
-import dhz.skz.citaci.CitacMain;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
@@ -28,9 +27,8 @@ public class PrihvatPodatakaWS {
     public static final Logger log = Logger.getLogger(PrihvatPodatakaWS.class.getName());
     @EJB
     private PrihvatSirovihPodatakaRemote ejbRef;// Add business logic below. (Right-click in editor and choose
-    @EJB
-    private CitacMain citacMainBean;
-    
+    // "Insert Code > Add Web Service Operation")
+
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
     public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
@@ -46,7 +44,5 @@ public class PrihvatPodatakaWS {
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
         return ejbRef.test(inStr);
     }
-
-
     
 }

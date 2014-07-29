@@ -78,6 +78,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     @Override
     public void obradi(CsvOmotnica omotnica) {
+        log.log(Level.INFO, "Idem obraditi.");
         postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
         izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -144,7 +145,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
             Calendar kraj = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 
-            log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
+            log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
 
             kraj.setTime(zadnjiSirovi);
             kraj.set(Calendar.MINUTE, 0);
@@ -156,11 +157,12 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
-            while ( cal.getTime().before(kraj.getTime())){
+            while (cal.compareTo(kraj) <= 0) {
                 Date pocetakD = cal.getTime();
                 cal.add(Calendar.HOUR, 1);
-                Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, cal.getTime());
-                obradiSat(program, sirovi, cal.getTime());
+                Date krajD = cal.getTime();
+                Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
+                obradiSat(program, sirovi, pocetakD);
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");

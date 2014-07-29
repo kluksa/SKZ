@@ -43,6 +43,12 @@ public class DemDiseminator implements DiseminatorPodataka {
     @EJB
     private PodatakFacade dao;
     
+    
+    @Override
+    public void salji(PrimateljiPodataka primatelj, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     @Override
     public void salji(PrimateljiPodataka primatelj) {
 //        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
@@ -103,10 +109,5 @@ public class DemDiseminator implements DiseminatorPodataka {
         trenutni_termin.add(Calendar.HOUR, -2);
         trenutni_termin.getTime();
         return trenutni_termin.getTime();
-    }
-
-    @Override
-    public void nadoknadi(PrimateljiPodataka primatelj, Date pocetak, Date kraj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
