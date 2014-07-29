@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -29,6 +28,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 public class PostajaFacade extends AbstractFacade<Postaja> {
+
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -40,16 +40,17 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
     public PostajaFacade() {
         super(Postaja.class);
     }
+
     public Postaja findByNacionalnaOznaka(final String oznaka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
-        
+
         Root<Postaja> from = cq.from(Postaja.class);
-        
+
         cq.select(from).where(cb.equal(from.get(Postaja_.nacionalnaOznaka), oznaka));
         return em.createQuery(cq).getSingleResult();
     }
-    
+
     public Collection<Postaja> getPostajeZaIzvor(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
@@ -62,5 +63,4 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         return em.createQuery(cq).getResultList();
     }
 
-    
 }

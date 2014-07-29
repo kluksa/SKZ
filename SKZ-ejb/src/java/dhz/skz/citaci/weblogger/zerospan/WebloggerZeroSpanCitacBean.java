@@ -58,7 +58,7 @@ public class WebloggerZeroSpanCitacBean {
         this.postaja = p;
         Date zadnji = getZadnjiZS(izvor, p);
 
-        if (imaZS(izvor, p )) {
+        if (imaZS(izvor, p)) {
 
             try {
                 Map<ProgramMjerenja, NizZeroSpanPodataka> tmp = getMapaZeroSpanNizova(p, izvor, zadnji);
@@ -133,23 +133,25 @@ public class WebloggerZeroSpanCitacBean {
         return mapa;
     }
 
-    private boolean imaZS( IzvorPodataka izvor, Postaja p ) {
-        List<ProgramMjerenja> list = dao.getProgramSaZeroSpanomNaPostaji(izvor,p);
-        
+    private boolean imaZS(IzvorPodataka izvor, Postaja p) {
+        List<ProgramMjerenja> list = dao.getProgramSaZeroSpanomNaPostaji(izvor, p);
+
         return !((list == null) || (list.isEmpty()));
     }
-    
+
     public void pospremiNiz(NizZeroSpanPodataka niz) {
         ProgramMjerenja kljuc = niz.getKljuc();
-        if ( niz.getPodaci().isEmpty()) return;
-        
+        if (niz.getPodaci().isEmpty()) {
+            return;
+        }
+
         log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
                 new Object[]{kljuc.getPostajaId().getNazivPostaje(),
                     kljuc.getKomponentaId().getFormula(),
                     niz.getPodaci().firstKey(),
                     niz.getPodaci().lastKey(),
                     niz.getPodaci().size()});
-        for (Date d : niz.getPodaci().keySet()){
+        for (Date d : niz.getPodaci().keySet()) {
             ZeroSpan zs = niz.getPodaci().get(d);
             dao.create(zs);
         }

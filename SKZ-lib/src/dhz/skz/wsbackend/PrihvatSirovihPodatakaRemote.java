@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.wsbackend;
 
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
@@ -17,10 +16,10 @@ import javax.ejb.Remote;
 @Remote
 public interface PrihvatSirovihPodatakaRemote {
 
-    void prihvatiOmotnicu(final CsvOmotnica  omotnica);
+    void prihvatiOmotnicu(final CsvOmotnica omotnica);
 
     Long getUnixTimeZadnjeg(String izvorS, String postajaS, String datotekaS);
 
     String test(String inStr) throws CsvPrihvatException;
-    
+
 }

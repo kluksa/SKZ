@@ -16,10 +16,10 @@ import java.util.logging.Logger;
  *
  * @author kraljevic
  */
-public class SatniAgregator  {
+public class SatniAgregator {
+
     public static final Logger log = Logger.getLogger(SatniAgregator.class.getName());
-    
-    
+
     protected static final short MIN_OBUHVAT = 75;
     protected NizPodataka agregiraniNiz;
     protected NizPodataka minutniNiz;
@@ -86,7 +86,6 @@ public class SatniAgregator  {
         // svakom satnom terminu dodajemo nekoliko sekundi offseta tako da pri odsijecanju
         // dobijemo niz <t-1h,t]
         // da bi ovo moglo raditi minutne vrijednosti moraju biti zapisane prije OFFSER sekunde
-
         while (!trenutni_termin.after(zadnji_termin)) {
             listaVremena.add(trenutni_termin.getTime());
             trenutni_termin.add(Calendar.HOUR, korak);
@@ -111,7 +110,7 @@ public class SatniAgregator  {
             Date kr = listaVremena.get(i);
 
             NavigableMap<Date, PodatakWl> podmapa = minutniNiz.getPodaci()
-                                                .subMap(po, false, kr, true);
+                    .subMap(po, false, kr, true);
             if (!podmapa.isEmpty()) {
                 PodatakWl ps = agregiraj_podmapu(kr, podmapa);
                 ps.setProgramMjerenjaId(minutniNiz.getKljuc());
@@ -122,19 +121,19 @@ public class SatniAgregator  {
 
     protected PodatakWl agregiraj_podmapu(Date vrijeme,
             NavigableMap<Date, PodatakWl> podmapa) {
-        
+
         float kum_sum = 0;
         int count = 0;
-        
+
         if (podmapa.isEmpty()) {
             return null;
         }
-        
+
         Validator v = minutniNiz.getValidatori().floorEntry(vrijeme).getValue();
-        
+
         PodatakWl agregirani = new PodatakWl();
         agregirani.setVrijeme(vrijeme);
-        for (Date t : podmapa.keySet()){
+        for (Date t : podmapa.keySet()) {
             PodatakWl trenutniPodatak = podmapa.get(t);
             Float iznos = trenutniPodatak.getVrijednost();
             agregirani.dodajStatus(trenutniPodatak.getStatus());
@@ -147,15 +146,15 @@ public class SatniAgregator  {
         }
 
         int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
-        if ( obuhvat < MIN_OBUHVAT) {
+        if (obuhvat < MIN_OBUHVAT) {
             agregirani.dodajStatus(Flag.OBUHVAT);
         }
 
-        agregirani.setObuhvat((short)obuhvat);
+        agregirani.setObuhvat((short) obuhvat);
         if (count > 0) {
             float iznos = kum_sum / count;
             agregirani.setVrijednost(iznos);
-            
+
         } else {
             agregirani.setVrijednost(-999.f);
         }

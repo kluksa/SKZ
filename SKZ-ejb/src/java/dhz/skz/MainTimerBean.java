@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz;
 
 import dhz.skz.citaci.CitacMainBean;
@@ -22,26 +21,24 @@ import javax.ejb.Singleton;
 @Singleton
 @LocalBean
 public class MainTimerBean {
+
     @EJB
     private DiseminacijaMain diseminacijaMain;
     @EJB
     private CitacMainBean citacMainBean;
 
-    
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
-    
 
-    
     @Schedule(minute = "17", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-        diseminacijaMain.pokreniDiseminaciju();
+//        diseminacijaMain.pokreniDiseminaciju();
     }
-    
+
     @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
-        log.log(Level.INFO,"Pokrecem citace" );
-        citacMainBean.pokreniCitace();
+        log.log(Level.INFO, "Pokrecem citace");
+//        citacMainBean.pokreniCitace();
     }
 
 }

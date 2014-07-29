@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.diseminacija;
 
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
@@ -25,5 +24,5 @@ public interface DiseminacijaMain {
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     void pokreniDiseminaciju();
-    
+
 }

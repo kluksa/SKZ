@@ -28,7 +28,7 @@ public class WlFileFilter implements FTPFileFilter {
     protected String nazivPostaje;
     protected TimeZone timeZone;
 
-    public WlFileFilter(String nazivPostaje, Date zadnji ,TimeZone timeZone) {
+    public WlFileFilter(String nazivPostaje, Date zadnji, TimeZone timeZone) {
         this.zadnji = zadnji;
         this.nazivPostaje = Pattern.quote(nazivPostaje.toLowerCase());
         this.timeZone = timeZone;
@@ -37,8 +37,10 @@ public class WlFileFilter implements FTPFileFilter {
 
     @Override
     public boolean accept(FTPFile file) {
-        if ( file.isDirectory()) return false;
-        
+        if (file.isDirectory()) {
+            return false;
+        }
+
         String strL = file.getName().toLowerCase();
         String ptStr = "^(" + nazivPostaje + ")-(\\d{8})(.?)\\.csv";
         Pattern pt = Pattern.compile(ptStr);

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.sirovi;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -34,21 +33,20 @@ import javax.naming.NamingException;
  */
 @Stateless
 public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
+
     @EJB
     private PostajaFacade postajaFacade;
-    
+
     public static final Logger log = Logger.getLogger(PrihvatPodataka.class.getName());
 
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
-    
 
-    
     @Override
-    public void prihvatiOmotnicu(final CsvOmotnica  omotnica) {
+    public void prihvatiOmotnicu(final CsvOmotnica omotnica) {
         DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String fname = df.format(new Date());
-        fname +=".dat";
+        fname += ".dat";
         try {
             try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fname))) {
                 os.writeObject(omotnica);
@@ -62,22 +60,20 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
         try {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
-        
+
             String naziv = str + izvor.getBean().trim();
-            log.log(Level.FINE,"Bean: {0}", naziv);
+            log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
             parser.obradi(omotnica);
-            
+
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
 
     }
-    
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-
     @Override
     public Long getUnixTimeZadnjeg(String izvorS, String postajaS, String datotekaS) {
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
@@ -86,9 +82,9 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
         try {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
-        
+
             String naziv = str + izvor.getBean().trim();
-            log.log(Level.FINE,"Bean: {0}", naziv);
+            log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
             return parser.getVrijemeZadnjegPodatka(izvor, postaja, datotekaS).getTime();
         } catch (NamingException ex) {
@@ -99,12 +95,10 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
 
     @Override
     public String test(String inStr) throws CsvPrihvatException {
-        if ( !inStr.equals("Orao javi se, orao javi se, prijem.")) {
+        if (!inStr.equals("Orao javi se, orao javi se, prijem.")) {
             throw new CsvPrihvatException();
         }
         return "Orao pao, orao pao.";
     }
 
-    
-    
 }

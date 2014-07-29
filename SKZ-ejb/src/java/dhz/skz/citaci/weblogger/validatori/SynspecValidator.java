@@ -16,6 +16,7 @@ import dhz.skz.citaci.weblogger.util.Status;
  */
 @Stateless
 public class SynspecValidator extends ValidatorImpl {
+
     private final Float ldl = 0.f;
     private final Float opseg = 1000.f;
 
@@ -35,7 +36,7 @@ public class SynspecValidator extends ValidatorImpl {
             s.dodajFlag(Flag.NEDOSTAJE);
         } else if (!statusStr.isEmpty()) {
             try {
-                int stInt = Integer.parseInt(statusStr,16);
+                int stInt = Integer.parseInt(statusStr, 16);
                 if (stInt > 255) {
                     s.dodajFlag(Flag.FAULT);
                 }

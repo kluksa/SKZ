@@ -8,7 +8,8 @@ package dhz.skz.citaci.weblogger.exceptions;
  *
  * @author kraljevic
  */
-public class AgregatorException extends Exception{
+public class AgregatorException extends Exception {
+
     public AgregatorException() {
     }
 

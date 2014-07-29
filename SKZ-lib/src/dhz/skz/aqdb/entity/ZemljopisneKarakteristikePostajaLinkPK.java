@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -17,6 +16,7 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class ZemljopisneKarakteristikePostajaLinkPK implements Serializable {
+
     @Basic(optional = false)
     @Column(name = "zemljopisne_karakteristike_id")
     private int zemljopisneKarakteristikeId;
@@ -76,5 +76,5 @@ public class ZemljopisneKarakteristikePostajaLinkPK implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ZemljopisneKarakteristikePostajaLinkPK[ zemljopisneKarakteristikeId=" + zemljopisneKarakteristikeId + ", postajaId=" + postajaId + " ]";
     }
-    
+
 }

@@ -9,6 +9,7 @@ import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
+import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
     private static final Logger log = Logger.getLogger(DiseminacijaMainBean.class.getName());
 
     @EJB
-    private PrimateljiPodatakaFacade dao;
+    private PrimateljiPodatakaFacadeLocal dao;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @Override
@@ -68,7 +69,7 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
             log.log(Level.INFO, "JNDI: {0}", naziv);
             try {
                 DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-                diseminator.nadoknadi(primatelj, program,  pocetak, kraj);
+                diseminator.nadoknadi(primatelj, program, pocetak, kraj);
             } catch (NamingException ex) {
                 log.log(Level.SEVERE, null, ex);
             }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.validatori;
 
 /**
@@ -11,6 +10,7 @@ package dhz.skz.citaci.weblogger.validatori;
  * @author kraljevic
  */
 public abstract class ValidatorImpl implements Validator {
+
     protected Float tempMin = 15.f;
     protected Float tempMax = 25.f;
     protected Integer brojMjerenjaUSatu = 60;

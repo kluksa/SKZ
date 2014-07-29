@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.exceptions;
 
 /**
@@ -14,7 +13,7 @@ public class NevaljanStatusException extends Exception {
 
     public NevaljanStatusException() {
     }
-    
+
     public NevaljanStatusException(String message) {
         super(message);
     }
@@ -22,7 +21,7 @@ public class NevaljanStatusException extends Exception {
     public NevaljanStatusException(String message, Throwable throwable) {
         super(message, throwable);
     }
-    
+
     public NevaljanStatusException(Throwable throwable) {
         super(throwable);
     }

@@ -47,13 +47,13 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     private PodatakFacade dao;
     @EJB
     private ZeroSpanFacade zsDao;
-    
+
     private Date pocetak, kraj;
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
         this.primatelj = primatelj;
-        
+
         odrediPocetakKraj();
 
         try {
@@ -71,13 +71,13 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                     + "VALUES (?,?,?,?,?)");
 
             for (PrimateljProgramKljuceviMap pm : primatelj.getPrimateljProgramKljuceviMapCollection()) {
-                log.log(Level.INFO, "Slati cu: {0};{1};{2};{3};{4};{5}", new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), 
-                    pm.getPKljuc(),pm.getProgramMjerenja().getKomponentaId().getFormula(), pm.getPKljuc(), pm.getUKljuc(), pm.getNKljuc()});
+                log.log(Level.INFO, "Slati cu: {0};{1};{2};{3};{4};{5}", new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(),
+                    pm.getPKljuc(), pm.getProgramMjerenja().getKomponentaId().getFormula(), pm.getPKljuc(), pm.getUKljuc(), pm.getNKljuc()});
                 List<Podatak> l = dao.getPodatak(pm.getProgramMjerenja(), pocetak, kraj);
                 if (!l.isEmpty()) {
                     spremi(prepStmt, pm, l.get(0));
                 } else {
-                    log.log(Level.INFO, "Nema podataka za: {0},{1} od {2} do {3}" , new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(),
+                    log.log(Level.INFO, "Nema podataka za: {0},{1} od {2} do {3}", new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(),
                         pm.getProgramMjerenja().getKomponentaId().getFormula(),
                         pocetak, kraj});
                 }
@@ -85,7 +85,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                 if (!zs.isEmpty()) {
                     spremiZS(zsStmt, pm, zs);
                 } else {
-                    log.log(Level.INFO, "Nema zero/span za: {0},{1} od {2} do {3}" , new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(),
+                    log.log(Level.INFO, "Nema zero/span za: {0},{1} od {2} do {3}", new Object[]{pm.getProgramMjerenja().getPostajaId().getNazivPostaje(),
                         pm.getProgramMjerenja().getKomponentaId().getFormula(),
                         pocetak, kraj});
                 }
@@ -100,17 +100,11 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         }
     }
 
-    @Override
-    public void salji(PrimateljiPodataka primatelj, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-    }
-
     private void otvoriKonekciju() throws SQLException {
         Properties connectionProps = new Properties();
         connectionProps.put("user", "automat");
         connectionProps.put("password", "pasvord@auto");
-        
+
         connectionProps.put("useJDBCCompliantTimeZoneShift", "true:");
         connectionProps.put("serverTimeZone", "UTC");
         connectionProps.put("useGMTMillisForDateTime", "true");
@@ -162,11 +156,9 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         kraj = trenutni_termin.getTime();
         trenutni_termin.add(Calendar.HOUR, -1);
         pocetak = trenutni_termin.getTime();
-        
-        
-        
+
     }
-    
+
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

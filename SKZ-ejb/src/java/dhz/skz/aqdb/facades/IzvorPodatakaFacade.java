@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -31,6 +30,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
+
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -42,29 +42,29 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
     public IzvorPodatakaFacade() {
         super(IzvorPodataka.class);
     }
-    
+
     public IzvorPodataka findByName(final String naziv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<IzvorPodataka> cq = cb.createQuery(IzvorPodataka.class);
-        
+
         Root<IzvorPodataka> from = cq.from(IzvorPodataka.class);
-        
+
         cq.select(from).where(cb.equal(from.get(IzvorPodataka_.naziv), naziv));
         return em.createQuery(cq).getSingleResult();
     }
-    
+
     public ProgramMjerenja getProgram(Postaja p, IzvorPodataka i, String kKljuc, String nKljuc) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
         Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
-        
+
         Join<ProgramMjerenja, IzvorPodataka> izvorJ = from.join(ProgramMjerenja_.izvorPodatakaId);
         Join<ProgramMjerenja, IzvorProgramKljuceviMap> kljuceviJ = from.join(ProgramMjerenja_.izvorProgramKljuceviMap);
-        
+
         Expression<String> kKljucE = kljuceviJ.get(IzvorProgramKljuceviMap_.kKljuc);
         Expression<String> nKljucE = kljuceviJ.get(IzvorProgramKljuceviMap_.nKljuc);
         Expression<Postaja> postajaE = from.get(ProgramMjerenja_.postajaId);
-        
+
         Predicate and = cb.and(
                 cb.equal(postajaE, p),
                 cb.equal(izvorJ, i),
@@ -73,7 +73,9 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
         );
         cq.select(from).where(and);
         List<ProgramMjerenja> resultList = em.createQuery(cq).getResultList();
-        if (resultList == null || resultList.isEmpty() ) return null;
+        if (resultList == null || resultList.isEmpty()) {
+            return null;
+        }
         return resultList.get(0);
     }
 

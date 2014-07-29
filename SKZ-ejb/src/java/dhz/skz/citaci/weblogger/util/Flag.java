@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.util;
 
 /**
@@ -11,6 +10,7 @@ package dhz.skz.citaci.weblogger.util;
  * @author kraljevic
  */
 public enum Flag {
+
     ALARM,
     UPOZORENJE,
     VAN_PODRUCJA,

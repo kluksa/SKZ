@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -16,6 +15,8 @@ import java.util.Date;
  * @author kraljevic
  */
 public interface CsvParser {
+
     void obradi(CsvOmotnica omotnica);
+
     public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka);
 }

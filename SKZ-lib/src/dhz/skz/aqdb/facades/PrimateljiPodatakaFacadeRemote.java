@@ -3,21 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dhz.skz.diseminacija;
+package dhz.skz.aqdb.facades;
 
-import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import java.util.Collection;
-import java.util.Date;
+import javax.ejb.Remote;
 
 /**
  *
  * @author kraljevic
  */
-public interface DiseminatorPodataka {
+@Remote
+public interface PrimateljiPodatakaFacadeRemote {
 
-    public void salji(PrimateljiPodataka primatelj);
+    Collection<ProgramMjerenja> getProgram(PrimateljiPodataka primatelj);
 
-    public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj);
+    PrimateljiPodataka findByNaziv(String naziv);
 }

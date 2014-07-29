@@ -357,8 +357,8 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //                String pocetniDatumStr = omotnica.getLinije().get(0)[0];
 //                Date pocetak = sdf.parse(pocetniDatumStr);
         parseHeaders(omotnica.getHeaderi());
-        
-       Iterator<Long> it = omotnica.getVremena().iterator();
+
+        Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
             Date vrijeme = new Date(it.next());
 //                if ( vrijeme.after(zadnji)){
@@ -376,7 +376,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         Date vrijeme;
-        if ( datoteka.compareToIgnoreCase("zero_span") == 0) {
+        if (datoteka.compareToIgnoreCase("zero_span") == 0) {
             vrijeme = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
         } else {
             vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);

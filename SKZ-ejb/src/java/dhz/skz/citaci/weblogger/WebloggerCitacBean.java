@@ -55,7 +55,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
     private PodatakFacade dao;
-    
+
     @EJB
     private PostajaFacade posajaFacade;
 
@@ -173,8 +173,7 @@ public class WebloggerCitacBean implements CitacIzvora {
             }
         }
     }
-    
-    
+
     public void pospremiNiz(NizPodataka niz) {
         ProgramMjerenja kljuc = niz.getKljuc();
 
@@ -197,6 +196,5 @@ public class WebloggerCitacBean implements CitacIzvora {
             dao.create(p);
         }
     }
-
 
 }

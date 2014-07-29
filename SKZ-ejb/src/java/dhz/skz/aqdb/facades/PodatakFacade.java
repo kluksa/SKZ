@@ -79,7 +79,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return pm;
     }
 
-
     public Date getVrijemeZadnjegNaPostajiZaIzvor(Postaja p, IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -123,10 +122,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-
-
-  
-
     public Collection<Podatak> getPodaciZaKomponentu(Date pocetak, Date kraj, Komponenta k, NivoValidacije nv, short usporedno) {
         em.refresh(k);
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -150,8 +145,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-   
-    
     public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
@@ -171,8 +164,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         cq.select(from);
         return em.createQuery(cq).getResultList();
     }
-    
-    
+
     public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
@@ -212,9 +204,9 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
                 )
         );
         cq.select(cb.greatest(vrijeme));
-        
+
         List<Date> rl = em.createQuery(cq).getResultList();
-        if ( rl == null || rl.isEmpty() || rl.get(0) == null) {
+        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
             return program.getPocetakMjerenja();
         }
         return rl.get(0);

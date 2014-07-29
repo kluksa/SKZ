@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.webservis.omotnica;
 
 import java.io.Serializable;
@@ -13,8 +12,8 @@ import java.util.List;
  *
  * @author kraljevic
  */
-public class CsvOmotnica implements Serializable{
-    
+public class CsvOmotnica implements Serializable {
+
     private String izvor;
 
     private String postaja;
@@ -22,9 +21,9 @@ public class CsvOmotnica implements Serializable{
     private String[] headeri;
 
     private List<String[]> linije;
-    
+
     private String datoteka;
-    
+
     private List<Long> vremena;
 
     public List<Long> getVremena() {
@@ -34,7 +33,7 @@ public class CsvOmotnica implements Serializable{
     public void setVremena(List<Long> vremena) {
         this.vremena = vremena;
     }
-    
+
     public String getDatoteka() {
         return datoteka;
     }
@@ -42,7 +41,6 @@ public class CsvOmotnica implements Serializable{
     public void setDatoteka(String datoteka) {
         this.datoteka = datoteka;
     }
-
 
     public String getIzvor() {
         return izvor;

@@ -37,7 +37,7 @@ public class API100EValidator extends ValidatorImpl {
             s.dodajFlag(Flag.NEDOSTAJE);
         } else if (!statusStr.isEmpty()) {
             try {
-                int stInt = Integer.parseInt(statusStr,16);
+                int stInt = Integer.parseInt(statusStr, 16);
                 if (stInt > 255) {
                     s.dodajFlag(Flag.FAULT);
                 }
@@ -53,7 +53,6 @@ public class API100EValidator extends ValidatorImpl {
                 if ((stInt & 8) == 16) {
                     s.dodajFlag(Flag.CALIBRATION);
                 }
-
 
             } catch (NumberFormatException ex) {
                 throw new NevaljanStatusException(ex);

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -32,6 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "VrstaPostajeIzvor.findByOznaka", query = "SELECT v FROM VrstaPostajeIzvor v WHERE v.oznaka = :oznaka"),
     @NamedQuery(name = "VrstaPostajeIzvor.findByNaziv", query = "SELECT v FROM VrstaPostajeIzvor v WHERE v.naziv = :naziv")})
 public class VrstaPostajeIzvor implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -116,5 +116,5 @@ public class VrstaPostajeIzvor implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.VrstaPostajeIzvor[ id=" + id + " ]";
     }
-    
+
 }

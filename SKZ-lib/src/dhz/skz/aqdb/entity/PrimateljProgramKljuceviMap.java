@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -33,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findByNKljuc", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.nKljuc = :nKljuc"),
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findByPrimateljId", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.primateljProgramKljuceviMapPK.primateljId = :primateljId")})
 public class PrimateljProgramKljuceviMap implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PrimateljProgramKljuceviMapPK primateljProgramKljuceviMapPK;
@@ -142,5 +142,5 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap[ primateljProgramKljuceviMapPK=" + primateljProgramKljuceviMapPK + " ]";
     }
-    
+
 }

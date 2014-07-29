@@ -41,12 +41,12 @@ public class FtpKlijent {
         passwd = userpass.substring(i + 1);
     }
 
-    public FTPFile[] getFileList(FTPFileFilter filter) throws FtpKlijentException  {
+    public FTPFile[] getFileList(FTPFileFilter filter) throws FtpKlijentException {
         try {
             return ftp.listFiles(null, filter);
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not get File list", ex);
-            throw new FtpKlijentException("Could not get File list.", ex); 
+            throw new FtpKlijentException("Could not get File list.", ex);
         }
     }
 
@@ -56,7 +56,7 @@ public class FtpKlijent {
             istream = ftp.retrieveFileStream(filename);
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not get file stream", ex);
-            throw new FtpKlijentException("Could not get file stream.", ex); 
+            throw new FtpKlijentException("Could not get file stream.", ex);
         }
         return istream;
     }
@@ -66,7 +66,7 @@ public class FtpKlijent {
             return ftp.completePendingCommand();
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not complete.", ex);
-            throw new FtpKlijentException("Could not complete.", ex); 
+            throw new FtpKlijentException("Could not complete.", ex);
         }
     }
 
@@ -75,10 +75,10 @@ public class FtpKlijent {
             istream.close();
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not close stream.", ex);
-            throw new FtpKlijentException("Could not close stream.", ex); 
+            throw new FtpKlijentException("Could not close stream.", ex);
         }
     }
-    
+
     public void connect(URI uri) throws FtpKlijentException {
         this.setUri(uri);
         ftp = new FTPClient();
@@ -97,7 +97,7 @@ public class FtpKlijent {
         } catch (IOException e) {
             disconnect();
             throw new FtpKlijentException("Could not connect to server.", e);
-        } 
+        }
     }
 
     public void disconnect() {
@@ -114,7 +114,7 @@ public class FtpKlijent {
             return ftp.listFiles();
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not get File list", ex);
-            throw new FtpKlijentException("Could not get File list.", ex); 
+            throw new FtpKlijentException("Could not get File list.", ex);
         }
     }
 }

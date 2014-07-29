@@ -14,21 +14,22 @@ import java.io.OutputStream;
  * @author kraljevic
  */
 public class LocalSaveFile implements DataTransfer {
+
     private OutputStream os = null;
     private String path = "/home/kraljevic/";
 
     LocalSaveFile(String path) {
         this.path = path;
     }
-    
+
     @Override
     public void pripremiTransfer(String ime) throws IOException {
-        String fname = path +"/"+ ime.toLowerCase();
+        String fname = path + "/" + ime.toLowerCase();
         os = new FileOutputStream(new File(fname));
     }
-    
+
     @Override
-    public OutputStream getOutputStream()  {
+    public OutputStream getOutputStream() {
         return os;
     }
 

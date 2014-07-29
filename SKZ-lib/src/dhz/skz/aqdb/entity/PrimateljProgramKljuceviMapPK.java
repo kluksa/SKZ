@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -17,6 +16,7 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class PrimateljProgramKljuceviMapPK implements Serializable {
+
     @Basic(optional = false)
     @Column(name = "program_mjerenja_id")
     private int programMjerenjaId;
@@ -76,5 +76,5 @@ public class PrimateljProgramKljuceviMapPK implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.PrimateljProgramKljuceviMapPK[ programMjerenjaId=" + programMjerenjaId + ", primateljId=" + primateljId + " ]";
     }
-    
+
 }

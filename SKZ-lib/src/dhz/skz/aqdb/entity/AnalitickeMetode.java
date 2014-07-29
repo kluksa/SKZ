@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -35,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AnalitickeMetode.findByNorma", query = "SELECT a FROM AnalitickeMetode a WHERE a.norma = :norma"),
     @NamedQuery(name = "AnalitickeMetode.findByPonovljivostUNuli", query = "SELECT a FROM AnalitickeMetode a WHERE a.ponovljivostUNuli = :ponovljivostUNuli")})
 public class AnalitickeMetode implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -129,5 +129,5 @@ public class AnalitickeMetode implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.AnalitickeMetode[ id=" + id + " ]";
     }
-    
+
 }

@@ -53,7 +53,7 @@ public class WlDatotekaParser {
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
     private Map<ProgramMjerenja, NizPodataka> nizKanala;
 
-    public WlDatotekaParser( TimeZone tz) {
+    public WlDatotekaParser(TimeZone tz) {
         this.temperatura = -999.f;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
@@ -64,7 +64,6 @@ public class WlDatotekaParser {
     public void setZadnjiPodatak(Date zadnjiPodatak) {
         this.zadnjiPodatak = zadnjiPodatak;
     }
-    
 
     public void setNizKanala(Map<ProgramMjerenja, NizPodataka> nizKanala) {
         this.nizKanala = nizKanala;
@@ -98,7 +97,7 @@ public class WlDatotekaParser {
             while (csv.readRecord()) {
                 int nc = csv.getColumnCount();
                 if (brojStupaca != nc) {
-                    log.log(Level.SEVERE,"Promijenio se broj stupaca kod zapisa {0}", csv.getRawRecord());
+                    log.log(Level.SEVERE, "Promijenio se broj stupaca kod zapisa {0}", csv.getRawRecord());
                     return;
                 }
                 try {

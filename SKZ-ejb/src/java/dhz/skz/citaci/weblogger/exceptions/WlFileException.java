@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.exceptions;
-
 
 import java.util.logging.Logger;
 
@@ -14,7 +12,7 @@ import java.util.logging.Logger;
  * @author kraljevic
  */
 public class WlFileException extends Exception {
-    
+
     public WlFileException() {
     }
 

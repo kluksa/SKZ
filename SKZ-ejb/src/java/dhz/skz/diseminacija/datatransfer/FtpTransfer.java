@@ -17,6 +17,7 @@ import org.apache.commons.net.ftp.FTPReply;
  * @author kraljevic
  */
 public class FtpTransfer implements DataTransfer {
+
     private static final Logger log = Logger.getLogger(FtpTransfer.class.getName());
     private FTPClient ftp;
     private final URI url;
@@ -27,8 +28,6 @@ public class FtpTransfer implements DataTransfer {
     FtpTransfer(URI url) {
         this.url = url;
     }
-    
-    
 
     @Override
     public void pripremiTransfer(String filename) throws IOException {
@@ -38,13 +37,13 @@ public class FtpTransfer implements DataTransfer {
         String username = null;
         String password = null;
         int i = userpass.indexOf(":");
-        if ( i > 0 ){
+        if (i > 0) {
             username = userpass.substring(0, i);
-            password = userpass.substring(i+1);
-        } else  {
+            password = userpass.substring(i + 1);
+        } else {
             username = userpass;
         }
-        
+
         ftp = new FTPClient();
 //        //ftp.addProtocolCommandListener(new PrintCommandListener(
         try {
@@ -59,21 +58,21 @@ public class FtpTransfer implements DataTransfer {
                     log.log(Level.SEVERE, "FTP error user password.");
                     disconnect();
                 } else {
-                   ftp.enterLocalPassiveMode();
+                    ftp.enterLocalPassiveMode();
 //                   ftp.setFileType(FTP.BINARY_FILE_TYPE);
-                   spojen = true;
+                    spojen = true;
                 }
-            }  else {
+            } else {
                 disconnect();
                 log.log(Level.SEVERE, "FTP server refused connection.");
             }
-            
+
         } catch (IOException e) {
             disconnect();
             log.log(Level.SEVERE, "Could not connect to server.");
         }
         this.stream = ftp.storeFileStream(filename);
-        
+
     }
 
     @Override
@@ -86,7 +85,7 @@ public class FtpTransfer implements DataTransfer {
         disconnect();
         log.log(Level.INFO, "Zatvorio konekciju {0}", url.getAuthority());
     }
-    
+
     private void disconnect() {
         spojen = false;
         if (ftp.isConnected()) {
@@ -96,5 +95,5 @@ public class FtpTransfer implements DataTransfer {
             }
         }
     }
-    
+
 }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -17,8 +16,10 @@ import java.util.Map;
  * @author kraljevic
  */
 public interface CitacIzvora {
+
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor);
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor, 
-                                            Map<ProgramMjerenja, Podatak> zadnjiPodatak);
+
+    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor,
+            Map<ProgramMjerenja, Podatak> zadnjiPodatak);
 
 }

@@ -68,8 +68,7 @@ class WlZeroSpanDatotekaParser {
                     log.log(Level.SEVERE, "izvor_program_kljucevi_map(program_mjerenja_id = {0}) ne sadrzi K Kljuc", kljuc.getId());
                 } else {
                     wlKanalProgram.put(ipm.getUKljuc().toLowerCase(), kljuc);
-                    log.log(Level.INFO, "Zero/span {0} : {1} : {2}", new Object[]
-                        {kljuc.getPostajaId().getNazivPostaje(), ipm.getUKljuc(), 
+                    log.log(Level.INFO, "Zero/span {0} : {1} : {2}", new Object[]{kljuc.getPostajaId().getNazivPostaje(), ipm.getUKljuc(),
                         kljuc.getKomponentaId().getFormula()});
                 }
             } else {

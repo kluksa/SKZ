@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -31,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UmjerniKoeficijenti.findBySlope", query = "SELECT u FROM UmjerniKoeficijenti u WHERE u.slope = :slope"),
     @NamedQuery(name = "UmjerniKoeficijenti.findByOffset", query = "SELECT u FROM UmjerniKoeficijenti u WHERE u.offset = :offset")})
 public class UmjerniKoeficijenti implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -115,5 +115,5 @@ public class UmjerniKoeficijenti implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjerniKoeficijenti[ umjeravanjeId=" + umjeravanjeId + " ]";
     }
-    
+
 }

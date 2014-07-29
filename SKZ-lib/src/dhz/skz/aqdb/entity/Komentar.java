@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -30,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Komentar.findByPodatakId", query = "SELECT k FROM Komentar k WHERE k.podatakId = :podatakId"),
     @NamedQuery(name = "Komentar.findByTekst", query = "SELECT k FROM Komentar k WHERE k.tekst = :tekst")})
 public class Komentar implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -96,5 +96,5 @@ public class Komentar implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Komentar[ podatakId=" + podatakId + " ]";
     }
-    
+
 }

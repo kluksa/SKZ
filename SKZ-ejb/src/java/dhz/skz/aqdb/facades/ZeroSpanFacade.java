@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
@@ -33,13 +32,14 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
+public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
+
     private static final Logger log = Logger.getLogger(ZeroSpanFacade.class.getName());
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
-    
-        @Override
+
+    @Override
     protected EntityManager getEntityManager() {
         return em;
     }
@@ -53,13 +53,12 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<ZeroSpan> zsT = cq.from(ZeroSpan.class);
         Join<ZeroSpan, ProgramMjerenja> programT = zsT.join(ZeroSpan_.programMjerenjaId);
-        
+
 //        Join<ZeroSpan, Uredjaj>  uredjajT= zsT.join(ZeroSpan_.uredjajId);
 //        Join<Uredjaj, ProgramUredjajLink> uredjajProgramT = uredjajT.join(Uredjaj_.programUredjajLinkCollection);
 //        Join<ProgramUredjajLink, ProgramMjerenja> programT = uredjajProgramT.join(ProgramUredjajLink_.programMjerenjaId);
 //        Join<ProgramMjerenja, IzvorPodataka> izvorT = programT.join(ProgramMjerenja_.izvorPodatakaId);
 //        Join<ProgramMjerenja, Postaja> postajaT = programT.join(ProgramMjerenja_.postajaId);
-        
         Expression<Date> vrijemeE = zsT.get(ZeroSpan_.vrijeme);
         Expression<Postaja> postajaE = programT.get(ProgramMjerenja_.postajaId);
         Expression<IzvorPodataka> izvorE = programT.get(ProgramMjerenja_.izvorPodatakaId);
@@ -71,8 +70,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         );
         cq.select(cb.greatest(vrijemeE));
         return em.createQuery(cq).getSingleResult();
-   }
-
+    }
 
     public Collection<ProgramMjerenja> getProgramNaPostajiZaIzvor(Postaja p, IzvorPodataka i, Date zadnji) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -81,16 +79,16 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         Expression<Postaja> postaja = program.get(ProgramMjerenja_.postajaId);
         Expression<IzvorPodataka> izvor = program.get(ProgramMjerenja_.izvorPodatakaId);
         Expression<Date> kraj = program.get(ProgramMjerenja_.zavrsetakMjerenja);
-        
+
         cq.select(program).where(
-            cb.and(
-                cb.equal(postaja, p),
-                cb.equal(izvor, i),
-                cb.or(
-                    cb.isNull(kraj),
-                    cb.greaterThan(kraj, zadnji)
+                cb.and(
+                        cb.equal(postaja, p),
+                        cb.equal(izvor, i),
+                        cb.or(
+                                cb.isNull(kraj),
+                                cb.greaterThan(kraj, zadnji)
+                        )
                 )
-            )
         );
         return em.createQuery(cq).getResultList();
     }
@@ -119,7 +117,6 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
 //        log.log(Level.INFO, "ZERO SPAN PROGRAM: {1}, SADA: {0}, POCETAK: {2}, DULJINA: {3}", new Object[]{sada.getTime(), programMjerenja.getId(), vrijeme.getTime(), q.getResultList().size()});
 //        return q.getResultList();
 //    }
-
 //    public List<ZeroSpan> getZeroSpan(ProgramMjerenja programMjerenja, Date pocetak, Date kraj) {
 //        CriteriaBuilder cb = em.getCriteriaBuilder();
 //        CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);
@@ -142,14 +139,13 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
 //        log.log(Level.INFO, "ZERO SPAN PROGRAM: {1}, SADA: {3} POCETAK: {0}, KRAJ: {2}", new Object[]{pocetak.getTime(), programMjerenja.getId(), kraj.getTime(), new Date().getTime()});
 //        return em.createQuery(cq).getResultList();
 //    }
-
     public List<ZeroSpan> getZeroSpan(ProgramMjerenja programMjerenja, Date pocetak, Date kraj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);
         Root<ZeroSpan> zsT = cq.from(ZeroSpan.class);
-        
+
         Expression<Date> vrijemeT = zsT.get(ZeroSpan_.vrijeme);
-        Expression<ProgramMjerenja> programT=zsT.get(ZeroSpan_.programMjerenjaId);
+        Expression<ProgramMjerenja> programT = zsT.get(ZeroSpan_.programMjerenjaId);
         cq.where(
                 cb.and(
                         cb.greaterThan(vrijemeT, pocetak),
@@ -161,15 +157,14 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         log.log(Level.INFO, "ZERO SPAN PROGRAM: {1}, SADA: {3} POCETAK: {0}, KRAJ: {2}", new Object[]{pocetak.getTime(), programMjerenja.getId(), kraj.getTime(), new Date().getTime()});
         return em.createQuery(cq).getResultList();
     }
-    
-    public List<ProgramMjerenja> getProgramSaZeroSpanomNaPostaji(IzvorPodataka izvor, Postaja p){
+
+    public List<ProgramMjerenja> getProgramSaZeroSpanomNaPostaji(IzvorPodataka izvor, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
-        
+
 //        Root<IzvorProgramKljuceviMap> ipkmT = cq.from(IzvorProgramKljuceviMap.class);
-        
         Root<ProgramMjerenja> pmT = cq.from(ProgramMjerenja.class);
-        
+
         Join<ProgramMjerenja, IzvorProgramKljuceviMap> ipkmT = pmT.join(ProgramMjerenja_.izvorProgramKljuceviMap);
 //        Join<IzvorProgramKljuceviMap, ProgramMjerenja> pmT = ipkmT.join(IzvorProgramKljuceviMap_.programMjerenja);
 //        Join<ProgramMjerenja, Postaja> pT = pmT.join(ProgramMjerenja_.postajaId);
@@ -177,23 +172,23 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         Expression<String> ukljucE = ipkmT.get(IzvorProgramKljuceviMap_.uKljuc);
         Expression<Postaja> postajaE = pmT.get(ProgramMjerenja_.postajaId);
         Expression<Date> zadnjiE = pmT.get(ProgramMjerenja_.zavrsetakMjerenja);
-        
+
         cq.where(
                 cb.and(
-                    cb.isNotNull(ukljucE),
-                    cb.equal(postajaE, p),
-                    cb.equal(izvorE, izvor)
+                        cb.isNotNull(ukljucE),
+                        cb.equal(postajaE, p),
+                        cb.equal(izvorE, izvor)
                 )
         );
         cq.select(pmT);
         return em.createQuery(cq).getResultList();
     }
-    
-        public void spremi(Collection<ZeroSpan> podaci) {
-        for ( ZeroSpan ps : podaci) {
+
+    public void spremi(Collection<ZeroSpan> podaci) {
+        for (ZeroSpan ps : podaci) {
             try {
-                log.log(Level.INFO, "PODATAK: {0}: {1} : {2} : {3}", new Object[]{ps.getProgramMjerenjaId().getKomponentaId().getFormula(), 
-                    ps.getVrijeme(), ps.getVrijednost(), ps.getVrsta() });
+                log.log(Level.INFO, "PODATAK: {0}: {1} : {2} : {3}", new Object[]{ps.getProgramMjerenjaId().getKomponentaId().getFormula(),
+                    ps.getVrijeme(), ps.getVrijednost(), ps.getVrsta()});
                 create(ps);
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
@@ -202,5 +197,4 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan>{
         em.flush();
     }
 
-    
 }

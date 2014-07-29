@@ -12,9 +12,11 @@ import java.io.OutputStream;
  * @author kraljevic
  */
 public interface DataTransfer {
-    
+
     public void pripremiTransfer(String url) throws IOException;
+
     public OutputStream getOutputStream();
+
     public void zavrsiTransfer() throws IOException;
-    
+
 }

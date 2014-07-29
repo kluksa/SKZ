@@ -3,16 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.exceptions;
-
-
 
 /**
  *
  * @author kraljevic
  */
-public class IzvorPodatakaException extends Exception{
+public class IzvorPodatakaException extends Exception {
 
     public IzvorPodatakaException() {
     }

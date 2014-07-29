@@ -36,7 +36,7 @@ public class GrimmValidator extends ValidatorImpl {
             s.dodajFlag(Flag.NEDOSTAJE);
         } else if (!statusStr.isEmpty()) {
             try {
-                int stInt = Integer.parseInt(statusStr,16);
+                int stInt = Integer.parseInt(statusStr, 16);
                 if (stInt > 255) {
                     s.dodajFlag(Flag.FAULT);
                 }

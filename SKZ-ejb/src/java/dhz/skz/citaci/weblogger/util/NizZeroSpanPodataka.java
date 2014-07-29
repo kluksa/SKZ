@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.util;
-
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
@@ -20,10 +18,11 @@ import java.util.logging.Logger;
  * @author kraljevic
  */
 public class NizZeroSpanPodataka {
+
     private static final Logger log = Logger.getLogger(NizZeroSpanPodataka.class.getName());
     private ProgramMjerenja kljuc;
     private final NavigableMap<Date, ZeroSpan> podaci;
-    private NavigableMap<Date,Uredjaj> uredjaji;
+    private NavigableMap<Date, Uredjaj> uredjaji;
 
     public NizZeroSpanPodataka() {
         this.podaci = new TreeMap<>();
@@ -41,7 +40,7 @@ public class NizZeroSpanPodataka {
     public void setKljuc(ProgramMjerenja kljuc) {
         this.kljuc = kljuc;
     }
-    
+
     public void dodajPodatak(Date vrijeme, ZeroSpan ocitanje) {
         podaci.put(vrijeme, ocitanje);
     }
@@ -57,5 +56,5 @@ public class NizZeroSpanPodataka {
     public void setUredjaji(NavigableMap<Date, Uredjaj> uredjaji) {
         this.uredjaji = uredjaji;
     }
-    
+
 }

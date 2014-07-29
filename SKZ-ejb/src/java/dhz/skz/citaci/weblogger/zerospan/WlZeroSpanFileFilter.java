@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.citaci.weblogger.zerospan;
-
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,12 +21,12 @@ import org.apache.commons.net.ftp.FTPFileFilter;
  * @author kraljevic
  */
 class WlZeroSpanFileFilter implements FTPFileFilter {
+
     private static final Logger log = Logger.getLogger(WlZeroSpanFileFilter.class.getName());
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     private final Date zadnji;
     private final String nazivPostaje;
     private final TimeZone timeZone;
-
 
     WlZeroSpanFileFilter(String nazivPostaje, Date zadnji, TimeZone timeZone) {
         this.zadnji = zadnji;
@@ -37,10 +35,12 @@ class WlZeroSpanFileFilter implements FTPFileFilter {
         formatter.setTimeZone(timeZone);
     }
 
- @Override
+    @Override
     public boolean accept(FTPFile file) {
-        if ( file.isDirectory()) return false;
-        
+        if (file.isDirectory()) {
+            return false;
+        }
+
         String strL = file.getName().toLowerCase();
         String ptStr = "^(" + nazivPostaje + ")_c-(\\d{8})\\.csv";
         Pattern pt = Pattern.compile(ptStr);

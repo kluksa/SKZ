@@ -30,8 +30,8 @@ public class NizPodataka {
         this.podaci = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
     }
-    
-    public NizPodataka(){
+
+    public NizPodataka() {
         this.podaci = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
     }
@@ -67,6 +67,5 @@ public class NizPodataka {
     public void setKljuc(ProgramMjerenja kljuc) {
         this.kljuc = kljuc;
     }
-    
-    
+
 }

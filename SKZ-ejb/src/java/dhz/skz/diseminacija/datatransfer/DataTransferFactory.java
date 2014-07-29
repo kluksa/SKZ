@@ -16,14 +16,15 @@ import java.util.logging.Logger;
  * @author kraljevic
  */
 public class DataTransferFactory {
-    
+
     private static final Logger log = Logger.getLogger(DataTransferFactory.class.getName());
+
     public static DataTransfer getTransferObj(PrimateljiPodataka pp) throws ProtocolNotSupported {
         DataTransfer dto = null;
         try {
             URI url = new URI(pp.getUrl());
             String protokol = url.getScheme();
-            
+
             switch (protokol) {
                 case "file":
                     log.log(Level.INFO, "Protokol file: {0}", url.getPath());
@@ -36,7 +37,7 @@ public class DataTransferFactory {
                 default:
                     throw new ProtocolNotSupported(protokol);
             }
-            
+
         } catch (URISyntaxException ex) {
             log.log(Level.SEVERE, null, ex);
             throw new ProtocolNotSupported("Los URL");

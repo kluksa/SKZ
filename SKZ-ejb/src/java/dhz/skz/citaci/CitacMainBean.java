@@ -26,7 +26,7 @@ public class CitacMainBean {
     private IzvorPodatakaFacade izvorPodatakaFacade;
 
     public void pokreniCitace() {
-        log.log(Level.INFO,"Pokrecem citace" );
+        log.log(Level.INFO, "Pokrecem citace");
         try {
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
@@ -43,6 +43,6 @@ public class CitacMainBean {
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-        log.log(Level.INFO,"Kraj pokretanja citaca" );
+        log.log(Level.INFO, "Kraj pokretanja citaca");
     }
 }

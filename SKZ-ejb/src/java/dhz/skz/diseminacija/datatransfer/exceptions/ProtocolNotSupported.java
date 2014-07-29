@@ -13,5 +13,5 @@ public class ProtocolNotSupported extends Exception {
     public ProtocolNotSupported(String protokol) {
         super(protokol);
     }
-    
+
 }
