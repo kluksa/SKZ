@@ -32,13 +32,13 @@ public class MainTimerBean {
     @Schedule(minute = "17", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-//        diseminacijaMain.pokreniDiseminaciju();
+        diseminacijaMain.pokreniDiseminaciju();
     }
 
     @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
-//        citacMainBean.pokreniCitace();
+        citacMainBean.pokreniCitace();
     }
 
 }

@@ -13,9 +13,11 @@ import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -110,6 +112,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         connectionProps.put("useGMTMillisForDateTime", "true");
         connectionProps.put("useLegacyDateTimeCode", "false");
         connectionProps.put("useTimeZone", "true");
+        connectionProps.put("noAccessToProcedureBodies", "true");
         String conStr = "jdbc:" + primatelj.getUrl();
         log.log(Level.INFO, conStr);
         con = DriverManager.getConnection(conStr, connectionProps);
@@ -158,9 +161,31 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         pocetak = trenutni_termin.getTime();
 
     }
-
     @Override
-    public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> programi, Date pocetak, Date kraj) {
+        this.primatelj = primatelj;
+        try {
+            otvoriKonekciju();
+            CallableStatement prepCall = con.prepareCall("CALL nedostajuci_periodi(?,?,?,?)");
+            for ( ProgramMjerenja program : programi ) {
+                prepCall.setString(1, program.getPostajaId().getNacionalnaOznaka());
+                prepCall.setString(2, program.getKomponentaId().getIsoOznaka());
+                java.sql.Timestamp ts1 = new java.sql.Timestamp(pocetak.getTime());
+                java.sql.Timestamp ts2 = new java.sql.Timestamp(kraj.getTime());
+                
+                prepCall.setTimestamp(3, new java.sql.Timestamp(pocetak.getTime()));
+                prepCall.setTimestamp(4, new java.sql.Timestamp(kraj.getTime()));
+                ResultSet rs = prepCall.executeQuery();
+                while (rs.next()) {
+                    java.sql.Date date = rs.getDate(1);
+                    java.sql.Date date1 = rs.getDate(2);
+                    log.log(Level.INFO, date + ":::::" + date1);
+                }
+                
+            }
+            zatvoriKonekciju();
+        } catch (SQLException ex) {
+            Logger.getLogger(EkonergDiseminator.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

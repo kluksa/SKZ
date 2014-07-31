@@ -26,6 +26,16 @@ public class CsvOmotnica implements Serializable {
 
     private List<Long> vremena;
 
+    private String vrsta;
+
+    public String getVrsta() {
+        return vrsta;
+    }
+
+    public void setVrsta(String vrsta) {
+        this.vrsta = vrsta;
+    }
+
     public List<Long> getVremena() {
         return vremena;
     }

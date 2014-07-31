@@ -50,25 +50,22 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 
     public void spremi(Collection<PodatakSirovi> podaci) {
         for (PodatakSirovi ps : podaci) {
-            try {
-
-                spremi(ps);
-            } catch (Exception ex) {
-                log.log(Level.SEVERE, "", ex);
+            if ( ! postoji(ps)) {
+                em.persist(ps);
             }
         }
         em.flush();
     }
 
-    public void spremi(PodatakSirovi podatak) {
-        if (!postoji(podatak)) {
-            create(podatak);
-        } else {
-            log.log(Level.INFO, "Podatak: {0}: {1} vec postoji", new Object[]{
-                podatak.getProgramMjerenjaId().getId(), podatak.getVrijeme()
-            });
-        }
-    }
+//    public void spremi(PodatakSirovi podatak) {
+//        if (!postoji(podatak)) {
+//            create(podatak);
+//        } else {
+//            log.log(Level.INFO, "Podatak: {0}: {1} vec postoji", new Object[]{
+//                podatak.getProgramMjerenjaId().getId(), podatak.getVrijeme()
+//            });
+//        }
+//    }
 
     public boolean postoji(PodatakSirovi podatak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();

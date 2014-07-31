@@ -44,18 +44,18 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
 
     @Override
     public void prihvatiOmotnicu(final CsvOmotnica omotnica) {
-        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        String fname = df.format(new Date());
-        fname += ".dat";
-        try {
-            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fname))) {
-                os.writeObject(omotnica);
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+//        String fname = df.format(new Date());
+//        fname += ".dat";
+//        try {
+//            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fname))) {
+//                os.writeObject(omotnica);
+//            }
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IOException ex) {
+//            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
             InitialContext ctx = new InitialContext();

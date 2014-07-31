@@ -85,10 +85,11 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         this.omotnica = omotnica;
         mapa = new HashMap<>();
 
-        if (omotnica.getDatoteka().equalsIgnoreCase("zero_span")) {
+        if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
+            log.log(Level.INFO,"ZERO/SPAN");
             obradiZeroSpan(omotnica);
-
         } else {
+            log.log(Level.INFO,"MJERENJE");
             obradiMjerenja(omotnica);
         }
     }
@@ -241,11 +242,9 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
-
             parseZSLinija(linija, it.next(), podaci);
-
         }
-
+        log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
         //       procitaj(izvor);
 //        } catch (ParseException ex) {
 //            log.log(Level.SEVERE, null, ex);
@@ -255,8 +254,9 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     }
 
     private void parseZSHeaders(String[] headeri) {
+        modMapa = new HashMap<>();
         String datoteka = omotnica.getDatoteka();
-        for (int i = 1; i < headeri.length; i++) {
+        for (Integer i = 1; i < headeri.length; i++) {
             String str = headeri[i];
             if (str.length() > 5) {
                 String kraj = str.substring(str.length() - 5);
@@ -271,6 +271,8 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     } else {
                         log.log(Level.INFO, "Los header {0} na poziciji {1}", new Object[]{str, i});
                     }
+                } else {
+                    log.log(Level.SEVERE,"NEMA PROGRAMA");
                 }
             } else {
                 log.log(Level.INFO, "Los header {0} na poziciji {1}", new Object[]{str, i});
@@ -376,7 +378,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         Date vrijeme;
-        if (datoteka.compareToIgnoreCase("zero_span") == 0) {
+        if (datoteka.compareToIgnoreCase("zero-span") == 0) {
             vrijeme = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
         } else {
             vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);
