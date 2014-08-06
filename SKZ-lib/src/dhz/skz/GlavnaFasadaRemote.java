@@ -5,6 +5,10 @@
  */
 package dhz.skz;
 
+import dhz.skz.aqdb.entity.PrimateljiPodataka;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Collection;
+import java.util.Date;
 import javax.ejb.Remote;
 
 /**
@@ -13,5 +17,11 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface GlavnaFasadaRemote {
+
+    void pokreniDiseminaciju();
+
+    void pokreniCitanje();
+
+    void nadoknadiPodatke(PrimateljiPodataka primatelji, Collection<ProgramMjerenja> programi, Date pocetak, Date kraj);
 
 }

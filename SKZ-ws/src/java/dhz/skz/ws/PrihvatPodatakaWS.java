@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.ws;
 
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.jws.WebService;
 import javax.ejb.Stateless;
@@ -23,8 +23,6 @@ import javax.jws.WebParam;
 @WebService(serviceName = "PrihvatPodatakaWS")
 @Stateless()
 public class PrihvatPodatakaWS {
-
-    public static final Logger log = Logger.getLogger(PrihvatPodatakaWS.class.getName());
     @EJB
     private PrihvatSirovihPodatakaRemote ejbRef;// Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Web Service Operation")
@@ -44,5 +42,5 @@ public class PrihvatPodatakaWS {
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
         return ejbRef.test(inStr);
     }
-
+    
 }

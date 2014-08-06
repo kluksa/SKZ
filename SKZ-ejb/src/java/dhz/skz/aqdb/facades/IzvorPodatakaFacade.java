@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -77,6 +78,22 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
             return null;
         }
         return resultList.get(0);
+    }
+
+    public Collection<ProgramMjerenja> getProgram(Postaja p, IzvorPodataka i) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+        Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
+
+        Join<ProgramMjerenja, IzvorPodataka> izvorJ = from.join(ProgramMjerenja_.izvorPodatakaId);
+        Expression<Postaja> postajaE = from.get(ProgramMjerenja_.postajaId);
+
+        Predicate and = cb.and(
+                cb.equal(postajaE, p),
+                cb.equal(izvorJ, i)
+        );
+        cq.select(from).where(and);
+        return em.createQuery(cq).getResultList();
     }
 
     public Iterable<IzvorPodataka> getAktivniIzvori() {

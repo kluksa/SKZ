@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 //import dhz.skz.citaci.weblogger.util.NizPodataka;
 //import dhz.skz.citaci.weblogger.util.PodatakWl;
 import java.util.List;
+import javax.persistence.criteria.Predicate;
 
 /**
  *
@@ -165,7 +166,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
+    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
@@ -173,19 +174,33 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         Expression<NivoValidacije> nivoValidacijeE = from.get(Podatak_.nivoValidacijeId);
         Expression<Date> vrijemeE = from.get(Podatak_.vrijeme);
         Expression<ProgramMjerenja> programE = from.get(Podatak_.programMjerenjaId);
-
+        Predicate pocetakP, krajP;
+        if ( p ) {
+            pocetakP = cb.greaterThanOrEqualTo(vrijemeE, pocetak);
+        } else  {
+            pocetakP = cb.greaterThan(vrijemeE, pocetak);
+        }
+        if ( k ) {
+            krajP = cb.lessThanOrEqualTo(vrijemeE, kraj);
+        } else  {
+            krajP = cb.lessThan(vrijemeE, kraj);
+        }
+       
+        Predicate uvjet = cb.and(pocetakP, krajP); 
         cq.where(
                 cb.and(
                         cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
                         cb.equal(programE, pm),
-                        cb.greaterThan(vrijemeE, pocetak),
-                        cb.lessThanOrEqualTo(vrijemeE, kraj)
+                        uvjet
                 )
         );
-        log.log(Level.INFO, "MJERENJE PROGRAM: {1}, SADA: {3} POCETAK: {0}, KRAJ: {2}", new Object[]{pocetak.getTime(), pm.getId(), kraj.getTime(), new Date().getTime()});
-
         cq.select(from);
         return em.createQuery(cq).getResultList();
+    }
+    
+    
+    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
+        return getPodatak(pm, pocetak, kraj, false, true);
     }
 
     public Date getZadnjiPodatak(ProgramMjerenja program) {
@@ -211,9 +226,31 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         }
         return rl.get(0);
     }
+    
+    public Podatak getZadnji(IzvorPodataka i, Postaja p) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
+        Root<Podatak> from = cq.from(Podatak.class);
+        Join<Podatak, ProgramMjerenja> pmJ = from.join(Podatak_.programMjerenjaId);
+        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId),p);
+        Predicate izvor = cb.equal(pmJ.join(ProgramMjerenja_.izvorPodatakaId), i);
+        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije((short) 0));
+        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
+        cq.select(from).where(cb.and(postaja, izvor, nivo)).orderBy(cb.desc(vrijeme));
+        List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+        if ( rl.isEmpty()) {
+            return null;
+        } else {
+            return rl.get(0);
+        }
+    }
 
     public void spremiPodatak(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});
         em.persist(ps);
+    }
+    
+    public void flush(){
+        em.flush();
     }
 }

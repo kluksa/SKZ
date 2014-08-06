@@ -5,6 +5,15 @@
  */
 package dhz.skz;
 
+import dhz.skz.aqdb.entity.PrimateljiPodataka;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.citaci.CitacMainBean;
+import dhz.skz.diseminacija.DiseminacijaMainBean;
+import java.util.Collection;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
@@ -13,5 +22,32 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class GlavnaFasada implements GlavnaFasadaRemote {
+
+    @EJB
+    private DiseminacijaMainBean diseminacijaMain;
+    @EJB
+    private CitacMainBean citacMainBean;
+
+    private static final Logger log = Logger.getLogger(GlavnaFasada.class.getName());
+
+    @Override
+    public void pokreniDiseminaciju() {
+        log.log(Level.INFO, "Pokrecem diseminaciju");
+        diseminacijaMain.pokreniDiseminaciju();
+    }
+
+    @Override
+    public void pokreniCitanje() {
+        log.log(Level.INFO, "Pokrecem citace");
+        citacMainBean.pokreniCitace();
+    }
+
+    @Override
+    public void nadoknadiPodatke(PrimateljiPodataka primatelji, Collection<ProgramMjerenja> programi, Date pocetak, Date kraj) {
+        log.log(Level.INFO, "Nadoknadjujem podatke");
+        diseminacijaMain.nadoknadiPodatke(primatelji, programi, pocetak, kraj);
+    }
+    
+    
 
 }

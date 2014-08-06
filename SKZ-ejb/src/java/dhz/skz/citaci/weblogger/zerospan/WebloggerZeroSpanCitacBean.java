@@ -28,9 +28,19 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -39,6 +49,7 @@ import org.apache.commons.net.ftp.FTPFile;
  */
 @Stateless
 @LocalBean
+@TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerZeroSpanCitacBean {
 
     @EJB
@@ -52,6 +63,8 @@ public class WebloggerZeroSpanCitacBean {
     private FtpKlijent ftp;
     private IzvorPodataka izvor;
     private Postaja postaja;
+    @Resource
+    private EJBContext context;
 
     public void pokupiZeroSpanSaPostaje(IzvorPodataka izvor, Postaja p) {
         this.izvor = izvor;
@@ -140,21 +153,40 @@ public class WebloggerZeroSpanCitacBean {
     }
 
     public void pospremiNiz(NizZeroSpanPodataka niz) {
-        ProgramMjerenja kljuc = niz.getKljuc();
-        if (niz.getPodaci().isEmpty()) {
-            return;
+        try {
+            ProgramMjerenja kljuc = niz.getKljuc();
+            if (niz.getPodaci().isEmpty()) {
+                return;
+            }
+            UserTransaction utx = context.getUserTransaction();
+            utx.begin();
+            log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
+                    new Object[]{kljuc.getPostajaId().getNazivPostaje(),
+                        kljuc.getKomponentaId().getFormula(),
+                        niz.getPodaci().firstKey(),
+                        niz.getPodaci().lastKey(),
+                        niz.getPodaci().size()});
+            for (Date d : niz.getPodaci().keySet()) {
+                ZeroSpan zs = niz.getPodaci().get(d);
+                dao.create(zs);
+            }
+            utx.commit();
+        } catch (RollbackException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicMixedException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicRollbackException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SystemException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(WebloggerZeroSpanCitacBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
-                new Object[]{kljuc.getPostajaId().getNazivPostaje(),
-                    kljuc.getKomponentaId().getFormula(),
-                    niz.getPodaci().firstKey(),
-                    niz.getPodaci().lastKey(),
-                    niz.getPodaci().size()});
-        for (Date d : niz.getPodaci().keySet()) {
-            ZeroSpan zs = niz.getPodaci().get(d);
-            dao.create(zs);
-        }
     }
 
 }

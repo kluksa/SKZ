@@ -6,7 +6,7 @@
 package dhz.skz;
 
 import dhz.skz.citaci.CitacMainBean;
-import dhz.skz.diseminacija.DiseminacijaMain;
+import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -23,13 +23,13 @@ import javax.ejb.Singleton;
 public class MainTimerBean {
 
     @EJB
-    private DiseminacijaMain diseminacijaMain;
+    private DiseminacijaMainBean diseminacijaMain;
     @EJB
     private CitacMainBean citacMainBean;
 
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
 
-    @Schedule(minute = "17", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "19", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
         diseminacijaMain.pokreniDiseminaciju();

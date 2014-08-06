@@ -26,7 +26,7 @@ import javax.naming.NamingException;
  * @author kraljevic
  */
 @Stateless
-public class DiseminacijaMainBean implements DiseminacijaMain {
+public class DiseminacijaMainBean  {
 
     private static final Logger log = Logger.getLogger(DiseminacijaMainBean.class.getName());
 
@@ -34,7 +34,6 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
     private PrimateljiPodatakaFacadeLocal dao;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @Override
     public void pokreniDiseminaciju() {
         log.log(Level.INFO, "DISEMINACIJA");
         try {
@@ -60,7 +59,6 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
         }
     }
 
-    @Override
     public void nadoknadiPodatke(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         try {
             InitialContext ctx = new InitialContext();
@@ -77,5 +75,4 @@ public class DiseminacijaMainBean implements DiseminacijaMain {
             log.log(Level.SEVERE, null, ex);
         }
     }
-
 }

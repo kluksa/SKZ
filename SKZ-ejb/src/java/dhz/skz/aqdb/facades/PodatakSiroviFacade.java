@@ -50,7 +50,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 
     public void spremi(Collection<PodatakSirovi> podaci) {
         for (PodatakSirovi ps : podaci) {
-            if ( ! postoji(ps)) {
+            if (!postoji(ps)) {
                 em.persist(ps);
             }
         }
@@ -66,7 +66,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 //            });
 //        }
 //    }
-
     public boolean postoji(PodatakSirovi podatak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);

@@ -10,9 +10,10 @@ import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -32,11 +33,21 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.apache.commons.net.ftp.FTPFile;
@@ -47,12 +58,19 @@ import org.apache.commons.net.ftp.FTPFile;
  */
 @Stateless
 @LocalBean
+@TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
 
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
 
+    @Resource
+    private EJBContext context;
+
+   @EJB
+    private ProgramMjerenjaFacade programMjerenjaFacade;
+   
     @EJB
     private PodatakFacade dao;
 
@@ -71,6 +89,13 @@ public class WebloggerCitacBean implements CitacIzvora {
     @EJB
     private WebloggerZeroSpanCitacBean zeroSpan;
 
+    @EJB
+    private IzvorPodatakaFacade izvorPodatakaFacade;
+    
+    
+    
+    private IzvorPodataka izvor;
+
     public WebloggerCitacBean() {
 
     }
@@ -84,18 +109,18 @@ public class WebloggerCitacBean implements CitacIzvora {
     @Override
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        em.refresh(izvor);
+        this.izvor = izvor;
         Collection<Postaja> postajeZaIzvor = posajaFacade.getPostajeZaIzvor(izvor);
         for (Postaja p : postajeZaIzvor) {
             log.log(Level.INFO, "Citam: {0}", p.getNazivPostaje());
-            pokupiMjerenjaSaPostaje(izvor, p);
+            pokupiMjerenjaSaPostaje(p);
             zeroSpan.pokupiZeroSpanSaPostaje(izvor, p);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
         return null;
     }
 
-    private Map<ProgramMjerenja, NizPodataka> getMapaNizova(Postaja p, IzvorPodataka izvor, Date zadnji) throws URISyntaxException {
+    private Map<ProgramMjerenja, NizPodataka> getMapaNizova(Postaja p, Date zadnji) throws URISyntaxException {
 
         Map<ProgramMjerenja, NizPodataka> tmp = new HashMap<>();
         Collection<ProgramMjerenja> programNaPostajiZaIzvor = dao.getProgramNaPostajiZaIzvor(p, izvor, zadnji);
@@ -109,10 +134,10 @@ public class WebloggerCitacBean implements CitacIzvora {
         return tmp;
     }
 
-    private void pokupiMjerenjaSaPostaje(IzvorPodataka izvor, Postaja p) {
-        Date zadnji = getZadnjiPodatak(izvor, p);
+    private void pokupiMjerenjaSaPostaje(Postaja p) {
+        Date zadnji = getVrijemePocetka( p );
         try {
-            Map<ProgramMjerenja, NizPodataka> tmp = getMapaNizova(p, izvor, zadnji);
+            Map<ProgramMjerenja, NizPodataka> tmp = getMapaNizova(p, zadnji);
             ftp.connect(new URI(izvor.getUri()));
 
             WlDatotekaParser citac = new WlDatotekaParser(timeZone);
@@ -133,17 +158,38 @@ public class WebloggerCitacBean implements CitacIzvora {
             obradiISpremiNizove(tmp);
         } catch (FtpKlijentException | URISyntaxException ex) {
             log.log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "XXXXXXXX", ex);
         } finally {
             ftp.disconnect();
         }
     }
 
-    private Date getZadnjiPodatak(IzvorPodataka izvor, Postaja p) {
-        Date zadnji = dao.getVrijemeZadnjegNaPostajiZaIzvor(p, izvor);
-        if (zadnji == null) {
-            zadnji = new Date(0L);
+    private Date getVrijemePocetka( Postaja p ) {
+        Date zadnji;
+        Podatak zadnjiP = dao.getZadnji(izvor, p);
+        if ( zadnjiP != null ) {
+            zadnji = zadnjiP.getVrijeme();
+        } else {
+            zadnji = programMjerenjaFacade.getPocetakMjerenja(izvor, p);
         }
-        log.log(Level.INFO, "Zadnji podatak na {0} u {1}", new Object[]{p.getNazivLokacije(), zadnji});
+
+//        Collection<ProgramMjerenja> programi = izvorPodatakaFacade.getProgram(p, izvor);
+//        Date zadnji = new Date(0L);
+//        for (ProgramMjerenja pm : programi) {
+//            Date tmp;
+//            if (pm.getZavrsetakMjerenja() == null) {
+//                tmp = dao.getZadnjiPodatak(pm);
+//
+//            } else {
+//                tmp = pm.getZavrsetakMjerenja();
+//            }
+//            if (zadnji.before(tmp)) {
+//                zadnji = tmp;
+//            }
+//
+//        }
+        log.log(Level.INFO, "Zadnji podatak na {0} u {1}", new Object[]{p.getNazivPostaje(), zadnji});
         return zadnji;
     }
 
@@ -175,25 +221,46 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     public void pospremiNiz(NizPodataka niz) {
-        ProgramMjerenja kljuc = niz.getKljuc();
-
-        log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
-                new Object[]{kljuc.getPostajaId().getNazivPostaje(),
-                    kljuc.getKomponentaId().getFormula(),
-                    niz.getPodaci().firstKey(),
-                    niz.getPodaci().lastKey(),
-                    niz.getPodaci().size()});
-        NivoValidacije nv = new NivoValidacije((short) 0);
-        for (Date d : niz.getPodaci().keySet()) {
-            PodatakWl wlp = niz.getPodaci().get(d);
-            Podatak p = new Podatak();
-            p.setVrijeme(d);
-            p.setVrijednost(wlp.getVrijednost());
-            p.setObuhvat(wlp.getObuhvat());
-            p.setProgramMjerenjaId(kljuc);
-            p.setNivoValidacijeId(nv);
-            p.setStatus(wlp.getStatus());
-            dao.create(p);
+        try {
+            UserTransaction utx = context.getUserTransaction();
+            utx.begin();
+            ProgramMjerenja kljuc = niz.getKljuc();
+            
+            log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
+                    new Object[]{kljuc.getPostajaId().getNazivPostaje(),
+                        kljuc.getKomponentaId().getFormula(),
+                        niz.getPodaci().firstKey(),
+                        niz.getPodaci().lastKey(),
+                        niz.getPodaci().size()});
+            NivoValidacije nv = new NivoValidacije((short) 0);
+            for (Date d : niz.getPodaci().keySet()) {
+                PodatakWl wlp = niz.getPodaci().get(d);
+                Podatak p = new Podatak();
+                p.setVrijeme(d);
+                p.setVrijednost(wlp.getVrijednost());
+                p.setObuhvat(wlp.getObuhvat());
+                p.setProgramMjerenjaId(kljuc);
+                p.setNivoValidacijeId(nv);
+                p.setStatus(wlp.getStatus());
+                dao.create(p);
+//            dao.flush();
+            }
+            utx.commit();
+//        dao.flush();
+        } catch (RollbackException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicMixedException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicRollbackException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SystemException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
