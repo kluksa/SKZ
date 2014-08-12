@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacadeLocal;
+import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import java.sql.CallableStatement;
@@ -81,7 +82,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 
             odrediPocetakKraj();
 
-            for (PrimateljProgramKljuceviMap pm : primatelj.getPrimateljProgramKljuceviMapCollection()) {
+            for (PrimateljProgramKljuceviMap pm : ppmFac.find(primatelj)) {
                 prebaciMjerenja(pm);
                 prebaciZS(pm);
             }

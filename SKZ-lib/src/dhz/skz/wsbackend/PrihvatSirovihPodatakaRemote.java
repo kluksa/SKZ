@@ -7,6 +7,7 @@ package dhz.skz.wsbackend;
 
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
+import java.util.Date;
 import javax.ejb.Remote;
 
 /**
@@ -21,5 +22,7 @@ public interface PrihvatSirovihPodatakaRemote {
     Long getUnixTimeZadnjeg(String izvorS, String postajaS, String datotekaS);
 
     String test(String inStr) throws CsvPrihvatException;
+
+    Date getVrijemeZadnjeg(final CsvOmotnica omotnica);
 
 }

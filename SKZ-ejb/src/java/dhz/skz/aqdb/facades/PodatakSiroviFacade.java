@@ -25,6 +25,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
@@ -88,22 +89,16 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
 
         Join<PodatakSirovi, ProgramMjerenja> programJ = from.join(PodatakSirovi_.programMjerenjaId);
-        Join<ProgramMjerenja, IzvorProgramKljuceviMap> kljuceviJ = programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap);
-        Join<ProgramMjerenja, Postaja> postajaJ = programJ.join(ProgramMjerenja_.postajaId);
-        Join<ProgramMjerenja, IzvorPodataka> izvorJ = programJ.join(ProgramMjerenja_.izvorPodatakaId);
+        
+        Predicate datotekaP = cb.equal(programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
+        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
+        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
 
         Expression<Date> vrijeme = from.get(PodatakSirovi_.vrijeme);
-        Expression<String> nKljucE = kljuceviJ.get(IzvorProgramKljuceviMap_.nKljuc);
 
-        cq.where(
-                cb.and(
-                        cb.equal(izvorJ, izvor),
-                        cb.equal(postajaJ, postaja),
-                        cb.equal(nKljucE, datoteka)
-                )
-        );
 
-        CriteriaQuery<Date> select = cq.select(cb.greatest(vrijeme));
+        CriteriaQuery<Date> select = cq.select(cb.greatest(vrijeme))
+                                        .where(cb.and(izvorP, postajaP, datotekaP));
         List<Date> rl = em.createQuery(cq).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
             return new Date(0L);

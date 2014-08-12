@@ -430,4 +430,17 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         return vrijeme;
     }
 
+    @Override
+    public Date getVrijemeZadnjegPodatka(CsvOmotnica omotnica) {
+        log.log(Level.INFO,"OOOO:{0} {1} {2}", new Object[]{omotnica.getPostaja(), omotnica.getVrsta(), omotnica.getDatoteka()});
+        postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
+        izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
+
+        if ( omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
+            return zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
+        } else {
+            return podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
+        }
+    }
+
 }

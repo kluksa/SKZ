@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,5 +51,17 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         cq.select(from).where(cb.and(prim, prog));
         return em.createQuery(cq).getResultList().get(0);
     }
+    
+    
+     public Collection<PrimateljProgramKljuceviMap> find(final PrimateljiPodataka primatelj) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);
+
+        Root<PrimateljProgramKljuceviMap> from = cq.from(PrimateljProgramKljuceviMap.class);
+        Predicate prim = cb.equal(from.get(PrimateljProgramKljuceviMap_.primateljiPodataka), primatelj);
+        cq.select(from).where(prim);
+        return em.createQuery(cq).getResultList();
+    }
+    
     
 }

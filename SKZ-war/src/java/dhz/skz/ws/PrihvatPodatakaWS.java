@@ -8,13 +8,15 @@ package dhz.skz.ws;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
+import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.jws.WebService;
 import javax.ejb.Stateless;
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebService;
 
 /**
  *
@@ -43,6 +45,16 @@ public class PrihvatPodatakaWS {
     @WebMethod(operationName = "test")
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
         return ejbRef.test(inStr);
+    }
+
+    @WebMethod(operationName = "getZadnjiZaOmotnicu")
+    public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
+        log.log(Level.INFO, "Omotnica od: {0} " , new Object[]{omotnica.getIzvor()});
+        log.log(Level.INFO, "Omotnica od: {0} " , new Object[]{ omotnica.getPostaja()});
+        log.log(Level.INFO, "Omotnica od: {0} " , new Object[]{ omotnica.getDatoteka()});
+        log.log(Level.INFO, "Omotnica od: {0} " , new Object[]{ omotnica.getVrsta()});
+        Date vrijemeZadnjeg = ejbRef.getVrijemeZadnjeg(omotnica);
+        return vrijemeZadnjeg.getTime();
     }
 
 }

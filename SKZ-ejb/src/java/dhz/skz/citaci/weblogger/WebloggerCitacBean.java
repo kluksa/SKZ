@@ -112,6 +112,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         this.izvor = izvor;
         Collection<Postaja> postajeZaIzvor = posajaFacade.getPostajeZaIzvor(izvor);
         for (Postaja p : postajeZaIzvor) {
+            Date pocetak = getVrijemePocetka(p);
             log.log(Level.INFO, "Citam: {0}", p.getNazivPostaje());
             pokupiMjerenjaSaPostaje(p);
             zeroSpan.pokupiZeroSpanSaPostaje(izvor, p);

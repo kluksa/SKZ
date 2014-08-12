@@ -9,6 +9,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import dhz.skz.aqdb.entity.ZeroSpan;
@@ -23,10 +24,12 @@ import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
@@ -197,6 +200,29 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
             }
         }
         em.flush();
+    }
+
+    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+        Root<ZeroSpan> zsT = cq.from(ZeroSpan.class);
+        Join<ZeroSpan, ProgramMjerenja> programT = zsT.join(ZeroSpan_.programMjerenjaId);
+        Predicate datotekaP = cb.equal(programT.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc),datoteka);
+//        Join<ZeroSpan, Uredjaj>  uredjajT= zsT.join(ZeroSpan_.uredjajId);
+//        Join<Uredjaj, ProgramUredjajLink> uredjajProgramT = uredjajT.join(Uredjaj_.programUredjajLinkCollection);
+//        Join<ProgramUredjajLink, ProgramMjerenja> programT = uredjajProgramT.join(ProgramUredjajLink_.programMjerenjaId);
+//        Join<ProgramMjerenja, IzvorPodataka> izvorT = programT.join(ProgramMjerenja_.izvorPodatakaId);
+//        Join<ProgramMjerenja, Postaja> postajaT = programT.join(ProgramMjerenja_.postajaId);
+        Expression<Date> vrijemeE = zsT.get(ZeroSpan_.vrijeme);
+        Predicate postajaP = cb.equal(programT.get(ProgramMjerenja_.postajaId),postaja);
+        Predicate izvorP =cb.equal( programT.get(ProgramMjerenja_.izvorPodatakaId), izvor);
+        cq.select(cb.greatest(vrijemeE)).where(cb.and(postajaP,izvorP));
+        List<Date> rl = em.createQuery(cq).getResultList();
+        if ( rl == null || rl.isEmpty() || rl.get(0) == null) {
+            return new Date(0L);
+        } else  {
+            return rl.get(0);
+        }
     }
 
 }

@@ -13,6 +13,7 @@ import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -37,18 +38,6 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
 
     @Override
     public void prihvatiOmotnicu(final CsvOmotnica omotnica) {
-//        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-//        String fname = df.format(new Date());
-//        fname += ".dat";
-//        try {
-//            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fname))) {
-//                os.writeObject(omotnica);
-//            }
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(PrihvatPodataka.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
             InitialContext ctx = new InitialContext();
@@ -65,8 +54,7 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
 
     }
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    
     @Override
     public Long getUnixTimeZadnjeg(String izvorS, String postajaS, String datotekaS) {
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
@@ -93,5 +81,25 @@ public class PrihvatPodataka implements PrihvatSirovihPodatakaRemote {
         }
         return "Orao pao, orao pao.";
     }
+
+    @Override
+    public Date getVrijemeZadnjeg(final CsvOmotnica omotnica) {
+        IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
+        try {
+            InitialContext ctx = new InitialContext();
+            String str = "java:module/";
+
+            String naziv = str + izvor.getBean().trim();
+            log.log(Level.FINE, "Bean: {0}", naziv);
+            CsvParser parser = (CsvParser) ctx.lookup(naziv);
+            return parser.getVrijemeZadnjegPodatka(omotnica);
+
+        } catch (NamingException ex) {
+            log.log(Level.SEVERE, null, ex);
+        }
+        return null;
+
+    }
+    
 
 }

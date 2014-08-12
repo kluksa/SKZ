@@ -9,6 +9,7 @@ package dhz.skz.aqdb.facades;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -34,5 +35,6 @@ public interface PrimateljProgramKljuceviMapFacadeLocal {
     int count();
 
     public PrimateljProgramKljuceviMap find(final PrimateljiPodataka primatelj, final ProgramMjerenja program);
+    public Collection<PrimateljProgramKljuceviMap> find(final PrimateljiPodataka primatelj);
     
 }
