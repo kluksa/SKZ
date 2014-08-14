@@ -146,7 +146,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak) {
+    public List<Podatak> getPodatakOd(ProgramMjerenja pm, Date pocetak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);

@@ -225,4 +225,21 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         }
     }
 
+    public List<ZeroSpan> getZeroSpanOd(ProgramMjerenja programMjerenja, Date pocetak) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);
+        Root<ZeroSpan> zsT = cq.from(ZeroSpan.class);
+
+        Expression<Date> vrijemeT = zsT.get(ZeroSpan_.vrijeme);
+        Expression<ProgramMjerenja> programT = zsT.get(ZeroSpan_.programMjerenjaId);
+        cq.where(
+                cb.and(
+                        cb.greaterThan(vrijemeT, pocetak),
+                        cb.equal(programT, programMjerenja)
+                )
+        );
+        cq.select(zsT);
+        return em.createQuery(cq).getResultList();
+    }
+
 }
