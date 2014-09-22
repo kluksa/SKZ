@@ -150,7 +150,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         
-        for (ProgramMjerenja program : izvorPodatakaFacade.getProgram(postaja, izvor)) {
+        for (ProgramMjerenja program : izvorPodatakaFacade.getProgram(izvor)) {
             try {
                 Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
                 Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
@@ -180,7 +180,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
                     if ( ! sirovi.isEmpty()) { 
                         Podatak p = obradiSat(program, sirovi, krajD);
-                        podatakFacade.spremiPodatak(p);
+                        podatakFacade.spremi(p);
                     }
                 }
                 utx.commit();
@@ -253,7 +253,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //            podatak.getObuhvat(), 
 //            count,
 //            podatak.getNivoValidacijeId().getId()});
-//        podatakFacade.spremiPodatak(podatak);
+//        podatakFacade.spremiPspremik);
     }
 
 //    private void odradi(Date zadnjiSat, ProgramMjerenja program) {
@@ -334,8 +334,12 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     symbols.setDecimalSeparator(',');
                     DecimalFormat format = new DecimalFormat("#.#");
                     format.setDecimalFormatSymbols(symbols);
-                    Float vrijednost = format.parse(linija[i]).floatValue();
-
+                    Float vrijednost;
+                    if ( "-9999".equals(linija[i])){
+                        vrijednost = -999.f;
+                    } else {
+                        vrijednost = format.parse(linija[i]).floatValue();
+                    }
                     ZeroSpan ps = new ZeroSpan();
                     ps.setProgramMjerenjaId(pm);
                     ps.setVrijeme(vrijeme);
@@ -382,16 +386,10 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             s.dodajFlag(Flag.MAINTENENCE);
         }
         if ((bs & 32) == 32) {
-            s.dodajFlag(Flag.MAINTENENCE);
         }
         if ((bs & 64) == 64) {
-            s.dodajFlag(Flag.MAINTENENCE);
         }
         if ((bs & 128) == 128) {
-            s.dodajFlag(Flag.MAINTENENCE);
-        }
-        if (ss != 0) {
-            s.dodajFlag(Flag.FAULT);
         }
         return s;
     }

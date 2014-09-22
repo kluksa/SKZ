@@ -75,7 +75,6 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         String conStr = "jdbc:" + primatelj.getUrl();
         log.log(Level.INFO, conStr);
         //        try (Connection con = DriverManager.getConnection(conStr, connectionProps)) {
-        ;
         try (Connection con = diseminacija.getConnection()) {
             prepStmt = con.prepareStatement(podatakInsertSql);
             zsStmt = con.prepareStatement(zsInsertSql);

@@ -6,20 +6,17 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.IzvorPodataka_;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.Postaja_;
-import dhz.skz.aqdb.entity.PrimateljiPodataka;
-import dhz.skz.aqdb.entity.PrimateljiPodataka_;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,16 +24,12 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-//import dhz.skz.citaci.weblogger.util.NizPodataka;
-//import dhz.skz.citaci.weblogger.util.PodatakWl;
-import java.util.List;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -245,9 +238,15 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         }
     }
 
-    public void spremiPodatak(Podatak ps) {
+    public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});
         em.persist(ps);
+    }
+    
+    public void spremi(Collection<Podatak> ps) {
+        for ( Podatak p : ps ) {
+            em.persist(p);
+        }
     }
     
     public void flush(){

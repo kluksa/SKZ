@@ -95,6 +95,17 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
         cq.select(from).where(and);
         return em.createQuery(cq).getResultList();
     }
+    
+    public Collection<ProgramMjerenja> getProgram(IzvorPodataka i) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+        Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
+
+
+        cq.select(from).where(cb.equal(from.join(ProgramMjerenja_.izvorPodatakaId), i));
+        return em.createQuery(cq).getResultList();
+    }
+    
 
     public Iterable<IzvorPodataka> getAktivniIzvori() {
         em.flush();
