@@ -25,6 +25,7 @@ import dhz.skz.citaci.weblogger.util.NizPodataka;
 import dhz.skz.citaci.weblogger.util.PodatakWl;
 import dhz.skz.citaci.weblogger.util.SatniAgregator;
 import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,6 +56,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -83,9 +85,6 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
     private PostajaFacade posajaFacade;
-
-    @EJB
-    private FtpKlijent ftp;
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -139,9 +138,10 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     private void pokupiMjerenjaSaPostaje() {
+        FtpKlijent ftp = new FtpKlijent();
+
         try {
             Map<ProgramMjerenja, NizPodataka> mapaMjernihNizova = getMapaNizova();
-
             ftp.connect(new URI(izvor.getUri()));
 
             String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)\\.csv";

@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Stateful;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileFilter;
@@ -20,7 +19,6 @@ import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
  *
  * @author kraljevic
  */
-@Stateful
 public class FtpKlijent {
 
     private static final Logger log = Logger.getLogger(FtpKlijent.class.getName());
@@ -28,10 +26,12 @@ public class FtpKlijent {
     private String host;
     private String user;
     private String passwd;
-    private boolean spojen = false;
 
     private FTPClient ftp;
     private InputStream istream;
+
+    public FtpKlijent() {
+    }
 
     private void setUri(URI uri) {
         host = uri.getHost();
