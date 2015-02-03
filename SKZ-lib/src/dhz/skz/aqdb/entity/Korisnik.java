@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -26,7 +30,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "korisnik", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"korisnicko_ime"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Korisnik.findAll", query = "SELECT k FROM Korisnik k"),
@@ -38,26 +43,29 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Korisnik.findByEnabled", query = "SELECT k FROM Korisnik k WHERE k.enabled = :enabled"),
     @NamedQuery(name = "Korisnik.findByVersion", query = "SELECT k FROM Korisnik k WHERE k.version = :version")})
 public class Korisnik implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "korisnicko_ime")
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "korisnicko_ime", nullable = false, length = 50)
     private String korisnickoIme;
     @Basic(optional = false)
-    @Column(name = "lozinka")
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
     private String lozinka;
-    @Column(name = "ime")
+    @Size(max = 50)
+    @Column(length = 50)
     private String ime;
-    @Column(name = "prezime")
+    @Size(max = 50)
+    @Column(length = 50)
     private String prezime;
-    @Column(name = "enabled")
     private Boolean enabled;
-    @Column(name = "version")
     private Integer version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "korisnikId")
     private Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection;
@@ -186,5 +194,5 @@ public class Korisnik implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Korisnik[ id=" + id + " ]";
     }
-
+    
 }

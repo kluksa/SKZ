@@ -116,6 +116,30 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
+    public Collection<ProgramMjerenja> getProgramNaPostajiZaTermin(Postaja p, IzvorPodataka i, Date termin) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+        Root<ProgramMjerenja> program = cq.from(ProgramMjerenja.class);
+        Expression<Postaja> postaja = program.get(ProgramMjerenja_.postajaId);
+        Expression<IzvorPodataka> izvor = program.get(ProgramMjerenja_.izvorPodatakaId);
+        Expression<Date> pocetak = program.get(ProgramMjerenja_.pocetakMjerenja);
+        Expression<Date> kraj = program.get(ProgramMjerenja_.zavrsetakMjerenja);
+
+        cq.select(program).where(
+                cb.and(
+                        cb.equal(postaja, p),
+                        cb.equal(izvor, i),
+                        cb.lessThanOrEqualTo(pocetak, termin),
+                        cb.or(
+                                cb.isNull(kraj),
+                                cb.greaterThan(kraj, termin)
+                        )
+                )
+        );
+        return em.createQuery(cq).getResultList();
+    }
+    
+    
     public Collection<Podatak> getPodaciZaKomponentu(Date pocetak, Date kraj, Komponenta k, NivoValidacije nv, short usporedno) {
         em.refresh(k);
         CriteriaBuilder cb = em.getCriteriaBuilder();

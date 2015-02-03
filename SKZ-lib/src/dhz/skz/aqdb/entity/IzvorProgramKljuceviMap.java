@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,21 +35,25 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByUKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.uKljuc = :uKljuc"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByNKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.nKljuc = :nKljuc")})
 public class IzvorProgramKljuceviMap implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "program_mjerenja_id")
+    @NotNull
+    @Column(name = "program_mjerenja_id", nullable = false)
     private Integer programMjerenjaId;
-    @Column(name = "p_kljuc")
+    @Size(max = 45)
+    @Column(name = "p_kljuc", length = 45)
     private String pKljuc;
-    @Column(name = "k_kljuc")
+    @Size(max = 45)
+    @Column(name = "k_kljuc", length = 45)
     private String kKljuc;
-    @Column(name = "u_kljuc")
+    @Size(max = 45)
+    @Column(name = "u_kljuc", length = 45)
     private String uKljuc;
-    @Column(name = "n_kljuc")
+    @Size(max = 45)
+    @Column(name = "n_kljuc", length = 45)
     private String nKljuc;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
     private ProgramMjerenja programMjerenja;
 
@@ -129,5 +136,5 @@ public class IzvorProgramKljuceviMap implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.IzvorProgramKljuceviMap[ programMjerenjaId=" + programMjerenjaId + " ]";
     }
-
+    
 }

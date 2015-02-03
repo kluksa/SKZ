@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -24,6 +25,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -32,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "podatak", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"program_mjerenja_id", "nivo_validacije_id", "vrijeme"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Podatak.findAll", query = "SELECT p FROM Podatak p"),
@@ -44,39 +48,37 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Podatak.findByOriginalniPodatakId", query = "SELECT p FROM Podatak p WHERE p.originalniPodatakId = :originalniPodatakId"),
     @NamedQuery(name = "Podatak.findByStatus", query = "SELECT p FROM Podatak p WHERE p.status = :status")})
 public class Podatak implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "podatak_id")
+    @Column(name = "podatak_id", nullable = false)
     private Integer podatakId;
     @Basic(optional = false)
-    @Column(name = "vrijeme")
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "vrijednost")
+    @Column(precision = 12)
     private Float vrijednost;
-    @Column(name = "obuhvat")
     private Short obuhvat;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa")
+    @Column(name = "vrijeme_upisa", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Column(name = "originalni_podatak_id")
     private Integer originalniPodatakId;
     @Basic(optional = false)
-    @Column(name = "status")
+    @Column(nullable = false)
     private int status;
     @ManyToMany(mappedBy = "podatakCollection")
     private Collection<Flag> flagCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
     private Komentar komentar;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
-    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
+    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private NivoValidacije nivoValidacijeId;
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
@@ -218,5 +220,5 @@ public class Podatak implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Podatak[ podatakId=" + podatakId + " ]";
     }
-
+    
 }

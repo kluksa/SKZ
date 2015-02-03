@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,13 +34,14 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "NivoValidacije.findById", query = "SELECT n FROM NivoValidacije n WHERE n.id = :id"),
     @NamedQuery(name = "NivoValidacije.findByOznaka", query = "SELECT n FROM NivoValidacije n WHERE n.oznaka = :oznaka")})
 public class NivoValidacije implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Short id;
-    @Column(name = "oznaka")
+    @Size(max = 45)
+    @Column(length = 45)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nivoValidacijeId")
     private Collection<Podatak> podatakCollection;
@@ -98,5 +102,5 @@ public class NivoValidacije implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.NivoValidacije[ id=" + id + " ]";
     }
-
+    
 }

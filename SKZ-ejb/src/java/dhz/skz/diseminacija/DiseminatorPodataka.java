@@ -5,7 +5,6 @@
  */
 package dhz.skz.diseminacija;
 
-import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import java.util.Collection;

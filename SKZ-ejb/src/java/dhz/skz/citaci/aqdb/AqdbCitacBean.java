@@ -353,4 +353,9 @@ public class AqdbCitacBean implements CitacIzvora {
 //        }
 //        return listaVremena;
 //    }    
+
+    @Override
+    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

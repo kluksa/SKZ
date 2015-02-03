@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -33,21 +35,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "IndustrijskePostajeSvojstva.findByPostajaId", query = "SELECT i FROM IndustrijskePostajeSvojstva i WHERE i.postajaId = :postajaId"),
     @NamedQuery(name = "IndustrijskePostajeSvojstva.findByUdaljenostOdIzvora", query = "SELECT i FROM IndustrijskePostajeSvojstva i WHERE i.udaljenostOdIzvora = :udaljenostOdIzvora")})
 public class IndustrijskePostajeSvojstva implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "postaja_id")
+    @NotNull
+    @Column(name = "postaja_id", nullable = false)
     private Integer postajaId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "udaljenost_od_izvora")
+    @Column(name = "udaljenost_od_izvora", precision = 12)
     private Float udaljenostOdIzvora;
     @JoinTable(name = "industrijske_postaje_svojstva_has_snap_sektori", joinColumns = {
-        @JoinColumn(name = "industrijske_postaje_svojstva_postaja_id", referencedColumnName = "postaja_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "snap_sektori_id", referencedColumnName = "id")})
+        @JoinColumn(name = "industrijske_postaje_svojstva_postaja_id", referencedColumnName = "postaja_id", nullable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "snap_sektori_id", referencedColumnName = "id", nullable = false)})
     @ManyToMany
     private Collection<SnapSektori> snapSektoriCollection;
-    @JoinColumn(name = "postaja_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Postaja postaja;
 
@@ -115,5 +117,5 @@ public class IndustrijskePostajeSvojstva implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.IndustrijskePostajeSvojstva[ postajaId=" + postajaId + " ]";
     }
-
+    
 }

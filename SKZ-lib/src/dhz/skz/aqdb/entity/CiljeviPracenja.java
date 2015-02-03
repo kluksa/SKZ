@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -33,22 +36,26 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "CiljeviPracenja.findById", query = "SELECT c FROM CiljeviPracenja c WHERE c.id = :id"),
     @NamedQuery(name = "CiljeviPracenja.findByTekstualnaDefinicija", query = "SELECT c FROM CiljeviPracenja c WHERE c.tekstualnaDefinicija = :tekstualnaDefinicija")})
 public class CiljeviPracenja implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "tekstualna_definicija")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "tekstualna_definicija", nullable = false, length = 45)
     private String tekstualnaDefinicija;
     @Basic(optional = false)
+    @NotNull
     @Lob
-    @Column(name = "opis")
+    @Size(min = 1, max = 65535)
+    @Column(nullable = false, length = 65535)
     private String opis;
     @JoinTable(name = "postaja_ciljevi_link", joinColumns = {
-        @JoinColumn(name = "ciljevi_pracenja_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "postaja_id", referencedColumnName = "id")})
+        @JoinColumn(name = "ciljevi_pracenja_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)})
     @ManyToMany
     private Collection<Postaja> postajaCollection;
 
@@ -122,5 +129,5 @@ public class CiljeviPracenja implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.CiljeviPracenja[ id=" + id + " ]";
     }
-
+    
 }

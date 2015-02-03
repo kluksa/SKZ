@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -17,6 +18,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,21 +37,24 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "SnapSektori.findBySektor", query = "SELECT s FROM SnapSektori s WHERE s.sektor = :sektor"),
     @NamedQuery(name = "SnapSektori.findByNaziv", query = "SELECT s FROM SnapSektori s WHERE s.naziv = :naziv")})
 public class SnapSektori implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "asocirana_oznaka")
+    @NotNull
+    @Column(name = "asocirana_oznaka", nullable = false)
     private int asociranaOznaka;
     @Basic(optional = false)
-    @Column(name = "sektor")
+    @NotNull
+    @Column(nullable = false)
     private short sektor;
     @Basic(optional = false)
-    @Column(name = "naziv")
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(nullable = false, length = 255)
     private String naziv;
     @ManyToMany(mappedBy = "snapSektoriCollection")
     private Collection<IndustrijskePostajeSvojstva> industrijskePostajeSvojstvaCollection;
@@ -132,5 +138,5 @@ public class SnapSektori implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.SnapSektori[ id=" + id + " ]";
     }
-
+    
 }

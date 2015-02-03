@@ -21,4 +21,34 @@
     <welcome-file-list>
         <welcome-file>faces/index.xhtml</welcome-file>
     </welcome-file-list>
+    <ejb-ref>
+        <ejb-ref-name>CitacMainBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.citaci.CitacMainRemote</remote>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ProgramMjerenjaFacade</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote</remote>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ProgramMjerenjaFacade1</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote</remote>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ZeroSpanFacadeB</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.aqdb.facades.ZeroSpanFacadeRemote</remote>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ProgramMjerenjaFacade2</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote</remote>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ZeroSpanFacadeB1</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>dhz.skz.aqdb.facades.ZeroSpanFacadeRemote</remote>
+    </ejb-ref>
 </web-app>

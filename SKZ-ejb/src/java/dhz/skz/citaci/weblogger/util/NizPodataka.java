@@ -7,6 +7,7 @@ package dhz.skz.citaci.weblogger.util;
 
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.ZeroSpan;
 import java.util.Date;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -23,17 +24,21 @@ public class NizPodataka {
     private ProgramMjerenja kljuc;
     private NavigableMap<Date, Validator> validatori;
     private int brojMjerenjaUSatu;
-    private final NavigableMap<Date, PodatakWl> podaci;
+    private NavigableMap<Date, PodatakWl> podaci;
+    private NavigableMap<Date, ZeroSpan> zs;
 
     public NizPodataka(ProgramMjerenja kljuc) {
         this.kljuc = kljuc;
         this.podaci = new TreeMap<>();
+        this.zs = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
     }
 
     public NizPodataka() {
         this.podaci = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
+        this.zs = new TreeMap<>();
+
     }
 
     public NavigableMap<Date, Validator> getValidatori() {
@@ -47,9 +52,17 @@ public class NizPodataka {
     public void dodajPodatak(Date vrijeme, PodatakWl ocitanje) {
         podaci.put(vrijeme, ocitanje);
     }
-
+    
+    public void dodajZeroSpan(Date vrijeme, ZeroSpan ocitanje) {
+        zs.put(vrijeme, ocitanje);
+    }
+    
     public NavigableMap<Date, PodatakWl> getPodaci() {
         return podaci;
+    }
+    
+    public NavigableMap<Date, ZeroSpan> getZeroSpan() {
+        return zs;
     }
 
     public int getBrojMjerenjaUSatu() {
@@ -68,4 +81,11 @@ public class NizPodataka {
         this.kljuc = kljuc;
     }
 
+    public void setPodaci(NavigableMap<Date, PodatakWl> podaci) {
+        this.podaci = podaci;
+    }
+
+    public void setZs(NavigableMap<Date, ZeroSpan> zs) {
+        this.zs = zs;
+    }
 }

@@ -14,7 +14,7 @@ is divided into following sections:
   - javadoc
   - cleanup
 
--->
+        -->
 <project xmlns:ejbjarproject1="http://www.netbeans.org/ns/j2ee-ejbjarproject/1" xmlns:ejbjarproject2="http://www.netbeans.org/ns/j2ee-ejbjarproject/2" xmlns:ejbjarproject3="http://www.netbeans.org/ns/j2ee-ejbjarproject/3" basedir=".." default="default" name="SKZ-ejb-impl">
     <import file="ant-deploy.xml"/>
     <fail message="Please build using Ant 1.7.1 or higher.">
@@ -26,8 +26,8 @@ is divided into following sections:
     </fail>
     <target depends="dist,javadoc" description="Build whole project." name="default"/>
     <!-- 
-        INITIALIZATION SECTION 
-    -->
+                INITIALIZATION SECTION 
+            -->
     <target name="-pre-init">
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
@@ -73,8 +73,8 @@ is divided into following sections:
         </condition>
         <available file="${meta.inf}/MANIFEST.MF" property="has.custom.manifest"/>
         <!--
-            Variables needed to support directory deployment.
-        -->
+                    Variables needed to support directory deployment.
+                -->
         <condition property="do.package.with.custom.manifest.not.directory.deploy">
             <and>
                 <isset property="has.custom.manifest"/>
@@ -191,18 +191,18 @@ is divided into following sections:
             </and>
         </condition>
         <fail if="missing.j2ee.server.home">
-            The Java EE server classpath is not correctly set up - server home directory is missing.
-            Either open the project in the IDE and assign the server or setup the server classpath manually.
-            For example like this:
-            ant -Dj2ee.server.home=&lt;app_server_installation_directory&gt;
-        </fail>
+The Java EE server classpath is not correctly set up - server home directory is missing.
+Either open the project in the IDE and assign the server or setup the server classpath manually.
+For example like this:
+   ant -Dj2ee.server.home=&lt;app_server_installation_directory&gt;
+                </fail>
         <fail unless="j2ee.platform.classpath">
-            The Java EE server classpath is not correctly set up. Your active server type is ${j2ee.server.type}.
-            Either open the project in the IDE and assign the server or setup the server classpath manually.
-            For example like this:
-            ant -Duser.properties.file=&lt;path_to_property_file&gt; (where you put the property "j2ee.platform.classpath" in a .properties file)
-            or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties file is used)
-        </fail>
+The Java EE server classpath is not correctly set up. Your active server type is ${j2ee.server.type}.
+Either open the project in the IDE and assign the server or setup the server classpath manually.
+For example like this:
+   ant -Duser.properties.file=&lt;path_to_property_file&gt; (where you put the property "j2ee.platform.classpath" in a .properties file)
+or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties file is used)
+                </fail>
     </target>
     <target name="-init-macrodef-property">
         <macrodef name="property" uri="http://www.netbeans.org/ns/j2ee-ejbjarproject/1">
@@ -723,15 +723,15 @@ is divided into following sections:
     </target>
     <target name="-init-taskdefs">
         <fail unless="libs.CopyLibs.classpath">
-            The libs.CopyLibs.classpath property is not set up.
-            This property must point to 
-            org-netbeans-modules-java-j2seproject-copylibstask.jar file which is part
-            of NetBeans IDE installation and is usually located at 
+The libs.CopyLibs.classpath property is not set up.
+This property must point to 
+org-netbeans-modules-java-j2seproject-copylibstask.jar file which is part
+of NetBeans IDE installation and is usually located at 
 &lt;netbeans_installation&gt;/java&lt;version&gt;/ant/extra folder.
-            Either open the project in the IDE and make sure CopyLibs library
-            exists or setup the property manually. For example like this:
-            ant -Dlibs.CopyLibs.classpath=a/path/to/org-netbeans-modules-java-j2seproject-copylibstask.jar
-        </fail>
+Either open the project in the IDE and make sure CopyLibs library
+exists or setup the property manually. For example like this:
+ ant -Dlibs.CopyLibs.classpath=a/path/to/org-netbeans-modules-java-j2seproject-copylibstask.jar
+                </fail>
         <taskdef classpath="${libs.CopyLibs.classpath}" resource="org/netbeans/modules/java/j2seproject/copylibstask/antlib.xml"/>
     </target>
     <target name="-init-ap-cmdline-properties">
@@ -758,8 +758,8 @@ is divided into following sections:
         <property name="ap.cmd.line.internal" value=""/>
     </target>
     <!--
-        pre NB7.2 profiling section; consider it deprecated
-    -->
+                pre NB7.2 profiling section; consider it deprecated
+            -->
     <target depends="-profile-pre-init, init, -profile-post-init, -profile-init-check" if="profiler.info.jvmargs.agent" name="profile-init"/>
     <target if="profiler.info.jvmargs.agent" name="-profile-pre-init">
         <!-- Empty placeholder for easier customization. -->
@@ -774,12 +774,12 @@ is divided into following sections:
         <fail unless="profiler.info.jvmargs.agent">Must set profiler agent JVM arguments in profiler.info.jvmargs.agent</fail>
     </target>
     <!--
-        end of pre NB7.2 profiling section
-    -->
+                end of pre NB7.2 profiling section
+            -->
     <target depends="-pre-init,-init-private,-init-userdir,-init-user,-init-project,-do-init,-post-init,-init-check,-init-macrodef-property,-init-macrodef-javac,-init-macrodef-test,-init-macrodef-test-debug,-init-macrodef-java,-init-macrodef-nbjpda,-init-macrodef-debug,-init-taskdefs,-init-ap-cmdline" name="init"/>
     <!--
-        COMPILATION SECTION
-    -->
+                COMPILATION SECTION
+            -->
     <target depends="init" if="no.dist.ear.dir" name="-deps-module-jar" unless="no.deps">
         <ant antfile="${project.SKZ-lib}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
@@ -801,25 +801,25 @@ is divided into following sections:
     </target>
     <target depends="compile,-library-inclusion-in-archive-weblogic,-library-inclusion-in-archive-by-user" name="library-inclusion-in-archive"/>
     <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
-        <copyfiles files="${libs.Commons_NET.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${libs.JavaCSV.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${reference.SKZ-lib.jar}" todir="${build.classes.dir}"/>
+        <copyfiles files="${libs.Commons_NET_3.classpath}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
-        <basename file="${libs.Commons_NET.classpath}" property="manifest.libs.Commons_NET.classpath"/>
         <basename file="${libs.JavaCSV.classpath}" property="manifest.libs.JavaCSV.classpath"/>
         <basename file="${reference.SKZ-lib.jar}" property="manifest.reference.SKZ-lib.jar"/>
+        <basename file="${libs.Commons_NET_3.classpath}" property="manifest.libs.Commons_NET_3.classpath"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
             <attribute name="Extension-List" value="jar-1 jar-2 jar-3 "/>
-            <attribute name="jar-1-Extension-Name" value="${manifest.libs.Commons_NET.classpath}"/>
-            <attribute name="jar-2-Extension-Name" value="${manifest.libs.JavaCSV.classpath}"/>
-            <attribute name="jar-3-Extension-Name" value="${manifest.reference.SKZ-lib.jar}"/>
+            <attribute name="jar-1-Extension-Name" value="${manifest.libs.JavaCSV.classpath}"/>
+            <attribute name="jar-2-Extension-Name" value="${manifest.reference.SKZ-lib.jar}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.libs.Commons_NET_3.classpath}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
-        <copyfiles files="${libs.Commons_NET.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.JavaCSV.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.SKZ-lib.jar}" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${libs.Commons_NET_3.classpath}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
@@ -855,8 +855,8 @@ is divided into following sections:
     </target>
     <target depends="init,deps-jar,-pre-pre-compile,-pre-compile-single,-do-compile-single,-post-compile-single" name="compile-single"/>
     <!--
-        DIST BUILDING SECTION
-    -->
+                DIST BUILDING SECTION
+            -->
     <target name="-pre-dist">
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
@@ -876,8 +876,8 @@ is divided into following sections:
         </jar>
     </target>
     <!--
-        TARGETS NEEDED TO SUPPORT DIRECTORY DEPLOYMENT
-    -->
+                TARGETS NEEDED TO SUPPORT DIRECTORY DEPLOYMENT
+            -->
     <target depends="init,compile,-pre-dist,library-inclusion-in-archive" if="do.package.with.custom.manifest.not.directory.deploy" name="-do-tmp-dist-with-manifest">
         <dirname file="${dist.jar}" property="dist.jar.dir"/>
         <mkdir dir="${dist.jar.dir}"/>
@@ -895,8 +895,8 @@ is divided into following sections:
     <target depends="init,compile,-pre-dist,library-inclusion-in-archive, -do-tmp-dist-without-manifest, -do-tmp-dist-with-manifest" name="-do-dist-directory-deploy"/>
     <target depends="init,compile,-pre-dist,-do-dist-directory-deploy,-post-dist" description="Build distribution (JAR) - if directory deployment is not supported." name="dist-directory-deploy"/>
     <!--
-        END TARGETS NEEDED TO SUPPORT DIRECTORY DEPLOYMENT
-    -->
+                END TARGETS NEEDED TO SUPPORT DIRECTORY DEPLOYMENT
+            -->
     <target depends="init,compile,-pre-dist,library-inclusion-in-archive, -do-dist-without-manifest, -do-dist-with-manifest" name="-do-dist"/>
     <target depends="init,compile,-pre-dist,library-inclusion-in-manifest" name="-do-ear-dist">
         <dirname file="${dist.ear.jar}" property="dist.jar.dir"/>
@@ -912,8 +912,8 @@ is divided into following sections:
     <target depends="init,compile,-pre-dist,-do-dist,-post-dist" description="Build distribution (JAR)." name="dist"/>
     <target depends="init,-init-cos,compile,-pre-dist,-do-ear-dist,-post-dist" description="Build distribution (JAR) to be packaged into an EAR." name="dist-ear"/>
     <!--
-        EXECUTION SECTION
-    -->
+                EXECUTION SECTION
+            -->
     <target depends="run-deploy" description="Deploy to server." name="run"/>
     <target name="-init-deploy">
         <property name="include.jar.manifest" value=""/>
@@ -961,8 +961,8 @@ is divided into following sections:
         <ejbjarproject1:nbjpdaappreloaded/>
     </target>
     <!--
-        DEBUGGING SECTION
-    -->
+                DEBUGGING SECTION
+            -->
     <target depends="init,compile,dist-directory-deploy" description="Debug project in IDE." if="netbeans.home" name="debug">
         <nbdeploy debugmode="true"/>
         <antcall target="connect-debugger"/>
@@ -997,13 +997,13 @@ is divided into following sections:
     </target>
     <target depends="init,-pre-debug-fix,-do-debug-fix" if="netbeans.home" name="debug-fix"/>
     <!--
-    =================
-    PROFILING SECTION
-    =================
-    -->
+            =================
+            PROFILING SECTION
+            =================
+            -->
     <!--
-        pre NB7.2 profiling section; consider it deprecated
-    -->
+                pre NB7.2 profiling section; consider it deprecated
+            -->
     <target description="Profile a J2EE project in the IDE." if="profiler.info.jvmargs.agent" name="-profile-pre72">
         <fail unless="netbeans.home">This target only works when run from inside the NetBeans IDE.</fail>
         <condition else="start-profiled-server" property="profiler.startserver.target" value="start-profiled-server-extraargs">
@@ -1052,8 +1052,8 @@ is divided into following sections:
         </nbstartprofiledserver>
     </target>
     <!--
-        end of pre NB7.2 profiling section
-    -->
+                end of pre NB7.2 profiling section
+            -->
     <target if="netbeans.home" name="-profile-check">
         <condition property="profiler.configured">
             <or>
@@ -1080,8 +1080,8 @@ is divided into following sections:
         <loadgenstart path="${profiler.loadgen.path}"/>
     </target>
     <!--
-        JAVADOC SECTION
-    -->
+                JAVADOC SECTION
+            -->
     <target depends="init" if="have.sources" name="javadoc-build">
         <mkdir dir="${dist.javadoc.dir}"/>
         <javadoc additionalparam="${javadoc.additionalparam}" author="${javadoc.author}" charset="UTF-8" destdir="${dist.javadoc.dir}" docencoding="UTF-8" encoding="${javadoc.encoding.used}" failonerror="true" noindex="${javadoc.noindex}" nonavbar="${javadoc.nonavbar}" notree="${javadoc.notree}" private="${javadoc.private}" source="${javac.source}" splitindex="${javadoc.splitindex}" use="${javadoc.use}" useexternalfile="true" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}">
@@ -1109,8 +1109,8 @@ is divided into following sections:
     </target>
     <target depends="init,javadoc-build,javadoc-browse" description="Build Javadoc." name="javadoc"/>
     <!--
-        TEST COMPILATION SECTION
-    -->
+                TEST COMPILATION SECTION
+            -->
     <target depends="init,compile" if="have.tests" name="-pre-pre-compile-test">
         <mkdir dir="${build.test.classes.dir}"/>
         <property name="j2ee.platform.embeddableejb.classpath" value=""/>
@@ -1144,8 +1144,8 @@ is divided into following sections:
     </target>
     <target depends="init,compile,-pre-pre-compile-test,-pre-compile-test-single,-do-compile-test-single,-post-compile-test-single" name="compile-test-single"/>
     <!--
-        TEST EXECUTION SECTION
-    -->
+                TEST EXECUTION SECTION
+            -->
     <target depends="init" if="have.tests" name="-pre-test-run">
         <mkdir dir="${build.test.results.dir}"/>
     </target>
@@ -1179,8 +1179,8 @@ is divided into following sections:
     </target>
     <target depends="init,compile-test-single,-pre-test-run-single,-do-test-run-single-method,-post-test-run-single-method" description="Run single unit test." name="test-single-method"/>
     <!--
-        TEST DEBUGGING SECTION
-    -->
+                TEST DEBUGGING SECTION
+            -->
     <target depends="init,compile-test-single,-pre-test-run-single" if="have.tests" name="-debug-start-debuggee-test">
         <fail unless="test.class">Must select one file in the IDE or set test.class</fail>
         <ejbjarproject2:test-debug excludes="" includes="${javac.includes}" testClass="${test.class}" testincludes="${javac.includes}"/>
@@ -1200,8 +1200,8 @@ is divided into following sections:
     </target>
     <target depends="init,-pre-debug-fix,-do-debug-fix-test" if="netbeans.home" name="debug-fix-test"/>
     <!--
-        CLEANUP SECTION
-    -->
+                CLEANUP SECTION
+            -->
     <target depends="init" name="deps-clean" unless="no.deps">
         <ant antfile="${project.SKZ-lib}/build.xml" inheritall="false" target="clean"/>
     </target>

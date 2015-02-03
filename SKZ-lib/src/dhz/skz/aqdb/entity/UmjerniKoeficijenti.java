@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -30,19 +32,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UmjerniKoeficijenti.findBySlope", query = "SELECT u FROM UmjerniKoeficijenti u WHERE u.slope = :slope"),
     @NamedQuery(name = "UmjerniKoeficijenti.findByOffset", query = "SELECT u FROM UmjerniKoeficijenti u WHERE u.offset = :offset")})
 public class UmjerniKoeficijenti implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "umjeravanje_id")
+    @NotNull
+    @Column(name = "umjeravanje_id", nullable = false)
     private Integer umjeravanjeId;
     @Basic(optional = false)
-    @Column(name = "slope")
+    @NotNull
+    @Column(nullable = false)
     private long slope;
     @Basic(optional = false)
-    @Column(name = "offset")
+    @NotNull
+    @Column(nullable = false)
     private long offset;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Umjeravanje umjeravanje;
 
@@ -115,5 +119,5 @@ public class UmjerniKoeficijenti implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjerniKoeficijenti[ umjeravanjeId=" + umjeravanjeId + " ]";
     }
-
+    
 }

@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,17 +34,20 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "VrstaPostajeIzvor.findByOznaka", query = "SELECT v FROM VrstaPostajeIzvor v WHERE v.oznaka = :oznaka"),
     @NamedQuery(name = "VrstaPostajeIzvor.findByNaziv", query = "SELECT v FROM VrstaPostajeIzvor v WHERE v.naziv = :naziv")})
 public class VrstaPostajeIzvor implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "oznaka")
+    @NotNull
+    @Column(nullable = false)
     private Character oznaka;
     @Basic(optional = false)
-    @Column(name = "naziv")
+    @NotNull
+    @Size(min = 1, max = 20)
+    @Column(nullable = false, length = 20)
     private String naziv;
     @OneToMany(mappedBy = "vrstaPostajeIzvorId")
     private Collection<Postaja> postajaCollection;
@@ -116,5 +122,5 @@ public class VrstaPostajeIzvor implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.VrstaPostajeIzvor[ id=" + id + " ]";
     }
-
+    
 }

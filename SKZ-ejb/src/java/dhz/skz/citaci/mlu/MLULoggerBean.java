@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -63,6 +64,9 @@ import javax.transaction.UserTransaction;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
+
+    @EJB
+    private PodatakSiroviFacade podatakSiroviFacade1;
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
 
@@ -149,36 +153,35 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        
+
         for (ProgramMjerenja program : izvorPodatakaFacade.getProgram(izvor)) {
             try {
                 Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
                 Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
                 Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 Calendar kraj = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                
+
                 log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
-                
+
                 kraj.setTime(zadnjiSirovi);
                 kraj.set(Calendar.MINUTE, 0);
                 kraj.set(Calendar.SECOND, 0);
                 kraj.set(Calendar.MILLISECOND, 0);
-                
+
                 cal.setTime(zadnjiSatni);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
-                
+
                 UserTransaction utx = context.getUserTransaction();
                 utx.begin();
-                
-                
+
                 while (cal.getTime().before(kraj.getTime())) {
                     Date pocetakD = cal.getTime();
                     cal.add(Calendar.HOUR, 1);
                     Date krajD = cal.getTime();
                     Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
-                    if ( ! sirovi.isEmpty()) { 
+                    if (!sirovi.isEmpty()) {
                         Podatak p = obradiSat(program, sirovi, krajD);
                         podatakFacade.spremi(p);
                     }
@@ -268,12 +271,12 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         UserTransaction utx = context.getUserTransaction();
         try {
             Collection<ZeroSpan> podaci = new ArrayList<>();
-            
+
 //        try {
 //                String pocetniDatumStr = omotnica.getLinije().get(0)[0];
 //                Date pocetak = sdf.parse(pocetniDatumStr);
             parseZSHeaders(omotnica.getHeaderi());
-            
+
             Iterator<Long> it = omotnica.getVremena().iterator();
             for (String[] linija : omotnica.getLinije()) {
                 parseZSLinija(linija, it.next(), podaci);
@@ -283,7 +286,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //        } catch (ParseException ex) {
 //            log.log(Level.SEVERE, null, ex);
 //        }
-           
+
             utx.begin();
             zeroSpanFacade.spremi(podaci);
             utx.commit();
@@ -293,7 +296,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             log.log(Level.SEVERE, null, ex);
         } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             log.log(Level.SEVERE, null, ex);
-        } 
+        }
 
     }
 
@@ -335,7 +338,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     DecimalFormat format = new DecimalFormat("#.#");
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost;
-                    if ( "-9999".equals(linija[i])){
+                    if ("-9999".equals(linija[i])) {
                         vrijednost = -999.f;
                     } else {
                         vrijednost = format.parse(linija[i]).floatValue();
@@ -430,15 +433,20 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     @Override
     public Date getVrijemeZadnjegPodatka(CsvOmotnica omotnica) {
-        log.log(Level.INFO,"OOOO:{0} {1} {2}", new Object[]{omotnica.getPostaja(), omotnica.getVrsta(), omotnica.getDatoteka()});
+        log.log(Level.INFO, "OOOO:{0} {1} {2}", new Object[]{omotnica.getPostaja(), omotnica.getVrsta(), omotnica.getDatoteka()});
         postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
         izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
 
-        if ( omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
+        if (omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
             return zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
         } else {
             return podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
         }
+    }
+
+    @Override
+    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
+        return podatakSiroviFacade1.getPodaci(program, pocetak, kraj, false, true);
     }
 
 }

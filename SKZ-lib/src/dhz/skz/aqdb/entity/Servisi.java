@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -23,24 +25,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "servisi", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Servisi.findAll", query = "SELECT s FROM Servisi s"),
     @NamedQuery(name = "Servisi.findByKvaroviId", query = "SELECT s FROM Servisi s WHERE s.kvaroviId = :kvaroviId"),
     @NamedQuery(name = "Servisi.findByCijenaKn", query = "SELECT s FROM Servisi s WHERE s.cijenaKn = :cijenaKn")})
 public class Servisi implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "kvarovi_id")
+    @NotNull
+    @Column(name = "kvarovi_id", nullable = false)
     private Integer kvaroviId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
-    @Column(name = "cijena_kn")
+    @NotNull
+    @Column(name = "cijena_kn", nullable = false, precision = 10, scale = 2)
     private BigDecimal cijenaKn;
-    @JoinColumn(name = "kvarovi_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "kvarovi_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Kvarovi kvarovi;
 
@@ -104,5 +107,5 @@ public class Servisi implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Servisi[ kvaroviId=" + kvaroviId + " ]";
     }
-
+    
 }

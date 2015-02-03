@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -29,17 +32,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UmjeravanjeKomentar.findAll", query = "SELECT u FROM UmjeravanjeKomentar u"),
     @NamedQuery(name = "UmjeravanjeKomentar.findByUmjeravanjeId", query = "SELECT u FROM UmjeravanjeKomentar u WHERE u.umjeravanjeId = :umjeravanjeId")})
 public class UmjeravanjeKomentar implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "umjeravanje_id")
+    @NotNull
+    @Column(name = "umjeravanje_id", nullable = false)
     private Integer umjeravanjeId;
     @Basic(optional = false)
+    @NotNull
     @Lob
-    @Column(name = "komentar")
+    @Size(min = 1, max = 65535)
+    @Column(nullable = false, length = 65535)
     private String komentar;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Umjeravanje umjeravanje;
 
@@ -103,5 +108,5 @@ public class UmjeravanjeKomentar implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjeravanjeKomentar[ umjeravanjeId=" + umjeravanjeId + " ]";
     }
-
+    
 }

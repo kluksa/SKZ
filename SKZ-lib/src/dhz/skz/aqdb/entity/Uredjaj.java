@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -23,6 +24,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "uredjaj", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Uredjaj.findAll", query = "SELECT u FROM Uredjaj u"),
@@ -40,16 +43,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Uredjaj.findByGodinaProizvodnje", query = "SELECT u FROM Uredjaj u WHERE u.godinaProizvodnje = :godinaProizvodnje"),
     @NamedQuery(name = "Uredjaj.findByDatumIsporuke", query = "SELECT u FROM Uredjaj u WHERE u.datumIsporuke = :datumIsporuke"),
     @NamedQuery(name = "Uredjaj.findByDatumOtpisa", query = "SELECT u FROM Uredjaj u WHERE u.datumOtpisa = :datumOtpisa")})
+//SELECT * FROM aqdb_likz.uredjaj u 
+//join model_uredjaja m on m.id = u.model_uredjaja_id
+//join model_uredjaja_komponenta_link mk on mk.model_uredjaja_id = m.id
+//join komponenta k on k.id = mk.komponenta_id;
 public class Uredjaj implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "serijska_oznaka")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "serijska_oznaka", nullable = false, length = 45)
     private String serijskaOznaka;
     @Column(name = "godina_proizvodnje")
     private Integer godinaProizvodnje;
@@ -180,5 +188,5 @@ public class Uredjaj implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Uredjaj[ id=" + id + " ]";
     }
-
+    
 }

@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -22,6 +23,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -30,7 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "komponenta", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"eol_oznaka"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Komponenta.findAll", query = "SELECT k FROM Komponenta k"),
@@ -39,58 +44,68 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Komponenta.findByIsoOznaka", query = "SELECT k FROM Komponenta k WHERE k.isoOznaka = :isoOznaka"),
     @NamedQuery(name = "Komponenta.findByFormula", query = "SELECT k FROM Komponenta k WHERE k.formula = :formula"),
     @NamedQuery(name = "Komponenta.findByNaziv", query = "SELECT k FROM Komponenta k WHERE k.naziv = :naziv"),
-    @NamedQuery(name = "Komponenta.findByProsijekTijekom", query = "SELECT k FROM Komponenta k WHERE k.prosijekTijekom = :prosijekTijekom"),
     @NamedQuery(name = "Komponenta.findByIzrazenoKao", query = "SELECT k FROM Komponenta k WHERE k.izrazenoKao = :izrazenoKao"),
     @NamedQuery(name = "Komponenta.findByVrstaKomponente", query = "SELECT k FROM Komponenta k WHERE k.vrstaKomponente = :vrstaKomponente"),
     @NamedQuery(name = "Komponenta.findByKonvVUM", query = "SELECT k FROM Komponenta k WHERE k.konvVUM = :konvVUM"),
-    @NamedQuery(name = "Komponenta.findByNazivEng", query = "SELECT k FROM Komponenta k WHERE k.nazivEng = :nazivEng")})
+    @NamedQuery(name = "Komponenta.findByNazivEng", query = "SELECT k FROM Komponenta k WHERE k.nazivEng = :nazivEng"),
+    @NamedQuery(name = "Komponenta.findByProsijekTijekom", query = "SELECT k FROM Komponenta k WHERE k.prosijekTijekom = :prosijekTijekom")})
 public class Komponenta implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Column(name = "eol_oznaka")
     private Short eolOznaka;
-    @Column(name = "iso_oznaka")
+    @Size(max = 2)
+    @Column(name = "iso_oznaka", length = 2)
     private String isoOznaka;
-    @Column(name = "formula")
+    @Size(max = 45)
+    @Column(length = 45)
     private String formula;
     @Basic(optional = false)
-    @Column(name = "naziv")
+    @NotNull
+    @Size(min = 1, max = 60)
+    @Column(nullable = false, length = 60)
     private String naziv;
-    @Column(name = "prosijek_tijekom")
-    private String prosijekTijekom;
-    @Column(name = "izrazeno_kao")
+    @Size(max = 45)
+    @Column(name = "izrazeno_kao", length = 45)
     private String izrazenoKao;
     @Column(name = "vrsta_komponente")
     private Character vrstaKomponente;
     @Basic(optional = false)
-    @Column(name = "konv_v_u_m")
+    @NotNull
+    @Column(name = "konv_v_u_m", nullable = false)
     private float konvVUM;
-    @Column(name = "naziv_eng")
+    @Size(max = 60)
+    @Column(name = "naziv_eng", length = 60)
     private String nazivEng;
-    @JoinTable(name = "komponenta_has_relevantne_smjernice", joinColumns = {
-        @JoinColumn(name = "komponenta_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "relevantne_smjernice_id", referencedColumnName = "id")})
+    @Size(max = 45)
+    @Column(name = "prosijek_tijekom", length = 45)
+    private String prosijekTijekom;
+    @JoinTable(name = "komponenta_has_relevantne_direktive", joinColumns = {
+        @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "relevantne_direktive_id", referencedColumnName = "id", nullable = false)})
     @ManyToMany
-    private Collection<RelevantneSmjernice> relevantneSmjerniceCollection;
+    private Collection<RelevantneDirektive> relevantneDirektiveCollection;
     @JoinTable(name = "model_uredjaja_komponenta_link", joinColumns = {
-        @JoinColumn(name = "komponenta_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")})
+        @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id", nullable = false)})
     @ManyToMany
     private Collection<ModelUredjaja> modelUredjajaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<ProgramMjerenja> programMjerenjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
-    private Collection<SluzbeneVrijednosti> sluzbeneVrijednostiCollection;
+    private Collection<Granice> graniceCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<Umjeravanje> umjeravanjeCollection;
-    @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
+    @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private MjerneJedinice mjerneJediniceId;
+    @JoinColumn(name = "agregacije_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Agregacije agregacijeId;
 
     public Komponenta() {
     }
@@ -145,14 +160,6 @@ public class Komponenta implements Serializable {
         this.naziv = naziv;
     }
 
-    public String getProsijekTijekom() {
-        return prosijekTijekom;
-    }
-
-    public void setProsijekTijekom(String prosijekTijekom) {
-        this.prosijekTijekom = prosijekTijekom;
-    }
-
     public String getIzrazenoKao() {
         return izrazenoKao;
     }
@@ -185,13 +192,21 @@ public class Komponenta implements Serializable {
         this.nazivEng = nazivEng;
     }
 
-    @XmlTransient
-    public Collection<RelevantneSmjernice> getRelevantneSmjerniceCollection() {
-        return relevantneSmjerniceCollection;
+    public String getProsijekTijekom() {
+        return prosijekTijekom;
     }
 
-    public void setRelevantneSmjerniceCollection(Collection<RelevantneSmjernice> relevantneSmjerniceCollection) {
-        this.relevantneSmjerniceCollection = relevantneSmjerniceCollection;
+    public void setProsijekTijekom(String prosijekTijekom) {
+        this.prosijekTijekom = prosijekTijekom;
+    }
+
+    @XmlTransient
+    public Collection<RelevantneDirektive> getRelevantneDirektiveCollection() {
+        return relevantneDirektiveCollection;
+    }
+
+    public void setRelevantneDirektiveCollection(Collection<RelevantneDirektive> relevantneDirektiveCollection) {
+        this.relevantneDirektiveCollection = relevantneDirektiveCollection;
     }
 
     @XmlTransient
@@ -213,12 +228,12 @@ public class Komponenta implements Serializable {
     }
 
     @XmlTransient
-    public Collection<SluzbeneVrijednosti> getSluzbeneVrijednostiCollection() {
-        return sluzbeneVrijednostiCollection;
+    public Collection<Granice> getGraniceCollection() {
+        return graniceCollection;
     }
 
-    public void setSluzbeneVrijednostiCollection(Collection<SluzbeneVrijednosti> sluzbeneVrijednostiCollection) {
-        this.sluzbeneVrijednostiCollection = sluzbeneVrijednostiCollection;
+    public void setGraniceCollection(Collection<Granice> graniceCollection) {
+        this.graniceCollection = graniceCollection;
     }
 
     @XmlTransient
@@ -236,6 +251,14 @@ public class Komponenta implements Serializable {
 
     public void setMjerneJediniceId(MjerneJedinice mjerneJediniceId) {
         this.mjerneJediniceId = mjerneJediniceId;
+    }
+
+    public Agregacije getAgregacijeId() {
+        return agregacijeId;
+    }
+
+    public void setAgregacijeId(Agregacije agregacijeId) {
+        this.agregacijeId = agregacijeId;
     }
 
     @Override
@@ -262,5 +285,5 @@ public class Komponenta implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Komponenta[ id=" + id + " ]";
     }
-
+    
 }

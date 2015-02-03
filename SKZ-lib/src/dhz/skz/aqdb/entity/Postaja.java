@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -22,6 +23,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -30,7 +34,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "postaja", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"nacionalna_oznaka"}),
+    @UniqueConstraint(columnNames = {"kratka_oznaka"}),
+    @UniqueConstraint(columnNames = {"oznaka_postaje"}),
+    @UniqueConstraint(columnNames = {"naziv_postaje"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Postaja.findAll", query = "SELECT p FROM Postaja p"),
@@ -46,38 +54,46 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Postaja.findByStanovnistvo", query = "SELECT p FROM Postaja p WHERE p.stanovnistvo = :stanovnistvo"),
     @NamedQuery(name = "Postaja.findByKratkaOznaka", query = "SELECT p FROM Postaja p WHERE p.kratkaOznaka = :kratkaOznaka")})
 public class Postaja implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "naziv_postaje")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "naziv_postaje", nullable = false, length = 45)
     private String nazivPostaje;
-    @Column(name = "naziv_lokacije")
+    @Size(max = 255)
+    @Column(name = "naziv_lokacije", length = 255)
     private String nazivLokacije;
-    @Column(name = "nacionalna_oznaka")
+    @Size(max = 8)
+    @Column(name = "nacionalna_oznaka", length = 8)
     private String nacionalnaOznaka;
-    @Column(name = "oznaka_postaje")
+    @Size(max = 8)
+    @Column(name = "oznaka_postaje", length = 8)
     private String oznakaPostaje;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "geogr_duzina")
+    @Column(name = "geogr_duzina", precision = 12)
     private Float geogrDuzina;
-    @Column(name = "geogr_sirina")
+    @Column(name = "geogr_sirina", precision = 12)
     private Float geogrSirina;
     @Column(name = "nadmorska_visina")
     private Integer nadmorskaVisina;
-    @Column(name = "nuts_oznaka")
+    @Size(max = 45)
+    @Column(name = "nuts_oznaka", length = 45)
     private String nutsOznaka;
-    @Column(name = "stanovnistvo")
     private Integer stanovnistvo;
     @Basic(optional = false)
-    @Column(name = "kratka_oznaka")
+    @NotNull
+    @Size(min = 1, max = 15)
+    @Column(name = "kratka_oznaka", nullable = false, length = 15)
     private String kratkaOznaka;
     @ManyToMany(mappedBy = "postajaCollection")
     private Collection<CiljeviPracenja> ciljeviPracenjaCollection;
+    @ManyToMany(mappedBy = "postajaCollection")
+    private Collection<ZemljopisneKarakteristike> zemljopisneKarakteristikeCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "postajaId")
     private Collection<ProgramMjerenja> programMjerenjaCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "postaja")
@@ -208,6 +224,15 @@ public class Postaja implements Serializable {
     }
 
     @XmlTransient
+    public Collection<ZemljopisneKarakteristike> getZemljopisneKarakteristikeCollection() {
+        return zemljopisneKarakteristikeCollection;
+    }
+
+    public void setZemljopisneKarakteristikeCollection(Collection<ZemljopisneKarakteristike> zemljopisneKarakteristikeCollection) {
+        this.zemljopisneKarakteristikeCollection = zemljopisneKarakteristikeCollection;
+    }
+
+    @XmlTransient
     public Collection<ProgramMjerenja> getProgramMjerenjaCollection() {
         return programMjerenjaCollection;
     }
@@ -288,5 +313,5 @@ public class Postaja implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Postaja[ id=" + id + " ]";
     }
-
+    
 }

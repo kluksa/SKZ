@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -25,6 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -43,15 +45,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ProgramMjerenja.findByZavrsetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.zavrsetakMjerenja = :zavrsetakMjerenja"),
     @NamedQuery(name = "ProgramMjerenja.findByPrikazWeb", query = "SELECT p FROM ProgramMjerenja p WHERE p.prikazWeb = :prikazWeb")})
 public class ProgramMjerenja implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "usporedno_mjerenje")
+    @NotNull
+    @Column(name = "usporedno_mjerenje", nullable = false)
     private short usporednoMjerenje;
     @Column(name = "pocetak_mjerenja")
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,13 +65,13 @@ public class ProgramMjerenja implements Serializable {
     private Boolean prikazWeb;
     @ManyToMany(mappedBy = "programMjerenjaCollection")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
-    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
+    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private IzvorPodataka izvorPodatakaId;
-    @JoinColumn(name = "postaja_id", referencedColumnName = "id")
+    @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Postaja postajaId;
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenja")
@@ -206,6 +208,7 @@ public class ProgramMjerenja implements Serializable {
         this.podatakCollection = podatakCollection;
     }
 
+    @XmlTransient
     public IzvorProgramKljuceviMap getIzvorProgramKljuceviMap() {
         return izvorProgramKljuceviMap;
     }
@@ -247,5 +250,5 @@ public class ProgramMjerenja implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ProgramMjerenja[ id=" + id + " ]";
     }
-
+    
 }

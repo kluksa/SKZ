@@ -60,6 +60,11 @@ public class FtpKlijent {
         }
         return istream;
     }
+    
+    public InputStream getFileStream(String filename) throws IOException {
+        istream = ftp.retrieveFileStream(filename);
+        return istream;
+    }
 
     public boolean zavrsi() throws FtpKlijentException {
         try {

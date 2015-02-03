@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -33,19 +36,22 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UmjerniLaboratorij.findById", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.id = :id"),
     @NamedQuery(name = "UmjerniLaboratorij.findByAdresa", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.adresa = :adresa")})
 public class UmjerniLaboratorij implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
+    @NotNull
     @Lob
-    @Column(name = "naziv")
+    @Size(min = 1, max = 65535)
+    @Column(nullable = false, length = 65535)
     private String naziv;
     @Basic(optional = false)
-    @Column(name = "adresa")
+    @NotNull
+    @Size(min = 1, max = 200)
+    @Column(nullable = false, length = 200)
     private String adresa;
     @OneToMany(mappedBy = "umjerniLaboratorijId")
     private Collection<Umjeravanje> umjeravanjeCollection;
@@ -120,5 +126,5 @@ public class UmjerniLaboratorij implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjerniLaboratorij[ id=" + id + " ]";
     }
-
+    
 }

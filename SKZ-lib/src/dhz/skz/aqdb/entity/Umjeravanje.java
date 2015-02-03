@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -24,6 +25,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -32,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "umjeravanje", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Umjeravanje.findAll", query = "SELECT u FROM Umjeravanje u"),
@@ -42,25 +45,29 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Umjeravanje.findBySlope", query = "SELECT u FROM Umjeravanje u WHERE u.slope = :slope"),
     @NamedQuery(name = "Umjeravanje.findByOffset", query = "SELECT u FROM Umjeravanje u WHERE u.offset = :offset")})
 public class Umjeravanje implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "datum")
+    @NotNull
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date datum;
     @Basic(optional = false)
-    @Column(name = "oznaka_umjernice")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "oznaka_umjernice", nullable = false, length = 45)
     private String oznakaUmjernice;
     @Basic(optional = false)
-    @Column(name = "slope")
+    @NotNull
+    @Column(nullable = false)
     private float slope;
     @Basic(optional = false)
-    @Column(name = "offset")
+    @NotNull
+    @Column(nullable = false)
     private float offset;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
     private UmjerniKoeficijenti umjerniKoeficijenti;
@@ -70,10 +77,10 @@ public class Umjeravanje implements Serializable {
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
     @ManyToOne
     private Korisnik mjeriteljId;
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
-    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
+    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
@@ -217,5 +224,5 @@ public class Umjeravanje implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Umjeravanje[ id=" + id + " ]";
     }
-
+    
 }

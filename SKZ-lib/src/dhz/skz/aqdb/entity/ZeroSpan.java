@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -20,6 +21,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -40,32 +43,32 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ZeroSpan.findByStdev", query = "SELECT z FROM ZeroSpan z WHERE z.stdev = :stdev"),
     @NamedQuery(name = "ZeroSpan.findByReferentnaVrijednost", query = "SELECT z FROM ZeroSpan z WHERE z.referentnaVrijednost = :referentnaVrijednost")})
 public class ZeroSpan implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "vrijeme")
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
-    @Column(name = "vrsta")
+    @Size(min = 1, max = 2)
+    @Column(nullable = false, length = 2)
     private String vrsta;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "vrijednost")
+    @Column(precision = 12)
     private Float vrijednost;
-    @Column(name = "minimum")
+    @Column(precision = 12)
     private Float minimum;
-    @Column(name = "maximum")
+    @Column(precision = 12)
     private Float maximum;
-    @Column(name = "stdev")
+    @Column(precision = 12)
     private Float stdev;
-    @Column(name = "referentna_vrijednost")
+    @Column(name = "referentna_vrijednost", precision = 12)
     private Float referentnaVrijednost;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 
@@ -178,5 +181,5 @@ public class ZeroSpan implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ZeroSpan[ id=" + id + " ]";
     }
-
+    
 }

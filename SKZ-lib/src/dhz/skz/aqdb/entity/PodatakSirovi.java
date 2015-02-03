@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -20,6 +21,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -27,7 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "podatak_sirovi", catalog = "aqdb_likz", schema = "")
+@Table(name = "podatak_sirovi", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"program_mjerenja_id", "vrijeme"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PodatakSirovi.findAll", query = "SELECT p FROM PodatakSirovi p"),
@@ -39,31 +44,29 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PodatakSirovi.findByVrijemeUpisa", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijemeUpisa = :vrijemeUpisa"),
     @NamedQuery(name = "PodatakSirovi.findByStatusString", query = "SELECT p FROM PodatakSirovi p WHERE p.statusString = :statusString")})
 public class PodatakSirovi implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "vrijeme")
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
-    @Column(name = "vrijednost")
+    @Column(nullable = false)
     private float vrijednost;
-    @Column(name = "status")
     private Integer status;
-    @Column(name = "greska")
     private Integer greska;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa")
+    @Column(name = "vrijeme_upisa", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
-    @Column(name = "status_string")
+    @Size(max = 60)
+    @Column(name = "status_string", length = 60)
     private String statusString;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 
@@ -169,5 +172,5 @@ public class PodatakSirovi implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.PodatakSirovi[ id=" + id + " ]";
     }
-
+    
 }

@@ -14,18 +14,13 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -55,18 +50,15 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     @EJB
     private ZeroSpanFacade zsDao;
 
-    private Date pocetak, kraj;
-
-    private PreparedStatement prepStmt, zsStmt;
-
-    private final Properties connectionProps = new Properties();
-
+//    private Date pocetak, kraj;
+//    private PreparedStatement prepStmt, zsStmt;
+//    private final Properties connectionProps = new Properties();
     private final String podatakInsertSql = "INSERT INTO mjerenja (postaja_oznaka_azo, komponenta_iso, vrijeme, vrijednost, status, obuhvat) VALUES (?,?,?,?,?,?)";
     private final String zsInsertSql = "INSERT INTO zero_span (postaja_azo, komponenta_iso, vrijeme, vrijednost, vrsta) VALUES (?,?,?,?,?)";
     private final String zadnjiPodatakSql = "SELECT MAX(vrijeme) from mjerenja WHERE postaja_oznaka_azo=? AND komponenta_iso=?";
     private final String zadnjiZSSql = "SELECT MAX(vrijeme) from zero_span WHERE postaja_azo=? AND komponenta_iso=?";
-    private PreparedStatement zadnjiMStmt;
-    private PreparedStatement zadnjiZSStmt;
+//    private PreparedStatement zadnjiMStmt;
+//    private PreparedStatement zadnjiZSStmt;
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
@@ -75,57 +67,62 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         String conStr = "jdbc:" + primatelj.getUrl();
         log.log(Level.INFO, conStr);
         //        try (Connection con = DriverManager.getConnection(conStr, connectionProps)) {
+        Date sada = new Date();
         try (Connection con = diseminacija.getConnection()) {
-            prepStmt = con.prepareStatement(podatakInsertSql);
-            zsStmt = con.prepareStatement(zsInsertSql);
-            zadnjiMStmt = con.prepareStatement(zadnjiPodatakSql);
-            zadnjiZSStmt = con.prepareStatement(zadnjiZSSql);
+//            prepStmt = con.prepareStatement(podatakInsertSql);
+//            zsStmt = con.prepareStatement(zsInsertSql);
+//            zadnjiMStmt = con.prepareStatement(zadnjiPodatakSql);
+//            zadnjiZSStmt = con.prepareStatement(zadnjiZSSql);
 
 //            odrediPocetakKraj();
-
-            for (PrimateljProgramKljuceviMap pm : ppmFac.find(primatelj)) {
-                prebaciMjerenja(pm);
-                prebaciZS(pm);
+            Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);
+            for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
+                prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
+                prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
             }
-            prepStmt.executeBatch();
-            prepStmt.close();
-            zsStmt.executeBatch();
-            zsStmt.close();
+
+//            for (PrimateljProgramKljuceviMap pm : ppmFac.find(primatelj)) {
+//                prebaciMjerenja(pm);
+//                prebaciZS(pm);
+//            }
+//            prepStmt.executeBatch();
+//            prepStmt.close();
+//            zsStmt.executeBatch();
+//            zsStmt.close();
         } catch (SQLException ex) {
             log.log(Level.SEVERE, "", ex);
         }
     }
 
-    private void prebaciMjerenja(PrimateljProgramKljuceviMap pm) throws SQLException {
-        pocetak = getZadnjeMjerenje(pm);
-        for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak)) {
-            log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(),
-                p.getProgramMjerenjaId().getId(), pm.getPKljuc(), pm.getKKljuc(), p.getVrijednost()});
-
-            prepStmt.setString(1, pm.getPKljuc());
-            prepStmt.setString(2, pm.getKKljuc());
-            prepStmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
-            prepStmt.setFloat(4, p.getVrijednost());
-            prepStmt.setInt(5, p.getStatus());
-            prepStmt.setInt(6, p.getObuhvat());
-            prepStmt.addBatch();
-        }
-    }
-
-    private void prebaciZS(PrimateljProgramKljuceviMap pm) throws SQLException {
-        pocetak = getZadnjiZS(pm);
-        for (ZeroSpan zs : zsDao.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
-            log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
-                pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
-            zsStmt.setString(1, pm.getPKljuc());
-            zsStmt.setString(2, pm.getKKljuc());
-            zsStmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
-            zsStmt.setFloat(4, zs.getVrijednost());
-            zsStmt.setString(5, zs.getVrsta());
-            zsStmt.addBatch();
-        }
-    }
-
+//    private void prebaciMjerenja(PrimateljProgramKljuceviMap pm) throws SQLException {
+//        pocetak = getZadnjeMjerenje(pm);
+//        for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak)) {
+//            log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(),
+//                p.getProgramMjerenjaId().getId(), pm.getPKljuc(), pm.getKKljuc(), p.getVrijednost()});
+//
+//            prepStmt.setString(1, pm.getPKljuc());
+//            prepStmt.setString(2, pm.getKKljuc());
+//            prepStmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
+//            prepStmt.setFloat(4, p.getVrijednost());
+//            prepStmt.setInt(5, p.getStatus());
+//            prepStmt.setInt(6, p.getObuhvat());
+//            prepStmt.addBatch();
+//        }
+//    }
+//
+//    private void prebaciZS(PrimateljProgramKljuceviMap pm) throws SQLException {
+//        pocetak = getZadnjiZS(pm);
+//        for (ZeroSpan zs : zsDao.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
+//            log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
+//                pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
+//            zsStmt.setString(1, pm.getPKljuc());
+//            zsStmt.setString(2, pm.getKKljuc());
+//            zsStmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
+//            zsStmt.setFloat(4, zs.getVrijednost());
+//            zsStmt.setString(5, zs.getVrsta());
+//            zsStmt.addBatch();
+//        }
+//    }
 //    private void odrediPocetakKraj() {
 //        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 //        trenutni_termin.set(Calendar.MINUTE, 0);
@@ -187,33 +184,90 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 //            Logger.getLogger(EkonergDiseminator.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
-
-    private Date getZadnjeMjerenje(PrimateljProgramKljuceviMap pm) throws SQLException {
-        zadnjiMStmt.setString(1, pm.getPKljuc());
-        zadnjiMStmt.setString(2, pm.getKKljuc());
-        zadnjiMStmt.execute();
-
-        ResultSet rs = zadnjiMStmt.getResultSet();
-        if (rs.next()) {
-            
-            return ( rs.getTimestamp(1) == null ) ? new Date(1388534400000L) : rs.getTimestamp(1);
-        }
-        return new Date(1388534400000L);
-    }
-
-    private Date getZadnjiZS(PrimateljProgramKljuceviMap pm) throws SQLException {
-        zadnjiZSStmt.setString(1, pm.getPKljuc());
-        zadnjiZSStmt.setString(2, pm.getKKljuc());
-        zadnjiZSStmt.execute();
-        ResultSet rs = zadnjiZSStmt.getResultSet();
-        if (rs.next()) {
-            return ( rs.getTimestamp(1) == null ) ? new Date(1388534400000L) : rs.getTimestamp(1);
-        }
-        return new Date(1388534400000L);
-    }
-
+//    private Date getZadnjeMjerenje(PrimateljProgramKljuceviMap pm) throws SQLException {
+//        zadnjiMStmt.setString(1, pm.getPKljuc());
+//        zadnjiMStmt.setString(2, pm.getKKljuc());
+//        zadnjiMStmt.execute();
+//
+//        ResultSet rs = zadnjiMStmt.getResultSet();
+//        if (rs.next()) {
+//
+//            return (rs.getTimestamp(1) == null) ? new Date(1388534400000L) : rs.getTimestamp(1);
+//        }
+//        return new Date(1388534400000L);
+//    }
+//
+//    private Date getZadnjiZS(PrimateljProgramKljuceviMap pm) throws SQLException {
+//        zadnjiZSStmt.setString(1, pm.getPKljuc());
+//        zadnjiZSStmt.setString(2, pm.getKKljuc());
+//        zadnjiZSStmt.execute();
+//        ResultSet rs = zadnjiZSStmt.getResultSet();
+//        if (rs.next()) {
+//            return (rs.getTimestamp(1) == null) ? new Date(1388534400000L) : rs.getTimestamp(1);
+//        }
+//        return new Date(1388534400000L);
+//    }
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
+        for ( ProgramMjerenja pm : program){
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void prebaciMjerenja(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
+        try (PreparedStatement stmt = con.prepareStatement(podatakInsertSql)) {
+            for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak)) {
+                log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(),
+                    p.getProgramMjerenjaId().getId(), pm.getPKljuc(), pm.getKKljuc(), p.getVrijednost()});
+
+                stmt.setString(1, pm.getPKljuc());
+                stmt.setString(2, pm.getKKljuc());
+                stmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
+                stmt.setFloat(4, p.getVrijednost());
+                stmt.setInt(5, p.getStatus());
+                stmt.setInt(6, p.getObuhvat());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    private void prebaciZS(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
+        try (PreparedStatement stmt = con.prepareStatement(zsInsertSql)) {
+            for (ZeroSpan zs : zsDao.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
+                log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
+                    pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
+                stmt.setString(1, pm.getPKljuc());
+                stmt.setString(2, pm.getKKljuc());
+                stmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
+                stmt.setFloat(4, zs.getVrijednost());
+                stmt.setString(5, zs.getVrsta());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    private Date getZadnjiZS(Connection con, PrimateljProgramKljuceviMap pm) throws SQLException {
+        return getZadnji(con, pm, zadnjiZSSql);
+    }
+
+    private Date getZadnjeMjerenje(Connection con, PrimateljProgramKljuceviMap pm) throws SQLException {
+        return getZadnji(con, pm, zadnjiPodatakSql);
+    }
+
+    private Date getZadnji(Connection con, PrimateljProgramKljuceviMap pm, String sql) throws SQLException {
+        Date zadnji = new Date(1388534400000L);
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, pm.getPKljuc());
+            stmt.setString(2, pm.getKKljuc());
+            stmt.execute();
+            try (ResultSet rs = stmt.getResultSet()) {
+                if (rs.next() && rs.getTimestamp(1) != null) {
+                    zadnji = rs.getTimestamp(1);
+                }
+            }
+        }
+        return zadnji;
     }
 }

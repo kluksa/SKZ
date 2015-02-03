@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -16,12 +18,13 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class PrimateljProgramKljuceviMapPK implements Serializable {
-
     @Basic(optional = false)
-    @Column(name = "program_mjerenja_id")
+    @NotNull
+    @Column(name = "program_mjerenja_id", nullable = false)
     private int programMjerenjaId;
     @Basic(optional = false)
-    @Column(name = "primatelj_id")
+    @NotNull
+    @Column(name = "primatelj_id", nullable = false)
     private int primateljId;
 
     public PrimateljProgramKljuceviMapPK() {
@@ -76,5 +79,5 @@ public class PrimateljProgramKljuceviMapPK implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.PrimateljProgramKljuceviMapPK[ programMjerenjaId=" + programMjerenjaId + ", primateljId=" + primateljId + " ]";
     }
-
+    
 }

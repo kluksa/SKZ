@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -19,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -27,7 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "mreza", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Mreza.findAll", query = "SELECT m FROM Mreza m"),
@@ -35,25 +38,27 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Mreza.findByNaziv", query = "SELECT m FROM Mreza m WHERE m.naziv = :naziv"),
     @NamedQuery(name = "Mreza.findByKratica", query = "SELECT m FROM Mreza m WHERE m.kratica = :kratica")})
 public class Mreza implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "naziv")
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(nullable = false, length = 150)
     private String naziv;
-    @Column(name = "kratica")
+    @Size(max = 45)
+    @Column(length = 45)
     private String kratica;
-    @JoinColumn(name = "vrsta_id", referencedColumnName = "id")
+    @JoinColumn(name = "vrsta_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private VrstaMreze vrstaId;
-    @JoinColumn(name = "tijelo_id", referencedColumnName = "id")
+    @JoinColumn(name = "tijelo_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private OdgovornoTijelo tijeloId;
-    @JoinColumn(name = "iskaz_vremena_id", referencedColumnName = "id")
+    @JoinColumn(name = "iskaz_vremena_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private IskazVremena iskazVremenaId;
     @OneToMany(mappedBy = "mrezaId")
@@ -152,5 +157,5 @@ public class Mreza implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Mreza[ id=" + id + " ]";
     }
-
+    
 }

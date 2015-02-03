@@ -108,6 +108,10 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
 
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
+        return getPodaci(pm, pocetak, kraj, false, true); 
+    }
+
+    public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
         Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
@@ -117,8 +121,8 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         cq.where(
                 cb.and(
                         cb.equal(programE, pm),
-                        cb.greaterThan(vrijemeE, pocetak),
-                        cb.lessThanOrEqualTo(vrijemeE, kraj)
+                        (p ? cb.greaterThanOrEqualTo(vrijemeE, pocetak) : cb.greaterThan(vrijemeE, pocetak)),
+                        (k ? cb.lessThanOrEqualTo(vrijemeE, kraj) : cb.lessThan(vrijemeE, kraj))
                 )
         );
 
@@ -126,6 +130,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return em.createQuery(cq).getResultList();
     }
 
+    
     public Collection<PodatakSirovi> getPodatkeZaSat(ProgramMjerenja pm, Date kraj) {
 
 //        Date kraj = sat.getTime();

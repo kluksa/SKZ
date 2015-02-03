@@ -7,8 +7,6 @@ package dhz.skz.diseminacija;
 
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
 import java.util.Collection;
 import java.util.Date;
@@ -34,7 +32,7 @@ public class DiseminacijaMainBean  {
     private PrimateljiPodatakaFacadeLocal dao;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void pokreniDiseminaciju() {
+    public void pokreni() {
         log.log(Level.INFO, "DISEMINACIJA");
         try {
             InitialContext ctx = new InitialContext();
@@ -46,15 +44,15 @@ public class DiseminacijaMainBean  {
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {
                         DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-
                         diseminator.salji(pr);
-
                     } catch (NamingException ex) {
                         log.log(Level.SEVERE, null, ex);
                     }
                 }
             }
         } catch (NamingException ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
         }
     }

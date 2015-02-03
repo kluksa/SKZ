@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author kraljevic
  * @param <T>
  */
-public abstract class AbstractFacade<T> {
+public abstract class AbstractFacade<T> implements AbstractFacadeInterface<T> {
 
     private Class<T> entityClass;
 
@@ -24,28 +24,34 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
+    @Override
     public void create(T entity) {
         getEntityManager().persist(entity);
     }
 
+    @Override
     public void edit(T entity) {
         getEntityManager().merge(entity);
     }
 
+    @Override
     public void remove(T entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }
 
+    @Override
     public T find(Object id) {
         return getEntityManager().find(entityClass, id);
     }
 
+    @Override
     public List<T> findAll() {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
+    @Override
     public List<T> findRange(int[] range) {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
@@ -55,6 +61,7 @@ public abstract class AbstractFacade<T> {
         return q.getResultList();
     }
 
+    @Override
     public int count() {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         javax.persistence.criteria.Root<T> rt = cq.from(entityClass);

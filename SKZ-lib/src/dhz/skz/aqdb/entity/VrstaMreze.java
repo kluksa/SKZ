@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -32,16 +35,19 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "VrstaMreze.findByTerenskaOznaka", query = "SELECT v FROM VrstaMreze v WHERE v.terenskaOznaka = :terenskaOznaka"),
     @NamedQuery(name = "VrstaMreze.findByOpisRazine", query = "SELECT v FROM VrstaMreze v WHERE v.opisRazine = :opisRazine")})
 public class VrstaMreze implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "terenska_oznaka")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "terenska_oznaka", nullable = false, length = 45)
     private String terenskaOznaka;
-    @Column(name = "opis_razine")
+    @Size(max = 255)
+    @Column(name = "opis_razine", length = 255)
     private String opisRazine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vrstaId")
     private Collection<Mreza> mrezaCollection;
@@ -115,5 +121,5 @@ public class VrstaMreze implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.VrstaMreze[ id=" + id + " ]";
     }
-
+    
 }

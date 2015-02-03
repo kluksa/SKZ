@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -20,6 +21,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -38,18 +41,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ModelUredjaja.findByBrojMjerenjaUSatu", query = "SELECT m FROM ModelUredjaja m WHERE m.brojMjerenjaUSatu = :brojMjerenjaUSatu"),
     @NamedQuery(name = "ModelUredjaja.findByImaZeroSpanCal", query = "SELECT m FROM ModelUredjaja m WHERE m.imaZeroSpanCal = :imaZeroSpanCal")})
 public class ModelUredjaja implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "oznaka_modela")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "oznaka_modela", nullable = false, length = 45)
     private String oznakaModela;
     @Basic(optional = false)
-    @Column(name = "vrsta")
+    @NotNull
+    @Size(min = 1, max = 1)
+    @Column(nullable = false, length = 1)
     private String vrsta;
     @Column(name = "broj_mjerenja_u_satu")
     private Integer brojMjerenjaUSatu;
@@ -188,5 +194,5 @@ public class ModelUredjaja implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ModelUredjaja[ id=" + id + " ]";
     }
-
+    
 }

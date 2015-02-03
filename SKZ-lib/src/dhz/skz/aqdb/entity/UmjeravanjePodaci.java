@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -33,20 +35,22 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UmjeravanjePodaci.findByVrijeme", query = "SELECT u FROM UmjeravanjePodaci u WHERE u.vrijeme = :vrijeme"),
     @NamedQuery(name = "UmjeravanjePodaci.findByVrijednost", query = "SELECT u FROM UmjeravanjePodaci u WHERE u.vrijednost = :vrijednost")})
 public class UmjeravanjePodaci implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "vrijeme")
+    @NotNull
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
-    @Column(name = "vrijednost")
+    @NotNull
+    @Column(nullable = false)
     private long vrijednost;
-    @JoinColumn(name = "umjerne_to\u010dke_id", referencedColumnName = "id")
+    @JoinColumn(name = "umjerne_to\u010dke_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private UmjerneTocke umjerneTočkeId;
 
@@ -119,5 +123,5 @@ public class UmjeravanjePodaci implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjeravanjePodaci[ id=" + id + " ]";
     }
-
+    
 }

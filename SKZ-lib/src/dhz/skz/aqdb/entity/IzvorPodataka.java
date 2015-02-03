@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -26,7 +30,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "izvor_podataka", catalog = "aqdb_likz", schema = "")
+@Table(name = "izvor_podataka", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"naziv"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "IzvorPodataka.findAll", query = "SELECT i FROM IzvorPodataka i"),
@@ -36,22 +41,26 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "IzvorPodataka.findByBean", query = "SELECT i FROM IzvorPodataka i WHERE i.bean = :bean"),
     @NamedQuery(name = "IzvorPodataka.findByAktivan", query = "SELECT i FROM IzvorPodataka i WHERE i.aktivan = :aktivan")})
 public class IzvorPodataka implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "naziv")
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Column(nullable = false, length = 30)
     private String naziv;
-    @Column(name = "uri")
+    @Size(max = 150)
+    @Column(length = 150)
     private String uri;
-    @Column(name = "bean")
+    @Size(max = 250)
+    @Column(length = 250)
     private String bean;
     @Basic(optional = false)
-    @Column(name = "aktivan")
+    @NotNull
+    @Column(nullable = false)
     private boolean aktivan;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "izvorPodatakaId")
     private Collection<ProgramMjerenja> programMjerenjaCollection;
@@ -142,5 +151,5 @@ public class IzvorPodataka implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.IzvorPodataka[ id=" + id + " ]";
     }
-
+    
 }

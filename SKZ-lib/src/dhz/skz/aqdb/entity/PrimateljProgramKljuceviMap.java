@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -30,26 +32,31 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findByKKljuc", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.kKljuc = :kKljuc"),
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findByUKljuc", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.uKljuc = :uKljuc"),
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findByNKljuc", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.nKljuc = :nKljuc"),
-    @NamedQuery(name = "PrimateljProgramKljuceviMap.findByPrimateljId", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.primateljProgramKljuceviMapPK.primateljId = :primateljId")})
+    @NamedQuery(name = "PrimateljProgramKljuceviMap.findByPrimateljId", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.primateljProgramKljuceviMapPK.primateljId = :primateljId"),
+    @NamedQuery(name = "PrimateljProgramKljuceviMap.findByAktivan", query = "SELECT p FROM PrimateljProgramKljuceviMap p WHERE p.aktivan = :aktivan")})
 public class PrimateljProgramKljuceviMap implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PrimateljProgramKljuceviMapPK primateljProgramKljuceviMapPK;
-    @Column(name = "p_kljuc")
+    @Size(max = 45)
+    @Column(name = "p_kljuc", length = 45)
     private String pKljuc;
-    @Column(name = "k_kljuc")
+    @Size(max = 45)
+    @Column(name = "k_kljuc", length = 45)
     private String kKljuc;
-    @Column(name = "u_kljuc")
+    @Size(max = 45)
+    @Column(name = "u_kljuc", length = 45)
     private String uKljuc;
-    @Column(name = "n_kljuc")
+    @Size(max = 45)
+    @Column(name = "n_kljuc", length = 45)
     private String nKljuc;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private ProgramMjerenja programMjerenja;
-    @JoinColumn(name = "primatelj_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Integer aktivan;
+    @JoinColumn(name = "primatelj_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private PrimateljiPodataka primateljiPodataka;
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private ProgramMjerenja programMjerenja;
 
     public PrimateljProgramKljuceviMap() {
     }
@@ -102,12 +109,12 @@ public class PrimateljProgramKljuceviMap implements Serializable {
         this.nKljuc = nKljuc;
     }
 
-    public ProgramMjerenja getProgramMjerenja() {
-        return programMjerenja;
+    public Integer getAktivan() {
+        return aktivan;
     }
 
-    public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
-        this.programMjerenja = programMjerenja;
+    public void setAktivan(Integer aktivan) {
+        this.aktivan = aktivan;
     }
 
     public PrimateljiPodataka getPrimateljiPodataka() {
@@ -116,6 +123,14 @@ public class PrimateljProgramKljuceviMap implements Serializable {
 
     public void setPrimateljiPodataka(PrimateljiPodataka primateljiPodataka) {
         this.primateljiPodataka = primateljiPodataka;
+    }
+
+    public ProgramMjerenja getProgramMjerenja() {
+        return programMjerenja;
+    }
+
+    public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
+        this.programMjerenja = programMjerenja;
     }
 
     @Override
@@ -142,5 +157,5 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap[ primateljProgramKljuceviMapPK=" + primateljProgramKljuceviMapPK + " ]";
     }
-
+    
 }

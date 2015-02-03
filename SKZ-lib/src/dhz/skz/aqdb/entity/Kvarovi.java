@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -23,6 +24,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -30,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "kvarovi", catalog = "aqdb_likz", schema = "")
+@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Kvarovi.findAll", query = "SELECT k FROM Kvarovi k"),
@@ -39,27 +42,30 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Kvarovi.findByDatumPopravka", query = "SELECT k FROM Kvarovi k WHERE k.datumPopravka = :datumPopravka"),
     @NamedQuery(name = "Kvarovi.findByKvarovicol", query = "SELECT k FROM Kvarovi k WHERE k.kvarovicol = :kvarovicol")})
 public class Kvarovi implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "datum")
+    @NotNull
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date datum;
     @Basic(optional = false)
+    @NotNull
     @Lob
-    @Column(name = "opis_kvara")
+    @Size(min = 1, max = 2147483647)
+    @Column(name = "opis_kvara", nullable = false, length = 2147483647)
     private String opisKvara;
     @Column(name = "datum_popravka")
     @Temporal(TemporalType.DATE)
     private Date datumPopravka;
-    @Column(name = "kvarovicol")
+    @Size(max = 45)
+    @Column(length = 45)
     private String kvarovicol;
-    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
+    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "kvarovi")
@@ -158,5 +164,5 @@ public class Kvarovi implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Kvarovi[ id=" + id + " ]";
     }
-
+    
 }

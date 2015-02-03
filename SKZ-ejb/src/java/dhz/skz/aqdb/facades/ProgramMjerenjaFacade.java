@@ -6,8 +6,6 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
@@ -27,7 +25,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
+public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> implements ProgramMjerenjaFacadeLocal, ProgramMjerenjaFacadeRemote {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -41,6 +39,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         super(ProgramMjerenja.class);
     }
     
+    @Override
     public Date getPocetakMjerenja(IzvorPodataka i, Postaja p){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -57,6 +56,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         }
     }
     
+    @Override
     public Date getKrajMjerenja(IzvorPodataka i, Postaja p){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -72,5 +72,11 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
             return rl.get(0);
         }
     }
+
+    @Override
+    public ProgramMjerenja find(Integer id) {
+        return super.find(id);
+    }
+    
 
 }

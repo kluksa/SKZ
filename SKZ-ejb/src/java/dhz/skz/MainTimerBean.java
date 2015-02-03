@@ -5,7 +5,7 @@
  */
 package dhz.skz;
 
-import dhz.skz.citaci.CitacMainBean;
+import dhz.skz.citaci.CitacMainLocal;
 import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,20 +25,28 @@ public class MainTimerBean {
     @EJB
     private DiseminacijaMainBean diseminacijaMain;
     @EJB
-    private CitacMainBean citacMainBean;
+    private CitacMainLocal citacMainBean;
 
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
 
-    @Schedule(minute = "19", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+//    @Schedule(minute = "19", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
+        try {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-        diseminacijaMain.pokreniDiseminaciju();
+        diseminacijaMain.pokreni();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,"",ex);
+        }
     }
 
-    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+//    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
+        try {
         citacMainBean.pokreniCitace();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,"",ex);
+        }
     }
 
 }

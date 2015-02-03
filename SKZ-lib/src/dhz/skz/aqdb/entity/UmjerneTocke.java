@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -35,24 +37,27 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UmjerneTocke.findByMjerenaVrijednost", query = "SELECT u FROM UmjerneTocke u WHERE u.mjerenaVrijednost = :mjerenaVrijednost"),
     @NamedQuery(name = "UmjerneTocke.findByMjernaNesigurnost", query = "SELECT u FROM UmjerneTocke u WHERE u.mjernaNesigurnost = :mjernaNesigurnost")})
 public class UmjerneTocke implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "referentna_vrijednost")
+    @NotNull
+    @Column(name = "referentna_vrijednost", nullable = false)
     private long referentnaVrijednost;
     @Basic(optional = false)
-    @Column(name = "mjerena_vrijednost")
+    @NotNull
+    @Column(name = "mjerena_vrijednost", nullable = false)
     private long mjerenaVrijednost;
     @Basic(optional = false)
-    @Column(name = "mjerna_nesigurnost")
+    @NotNull
+    @Column(name = "mjerna_nesigurnost", nullable = false)
     private long mjernaNesigurnost;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjerneTo\u010dkeId")
     private Collection<UmjeravanjePodaci> umjeravanjePodaciCollection;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Umjeravanje umjeravanjeId;
 
@@ -143,5 +148,5 @@ public class UmjerneTocke implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjerneTocke[ id=" + id + " ]";
     }
-
+    
 }

@@ -3,21 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -33,18 +37,22 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ZemljopisneKarakteristike.findById", query = "SELECT z FROM ZemljopisneKarakteristike z WHERE z.id = :id"),
     @NamedQuery(name = "ZemljopisneKarakteristike.findByOpis", query = "SELECT z FROM ZemljopisneKarakteristike z WHERE z.opis = :opis")})
 public class ZemljopisneKarakteristike implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "opis")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
     private String opis;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "zemljopisneKarakteristike")
-    private Collection<ZemljopisneKarakteristikePostajaLink> zemljopisneKarakteristikePostajaLinkCollection;
+    @JoinTable(name = "zemljopisne_karakteristike_postaja_link", joinColumns = {
+        @JoinColumn(name = "zemljopisne_karakteristike_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)})
+    @ManyToMany
+    private Collection<Postaja> postajaCollection;
 
     public ZemljopisneKarakteristike() {
     }
@@ -75,12 +83,12 @@ public class ZemljopisneKarakteristike implements Serializable {
     }
 
     @XmlTransient
-    public Collection<ZemljopisneKarakteristikePostajaLink> getZemljopisneKarakteristikePostajaLinkCollection() {
-        return zemljopisneKarakteristikePostajaLinkCollection;
+    public Collection<Postaja> getPostajaCollection() {
+        return postajaCollection;
     }
 
-    public void setZemljopisneKarakteristikePostajaLinkCollection(Collection<ZemljopisneKarakteristikePostajaLink> zemljopisneKarakteristikePostajaLinkCollection) {
-        this.zemljopisneKarakteristikePostajaLinkCollection = zemljopisneKarakteristikePostajaLinkCollection;
+    public void setPostajaCollection(Collection<Postaja> postajaCollection) {
+        this.postajaCollection = postajaCollection;
     }
 
     @Override
@@ -107,5 +115,5 @@ public class ZemljopisneKarakteristike implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ZemljopisneKarakteristike[ id=" + id + " ]";
     }
-
+    
 }

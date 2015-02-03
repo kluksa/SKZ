@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,14 +34,16 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "IskazVremena.findById", query = "SELECT i FROM IskazVremena i WHERE i.id = :id"),
     @NamedQuery(name = "IskazVremena.findByTekstDefinicija", query = "SELECT i FROM IskazVremena i WHERE i.tekstDefinicija = :tekstDefinicija")})
 public class IskazVremena implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id")
+    @NotNull
+    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "tekst_definicija")
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "tekst_definicija", nullable = false, length = 45)
     private String tekstDefinicija;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "iskazVremenaId")
     private Collection<Mreza> mrezaCollection;
@@ -104,5 +109,5 @@ public class IskazVremena implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.IskazVremena[ id=" + id + " ]";
     }
-
+    
 }

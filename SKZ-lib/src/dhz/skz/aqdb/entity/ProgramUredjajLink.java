@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -36,12 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ProgramUredjajLink.findByUcestalostIntegriranjaPodataka", query = "SELECT p FROM ProgramUredjajLink p WHERE p.ucestalostIntegriranjaPodataka = :ucestalostIntegriranjaPodataka"),
     @NamedQuery(name = "ProgramUredjajLink.findByVrijemeUklanjanja", query = "SELECT p FROM ProgramUredjajLink p WHERE p.vrijemeUklanjanja = :vrijemeUklanjanja")})
 public class ProgramUredjajLink implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(nullable = false)
     private Integer id;
     @Column(name = "vrijeme_postavljanja")
     @Temporal(TemporalType.TIMESTAMP)
@@ -54,7 +54,7 @@ public class ProgramUredjajLink implements Serializable {
     @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne
     private Uredjaj uredjajId;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 
@@ -137,5 +137,5 @@ public class ProgramUredjajLink implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.ProgramUredjajLink[ id=" + id + " ]";
     }
-
+    
 }
