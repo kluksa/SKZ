@@ -16,6 +16,7 @@ import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
@@ -80,6 +81,9 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private PodatakFacade podatakFacade;
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB
+    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    
     @Resource
     private EJBContext context;
 
@@ -113,7 +117,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         for (int i = 1; i < headeri.length; i += 5) {
             String str = headeri[i];
             String datoteka = omotnica.getDatoteka();
-            ProgramMjerenja pm = izvorPodatakaFacade.getProgram(postaja, izvor, str, datoteka);
+            ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, str, datoteka);
             if (pm != null) {
                 mapa.put(i, pm);
             }
@@ -154,7 +158,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 
-        for (ProgramMjerenja program : izvorPodatakaFacade.getProgram(izvor)) {
+        for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
             try {
                 Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
                 Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
@@ -308,7 +312,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             if (str.length() > 5) {
                 String kraj = str.substring(str.length() - 5);
                 String pocetak = str.substring(0, str.length() - 5);
-                ProgramMjerenja pm = izvorPodatakaFacade.getProgram(postaja, izvor, pocetak, datoteka);
+                ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, pocetak, datoteka);
                 if (pm != null) {
                     mapa.put(i, pm);
                     if (kraj.compareToIgnoreCase("_Span") == 0) {

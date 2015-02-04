@@ -12,7 +12,6 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
@@ -25,7 +24,6 @@ import dhz.skz.citaci.weblogger.util.NizPodataka;
 import dhz.skz.citaci.weblogger.util.PodatakWl;
 import dhz.skz.citaci.weblogger.util.SatniAgregator;
 import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,7 +54,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -73,6 +70,10 @@ public class WebloggerCitacBean implements CitacIzvora {
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     @Resource
     private EJBContext context;
+    
+    @PersistenceContext(unitName = "LIKZ-ejbPU")
+    private EntityManager em;
+
 
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
@@ -86,14 +87,8 @@ public class WebloggerCitacBean implements CitacIzvora {
     @EJB
     private PostajaFacade posajaFacade;
 
-    @PersistenceContext(unitName = "LIKZ-ejbPU")
-    private EntityManager em;
-
     @EJB
     private ValidatorFactory validatorFac;
-
-    @EJB
-    private IzvorPodatakaFacade izvorPodatakaFacade;
 
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
@@ -112,7 +107,7 @@ public class WebloggerCitacBean implements CitacIzvora {
             aktivnaPostaja = it.next();
             log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
-            programNaPostaji = izvorPodatakaFacade.getProgram(aktivnaPostaja, izvor);
+            programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
 
             odrediVrijemeZadnjegPodatka(aktivnaPostaja);
 
@@ -156,7 +151,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 
                             WlFileParser citac = napraviParser(isMjerenjaOrZerospan);
 
-                            Collection<ProgramMjerenja> aktivniProgram = dao.getProgramNaPostajiZaTermin(aktivnaPostaja, izvor, terminDatoteke);
+                            Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
 
                             citac.setNizKanala(mapaMjernihNizova, aktivniProgram);
 

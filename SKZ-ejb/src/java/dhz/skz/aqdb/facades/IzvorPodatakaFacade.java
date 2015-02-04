@@ -54,59 +54,6 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
         return em.createQuery(cq).getSingleResult();
     }
 
-    public ProgramMjerenja getProgram(Postaja p, IzvorPodataka i, String kKljuc, String nKljuc) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
-        Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
-
-        Join<ProgramMjerenja, IzvorPodataka> izvorJ = from.join(ProgramMjerenja_.izvorPodatakaId);
-        Join<ProgramMjerenja, IzvorProgramKljuceviMap> kljuceviJ = from.join(ProgramMjerenja_.izvorProgramKljuceviMap);
-
-        Expression<String> kKljucE = kljuceviJ.get(IzvorProgramKljuceviMap_.kKljuc);
-        Expression<String> nKljucE = kljuceviJ.get(IzvorProgramKljuceviMap_.nKljuc);
-        Expression<Postaja> postajaE = from.get(ProgramMjerenja_.postajaId);
-
-        Predicate and = cb.and(
-                cb.equal(postajaE, p),
-                cb.equal(izvorJ, i),
-                cb.equal(kKljucE, kKljuc),
-                cb.equal(nKljucE, nKljuc)
-        );
-        cq.select(from).where(and);
-        List<ProgramMjerenja> resultList = em.createQuery(cq).getResultList();
-        if (resultList == null || resultList.isEmpty()) {
-            return null;
-        }
-        return resultList.get(0);
-    }
-
-    public Collection<ProgramMjerenja> getProgram(Postaja p, IzvorPodataka i) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
-        Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
-
-        Join<ProgramMjerenja, IzvorPodataka> izvorJ = from.join(ProgramMjerenja_.izvorPodatakaId);
-        Expression<Postaja> postajaE = from.get(ProgramMjerenja_.postajaId);
-
-        Predicate and = cb.and(
-                cb.equal(postajaE, p),
-                cb.equal(izvorJ, i)
-        );
-        cq.select(from).where(and);
-        return em.createQuery(cq).getResultList();
-    }
-    
-    public Collection<ProgramMjerenja> getProgram(IzvorPodataka i) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
-        Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
-
-
-        cq.select(from).where(cb.equal(from.join(ProgramMjerenja_.izvorPodatakaId), i));
-        return em.createQuery(cq).getResultList();
-    }
-    
-
     public Iterable<IzvorPodataka> getAktivniIzvori() {
         em.flush();
         CriteriaBuilder cb = em.getCriteriaBuilder();

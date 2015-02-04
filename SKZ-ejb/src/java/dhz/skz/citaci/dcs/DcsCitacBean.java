@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.weblogger.util.Flag;
 import dhz.skz.citaci.weblogger.util.NizPodataka;
@@ -41,6 +42,8 @@ import javax.sql.DataSource;
 @Stateless
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
+    @EJB
+    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 
     private static final Logger log = Logger.getLogger(DcsCitacBean.class.getName());
 
@@ -51,12 +54,13 @@ public class DcsCitacBean implements CitacIzvora {
     private PodatakFacade podatakFacade;
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
+    
 
     private final String selektSql = "SELECT endtime, value, validity, opestatus, errstatus FROM sirovi_2 WHERE station=? AND component=? AND vrijeme > ?";
 
     @Override
     public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
-        for (ProgramMjerenja pm : izvorPodatakaFacade.getProgram(izvor)) {
+        for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
             Date zadnji = podatakFacade.getZadnjiPodatak(pm);
             try (Connection con = dcsDS.getConnection()) {
                 List<Podatak> podaci = getPodaci(con, pm, zadnji);
