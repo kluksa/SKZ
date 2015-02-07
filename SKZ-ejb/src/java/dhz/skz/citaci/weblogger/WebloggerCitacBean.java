@@ -44,16 +44,12 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -62,14 +58,11 @@ import org.apache.commons.net.ftp.FTPFile;
  */
 @Stateless
 @LocalBean
-@TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-    @Resource
-    private EJBContext context;
     
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -79,10 +72,10 @@ public class WebloggerCitacBean implements CitacIzvora {
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 
     @EJB
-    private PodatakFacade dao;
+    private PodatakFacade podatakFacade;
 
     @EJB
-    private ZeroSpanFacade zeroSpanFacadeB;
+    private ZeroSpanFacade zeroSpanFacade;
 
     @EJB
     private PostajaFacade posajaFacade;
@@ -95,6 +88,8 @@ public class WebloggerCitacBean implements CitacIzvora {
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
 
+    enum Vrsta {MJERENJE, KALIBRACIJA}
+    
     public WebloggerCitacBean() {
         formatter.setTimeZone(timeZone);
     }
@@ -145,11 +140,12 @@ public class WebloggerCitacBean implements CitacIzvora {
                 Matcher m = pattern.matcher(file.getName().toLowerCase());
                 if (m.matches()) {
                     try {
-                        boolean isMjerenjaOrZerospan = (m.group(2) == null) || m.group(2).isEmpty();
+                        Vrsta vrstaDatoteke = odrediVrstuDatoteke(m.group(2));
                         Date terminDatoteke = formatter.parse(m.group(3));
-                        if (isDobarTermin(terminDatoteke, isMjerenjaOrZerospan)) {
+                        
+                        if (isDobarTermin(terminDatoteke, vrstaDatoteke)) {
 
-                            WlFileParser citac = napraviParser(isMjerenjaOrZerospan);
+                            WlFileParser citac = napraviParser(vrstaDatoteke);
 
                             Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
 
@@ -183,13 +179,13 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     private void odrediVrijemeZadnjegPodatka(Postaja p) {
-        Podatak zadnjiP = dao.getZadnji(izvor, p);
+        Podatak zadnjiP = podatakFacade.getZadnji(izvor, p);
         if (zadnjiP != null) {
             vrijemeZadnjegMjerenja = zadnjiP.getVrijeme();
         } else {
             vrijemeZadnjegMjerenja = null;
         }
-        vrijemeZadnjegZeroSpan = zeroSpanFacadeB.getVrijemeZadnjeg(izvor, p);
+        vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
     private void obradiISpremiNizove(Map<ProgramMjerenja, NizPodataka> ulaz) {
@@ -211,29 +207,12 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     public void pospremiNiz(NizPodataka niz) {
 
-        try {
-            UserTransaction utx = context.getUserTransaction();
-            utx.begin();
 //            pospremiZsNiz(niz);
 //            pospremiMjerenjaNiz(niz);
-            utx.commit();
-        } catch (RollbackException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HeuristicMixedException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HeuristicRollbackException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalStateException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SystemException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotSupportedException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
 
+    @TransactionAttribute(REQUIRES_NEW)
     public void pospremiMjerenjaNiz(NizPodataka niz) {
         log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
                     new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
@@ -251,9 +230,11 @@ public class WebloggerCitacBean implements CitacIzvora {
                 p.setProgramMjerenjaId(niz.getKljuc());
                 p.setNivoValidacijeId(nv);
                 p.setStatus(wlp.getStatus());
-                dao.create(p);
+                podatakFacade.create(p);
             }
     }
+
+    @TransactionAttribute(REQUIRES_NEW)
     public void pospremiZsNiz(NizPodataka niz) {
 
         log.log(Level.INFO, "ZS postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
@@ -264,12 +245,12 @@ public class WebloggerCitacBean implements CitacIzvora {
                     niz.getZeroSpan().size()});
         for (Date d : niz.getZeroSpan().keySet()) {
             ZeroSpan zs = niz.getZeroSpan().get(d);
-            zeroSpanFacadeB.create(zs);
+            zeroSpanFacade.create(zs);
         }
     }
 
-    private boolean isDobarTermin(Date t, Boolean isMjerenja) {
-        if (isMjerenja) {
+    private boolean isDobarTermin(Date t, Vrsta vrsta) {
+        if (vrsta == Vrsta.MJERENJE) {
             return isDobarTerminMjerenje(t);
         } else {
             return isDobarTerminZeroSpan(t);
@@ -310,10 +291,9 @@ public class WebloggerCitacBean implements CitacIzvora {
         return aktivna && dobroVrijeme;
     }
 
-    private WlFileParser napraviParser(boolean isMjerenja) {
+    private WlFileParser napraviParser(Vrsta vrstaDatoteke) {
         WlFileParser parser;
-
-        if (isMjerenja) {
+        if (vrstaDatoteke == Vrsta.MJERENJE) {
             parser = new WlMjerenjaParser(timeZone);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         } else {
@@ -323,6 +303,16 @@ public class WebloggerCitacBean implements CitacIzvora {
 
         return parser;
     }
+    
+    private Vrsta odrediVrstuDatoteke(String group) {
+        if ( group == null || group.isEmpty()) {
+            return Vrsta.MJERENJE;
+        } else {
+            return Vrsta.KALIBRACIJA;
+        }
+    }
+
+    
 
     @Override
     public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {

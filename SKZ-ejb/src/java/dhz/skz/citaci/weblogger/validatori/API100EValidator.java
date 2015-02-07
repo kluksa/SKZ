@@ -5,7 +5,6 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import dhz.skz.citaci.weblogger.util.Flag;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
