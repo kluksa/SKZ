@@ -26,6 +26,10 @@ public class ValidatorFactory {
 
     private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
 
+    public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     public NavigableMap<Date, Validator> getValidatori(ProgramMjerenja pm) {
         NavigableMap<Date, Validator> validatori = new TreeMap<>();
         for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {

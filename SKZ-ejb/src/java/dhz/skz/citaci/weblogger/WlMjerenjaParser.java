@@ -5,7 +5,6 @@
  */
 package dhz.skz.citaci.weblogger;
 
-import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import com.csvreader.CsvReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,16 +14,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.citaci.weblogger.util.NizProcitanih;
 import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
 import java.util.Collection;
 
@@ -32,7 +30,7 @@ import java.util.Collection;
  *
  * @author kraljevic
  */
-public class WlMjerenjaParser implements WlFileParser {
+class WlMjerenjaParser implements WlFileParser {
 
     private static final Logger log = Logger.getLogger(WlMjerenjaParser.class.getName());
 
@@ -50,7 +48,7 @@ public class WlMjerenjaParser implements WlFileParser {
 
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
-    private Map<ProgramMjerenja, NizOcitanja> nizKanala;
+    private Map<ProgramMjerenja, NizProcitanih> nizKanala;
 
     public WlMjerenjaParser(TimeZone tz) {
         this.temperatura = -999.f;
@@ -149,8 +147,7 @@ public class WlMjerenjaParser implements WlFileParser {
             }
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
-            NizOcitanja nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
-            NavigableMap<Date, Validator> validatori = nizPodataka.getValidatori();
+            NizProcitanih nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
 
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
@@ -171,7 +168,7 @@ public class WlMjerenjaParser implements WlFileParser {
     }
 
     @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizOcitanja> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
+    public void setNizKanala(Map<ProgramMjerenja, NizProcitanih> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
         this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala

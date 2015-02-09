@@ -13,16 +13,33 @@ import java.util.Date;
  */
 public class ProcitaniPodatak {
 
-    public void setVrijeme(Date trenutnoVrijeme) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private Date vrijeme;
+        
+    private String status;
+
+    private Float vrijednost;
+
+    public Float getVrijednost() {
+        return vrijednost;
     }
 
-    public void setStatus(String statusStr) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setVrijednost(Float vrijednost) {
+        this.vrijednost = vrijednost;
     }
 
-    public void setVrijednost(Float iznos) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getStatus() {
+        return status;
     }
-    
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getVrijeme() {
+        return vrijeme;
+    }
+
+    public void setVrijeme(Date vrijeme) {
+        this.vrijeme = vrijeme;
+    }
 }

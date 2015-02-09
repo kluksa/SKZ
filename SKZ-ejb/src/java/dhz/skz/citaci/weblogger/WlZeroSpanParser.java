@@ -10,7 +10,7 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.citaci.weblogger.util.NizOcitanja;
+import dhz.skz.citaci.weblogger.util.NizProcitanih;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  *
  * @author kraljevic
  */
-public class WlZeroSpanParser implements WlFileParser{
+class WlZeroSpanParser implements WlFileParser{
 
     private static final Logger log = Logger.getLogger(WlZeroSpanParser.class.getName());
 
@@ -39,7 +39,7 @@ public class WlZeroSpanParser implements WlFileParser{
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm z");
 
     private Date zadnjiPodatak;
-    private Map<ProgramMjerenja, NizOcitanja> nizKanala;
+    private Map<ProgramMjerenja, NizProcitanih> nizKanala;
     private final Map<String, ProgramMjerenja> wlKanalProgram;
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
 
@@ -59,6 +59,7 @@ public class WlZeroSpanParser implements WlFileParser{
         this.zadnjiPodatak = zadnjiPodatak;
     }
 
+    @Override
     public void parse(InputStream fileStream) throws WlFileException, IOException {
 //        log.log(Level.INFO, "Pocinjem parsati {0} od {1}", new Object[]{
 //            nizKanala.getPostaja().getNazivPostaje(), zadnjiPodatak});
@@ -123,7 +124,8 @@ public class WlZeroSpanParser implements WlFileParser{
 
     private void parsaj_record(CsvReader csv) throws IOException {
         for (Integer stupac : wlStupacProgram.keySet()) {
-            NizOcitanja nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
+            ProgramMjerenja program = wlStupacProgram.get(stupac);
+            NizProcitanih nizPodataka = nizKanala.get(program);
 
             String modStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
@@ -139,9 +141,7 @@ public class WlZeroSpanParser implements WlFileParser{
 
                     ZeroSpan pod = new ZeroSpan();
                     pod.setVrijeme(trenutnoVrijeme);
-                    pod.setProgramMjerenjaId(nizPodataka.getKljuc());
-//                    pod.setKomponentaId(nizPodataka.getKljuc().getKomponentaId());
-//                    pod.setUredjajId(uredjaj);
+                    pod.setProgramMjerenjaId(program);
                     pod.setVrsta(modStr);
                     pod.setReferentnaVrijednost(refV);
                     pod.setStdev(varijanca);
@@ -157,7 +157,7 @@ public class WlZeroSpanParser implements WlFileParser{
     }
 
     @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizOcitanja> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
+    public void setNizKanala(Map<ProgramMjerenja, NizProcitanih> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
         this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala

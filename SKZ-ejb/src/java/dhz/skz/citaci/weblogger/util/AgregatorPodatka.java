@@ -11,22 +11,29 @@ import java.util.EnumMap;
  *
  * @author kraljevic
  */
-public class AgregiraniPodatak {
+public class AgregatorPodatka {
     
     EnumMap<Status.ModRada, Float> kumulativnaSuma =  new EnumMap<>(Status.ModRada.class);
     EnumMap<Status.ModRada, Status> kumulativniStatus = new EnumMap<>(Status.ModRada.class);
     EnumMap<Status.ModRada, Integer> broj = new EnumMap<>(Status.ModRada.class);
 
-    public AgregiraniPodatak() {
+    private final Integer ocekivaniBroj;
+
+    public AgregatorPodatka() {
+        this.ocekivaniBroj = 60;
     }
 
-    void reset(){
+    public AgregatorPodatka(Integer ocekivaniBroj) {
+        this.ocekivaniBroj = ocekivaniBroj;
+    }
+
+    public void reset(){
         kumulativnaSuma.clear();
         kumulativniStatus.clear();
         broj.clear();
     }
 
-    void dodaj(Float vrijednost, Status s) {
+    public void dodaj(Float vrijednost, Status s) {
         if (!kumulativniStatus.containsKey(s.getModRada())){
             kumulativnaSuma.put(s.getModRada(), 0.f);
             broj.put(s.getModRada(),0);
@@ -42,16 +49,17 @@ public class AgregiraniPodatak {
         kumulativniStatus.get(s.getModRada()).dodajStatus(s);
     }
     
-    Float getIznos(){
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Float getIznos(Status.ModRada mod){
+        if ( broj.get(mod) != 0 ){
+            return kumulativnaSuma.get(mod)/broj.get(mod);
+        } else return -999.f;
     }
     
-    Integer getObuhvat(){
-        throw new UnsupportedOperationException("Not supported yet.");
+    public short getObuhvat(Status.ModRada mod){
+        return (short) ((short) 100 * broj.get(mod)/ocekivaniBroj);
     }
     
-    Integer getStatus(){
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Status getStatus(Status.ModRada mod){
+        return kumulativniStatus.get(mod);
     }
-    
 }

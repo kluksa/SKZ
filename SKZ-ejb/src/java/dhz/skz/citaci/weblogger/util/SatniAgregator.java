@@ -21,8 +21,8 @@ public class SatniAgregator {
 
     protected static final short MIN_OBUHVAT = 75;
 //    protected NizPodataka agregiraniNiz;
-    private NavigableMap<Date, AgregiraniPodatak> agregiraniPodaci;
-    private NavigableMap<Date, AgregiraniPodatak> minutniPodaci;
+    private NavigableMap<Date, AgregatorPodatka> agregiraniPodaci;
+    private NavigableMap<Date, AgregatorPodatka> minutniPodaci;
 //    protected NizPodataka minutniNiz;
     protected int korak = 1;
     protected List<Date> listaVremena;
@@ -39,7 +39,7 @@ public class SatniAgregator {
     public SatniAgregator() {
     }
 
-    public SatniAgregator(NavigableMap<Date, AgregiraniPodatak> podaci, NavigableMap<Date, Validator> validatori) {
+    public SatniAgregator(NavigableMap<Date, AgregatorPodatka> podaci, NavigableMap<Date, Validator> validatori) {
         this.minutniPodaci=podaci;
         this.validatori=validatori;
     }
@@ -67,7 +67,7 @@ public class SatniAgregator {
         this.korak = korak;
     }
 
-    public void setMinutniPodaci(NavigableMap<Date, AgregiraniPodatak> minutniPodaci) {
+    public void setMinutniPodaci(NavigableMap<Date, AgregatorPodatka> minutniPodaci) {
         this.minutniPodaci = minutniPodaci;
     }
 
@@ -77,7 +77,7 @@ public class SatniAgregator {
 //    public NizPodataka getAgregiraniNiz() {
 //        return agregiraniNiz;
 //    }
-    public NavigableMap<Date, AgregiraniPodatak> getAgregiraniPodaci() {
+    public NavigableMap<Date, AgregatorPodatka> getAgregiraniPodaci() {
         return agregiraniPodaci;
     }
 
@@ -125,11 +125,11 @@ public class SatniAgregator {
                 Date po = listaVremena.get(i - 1);
                 Date kr = listaVremena.get(i);
 
-//            NavigableMap<Date, AgregiraniPodatak> podmapa = minutniNiz.getPodaci()
+//            NavigableMap<Date, AgregatorPodatka> podmapa = minutniNiz.getPodaci()
 //                    .subMap(po, false, kr, true);
-                NavigableMap<Date, AgregiraniPodatak> podmapa = minutniPodaci.subMap(po, false, kr, true);
+                NavigableMap<Date, AgregatorPodatka> podmapa = minutniPodaci.subMap(po, false, kr, true);
                 if (!podmapa.isEmpty()) {
-                    AgregiraniPodatak ps = agregiraj_podmapu(kr, podmapa);
+                    AgregatorPodatka ps = agregiraj_podmapu(kr, podmapa);
                     ps.setProgramMjerenjaId(kljuc);
                     agregiraniPodaci.put(kr, ps);
                 }
@@ -137,8 +137,8 @@ public class SatniAgregator {
         }
     }
 
-    protected AgregiraniPodatak agregiraj_podmapu(Date vrijeme,
-            NavigableMap<Date, AgregiraniPodatak> podmapa) {
+    protected AgregatorPodatka agregiraj_podmapu(Date vrijeme,
+            NavigableMap<Date, AgregatorPodatka> podmapa) {
 
         float kum_sum = 0;
         int count = 0;
@@ -152,10 +152,10 @@ public class SatniAgregator {
         je ogromnu vecinu vremena tocna da nije vrijedno provjeravati za svaki minutni podatak
         */
 
-        AgregiraniPodatak agregirani = new AgregiraniPodatak();
+        AgregatorPodatka agregirani = new AgregatorPodatka();
         agregirani.setVrijeme(vrijeme);
         for (Date t : podmapa.keySet()) {
-            AgregiraniPodatak trenutniPodatak = podmapa.get(t);
+            AgregatorPodatka trenutniPodatak = podmapa.get(t);
             agregirani.dodaj(trenutniPodatak.getVrijednost(), v.getStatus(String.valueOf(trenutniPodatak.getStatus())));
         }
 /* ovo cemo prebaciti u podatakwl

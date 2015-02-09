@@ -21,33 +21,38 @@ import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.citaci.weblogger.util.NizOcitanja;
-import dhz.skz.citaci.weblogger.util.AgregiraniPodatak;
-import dhz.skz.citaci.weblogger.util.SatniAgregator;
+import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
+import dhz.skz.citaci.weblogger.util.NizProcitanih;
+import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
+import dhz.skz.citaci.weblogger.util.Status;
+import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.commons.net.ftp.FTPFile;
@@ -59,14 +64,15 @@ import org.apache.commons.net.ftp.FTPFile;
 @Stateless
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
+    @EJB
+    private ValidatorFactory validatorFactory;
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-    
+
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
-
 
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
@@ -88,8 +94,13 @@ public class WebloggerCitacBean implements CitacIzvora {
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
 
-    enum Vrsta {MJERENJE, KALIBRACIJA}
     
+
+    enum Vrsta {
+
+        MJERENJE, KALIBRACIJA
+    }
+
     public WebloggerCitacBean() {
         formatter.setTimeZone(timeZone);
     }
@@ -99,39 +110,43 @@ public class WebloggerCitacBean implements CitacIzvora {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
         for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
+            
+            
             aktivnaPostaja = it.next();
             log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
-            programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
+                        
+            
+            Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova = napraviMapuNizova();
 
             odrediVrijemeZadnjegPodatka(aktivnaPostaja);
 
-            pokupiMjerenjaSaPostaje();
+            pokupiMjerenjaSaPostaje(mapaMjernihNizova);
+            
+            obradiISpremiMjerenjaSaPostaje(mapaMjernihNizova);
 
         }
         log.log(Level.INFO, "KRAJ CITANJA");
         return null;
     }
 
-    private Map<ProgramMjerenja, NizOcitanja> getMapaNizovaOcitanja() throws URISyntaxException {
+    private Map<ProgramMjerenja, NizProcitanih> napraviMapuNizova() {
 
-        Map<ProgramMjerenja, NizOcitanja> tmp = new HashMap<>();
-
+        Map<ProgramMjerenja, NizProcitanih> tmp = new HashMap<>();
+        programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
         for (ProgramMjerenja pm : programNaPostaji) {
             log.log(Level.FINEST, "Program: {0}: {1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
-            NizOcitanja np = new NizOcitanja();
-            np.setKljuc(pm);
-            np.setValidatori(validatorFac.getValidatori(pm));
+            NizProcitanih np = new NizProcitanih();
             tmp.put(pm, np);
         }
         return tmp;
     }
 
-    private void pokupiMjerenjaSaPostaje() {
+    private void pokupiMjerenjaSaPostaje(Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova) {
         FtpKlijent ftp = new FtpKlijent();
 
         try {
-            Map<ProgramMjerenja, NizOcitanja> mapaMjernihNizova = getMapaNizovaOcitanja();
+            
             ftp.connect(new URI(izvor.getUri()));
 
             String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)\\.csv";
@@ -142,7 +157,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                     try {
                         Vrsta vrstaDatoteke = odrediVrstuDatoteke(m.group(2));
                         Date terminDatoteke = formatter.parse(m.group(3));
-                        
+
                         if (isDobarTermin(terminDatoteke, vrstaDatoteke)) {
 
                             WlFileParser citac = napraviParser(vrstaDatoteke);
@@ -167,7 +182,6 @@ public class WebloggerCitacBean implements CitacIzvora {
                     }
                 }
             }
-            obradiISpremiNizove(mapaMjernihNizova);
         } catch (FtpKlijentException | URISyntaxException ex) {
             log.log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
@@ -187,19 +201,68 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    private void obradiISpremiNizove(Map<ProgramMjerenja, NizOcitanja> ulaz) {
-        for (ProgramMjerenja p : ulaz.keySet()) {
+     protected List<Date> napraviListuVremena(NizProcitanih niz) {
+        List <Date> listaVremena = new ArrayList<>();
 
-            NizOcitanja niz = ulaz.get(p);
-            try {
-                SatniAgregator a = new SatniAgregator(niz.getPodaci(), niz.getValidatori());
-                a.agregiraj();
-                niz.setPodaci(a.getAgregiraniPodaci());
-            } catch (Exception ex) {
-                log.log(Level.SEVERE, "Postaja {0}, komponenta {1}", new Object[]{p.getPostajaId().getNazivPostaje(), p.getKomponentaId().getFormula()});
-                throw ex;
+        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        trenutni_termin.setTime(niz.getPodaci().firstKey());
+        trenutni_termin.set(Calendar.MINUTE, 0);
+        trenutni_termin.set(Calendar.SECOND, 0);
+        trenutni_termin.set(Calendar.MILLISECOND, 0);
+
+        Calendar zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        zadnji_termin.setTime(niz.getPodaci().lastKey());
+        zadnji_termin.set(Calendar.MINUTE, 0);
+        zadnji_termin.set(Calendar.SECOND, 0);
+        trenutni_termin.set(Calendar.MILLISECOND, 0);
+
+        // svakom satnom terminu dodajemo nekoliko sekundi offseta tako da pri odsijecanju
+        // dobijemo niz <t-1h,t]
+        // da bi ovo moglo raditi minutne vrijednosti moraju biti zapisane prije OFFSER sekunde
+        while (!trenutni_termin.after(zadnji_termin)) {
+            listaVremena.add(trenutni_termin.getTime());
+            trenutni_termin.add(Calendar.HOUR, 1);
+        }
+        return listaVremena;
+    }
+    
+    private void obradiISpremiMjerenjaSaPostaje(Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova) {
+        AgregatorPodatka ap = new AgregatorPodatka();
+        
+        for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
+
+            NizProcitanih niz = mapaMjernihNizova.get(program);
+            NavigableMap<Date, ProcitaniPodatak> tmp = new TreeMap<>();
+            
+            if (!niz.getPodaci().isEmpty()) {
+                List<Date> listaVremena = napraviListuVremena(niz);
+                NavigableMap<Date, ProcitaniPodatak> podaci = niz.getPodaci();
+                for (int i = 1; i < listaVremena.size(); i++) {
+                    Date po = listaVremena.get(i - 1);
+                    Date kr = listaVremena.get(i);
+                    ap.reset();
+
+                    NavigableMap<Date, ProcitaniPodatak> podmapa = podaci.subMap(po, false, kr, true);
+                    Validator v = validatorFactory.getValidator(program, po);
+                    for ( Date d : tmp.subMap(po, false, kr, true).keySet()) {
+                        ProcitaniPodatak pp = tmp.get(d);
+                        ap.dodaj(pp.getVrijednost(), v.getStatus(pp.getStatus()));
+                    }
+                    
+                    Podatak p = new Podatak();
+                    p.setVrijeme(kr);
+                    p.setVrijednost(ap.getIznos(Status.ModRada.MJERENJE));
+                    p.setObuhvat(ap.getObuhvat(Status.ModRada.MJERENJE));
+                    p.setProgramMjerenjaId(program);
+                    p.setNivoValidacijeId(new NivoValidacije((short) 0));
+                    p.setStatus(ap.getStatus(Status.ModRada.MJERENJE));
+                    podatakFacade.create(p);
+                }
             }
-            log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{p.getPostajaId().getNazivPostaje(), p.getKomponentaId().getFormula()});
+            if ( !niz.getZs().isEmpty()) {
+                pospremiZsNiz(niz);
+            }
+            log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
             pospremiNiz(niz);
         }
     }
@@ -208,42 +271,34 @@ public class WebloggerCitacBean implements CitacIzvora {
 
 //            pospremiZsNiz(niz);
 //            pospremiMjerenjaNiz(niz);
-
     }
 
     @TransactionAttribute(REQUIRES_NEW)
     public void pospremiMjerenjaNiz(NizOcitanja niz) {
         log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
-                    new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
-                        niz.getKljuc().getKomponentaId().getFormula(),
-                        niz.getPodaci().firstKey(),
-                        niz.getPodaci().lastKey(),
-                        niz.getPodaci().size()});
-            NivoValidacije nv = new NivoValidacije((short) 0);
-            for (Date d : niz.getPodaci().keySet()) {
-                AgregiraniPodatak wlp = niz.getPodaci().get(d);
-                Podatak p = new Podatak();
-                p.setVrijeme(d);
-                p.setVrijednost(wlp.getVrijednost());
-                p.setObuhvat(wlp.getObuhvat());
-                p.setProgramMjerenjaId(niz.getKljuc());
-                p.setNivoValidacijeId(nv);
-                p.setStatus(wlp.getStatus());
-                podatakFacade.create(p);
-            }
+                new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
+                    niz.getKljuc().getKomponentaId().getFormula(),
+                    niz.getPodaci().firstKey(),
+                    niz.getPodaci().lastKey(),
+                    niz.getPodaci().size()});
+        NivoValidacije nv = new NivoValidacije((short) 0);
+        for (Date d : niz.getPodaci().keySet()) {
+            AgregatorPodatka wlp = niz.getPodaci().get(d);
+            Podatak p = new Podatak();
+            p.setVrijeme(d);
+            p.setVrijednost(wlp.getVrijednost());
+            p.setObuhvat(wlp.getObuhvat());
+            p.setProgramMjerenjaId(niz.getKljuc());
+            p.setNivoValidacijeId(nv);
+            p.setStatus(wlp.getStatus());
+            podatakFacade.create(p);
+        }
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiZsNiz(NizOcitanja niz) {
-
-        log.log(Level.INFO, "ZS postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
-                new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
-                    niz.getKljuc().getKomponentaId().getFormula(),
-                    niz.getZeroSpan().firstKey(),
-                    niz.getZeroSpan().lastKey(),
-                    niz.getZeroSpan().size()});
-        for (Date d : niz.getZeroSpan().keySet()) {
-            ZeroSpan zs = niz.getZeroSpan().get(d);
+    public void pospremiZsNiz(NizProcitanih niz) {
+        for (Date d : niz.getZs().keySet()) {
+            ZeroSpan zs = niz.getZs().get(d);
             zeroSpanFacade.create(zs);
         }
     }
@@ -302,16 +357,14 @@ public class WebloggerCitacBean implements CitacIzvora {
 
         return parser;
     }
-    
+
     private Vrsta odrediVrstuDatoteke(String group) {
-        if ( group == null || group.isEmpty()) {
+        if (group == null || group.isEmpty()) {
             return Vrsta.MJERENJE;
         } else {
             return Vrsta.KALIBRACIJA;
         }
     }
-
-    
 
     @Override
     public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {

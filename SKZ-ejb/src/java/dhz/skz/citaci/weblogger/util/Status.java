@@ -11,7 +11,7 @@ package dhz.skz.citaci.weblogger.util;
  */
 public class Status {
 
-    enum ModRada {MJERENJE, ZERO, SPAN, KALIBRACIJA};
+    public enum ModRada {MJERENJE, ZERO, SPAN, KALIBRACIJA};
     
     private int status;
     private ModRada modRada;

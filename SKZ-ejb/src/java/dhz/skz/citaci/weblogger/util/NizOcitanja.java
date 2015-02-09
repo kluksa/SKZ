@@ -24,7 +24,7 @@ public class NizOcitanja {
     private ProgramMjerenja kljuc;
     private NavigableMap<Date, Validator> validatori;
     private int brojMjerenjaUSatu;
-    private NavigableMap<Date, AgregiraniPodatak> podaci;
+    private NavigableMap<Date, AgregatorPodatka> podaci;
     private NavigableMap<Date, ZeroSpan> zs;
 
     public NizOcitanja(ProgramMjerenja kljuc) {
@@ -49,7 +49,7 @@ public class NizOcitanja {
         this.validatori = validatori;
     }
 
-    public void dodajPodatak(Date vrijeme, AgregiraniPodatak ocitanje) {
+    public void dodajPodatak(Date vrijeme, AgregatorPodatka ocitanje) {
         podaci.put(vrijeme, ocitanje);
     }
     
@@ -57,7 +57,7 @@ public class NizOcitanja {
         zs.put(vrijeme, ocitanje);
     }
     
-    public NavigableMap<Date, AgregiraniPodatak> getPodaci() {
+    public NavigableMap<Date, AgregatorPodatka> getPodaci() {
         return podaci;
     }
     
@@ -81,7 +81,7 @@ public class NizOcitanja {
         this.kljuc = kljuc;
     }
 
-    public void setPodaci(NavigableMap<Date, AgregiraniPodatak> podaci) {
+    public void setPodaci(NavigableMap<Date, AgregatorPodatka> podaci) {
         this.podaci = podaci;
     }
 

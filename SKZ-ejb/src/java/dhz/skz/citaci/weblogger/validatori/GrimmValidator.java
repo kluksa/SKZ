@@ -45,4 +45,9 @@ public class GrimmValidator implements Validator {
         return s;
     }
 
+    @Override
+    public Status getStatus(String status) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
