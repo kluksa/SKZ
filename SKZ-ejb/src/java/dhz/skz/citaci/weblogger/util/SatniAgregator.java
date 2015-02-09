@@ -21,8 +21,8 @@ public class SatniAgregator {
 
     protected static final short MIN_OBUHVAT = 75;
 //    protected NizPodataka agregiraniNiz;
-    private NavigableMap<Date, PodatakWl> agregiraniPodaci;
-    private NavigableMap<Date, PodatakWl> minutniPodaci;
+    private NavigableMap<Date, AgregiraniPodatak> agregiraniPodaci;
+    private NavigableMap<Date, AgregiraniPodatak> minutniPodaci;
 //    protected NizPodataka minutniNiz;
     protected int korak = 1;
     protected List<Date> listaVremena;
@@ -39,7 +39,7 @@ public class SatniAgregator {
     public SatniAgregator() {
     }
 
-    public SatniAgregator(NavigableMap<Date, PodatakWl> podaci, NavigableMap<Date, Validator> validatori) {
+    public SatniAgregator(NavigableMap<Date, AgregiraniPodatak> podaci, NavigableMap<Date, Validator> validatori) {
         this.minutniPodaci=podaci;
         this.validatori=validatori;
     }
@@ -67,7 +67,7 @@ public class SatniAgregator {
         this.korak = korak;
     }
 
-    public void setMinutniPodaci(NavigableMap<Date, PodatakWl> minutniPodaci) {
+    public void setMinutniPodaci(NavigableMap<Date, AgregiraniPodatak> minutniPodaci) {
         this.minutniPodaci = minutniPodaci;
     }
 
@@ -77,7 +77,7 @@ public class SatniAgregator {
 //    public NizPodataka getAgregiraniNiz() {
 //        return agregiraniNiz;
 //    }
-    public NavigableMap<Date, PodatakWl> getAgregiraniPodaci() {
+    public NavigableMap<Date, AgregiraniPodatak> getAgregiraniPodaci() {
         return agregiraniPodaci;
     }
 
@@ -125,11 +125,11 @@ public class SatniAgregator {
                 Date po = listaVremena.get(i - 1);
                 Date kr = listaVremena.get(i);
 
-//            NavigableMap<Date, PodatakWl> podmapa = minutniNiz.getPodaci()
+//            NavigableMap<Date, AgregiraniPodatak> podmapa = minutniNiz.getPodaci()
 //                    .subMap(po, false, kr, true);
-                NavigableMap<Date, PodatakWl> podmapa = minutniPodaci.subMap(po, false, kr, true);
+                NavigableMap<Date, AgregiraniPodatak> podmapa = minutniPodaci.subMap(po, false, kr, true);
                 if (!podmapa.isEmpty()) {
-                    PodatakWl ps = agregiraj_podmapu(kr, podmapa);
+                    AgregiraniPodatak ps = agregiraj_podmapu(kr, podmapa);
                     ps.setProgramMjerenjaId(kljuc);
                     agregiraniPodaci.put(kr, ps);
                 }
@@ -137,8 +137,8 @@ public class SatniAgregator {
         }
     }
 
-    protected PodatakWl agregiraj_podmapu(Date vrijeme,
-            NavigableMap<Date, PodatakWl> podmapa) {
+    protected AgregiraniPodatak agregiraj_podmapu(Date vrijeme,
+            NavigableMap<Date, AgregiraniPodatak> podmapa) {
 
         float kum_sum = 0;
         int count = 0;
@@ -147,22 +147,18 @@ public class SatniAgregator {
             return null;
         }
 
-        Validator v = validatori.floorEntry(vrijeme).getValue();
+        Validator v = validatori.floorEntry(vrijeme).getValue(); 
+/* pretpostavka da se unutar jednog sata ne mijenja validator. Fakticki je pogresna, ali 
+        je ogromnu vecinu vremena tocna da nije vrijedno provjeravati za svaki minutni podatak
+        */
 
-        PodatakWl agregirani = new PodatakWl();
+        AgregiraniPodatak agregirani = new AgregiraniPodatak();
         agregirani.setVrijeme(vrijeme);
         for (Date t : podmapa.keySet()) {
-            PodatakWl trenutniPodatak = podmapa.get(t);
-            Float iznos = trenutniPodatak.getVrijednost();
-            agregirani.dodajStatus(trenutniPodatak.getStatus());
-
-            if (trenutniPodatak.isValid()) {
-                kum_sum += iznos;
-                count++;
-            }
-            log.log(Level.FINEST, "podmapa:: {0}:{1}:{2}:{3}", new Object[]{t, iznos, kum_sum, count});
+            AgregiraniPodatak trenutniPodatak = podmapa.get(t);
+            agregirani.dodaj(trenutniPodatak.getVrijednost(), v.getStatus(String.valueOf(trenutniPodatak.getStatus())));
         }
-
+/* ovo cemo prebaciti u podatakwl
         int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
         if (obuhvat < MIN_OBUHVAT) {
             agregirani.dodajStatus(Flag.OBUHVAT);
@@ -176,6 +172,7 @@ public class SatniAgregator {
         } else {
             agregirani.setVrijednost(-999.f);
         }
+*/
         log.log(Level.FINEST, "PS:: {0}:{1}::{2}::{3}", new Object[]{agregirani.getVrijeme(), agregirani.getVrijednost(), count, kum_sum});
         return agregirani;
     }

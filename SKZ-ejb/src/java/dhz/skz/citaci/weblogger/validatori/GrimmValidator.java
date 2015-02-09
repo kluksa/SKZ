@@ -15,23 +15,12 @@ import dhz.skz.citaci.weblogger.util.Status;
  * @author kraljevic
  */
 @Stateless
-public class GrimmValidator extends ValidatorImpl {
+public class GrimmValidator implements Validator {
 
-    private final Float ldl = 0.f;
-    private final Float opseg = 1000.f;
 
     @Override
-    public Status getStatus(Float iznos, String statusStr, float temperatura) throws NevaljanStatusException {
+    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
         Status s = new Status();
-        if (temperatura != -999.f && (temperatura < tempMin || temperatura > tempMax)) {
-            s.dodajFlag(Flag.TEMPERATURA);
-        }
-        if (iznos < ldl) {
-            s.dodajFlag(Flag.LDL);
-        }
-        if (iznos > opseg) {
-            s.dodajFlag(Flag.VAN_PODRUCJA);
-        }
         if (iznos == -999.f) {
             s.dodajFlag(Flag.NEDOSTAJE);
         } else if (!statusStr.isEmpty()) {
@@ -55,4 +44,5 @@ public class GrimmValidator extends ValidatorImpl {
         }
         return s;
     }
+
 }

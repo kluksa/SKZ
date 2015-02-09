@@ -42,7 +42,6 @@ public class ValidatorFactory {
     public Validator lookupValidator(ModelUredjaja model) throws NamingException {
         String str = "java:module/" + model.getValidatorId().getNaziv().trim();
         Validator v = (Validator) new InitialContext().lookup(str);
-        v.setBrojMjerenjaUSatu(model.getBrojMjerenjaUSatu());
         return v;
     }
 }

@@ -5,7 +5,7 @@
  */
 package dhz.skz.citaci.weblogger;
 
-import dhz.skz.citaci.weblogger.util.NizPodataka;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import com.csvreader.CsvReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +21,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.util.PodatakWl;
-import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
 import java.util.Collection;
 
 /**
@@ -52,7 +50,7 @@ public class WlMjerenjaParser implements WlFileParser {
 
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
-    private Map<ProgramMjerenja, NizPodataka> nizKanala;
+    private Map<ProgramMjerenja, NizOcitanja> nizKanala;
 
     public WlMjerenjaParser(TimeZone tz) {
         this.temperatura = -999.f;
@@ -151,7 +149,7 @@ public class WlMjerenjaParser implements WlFileParser {
             }
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
-            NizPodataka nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
+            NizOcitanja nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
             NavigableMap<Date, Validator> validatori = nizPodataka.getValidatori();
 
             String iznosStr = csv.get(stupac);
@@ -159,19 +157,13 @@ public class WlMjerenjaParser implements WlFileParser {
             if (!iznosStr.isEmpty()) {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
-                    Map.Entry<Date, Validator> floorEntry = validatori.floorEntry(trenutnoVrijeme);
-                    Validator value = floorEntry.getValue();
-                    Status status = value.getStatus(iznos, statusStr, temperatura);
-//                    Status status = validatori.floorEntry(trenutnoVrijeme).getValue()
-//                            .getStatus(iznos, statusStr, temperatura);
-
-                    PodatakWl pod = new PodatakWl();
+                    ProcitaniPodatak pod = new ProcitaniPodatak();
                     pod.setVrijeme(trenutnoVrijeme);
-                    pod.setStatus(status.getStatus());
+                    pod.setStatus(statusStr);
                     pod.setVrijednost(iznos);
                     nizPodataka.dodajPodatak(trenutnoVrijeme, pod);
 
-                } catch (NumberFormatException | NevaljanStatusException ex) {
+                } catch (NumberFormatException  ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
@@ -179,7 +171,7 @@ public class WlMjerenjaParser implements WlFileParser {
     }
 
     @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizPodataka> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
+    public void setNizKanala(Map<ProgramMjerenja, NizOcitanja> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
         this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala

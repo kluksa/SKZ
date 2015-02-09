@@ -14,10 +14,6 @@ import dhz.skz.citaci.weblogger.util.Status;
  */
 public interface Validator {
 
-    Integer getBrojMjerenjaUSatu();
-
-    void setBrojMjerenjaUSatu(Integer n);
-
-    Status getStatus(Float iznos, String statusStr, float temperatura) throws NevaljanStatusException;
+    Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException;
 
 }

@@ -9,7 +9,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.citaci.weblogger.util.NizPodataka;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -20,9 +20,9 @@ import java.util.Map;
  */
 public interface CitacIzvora {
 
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor);
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor);
 
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor,
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor,
             Map<ProgramMjerenja, Podatak> zadnjiPodatak);
     
 //    public Collection<PodatakSirovi> getSirovi(ProgramMjerenja program, 

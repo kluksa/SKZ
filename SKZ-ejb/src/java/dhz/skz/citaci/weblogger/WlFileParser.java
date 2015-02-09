@@ -7,7 +7,7 @@ package dhz.skz.citaci.weblogger;
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.util.NizPodataka;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -24,6 +24,6 @@ public interface WlFileParser {
 
     void setZadnjiPodatak(Date zadnjiPodatak);
 
-    public void setNizKanala(Map<ProgramMjerenja, NizPodataka> mapaMjernihNizova, Collection<ProgramMjerenja> aktivniProgram);
+    public void setNizKanala(Map<ProgramMjerenja, NizOcitanja> mapaMjernihNizova, Collection<ProgramMjerenja> aktivniProgram);
     
 }

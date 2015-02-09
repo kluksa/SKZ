@@ -22,7 +22,7 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.NizPodataka;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
@@ -155,7 +155,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     }
 
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
@@ -267,7 +267,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //
 //    }
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

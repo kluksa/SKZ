@@ -17,24 +17,24 @@ import java.util.logging.Logger;
  *
  * @author kraljevic
  */
-public class NizPodataka {
+public class NizOcitanja {
 
-    private static final Logger log = Logger.getLogger(NizPodataka.class.getName());
+    private static final Logger log = Logger.getLogger(NizOcitanja.class.getName());
 
     private ProgramMjerenja kljuc;
     private NavigableMap<Date, Validator> validatori;
     private int brojMjerenjaUSatu;
-    private NavigableMap<Date, PodatakWl> podaci;
+    private NavigableMap<Date, AgregiraniPodatak> podaci;
     private NavigableMap<Date, ZeroSpan> zs;
 
-    public NizPodataka(ProgramMjerenja kljuc) {
+    public NizOcitanja(ProgramMjerenja kljuc) {
         this.kljuc = kljuc;
         this.podaci = new TreeMap<>();
         this.zs = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
     }
 
-    public NizPodataka() {
+    public NizOcitanja() {
         this.podaci = new TreeMap<>();
         this.brojMjerenjaUSatu = 60;
         this.zs = new TreeMap<>();
@@ -49,7 +49,7 @@ public class NizPodataka {
         this.validatori = validatori;
     }
 
-    public void dodajPodatak(Date vrijeme, PodatakWl ocitanje) {
+    public void dodajPodatak(Date vrijeme, AgregiraniPodatak ocitanje) {
         podaci.put(vrijeme, ocitanje);
     }
     
@@ -57,7 +57,7 @@ public class NizPodataka {
         zs.put(vrijeme, ocitanje);
     }
     
-    public NavigableMap<Date, PodatakWl> getPodaci() {
+    public NavigableMap<Date, AgregiraniPodatak> getPodaci() {
         return podaci;
     }
     
@@ -81,11 +81,15 @@ public class NizPodataka {
         this.kljuc = kljuc;
     }
 
-    public void setPodaci(NavigableMap<Date, PodatakWl> podaci) {
+    public void setPodaci(NavigableMap<Date, AgregiraniPodatak> podaci) {
         this.podaci = podaci;
     }
 
     public void setZs(NavigableMap<Date, ZeroSpan> zs) {
         this.zs = zs;
+    }
+
+    public void dodajPodatak(Date trenutnoVrijeme, ProcitaniPodatak pod) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

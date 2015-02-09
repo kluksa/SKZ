@@ -11,8 +11,19 @@ package dhz.skz.citaci.weblogger.util;
  */
 public class Status {
 
+    enum ModRada {MJERENJE, ZERO, SPAN, KALIBRACIJA};
+    
     private int status;
+    private ModRada modRada;
 
+    ModRada getModRada() {
+        return modRada;
+    }
+
+    void setModRada(ModRada modRada) {
+        this.modRada = modRada;
+    }
+    
     public int getStatus() {
         return status;
     }

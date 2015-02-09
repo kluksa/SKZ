@@ -15,44 +15,11 @@ import dhz.skz.citaci.weblogger.util.Status;
  * @author kraljevic
  */
 @Stateless
-public class SynspecValidator extends ValidatorImpl {
-
-    private final Float ldl = 0.f;
-    private final Float opseg = 1000.f;
+public class SynspecValidator implements Validator {
 
     @Override
-    public Status getStatus(Float iznos, String statusStr, float temperatura) throws NevaljanStatusException {
-        Status s = new Status();
-        if (temperatura != -999.f && (temperatura < tempMin || temperatura > tempMax)) {
-            s.dodajFlag(Flag.TEMPERATURA);
-        }
-        if (iznos < ldl) {
-            s.dodajFlag(Flag.LDL);
-        }
-        if (iznos > opseg) {
-            s.dodajFlag(Flag.VAN_PODRUCJA);
-        }
-        if (iznos == -999.f) {
-            s.dodajFlag(Flag.NEDOSTAJE);
-        } else if (!statusStr.isEmpty()) {
-            try {
-                int stInt = Integer.parseInt(statusStr, 16);
-                if (stInt > 255) {
-                    s.dodajFlag(Flag.FAULT);
-                }
-                if ((stInt & 1) == 1) {
-                    s.dodajFlag(Flag.MAINTENENCE);
-                }
-                if ((stInt & 2) == 2) {
-                    s.dodajFlag(Flag.ZERO);
-                }
-                if ((stInt & 4) == 4) {
-                    s.dodajFlag(Flag.SPAN);
-                }
-            } catch (NumberFormatException ex) {
-                throw new NevaljanStatusException(ex);
-            }
-        }
-        return s;
+    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

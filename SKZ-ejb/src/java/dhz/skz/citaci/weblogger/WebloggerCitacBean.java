@@ -20,8 +20,8 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.util.NizPodataka;
-import dhz.skz.citaci.weblogger.util.PodatakWl;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
+import dhz.skz.citaci.weblogger.util.AgregiraniPodatak;
 import dhz.skz.citaci.weblogger.util.SatniAgregator;
 import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
 import java.io.InputStream;
@@ -95,7 +95,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
         for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
@@ -113,13 +113,13 @@ public class WebloggerCitacBean implements CitacIzvora {
         return null;
     }
 
-    private Map<ProgramMjerenja, NizPodataka> getMapaNizova() throws URISyntaxException {
+    private Map<ProgramMjerenja, NizOcitanja> getMapaNizovaOcitanja() throws URISyntaxException {
 
-        Map<ProgramMjerenja, NizPodataka> tmp = new HashMap<>();
+        Map<ProgramMjerenja, NizOcitanja> tmp = new HashMap<>();
 
         for (ProgramMjerenja pm : programNaPostaji) {
             log.log(Level.FINEST, "Program: {0}: {1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
-            NizPodataka np = new NizPodataka();
+            NizOcitanja np = new NizOcitanja();
             np.setKljuc(pm);
             np.setValidatori(validatorFac.getValidatori(pm));
             tmp.put(pm, np);
@@ -131,7 +131,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         FtpKlijent ftp = new FtpKlijent();
 
         try {
-            Map<ProgramMjerenja, NizPodataka> mapaMjernihNizova = getMapaNizova();
+            Map<ProgramMjerenja, NizOcitanja> mapaMjernihNizova = getMapaNizovaOcitanja();
             ftp.connect(new URI(izvor.getUri()));
 
             String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)\\.csv";
@@ -166,7 +166,6 @@ public class WebloggerCitacBean implements CitacIzvora {
                         log.log(Level.SEVERE, null, ex);
                     }
                 }
-
             }
             obradiISpremiNizove(mapaMjernihNizova);
         } catch (FtpKlijentException | URISyntaxException ex) {
@@ -188,10 +187,10 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    private void obradiISpremiNizove(Map<ProgramMjerenja, NizPodataka> ulaz) {
+    private void obradiISpremiNizove(Map<ProgramMjerenja, NizOcitanja> ulaz) {
         for (ProgramMjerenja p : ulaz.keySet()) {
 
-            NizPodataka niz = ulaz.get(p);
+            NizOcitanja niz = ulaz.get(p);
             try {
                 SatniAgregator a = new SatniAgregator(niz.getPodaci(), niz.getValidatori());
                 a.agregiraj();
@@ -205,7 +204,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         }
     }
 
-    public void pospremiNiz(NizPodataka niz) {
+    public void pospremiNiz(NizOcitanja niz) {
 
 //            pospremiZsNiz(niz);
 //            pospremiMjerenjaNiz(niz);
@@ -213,7 +212,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiMjerenjaNiz(NizPodataka niz) {
+    public void pospremiMjerenjaNiz(NizOcitanja niz) {
         log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
                     new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
                         niz.getKljuc().getKomponentaId().getFormula(),
@@ -222,7 +221,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                         niz.getPodaci().size()});
             NivoValidacije nv = new NivoValidacije((short) 0);
             for (Date d : niz.getPodaci().keySet()) {
-                PodatakWl wlp = niz.getPodaci().get(d);
+                AgregiraniPodatak wlp = niz.getPodaci().get(d);
                 Podatak p = new Podatak();
                 p.setVrijeme(d);
                 p.setVrijednost(wlp.getVrijednost());
@@ -235,7 +234,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiZsNiz(NizPodataka niz) {
+    public void pospremiZsNiz(NizOcitanja niz) {
 
         log.log(Level.INFO, "ZS postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
                 new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
@@ -320,7 +319,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> pocetak) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> pocetak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -15,7 +15,7 @@ import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.NizPodataka;
+import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import java.util.ArrayList;
@@ -57,12 +57,12 @@ public class AqdbCitacBean implements CitacIzvora {
     private List<ZeroSpan> zslista = new ArrayList<>();
 
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
+    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         em.refresh(izvor);
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -110,73 +110,73 @@ public class AqdbCitacBean implements CitacIzvora {
         zslista.clear();
         String zsvrsta = "";
 
-        for (PodatakSirovi p : pod) {
-            try {
-                Status s = v.getStatus(p.getVrijednost(), p.getStatusString(), 0.f);
-                if (s.isAktivan(Flag.ZERO)) {
-                    if (!s.isAktivan(Flag.FAULT)) {
-                        zscount++;
-                        zskum_sum += p.getVrijednost();
-                    }
-                    zero = true;
-                    span = false;
-                    zsvrsta = "AZ";
-                } else if (s.isAktivan(Flag.SPAN)) {
-                    if (!s.isAktivan(Flag.FAULT)) {
-                        zscount++;
-                        zskum_sum += p.getVrijednost();
-                    }
-                    zsvrsta = "AS";
-                    span = true;
-                    zero = false;
-                } else {
-                    if (s.isValid()) {
-                        count++;
-                        kum_sum += p.getVrijednost();
-                    }
-                    if (zero || span) {
-                        if (zscount > 0) {
-                            ZeroSpan zspod = new ZeroSpan();
-//                        zspod.setKomponentaId(program.getKomponentaId());
-//                        zspod.setUredjajId(program.);
-                            zspod.setProgramMjerenjaId(program);
-                            zspod.setVrsta(zsvrsta);
-                            zspod.setVrijednost(zskum_sum / zscount);
-                            zslista.add(zspod);
-                        }
-                        zero = false;
-                        span = false;
-                        zscount = 0;
-                        zskum_sum = 0;
-                        zsvrsta = "";
-                    }
-                }
-                status.dodajStatus(s);
-            } catch (NevaljanStatusException ex) {
-                Logger.getLogger(AqdbCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
-        if (obuhvat < MIN_OBUHVAT) {
-            status.dodajFlag(Flag.OBUHVAT);
-        }
-
-        podatak.setObuhvat((short) obuhvat);
-        podatak.setStatus(status.getStatus());
-
-        if (count > 0) {
-            float iznos = kum_sum / count;
-            podatak.setVrijednost(iznos);
-
-        } else {
-            podatak.setVrijednost(-999.f);
-        }
-        podatak.setVrijeme(cal.getTime());
+//        for (PodatakSirovi p : pod) {
+//            try {
+//                Status s = v.getStatus(p.getVrijednost(), p.getStatusString());
+//                if (s.isAktivan(Flag.ZERO)) {
+//                    if (!s.isAktivan(Flag.FAULT)) {
+//                        zscount++;
+//                        zskum_sum += p.getVrijednost();
+//                    }
+//                    zero = true;
+//                    span = false;
+//                    zsvrsta = "AZ";
+//                } else if (s.isAktivan(Flag.SPAN)) {
+//                    if (!s.isAktivan(Flag.FAULT)) {
+//                        zscount++;
+//                        zskum_sum += p.getVrijednost();
+//                    }
+//                    zsvrsta = "AS";
+//                    span = true;
+//                    zero = false;
+//                } else {
+//                    if (s.isValid()) {
+//                        count++;
+//                        kum_sum += p.getVrijednost();
+//                    }
+//                    if (zero || span) {
+//                        if (zscount > 0) {
+//                            ZeroSpan zspod = new ZeroSpan();
+////                        zspod.setKomponentaId(program.getKomponentaId());
+////                        zspod.setUredjajId(program.);
+//                            zspod.setProgramMjerenjaId(program);
+//                            zspod.setVrsta(zsvrsta);
+//                            zspod.setVrijednost(zskum_sum / zscount);
+//                            zslista.add(zspod);
+//                        }
+//                        zero = false;
+//                        span = false;
+//                        zscount = 0;
+//                        zskum_sum = 0;
+//                        zsvrsta = "";
+//                    }
+//                }
+//                status.dodajStatus(s);
+//            } catch (NevaljanStatusException ex) {
+//                Logger.getLogger(AqdbCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//
+////        int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
+////        if (obuhvat < MIN_OBUHVAT) {
+////            status.dodajFlag(Flag.OBUHVAT);
+////        }
+//
+////        podatak.setObuhvat((short) obuhvat);
+//        podatak.setStatus(status.getStatus());
+//
+//        if (count > 0) {
+//            float iznos = kum_sum / count;
+//            podatak.setVrijednost(iznos);
+//
+//        } else {
+//            podatak.setVrijednost(-999.f);
+//        }
+//        podatak.setVrijeme(cal.getTime());
     }
 
 //    @Override
-//    public Map<ProgramMjerenja, NizPodataka> procitaj(IzvorPodataka izvor) {
+//    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
 //        log.log(Level.INFO, "POCETAK CITANJA");
 //        em.refresh(izvor);
 //        for ( ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {
@@ -204,19 +204,19 @@ public class AqdbCitacBean implements CitacIzvora {
 //        return null;   
 //    }
 //    private void pokupiMjerenjaSaPostaje(IzvorPodataka izvor, Postaja p, Date zadnji) {
-//        Map<ProgramMjerenja, NizPodataka> tmp = getMapaNizova(p, izvor, zadnji);
+//        Map<ProgramMjerenja, NizOcitanja> tmp = getMapaNizova(p, izvor, zadnji);
 //        obradiISpremiNizove(tmp);
 //    }
 //    
-//    private void obradiISpremiNizove(Map<ProgramMjerenja, NizPodataka> ulaz) {
+//    private void obradiISpremiNizove(Map<ProgramMjerenja, NizOcitanja> ulaz) {
 //        for (ProgramMjerenja p : ulaz.keySet()) {
-//            NizPodataka niz = ulaz.get(p);
+//            NizOcitanja niz = ulaz.get(p);
 //            if (!niz.getPodaci().isEmpty()) {
 //                try {
 //                    SatniAgregator a = new SatniAgregator();
 //                    a.setNeagregiraniNiz(niz);
 //                    a.agregiraj();
-//                    NizPodataka agr = a.getAgregiraniNiz();
+//                    NizOcitanja agr = a.getAgregiraniNiz();
 //                    log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{p.getPostajaId().getNazivPostaje(), p.getKomponentaId().getFormula()});
 //                    if ( ! agr.getPodaci().isEmpty() ) {
 //                        podatakFacade.pospremiNiz(agr);
@@ -231,13 +231,13 @@ public class AqdbCitacBean implements CitacIzvora {
 //        }
 //    }
 //    
-//    private Map<ProgramMjerenja, NizPodataka> getMapaNizova(Postaja p, IzvorPodataka izvor, Date zadnji ) {
+//    private Map<ProgramMjerenja, NizOcitanja> getMapaNizova(Postaja p, IzvorPodataka izvor, Date zadnji ) {
 //
-//        Map<ProgramMjerenja, NizPodataka> tmp = new HashMap<>();
+//        Map<ProgramMjerenja, NizOcitanja> tmp = new HashMap<>();
 //        Collection<ProgramMjerenja> programNaPostajiZaIzvor = podatakFacade.getProgramNaPostajiZaIzvor(p, izvor, zadnji);
 //        for ( ProgramMjerenja pm : programNaPostajiZaIzvor) {
 //            log.log(Level.INFO,"Program: {0}: {1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
-//            NizPodataka np = new NizPodataka();
+//            NizOcitanja np = new NizOcitanja();
 //            np.setKljuc(pm);
 //            np.setValidatori(validatorFac.getValidatori(pm));
 //            tmp.put(pm, np);
