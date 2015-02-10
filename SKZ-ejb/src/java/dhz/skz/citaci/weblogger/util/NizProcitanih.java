@@ -5,6 +5,7 @@
  */
 package dhz.skz.citaci.weblogger.util;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import java.util.Date;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -14,17 +15,17 @@ import java.util.TreeMap;
  * @author kraljevic
  */
 public class NizProcitanih {
-    protected NavigableMap<Date, ProcitaniPodatak> pod;
+    protected NavigableMap<Date, PodatakSirovi> pod;
 
     public NizProcitanih() {
         pod = new TreeMap<>();
     }
 
-    public NavigableMap<Date, ProcitaniPodatak> getPodaci() {
+    public NavigableMap<Date, PodatakSirovi> getPodaci() {
         return pod;
     }
 
-    public void dodajPodatak(Date trenutnoVrijeme, ProcitaniPodatak podatak) {
-        pod.put(trenutnoVrijeme, podatak);
+    public void dodajPodatak(PodatakSirovi podatak) {
+        pod.put(podatak.getVrijeme(), podatak);
     }
 }

@@ -21,9 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
-import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
 import java.util.Collection;
 
 /**
@@ -154,11 +154,11 @@ class WlMjerenjaParser implements WlFileParser {
             if (!iznosStr.equals("-999.00") && !iznosStr.isEmpty()) {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
-                    ProcitaniPodatak pod = new ProcitaniPodatak();
+                    PodatakSirovi pod = new PodatakSirovi();
                     pod.setVrijeme(trenutnoVrijeme);
-                    pod.setStatus(statusStr);
+                    pod.setStatusString(statusStr);
                     pod.setVrijednost(iznos);
-                    nizPodataka.dodajPodatak(trenutnoVrijeme, pod);
+                    nizPodataka.dodajPodatak(pod);
 
                 } catch (NumberFormatException  ex) {
                     log.log(Level.SEVERE, null, ex);

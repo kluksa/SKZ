@@ -5,6 +5,8 @@
  */
 package dhz.skz.citaci.weblogger.util;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
+import dhz.skz.citaci.weblogger.validatori.Validator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Set;
@@ -24,6 +26,13 @@ public class AgregatorPodatka {
     private int minimalniBroj;
     private int ocekivaniBroj;
     
+    private Validator validator;
+
+    public void setValidator(Validator validator) {
+        this.validator = validator;
+    }
+
+    
     public AgregatorPodatka() {
         this(60);
     }
@@ -39,7 +48,9 @@ public class AgregatorPodatka {
         broj.clear();
     }
 
-    public void dodaj(Float vrijednost, Status s) {
+    public void dodaj(PodatakSirovi ps) {
+        float vrijednost = ps.getVrijednost();
+        Status s = validator.getStatus(ps.getStatusString());
         vrste.add(s.getModRada());
         if (!kumulativniStatus.containsKey(s.getModRada())){
             kumulativnaSuma.put(s.getModRada(), 0.f);

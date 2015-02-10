@@ -89,7 +89,4 @@ public class NizOcitanja {
         this.zs = zs;
     }
 
-    public void dodajPodatak(Date trenutnoVrijeme, ProcitaniPodatak pod) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

@@ -23,7 +23,6 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
-import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
 import dhz.skz.citaci.weblogger.util.SatniIterator;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
@@ -33,18 +32,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TimeZone;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -205,18 +199,18 @@ public class WebloggerCitacBean implements CitacIzvora {
             NizProcitanihWl niz = mapaMjernihNizova.get(program);
 
             if (!niz.getPodaci().isEmpty()) {
-                NavigableMap<Date, ProcitaniPodatak> podaci = niz.getPodaci();
+                NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
 
                 SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
                 Date po = sat.getVrijeme();
                 while (sat.next()) {
                     Date kr = sat.getVrijeme();
                     ap.reset();
-                    NavigableMap<Date, ProcitaniPodatak> podmapa = podaci.subMap(po, false, kr, true);
+                    NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
                     Validator v = validatorFactory.getValidator(program, po);
                     for (Date d : podmapa.keySet()) {
-                        ProcitaniPodatak pp = podmapa.get(d);
-                        ap.dodaj(pp.getVrijednost(), v.getStatus(pp.getStatus()));
+                        PodatakSirovi pp = podmapa.get(d);
+                        ap.dodaj(pp);//.getVrijednost(), v.getStatus(pp.getStatus()));
                     }
                     spremi(ap, program, kr);
                     po = kr;
