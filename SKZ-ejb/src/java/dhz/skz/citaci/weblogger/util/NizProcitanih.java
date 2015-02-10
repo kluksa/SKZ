@@ -5,7 +5,6 @@
  */
 package dhz.skz.citaci.weblogger.util;
 
-import dhz.skz.aqdb.entity.ZeroSpan;
 import java.util.Date;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -15,29 +14,17 @@ import java.util.TreeMap;
  * @author kraljevic
  */
 public class NizProcitanih {
-    
-    private NavigableMap<Date, ProcitaniPodatak> podaci;
-    private NavigableMap<Date, ZeroSpan> zs;
+    protected NavigableMap<Date, ProcitaniPodatak> pod;
 
     public NizProcitanih() {
-        this.podaci = new TreeMap<>();
-        this.zs = new TreeMap<>();
+        pod = new TreeMap<>();
     }
-    
 
     public NavigableMap<Date, ProcitaniPodatak> getPodaci() {
-        return podaci;
+        return pod;
     }
 
-    public NavigableMap<Date, ZeroSpan> getZs() {
-        return zs;
-    }
-
-    public void dodajZeroSpan(Date trenutnoVrijeme, ZeroSpan pod) {
-        zs.put(trenutnoVrijeme, pod);
-    }
-
-    public void dodajPodatak(Date trenutnoVrijeme, ProcitaniPodatak pod) {
-        podaci.put(trenutnoVrijeme, pod);
+    public void dodajPodatak(Date trenutnoVrijeme, ProcitaniPodatak podatak) {
+        pod.put(trenutnoVrijeme, podatak);
     }
 }

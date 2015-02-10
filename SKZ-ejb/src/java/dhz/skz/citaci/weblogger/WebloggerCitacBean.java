@@ -22,8 +22,9 @@ import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
-import dhz.skz.citaci.weblogger.util.NizProcitanih;
+import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
+import dhz.skz.citaci.weblogger.util.SatniIterator;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
@@ -64,6 +65,7 @@ import org.apache.commons.net.ftp.FTPFile;
 @Stateless
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
+
     @EJB
     private ValidatorFactory validatorFactory;
 
@@ -94,8 +96,6 @@ public class WebloggerCitacBean implements CitacIzvora {
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
 
-    
-
     enum Vrsta {
 
         MJERENJE, KALIBRACIJA
@@ -110,43 +110,39 @@ public class WebloggerCitacBean implements CitacIzvora {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
         for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
-            
-            
+
             aktivnaPostaja = it.next();
             log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
-                        
-            
-            Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova = napraviMapuNizova();
+            Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova = napraviMapuNizova();
 
             odrediVrijemeZadnjegPodatka(aktivnaPostaja);
 
-            pokupiMjerenjaSaPostaje(mapaMjernihNizova);
-            
-            obradiISpremiMjerenjaSaPostaje(mapaMjernihNizova);
+            pokupiMjerenja(mapaMjernihNizova);
+
+            obradiISpremi(mapaMjernihNizova);
 
         }
         log.log(Level.INFO, "KRAJ CITANJA");
         return null;
     }
 
-    private Map<ProgramMjerenja, NizProcitanih> napraviMapuNizova() {
+    private Map<ProgramMjerenja, NizProcitanihWl> napraviMapuNizova() {
 
-        Map<ProgramMjerenja, NizProcitanih> tmp = new HashMap<>();
+        Map<ProgramMjerenja, NizProcitanihWl> tmp = new HashMap<>();
         programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
         for (ProgramMjerenja pm : programNaPostaji) {
             log.log(Level.FINEST, "Program: {0}: {1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
-            NizProcitanih np = new NizProcitanih();
-            tmp.put(pm, np);
+            tmp.put(pm, new NizProcitanihWl());
         }
         return tmp;
     }
 
-    private void pokupiMjerenjaSaPostaje(Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova) {
+    private void pokupiMjerenja(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
         FtpKlijent ftp = new FtpKlijent();
 
         try {
-            
+
             ftp.connect(new URI(izvor.getUri()));
 
             String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)\\.csv";
@@ -201,102 +197,83 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-     protected List<Date> napraviListuVremena(NizProcitanih niz) {
-        List <Date> listaVremena = new ArrayList<>();
-
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        trenutni_termin.setTime(niz.getPodaci().firstKey());
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        Calendar zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        zadnji_termin.setTime(niz.getPodaci().lastKey());
-        zadnji_termin.set(Calendar.MINUTE, 0);
-        zadnji_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        // svakom satnom terminu dodajemo nekoliko sekundi offseta tako da pri odsijecanju
-        // dobijemo niz <t-1h,t]
-        // da bi ovo moglo raditi minutne vrijednosti moraju biti zapisane prije OFFSER sekunde
-        while (!trenutni_termin.after(zadnji_termin)) {
-            listaVremena.add(trenutni_termin.getTime());
-            trenutni_termin.add(Calendar.HOUR, 1);
-        }
-        return listaVremena;
-    }
-    
-    private void obradiISpremiMjerenjaSaPostaje(Map<ProgramMjerenja, NizProcitanih> mapaMjernihNizova) {
+    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
         AgregatorPodatka ap = new AgregatorPodatka();
-        
+
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
 
-            NizProcitanih niz = mapaMjernihNizova.get(program);
-            NavigableMap<Date, ProcitaniPodatak> tmp = new TreeMap<>();
-            
-            if (!niz.getPodaci().isEmpty()) {
-                List<Date> listaVremena = napraviListuVremena(niz);
-                NavigableMap<Date, ProcitaniPodatak> podaci = niz.getPodaci();
-                for (int i = 1; i < listaVremena.size(); i++) {
-                    Date po = listaVremena.get(i - 1);
-                    Date kr = listaVremena.get(i);
-                    ap.reset();
+            NizProcitanihWl niz = mapaMjernihNizova.get(program);
 
+            if (!niz.getPodaci().isEmpty()) {
+                NavigableMap<Date, ProcitaniPodatak> podaci = niz.getPodaci();
+
+                SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
+                Date po = sat.getVrijeme();
+                while (sat.next()) {
+                    Date kr = sat.getVrijeme();
+                    ap.reset();
                     NavigableMap<Date, ProcitaniPodatak> podmapa = podaci.subMap(po, false, kr, true);
                     Validator v = validatorFactory.getValidator(program, po);
-                    for ( Date d : tmp.subMap(po, false, kr, true).keySet()) {
-                        ProcitaniPodatak pp = tmp.get(d);
+                    for (Date d : podmapa.keySet()) {
+                        ProcitaniPodatak pp = podmapa.get(d);
                         ap.dodaj(pp.getVrijednost(), v.getStatus(pp.getStatus()));
                     }
-                    
-                    Podatak p = new Podatak();
-                    p.setVrijeme(kr);
-                    p.setVrijednost(ap.getIznos(Status.ModRada.MJERENJE));
-                    p.setObuhvat(ap.getObuhvat(Status.ModRada.MJERENJE));
-                    p.setProgramMjerenjaId(program);
-                    p.setNivoValidacijeId(new NivoValidacije((short) 0));
-                    p.setStatus(ap.getStatus(Status.ModRada.MJERENJE));
-                    podatakFacade.create(p);
+                    spremi(ap, program, kr);
+                    po = kr;
                 }
             }
-            if ( !niz.getZs().isEmpty()) {
+            if (!niz.getZs().isEmpty()) {
                 pospremiZsNiz(niz);
             }
             log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
-            pospremiNiz(niz);
         }
     }
-
-    public void pospremiNiz(NizOcitanja niz) {
-
-//            pospremiZsNiz(niz);
-//            pospremiMjerenjaNiz(niz);
-    }
-
+    
     @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiMjerenjaNiz(NizOcitanja niz) {
-        log.log(Level.INFO, "Postaja {0}, komponenta {1}, prvi {2}, zadnj {3}, ukupno {4}",
-                new Object[]{niz.getKljuc().getPostajaId().getNazivPostaje(),
-                    niz.getKljuc().getKomponentaId().getFormula(),
-                    niz.getPodaci().firstKey(),
-                    niz.getPodaci().lastKey(),
-                    niz.getPodaci().size()});
-        NivoValidacije nv = new NivoValidacije((short) 0);
-        for (Date d : niz.getPodaci().keySet()) {
-            AgregatorPodatka wlp = niz.getPodaci().get(d);
-            Podatak p = new Podatak();
-            p.setVrijeme(d);
-            p.setVrijednost(wlp.getVrijednost());
-            p.setObuhvat(wlp.getObuhvat());
-            p.setProgramMjerenjaId(niz.getKljuc());
-            p.setNivoValidacijeId(nv);
-            p.setStatus(wlp.getStatus());
-            podatakFacade.create(p);
+    private void spremi(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+        if (ap.imaMjerenje()) {
+            spremiMjerenje(ap, program, kr);
+        }
+        if (ap.imaZero()) {
+            spremiZS(ap, program, kr, Status.ModRada.ZERO);
+        }
+        if (ap.imaSpan()) {
+            spremiZS(ap, program, kr, Status.ModRada.SPAN);
         }
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiZsNiz(NizProcitanih niz) {
+    private void spremiMjerenje(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+        Podatak p = new Podatak();
+        p.setVrijeme(kr);
+        p.setVrijednost(ap.getIznos(Status.ModRada.MJERENJE));
+        p.setObuhvat(ap.getObuhvat(Status.ModRada.MJERENJE));
+        p.setProgramMjerenjaId(program);
+        p.setNivoValidacijeId(new NivoValidacije((short) 0));
+        p.setStatus(ap.getStatus(Status.ModRada.MJERENJE).getStatus());
+        podatakFacade.create(p);
+    }
+
+    @TransactionAttribute(REQUIRES_NEW)
+    private void spremiZS(AgregatorPodatka ap, ProgramMjerenja program, Date kr, Status.ModRada st) {
+        String modStr = "";
+        if (st == Status.ModRada.ZERO) {
+            modStr = "AZ";
+        } else if (st == Status.ModRada.SPAN) {
+            modStr = "AS";
+        } else {
+            //throw snevalja;
+        }
+        ZeroSpan pod = new ZeroSpan();
+        pod.setVrijeme(kr);
+        pod.setProgramMjerenjaId(program);
+        pod.setVrsta(modStr);
+        pod.setVrijednost(ap.getIznos(st));
+        zeroSpanFacade.create(pod);
+    }
+
+    @TransactionAttribute(REQUIRES_NEW)
+    public void pospremiZsNiz(NizProcitanihWl niz) {
         for (Date d : niz.getZs().keySet()) {
             ZeroSpan zs = niz.getZs().get(d);
             zeroSpanFacade.create(zs);

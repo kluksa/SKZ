@@ -27,6 +27,7 @@ public class API100EValidator implements Validator {
         if (!statusStr.isEmpty()) {
             try {
                 int stInt = Integer.parseInt(statusStr, 16);
+                s.setModRada(Status.ModRada.MJERENJE);
                 if (stInt > 255) {
                     s.dodajFlag(Flag.FAULT);
                 }
@@ -35,12 +36,15 @@ public class API100EValidator implements Validator {
                 }
                 if ((stInt & 4) == 4) {
                     s.dodajFlag(Flag.ZERO);
+                    s.setModRada(Status.ModRada.ZERO);
                 }
                 if ((stInt & 8) == 8) {
                     s.dodajFlag(Flag.SPAN);
+                    s.setModRada(Status.ModRada.SPAN);
                 }
                 if ((stInt & 16) == 16) {
                     s.dodajFlag(Flag.CALIBRATION);
+                    s.setModRada(Status.ModRada.KALIBRACIJA);
                 }
 
             } catch (NumberFormatException ex) {

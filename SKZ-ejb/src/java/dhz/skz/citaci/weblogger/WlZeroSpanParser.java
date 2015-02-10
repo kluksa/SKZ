@@ -10,7 +10,7 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.citaci.weblogger.util.NizProcitanih;
+import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -39,7 +39,7 @@ class WlZeroSpanParser implements WlFileParser{
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm z");
 
     private Date zadnjiPodatak;
-    private Map<ProgramMjerenja, NizProcitanih> nizKanala;
+    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
     private final Map<String, ProgramMjerenja> wlKanalProgram;
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
 
@@ -125,7 +125,7 @@ class WlZeroSpanParser implements WlFileParser{
     private void parsaj_record(CsvReader csv) throws IOException {
         for (Integer stupac : wlStupacProgram.keySet()) {
             ProgramMjerenja program = wlStupacProgram.get(stupac);
-            NizProcitanih nizPodataka = nizKanala.get(program);
+            NizProcitanihWl nizPodataka = nizKanala.get(program);
 
             String modStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
@@ -157,7 +157,7 @@ class WlZeroSpanParser implements WlFileParser{
     }
 
     @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizProcitanih> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
+    public void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
         this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala

@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.citaci.weblogger.util.NizProcitanih;
+import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import dhz.skz.citaci.weblogger.util.ProcitaniPodatak;
 import java.util.Collection;
 
@@ -48,7 +48,7 @@ class WlMjerenjaParser implements WlFileParser {
 
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
-    private Map<ProgramMjerenja, NizProcitanih> nizKanala;
+    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
 
     public WlMjerenjaParser(TimeZone tz) {
         this.temperatura = -999.f;
@@ -147,11 +147,11 @@ class WlMjerenjaParser implements WlFileParser {
             }
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
-            NizProcitanih nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
+            NizProcitanihWl nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
 
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
-            if (!iznosStr.isEmpty()) {
+            if (!iznosStr.equals("-999.00") && !iznosStr.isEmpty()) {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
                     ProcitaniPodatak pod = new ProcitaniPodatak();
@@ -168,7 +168,7 @@ class WlMjerenjaParser implements WlFileParser {
     }
 
     @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizProcitanih> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
+    public void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
         this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala

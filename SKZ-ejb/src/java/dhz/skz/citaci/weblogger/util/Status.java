@@ -16,11 +16,11 @@ public class Status {
     private int status;
     private ModRada modRada;
 
-    ModRada getModRada() {
+    public ModRada getModRada() {
         return modRada;
     }
 
-    void setModRada(ModRada modRada) {
+    public void setModRada(ModRada modRada) {
         this.modRada = modRada;
     }
     

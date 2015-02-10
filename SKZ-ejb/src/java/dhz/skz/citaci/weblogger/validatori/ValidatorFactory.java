@@ -27,25 +27,25 @@ public class ValidatorFactory {
     private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
 
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new API100EValidator();
     }
     
-    public NavigableMap<Date, Validator> getValidatori(ProgramMjerenja pm) {
-        NavigableMap<Date, Validator> validatori = new TreeMap<>();
-        for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {
-            try {
-                Validator val = lookupValidator(pul.getUredjajId().getModelUredjajaId());
-                validatori.put(pul.getVrijemePostavljanja(), val);
-            } catch (NamingException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
-        }
-        return validatori;
-    }
-
-    public Validator lookupValidator(ModelUredjaja model) throws NamingException {
-        String str = "java:module/" + model.getValidatorId().getNaziv().trim();
-        Validator v = (Validator) new InitialContext().lookup(str);
-        return v;
-    }
+//    public NavigableMap<Date, Validator> getValidatori(ProgramMjerenja pm) {
+//        NavigableMap<Date, Validator> validatori = new TreeMap<>();
+//        for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {
+//            try {
+//                Validator val = lookupValidator(pul.getUredjajId().getModelUredjajaId());
+//                validatori.put(pul.getVrijemePostavljanja(), val);
+//            } catch (NamingException ex) {
+//                log.log(Level.SEVERE, null, ex);
+//            }
+//        }
+//        return validatori;
+//    }
+//
+//    public Validator lookupValidator(ModelUredjaja model) throws NamingException {
+//        String str = "java:module/" + model.getValidatorId().getNaziv().trim();
+//        Validator v = (Validator) new InitialContext().lookup(str);
+//        return v;
+//    }
 }

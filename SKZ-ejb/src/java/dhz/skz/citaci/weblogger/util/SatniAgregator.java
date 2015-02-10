@@ -59,125 +59,126 @@ public class SatniAgregator {
 //    public void setMinT(double minT) {
 //        this.minT = minT;
 //    }
-    public int getKorak() {
-        return korak;
-    }
-
-    public void setKorak(int korak) {
-        this.korak = korak;
-    }
-
-    public void setMinutniPodaci(NavigableMap<Date, AgregatorPodatka> minutniPodaci) {
-        this.minutniPodaci = minutniPodaci;
-    }
-
-//    public void setNeagregiraniNiz(NizPodataka niz) {
-//        minutniNiz = niz;
+//    public int getKorak() {
+//        return korak;
 //    }
-//    public NizPodataka getAgregiraniNiz() {
-//        return agregiraniNiz;
+//
+//    public void setKorak(int korak) {
+//        this.korak = korak;
 //    }
-    public NavigableMap<Date, AgregatorPodatka> getAgregiraniPodaci() {
-        return agregiraniPodaci;
-    }
-
-    public void setKljuc(ProgramMjerenja kljuc) {
-        this.kljuc = kljuc;
-    }
-
-    protected void napraviListuVremena() {
-        listaVremena = new ArrayList<>();
-
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        trenutni_termin.setTime(minutniPodaci.firstKey());
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        Calendar zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        zadnji_termin.setTime(minutniPodaci.lastKey());
-        zadnji_termin.set(Calendar.MINUTE, 0);
-        zadnji_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        // svakom satnom terminu dodajemo nekoliko sekundi offseta tako da pri odsijecanju
-        // dobijemo niz <t-1h,t]
-        // da bi ovo moglo raditi minutne vrijednosti moraju biti zapisane prije OFFSER sekunde
-        while (!trenutni_termin.after(zadnji_termin)) {
-            listaVremena.add(trenutni_termin.getTime());
-            trenutni_termin.add(Calendar.HOUR, korak);
-        }
-    }
-
-    public int getNivo_validacije() {
-        return nivo_validacije;
-    }
-
-    public void setNivo_validacije(int nivo_validacije) {
-        this.nivo_validacije = nivo_validacije;
-    }
-
-    public void agregiraj() {
-        agregiraniPodaci = new TreeMap<>();
-        if (!minutniPodaci.isEmpty()) {
-            napraviListuVremena();
-            for (int i = 1; i < listaVremena.size(); i++) {
-                Date po = listaVremena.get(i - 1);
-                Date kr = listaVremena.get(i);
-
-//            NavigableMap<Date, AgregatorPodatka> podmapa = minutniNiz.getPodaci()
-//                    .subMap(po, false, kr, true);
-                NavigableMap<Date, AgregatorPodatka> podmapa = minutniPodaci.subMap(po, false, kr, true);
-                if (!podmapa.isEmpty()) {
-                    AgregatorPodatka ps = agregiraj_podmapu(kr, podmapa);
-                    ps.setProgramMjerenjaId(kljuc);
-                    agregiraniPodaci.put(kr, ps);
-                }
-            }
-        }
-    }
-
-    protected AgregatorPodatka agregiraj_podmapu(Date vrijeme,
-            NavigableMap<Date, AgregatorPodatka> podmapa) {
-
-        float kum_sum = 0;
-        int count = 0;
-
-        if (podmapa.isEmpty()) {
-            return null;
-        }
-
-        Validator v = validatori.floorEntry(vrijeme).getValue(); 
-/* pretpostavka da se unutar jednog sata ne mijenja validator. Fakticki je pogresna, ali 
-        je ogromnu vecinu vremena tocna da nije vrijedno provjeravati za svaki minutni podatak
-        */
-
-        AgregatorPodatka agregirani = new AgregatorPodatka();
-        agregirani.setVrijeme(vrijeme);
-        for (Date t : podmapa.keySet()) {
-            AgregatorPodatka trenutniPodatak = podmapa.get(t);
-            agregirani.dodaj(trenutniPodatak.getVrijednost(), v.getStatus(String.valueOf(trenutniPodatak.getStatus())));
-        }
-/* ovo cemo prebaciti u podatakwl
-        int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
-        if (obuhvat < MIN_OBUHVAT) {
-            agregirani.dodajStatus(Flag.OBUHVAT);
-        }
-
-        agregirani.setObuhvat((short) obuhvat);
-        if (count > 0) {
-            float iznos = kum_sum / count;
-            agregirani.setVrijednost(iznos);
-
-        } else {
-            agregirani.setVrijednost(-999.f);
-        }
-*/
-        log.log(Level.FINEST, "PS:: {0}:{1}::{2}::{3}", new Object[]{agregirani.getVrijeme(), agregirani.getVrijednost(), count, kum_sum});
-        return agregirani;
-    }
-
-    public void setValidatori(NavigableMap<Date, Validator> validatori) {
-        this.validatori = validatori;
-    }
+//
+//    public void setMinutniPodaci(NavigableMap<Date, AgregatorPodatka> minutniPodaci) {
+//        this.minutniPodaci = minutniPodaci;
+//    }
+//
+////    public void setNeagregiraniNiz(NizPodataka niz) {
+////        minutniNiz = niz;
+////    }
+////    public NizPodataka getAgregiraniNiz() {
+////        return agregiraniNiz;
+////    }
+//    public NavigableMap<Date, AgregatorPodatka> getAgregiraniPodaci() {
+//        return agregiraniPodaci;
+//    }
+//
+//    public void setKljuc(ProgramMjerenja kljuc) {
+//        this.kljuc = kljuc;
+//    }
+//
+//    protected void napraviListuVremena() {
+//        listaVremena = new ArrayList<>();
+//
+//        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+//        trenutni_termin.setTime(minutniPodaci.firstKey());
+//        trenutni_termin.set(Calendar.MINUTE, 0);
+//        trenutni_termin.set(Calendar.SECOND, 0);
+//        trenutni_termin.set(Calendar.MILLISECOND, 0);
+//
+//        Calendar zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+//        zadnji_termin.setTime(minutniPodaci.lastKey());
+//        zadnji_termin.set(Calendar.MINUTE, 0);
+//        zadnji_termin.set(Calendar.SECOND, 0);
+//        trenutni_termin.set(Calendar.MILLISECOND, 0);
+//
+//        // svakom satnom terminu dodajemo nekoliko sekundi offseta tako da pri odsijecanju
+//        // dobijemo niz <t-1h,t]
+//        // da bi ovo moglo raditi minutne vrijednosti moraju biti zapisane prije OFFSER sekunde
+//        while (!trenutni_termin.after(zadnji_termin)) {
+//            listaVremena.add(trenutni_termin.getTime());
+//            trenutni_termin.add(Calendar.HOUR, korak);
+//        }
+//    }
+//
+//    public int getNivo_validacije() {
+//        return nivo_validacije;
+//    }
+//
+//    public void setNivo_validacije(int nivo_validacije) {
+//        this.nivo_validacije = nivo_validacije;
+//    }
+//
+//    public void agregiraj() {
+//        agregiraniPodaci = new TreeMap<>();
+//        if (!minutniPodaci.isEmpty()) {
+//            
+//            napraviListuVremena();
+//            for (int i = 1; i < listaVremena.size(); i++) {
+//                Date po = listaVremena.get(i - 1);
+//                Date kr = listaVremena.get(i);
+//
+////            NavigableMap<Date, AgregatorPodatka> podmapa = minutniNiz.getPodaci()
+////                    .subMap(po, false, kr, true);
+//                NavigableMap<Date, AgregatorPodatka> podmapa = minutniPodaci.subMap(po, false, kr, true);
+//                if (!podmapa.isEmpty()) {
+//                    AgregatorPodatka ps = agregiraj_podmapu(kr, podmapa);
+//                    ps.setProgramMjerenjaId(kljuc);
+//                    agregiraniPodaci.put(kr, ps);
+//                }
+//            }
+//        }
+//    }
+//
+//    protected AgregatorPodatka agregiraj_podmapu(Date vrijeme,
+//            NavigableMap<Date, AgregatorPodatka> podmapa) {
+//
+//        float kum_sum = 0;
+//        int count = 0;
+//
+//        if (podmapa.isEmpty()) {
+//            return null;
+//        }
+//
+//        Validator v = validatori.floorEntry(vrijeme).getValue(); 
+///* pretpostavka da se unutar jednog sata ne mijenja validator. Fakticki je pogresna, ali 
+//        je ogromnu vecinu vremena tocna da nije vrijedno provjeravati za svaki minutni podatak
+//        */
+//
+//        AgregatorPodatka agregirani = new AgregatorPodatka();
+//        agregirani.setVrijeme(vrijeme);
+//        for (Date t : podmapa.keySet()) {
+//            AgregatorPodatka trenutniPodatak = podmapa.get(t);
+//            agregirani.dodaj(trenutniPodatak.getVrijednost(), v.getStatus(String.valueOf(trenutniPodatak.getStatus())));
+//        }
+///* ovo cemo prebaciti u podatakwl
+//        int obuhvat = 100 * count / v.getBrojMjerenjaUSatu();
+//        if (obuhvat < MIN_OBUHVAT) {
+//            agregirani.dodajStatus(Flag.OBUHVAT);
+//        }
+//
+//        agregirani.setObuhvat((short) obuhvat);
+//        if (count > 0) {
+//            float iznos = kum_sum / count;
+//            agregirani.setVrijednost(iznos);
+//
+//        } else {
+//            agregirani.setVrijednost(-999.f);
+//        }
+//*/
+//        log.log(Level.FINEST, "PS:: {0}:{1}::{2}::{3}", new Object[]{agregirani.getVrijeme(), agregirani.getVrijednost(), count, kum_sum});
+//        return agregirani;
+//    }
+//
+//    public void setValidatori(NavigableMap<Date, Validator> validatori) {
+//        this.validatori = validatori;
+//    }
 }
