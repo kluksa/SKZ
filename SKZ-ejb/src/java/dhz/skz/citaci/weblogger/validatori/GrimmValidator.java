@@ -50,4 +50,9 @@ public class GrimmValidator implements Validator {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public int getBrojUSatu() {
+        return 60;
+    }
+
 }

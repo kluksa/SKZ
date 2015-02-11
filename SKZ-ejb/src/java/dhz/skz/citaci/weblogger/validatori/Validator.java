@@ -17,5 +17,7 @@ public interface Validator {
     Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException;
 
     public Status getStatus(String status);
+    
+    int getBrojUSatu();
 
 }

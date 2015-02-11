@@ -112,7 +112,7 @@ public class AqdbCitacBean implements CitacIzvora {
 
 //        for (PodatakSirovi p : pod) {
 //            try {
-//                Status s = v.getStatus(p.getVrijednost(), p.getStatusString());
+//                Status s = v.toInt(p.getVrijednost(), p.getStatusString());
 //                if (s.isAktivan(Flag.ZERO)) {
 //                    if (!s.isAktivan(Flag.FAULT)) {
 //                        zscount++;
@@ -163,7 +163,7 @@ public class AqdbCitacBean implements CitacIzvora {
 ////        }
 //
 ////        podatak.setObuhvat((short) obuhvat);
-//        podatak.setStatus(status.getStatus());
+//        podatak.setStatus(status.toInt());
 //
 //        if (count > 0) {
 //            float iznos = kum_sum / count;
@@ -264,7 +264,7 @@ public class AqdbCitacBean implements CitacIzvora {
 //        String zsvrsta = "";
 //        
 //        for ( PodatakSirovi p : pod ) {
-//            Status s = v.getStatus(p.getVrijednost(), p.getStatusString(), 0.f);
+//            Status s = v.toInt(p.getVrijednost(), p.getStatusString(), 0.f);
 //            if ( s.isAktivan(Flag.ZERO)) {
 //                if ( !s.isAktivan(Flag.FAULT)) {
 //                    zscount++;
@@ -314,7 +314,7 @@ public class AqdbCitacBean implements CitacIzvora {
 //        }
 //
 //        podatak.setObuhvat((short)obuhvat);
-//        podatak.setStatus(status.getStatus());
+//        podatak.setStatus(status.toInt());
 //
 //        if (count > 0) {
 //            float iznos = kum_sum / count;

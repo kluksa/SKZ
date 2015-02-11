@@ -24,16 +24,16 @@ public class Status {
         this.modRada = modRada;
     }
     
-    public int getStatus() {
+    public int toInt() {
         return status;
     }
 
     public void dodajStatus(Status s) {
-        this.status |= s.getStatus();
+        this.status |= s.toInt();
     }
 
     public void iskljuciStatus(Status s) {
-        this.status &= ~s.getStatus();
+        this.status &= ~s.toInt();
     }
 
     public void dodajFlag(Flag s) {

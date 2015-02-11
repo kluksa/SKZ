@@ -208,9 +208,10 @@ public class WebloggerCitacBean implements CitacIzvora {
                     ap.reset();
                     NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
                     Validator v = validatorFactory.getValidator(program, po);
+                    ap.setValidator(v);
                     for (Date d : podmapa.keySet()) {
                         PodatakSirovi pp = podmapa.get(d);
-                        ap.dodaj(pp);//.getVrijednost(), v.getStatus(pp.getStatus()));
+                        ap.dodaj(pp);
                     }
                     spremi(ap, program, kr);
                     po = kr;
@@ -229,40 +230,35 @@ public class WebloggerCitacBean implements CitacIzvora {
             spremiMjerenje(ap, program, kr);
         }
         if (ap.imaZero()) {
-            spremiZS(ap, program, kr, Status.ModRada.ZERO);
+            spremiZero(ap, program, kr);
         }
         if (ap.imaSpan()) {
-            spremiZS(ap, program, kr, Status.ModRada.SPAN);
+            spremiSpan(ap, program, kr);
         }
     }
 
     @TransactionAttribute(REQUIRES_NEW)
     private void spremiMjerenje(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
-        Podatak p = new Podatak();
+        Podatak p = ap.getPodatak();
         p.setVrijeme(kr);
-        p.setVrijednost(ap.getIznos(Status.ModRada.MJERENJE));
-        p.setObuhvat(ap.getObuhvat(Status.ModRada.MJERENJE));
         p.setProgramMjerenjaId(program);
         p.setNivoValidacijeId(new NivoValidacije((short) 0));
-        p.setStatus(ap.getStatus(Status.ModRada.MJERENJE).getStatus());
         podatakFacade.create(p);
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    private void spremiZS(AgregatorPodatka ap, ProgramMjerenja program, Date kr, Status.ModRada st) {
-        String modStr = "";
-        if (st == Status.ModRada.ZERO) {
-            modStr = "AZ";
-        } else if (st == Status.ModRada.SPAN) {
-            modStr = "AS";
-        } else {
-            //throw snevalja;
-        }
-        ZeroSpan pod = new ZeroSpan();
+    private void spremiZero(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+        ZeroSpan pod = ap.getZero();
         pod.setVrijeme(kr);
         pod.setProgramMjerenjaId(program);
-        pod.setVrsta(modStr);
-        pod.setVrijednost(ap.getIznos(st));
+        zeroSpanFacade.create(pod);
+    }
+    
+    @TransactionAttribute(REQUIRES_NEW)
+    private void spremiSpan(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+        ZeroSpan pod = ap.getSpan();
+        pod.setVrijeme(kr);
+        pod.setProgramMjerenjaId(program);
         zeroSpanFacade.create(pod);
     }
 

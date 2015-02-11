@@ -58,4 +58,9 @@ public class API100EValidator implements Validator {
     public Status getStatus(String status) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public int getBrojUSatu() {
+        return 60;
+    }
 }

@@ -130,7 +130,7 @@ public class DcsCitacBean implements CitacIzvora {
         if (obuhvat < 75) {
             s.dodajFlag(Flag.OBUHVAT);
         }
-        return s.getStatus();
+        return s.toInt();
     }
 
     @Override

@@ -241,7 +241,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         }
 
         podatak.setObuhvat((short) obuhvat);
-        podatak.setStatus(status.getStatus());
+        podatak.setStatus(status.toInt());
 
         if (count > 0) {
             float iznos = kum_sum / count;
@@ -256,7 +256,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //        log.log(Level.INFO,"MLU PODATAK: {0}:{1}:{2}:{3}:{4}:{5}:{6}", new Object[]{podatak.getProgramMjerenjaId().getId(), 
 //            podatak.getVrijeme(), 
 //            podatak.getVrijednost(), 
-//            podatak.getStatus(), 
+//            podatak.toInt(), 
 //            podatak.getObuhvat(), 
 //            count,
 //            podatak.getNivoValidacijeId().getId()});
