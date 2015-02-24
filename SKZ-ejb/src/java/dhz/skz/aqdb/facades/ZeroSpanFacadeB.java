@@ -157,7 +157,7 @@ public class ZeroSpanFacadeB extends AbstractFacade<ZeroSpan> implements ZeroSpa
                         cb.equal(programT, programMjerenja)
                 )
         );
-        cq.select(zsT);
+        cq.select(zsT).orderBy(cb.asc(vrijemeT));
         log.log(Level.INFO, "ZERO SPAN PROGRAM: {1}, SADA: {3} POCETAK: {0}, KRAJ: {2}", new Object[]{pocetak.getTime(), programMjerenja.getId(), kraj.getTime(), new Date().getTime()});
         return em.createQuery(cq).getResultList();
     }
@@ -241,7 +241,7 @@ public class ZeroSpanFacadeB extends AbstractFacade<ZeroSpan> implements ZeroSpa
                         cb.equal(programT, programMjerenja)
                 )
         );
-        cq.select(zsT);
+        cq.select(zsT).orderBy(cb.asc(vrijemeT));
         return em.createQuery(cq).getResultList();
     }
 

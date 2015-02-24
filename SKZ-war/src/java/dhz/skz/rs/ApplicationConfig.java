@@ -29,22 +29,9 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(dhz.skz.rs.SatniPodatak.class);
         resources.add(dhz.skz.rs.SiroviPodaci.class);
         resources.add(dhz.skz.rs.ZeroSpanResource.class);
-        resources.add(dhz.skz.rs.service.AgregacijeFacadeREST.class);
-        resources.add(dhz.skz.rs.service.IndustrijskePostajeSvojstvaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.IzvorPodatakaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.IzvorProgramKljuceviMapFacadeREST.class);
-        resources.add(dhz.skz.rs.service.KomponentaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.MjerneJediniceFacadeREST.class);
-        resources.add(dhz.skz.rs.service.OdgovornoTijeloFacadeREST.class);
-        resources.add(dhz.skz.rs.service.PodrucjeFacadeREST.class);
-        resources.add(dhz.skz.rs.service.PostajaFacadeREST.class);
         resources.add(dhz.skz.rs.service.ProgramMjerenjaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.PrometnePostajeSvojstvaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.ReprezentativnostFacadeREST.class);
-        resources.add(dhz.skz.rs.service.VrstaPostajeIzvorFacadeREST.class);
     }
     
 }

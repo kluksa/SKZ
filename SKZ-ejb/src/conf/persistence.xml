@@ -50,6 +50,8 @@
     <class>dhz.skz.aqdb.entity.VrstaPostajeIzvor</class>
     <class>dhz.skz.aqdb.entity.ZemljopisneKarakteristike</class>
     <class>dhz.skz.aqdb.entity.ZeroSpan</class>
+    <class>dhz.skz.aqdb.entity.PostajaUredjajLink</class>
+    <class>dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties/>
   </persistence-unit>

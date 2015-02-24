@@ -86,7 +86,11 @@ public class ProgramMjerenja implements Serializable {
     private IzvorProgramKljuceviMap izvorProgramKljuceviMap;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
     private Collection<ProgramUredjajLink> programUredjajLinkCollection;
+    
+    
+    private AnalitickeMetode metoda;
 
+    
     public ProgramMjerenja() {
     }
 
@@ -171,6 +175,16 @@ public class ProgramMjerenja implements Serializable {
     public void setKomponentaId(Komponenta komponentaId) {
         this.komponentaId = komponentaId;
     }
+
+    public AnalitickeMetode getMetoda() {
+        return metoda;
+    }
+
+    public void setMetoda(AnalitickeMetode metoda) {
+        this.metoda = metoda;
+    }
+    
+    
 
     @XmlTransient
     public Collection<PrimateljProgramKljuceviMap> getPrimateljProgramKljuceviMapCollection() {

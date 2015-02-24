@@ -14,6 +14,7 @@ public class ZeroSpanDTO {
     private long vrijeme;
     private float vrijednost;
     private Character vrsta;
+    private float minDozvoljeno, maxDozvoljeno;
 
 
     public long getVrijeme() {
@@ -39,4 +40,21 @@ public class ZeroSpanDTO {
     public void setVrsta(Character vrsta) {
         this.vrsta = vrsta;
     }
+
+    public float getMinDozvoljeno() {
+        return minDozvoljeno;
+    }
+
+    public void setMinDozvoljeno(float minDozvoljeno) {
+        this.minDozvoljeno = minDozvoljeno;
+    }
+
+    public float getMaxDozvoljeno() {
+        return maxDozvoljeno;
+    }
+
+    public void setMaxDozvoljeno(float maxDozvoljeno) {
+        this.maxDozvoljeno = maxDozvoljeno;
+    }
+    
 }

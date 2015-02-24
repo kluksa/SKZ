@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.naming.NamingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -37,10 +39,14 @@ import javax.ws.rs.core.Response;
  *
  * @author kraljevic
  */
+@LocalBean
+@Stateless
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
-    ProgramMjerenjaFacadeRemote programMjerenjaFacade = lookupProgramMjerenjaFacadeRemote();
-    CitacMainRemote citacMainBean = lookupCitacMainBeanRemote();
+    @EJB
+    ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    @EJB
+    CitacMainRemote citacMainBean;
     
     
 
@@ -63,7 +69,7 @@ public class SiroviPodaci {
     @GET
     @Path("{program}/{datum}")
     @Produces("application/json")
-    public List<PodatakSiroviDTO> getJson(@PathParam("program") Integer programId,  @PathParam("datum") DateParam datum) {
+    public List<PodatakSiroviDTO> getPodaci(@PathParam("program") Integer programId,  @PathParam("datum") DateParam datum) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC+1"));
         Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, datum.getDate().toString());
         cal.setTime(datum.getDate());
@@ -105,29 +111,9 @@ public class SiroviPodaci {
      */
     @PUT
     @Consumes("application/json")
-    public void putJson(List<PodatakDTO> podaci) {
+    public void putPodaci(List<PodatakDTO> podaci) {
         for (PodatakDTO p: podaci) {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}", new Object[]{p.getProgramMjerenjaId(), p.getVrijeme(), p.getVrijednost(), p.getObuhvat(), p.getStatus()});
-        }
-    }
-
-    private CitacMainRemote lookupCitacMainBeanRemote() {
-        try {
-            javax.naming.Context c = new InitialContext();
-            return (CitacMainRemote) c.lookup("java:global/SKZ/SKZ-ejb/CitacMainBean!dhz.skz.citaci.CitacMainRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private ProgramMjerenjaFacadeRemote lookupProgramMjerenjaFacadeRemote() {
-        try {
-            javax.naming.Context c = new InitialContext();
-            return (ProgramMjerenjaFacadeRemote) c.lookup("java:global/SKZ/SKZ-ejb/ProgramMjerenjaFacade!dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
         }
     }
 }

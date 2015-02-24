@@ -54,6 +54,12 @@ public class AnalitickeMetode implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "ponovljivost_u_nuli", precision = 12)
     private Float ponovljivostUNuli;
+    @Column(name = "zero_drift_absolut", precision = 12)
+    private Float zeroDriftAbs;
+    @Column(name = "span_drift_relativ", precision = 12)
+    private Float spanDriftRelativ;
+
+
     @OneToMany(mappedBy = "analitickeMetodeId")
     private Collection<ModelUredjaja> modelUredjajaCollection;
 
@@ -100,6 +106,22 @@ public class AnalitickeMetode implements Serializable {
     public void setPonovljivostUNuli(Float ponovljivostUNuli) {
         this.ponovljivostUNuli = ponovljivostUNuli;
     }
+    
+    public Float getSpanDriftRelativ() {
+        return spanDriftRelativ;
+    }
+
+    public void setSpanDriftRelativ(Float spanDriftRelativ) {
+        this.spanDriftRelativ = spanDriftRelativ;
+    }
+
+    public Float getZeroDriftAbs() {
+        return zeroDriftAbs;
+    }
+
+    public void setZeroDriftAbs(Float zeroDriftAbs) {
+        this.zeroDriftAbs = zeroDriftAbs;
+    }
 
     @XmlTransient
     public Collection<ModelUredjaja> getModelUredjajaCollection() {
@@ -110,6 +132,7 @@ public class AnalitickeMetode implements Serializable {
         this.modelUredjajaCollection = modelUredjajaCollection;
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 0;
