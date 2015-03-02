@@ -29,7 +29,7 @@ public class MainTimerBean {
 
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
 
-//    @Schedule(minute = "19", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "22", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         try {
         log.log(Level.INFO, "Pokrecem diseminaciju");
@@ -39,7 +39,7 @@ public class MainTimerBean {
         }
     }
 
-//    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "17", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {

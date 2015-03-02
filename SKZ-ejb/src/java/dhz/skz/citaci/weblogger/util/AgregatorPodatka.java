@@ -8,8 +8,11 @@ package dhz.skz.citaci.weblogger.util;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ZeroSpan;
+import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import java.util.EnumMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -49,29 +52,33 @@ public class AgregatorPodatka {
     }
 
     public void dodaj(PodatakSirovi ps) {
-        Status s = validator.getStatus(ps.getStatusString());
-        Status.ModRada vrsta = s.getModRada();
-
-        switch (vrsta) {
-            case ZERO:
-            case SPAN:
-                pod.get(vrsta).broj = pod.get(vrsta).broj + 1;
-                pod.get(vrsta).iznos = pod.get(vrsta).iznos + ps.getVrijednost();
-                pod.get(vrsta).status.dodajStatus(s);
-                pod.get(Status.ModRada.MJERENJE).status.dodajStatus(s);
-                break;
-            case MJERENJE:
-                if ( s.isValid()) {
+        try {
+            Status s = validator.getStatus(ps.getVrijednost(), ps.getStatusString());
+            Status.ModRada vrsta = s.getModRada();
+            
+            switch (vrsta) {
+                case ZERO:
+                case SPAN:
                     pod.get(vrsta).broj = pod.get(vrsta).broj + 1;
                     pod.get(vrsta).iznos = pod.get(vrsta).iznos + ps.getVrijednost();
-                    if ( pod.get(vrsta).broj >= minimalniBroj){
-                        pod.get(Status.ModRada.MJERENJE).status.iskljuciFlag(Flag.OBUHVAT);
+                    pod.get(vrsta).status.dodajStatus(s);
+                    pod.get(Status.ModRada.MJERENJE).status.dodajStatus(s);
+                    break;
+                case MJERENJE:
+                    if ( s.isValid()) {
+                        pod.get(vrsta).broj = pod.get(vrsta).broj + 1;
+                        pod.get(vrsta).iznos = pod.get(vrsta).iznos + ps.getVrijednost();
+                        if ( pod.get(vrsta).broj >= minimalniBroj){
+                            pod.get(Status.ModRada.MJERENJE).status.iskljuciFlag(Flag.OBUHVAT);
+                        }
                     }
-                }
-                pod.get(vrsta).status.dodajStatus(s);
-                break;
-            default:
-                break;
+                    pod.get(vrsta).status.dodajStatus(s);
+                    break;
+                default:
+                    break;
+            }
+        } catch (NevaljanStatusException ex) {
+            Logger.getLogger(AgregatorPodatka.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
