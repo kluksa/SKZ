@@ -5,8 +5,11 @@
  */
 package dhz.skz.rs;
 
+import static com.google.common.net.MediaType.GZIP;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
+import dhz.skz.aqdb.facades.ZeroSpanReferentneVrijednostiFacadeRemote;
 import dhz.skz.beans.ZeroSpanBean;
 import dhz.skz.rs.dto.ZeroSpanDTO;
 import dhz.skz.rs.util.DateParam;
@@ -24,9 +27,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 /**
  * REST Web Service
@@ -37,13 +43,14 @@ import javax.ws.rs.PUT;
 @Stateless
 @Path("dhz.skz.rs.zerospan")
 public class ZeroSpanResource {
+
+    @EJB
+    private ZeroSpanReferentneVrijednostiFacadeRemote zeroSpanReferentneVrijednostiFacade;
     @EJB
     private ZeroSpanBean zsb;
     @EJB
     ProgramMjerenjaFacadeRemote programMjerenjaFacade;
-    
-    
-    
+
     @Context
     private UriInfo context;
 
@@ -55,14 +62,18 @@ public class ZeroSpanResource {
 
     /**
      * Retrieves representation of an instance of dhz.skz.rs.GenericResource
+     *
      * @param programId
      * @param datum
+     * @param broj_dana
      * @return an instance of java.lang.String
      */
     @GET
     @Path("{program}/{datum}")
-    @Produces("application/json")
-    public List<ZeroSpanDTO> getZeroSpanLista(@PathParam("program") Integer programId, @PathParam("datum") DateParam datum) {
+    @Compress
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ZeroSpanDTO> getZeroSpanLista(@PathParam("program") Integer programId, @PathParam("datum") DateParam datum,
+            @DefaultValue("30") @QueryParam("broj_dana") Integer broj_dana) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC+1"));
         cal.setTime(datum.getDate());
         Date kraj = cal.getTime();
@@ -71,24 +82,34 @@ public class ZeroSpanResource {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DATE, -30);
+        cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
 
         Logger.getLogger(ZeroSpanResource.class.getName()).log(Level.SEVERE, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        return  zsb.getZeroSpan(program, pocetak, kraj);
+        List<ZeroSpanDTO> zeroSpan = zsb.getZeroSpan(program, pocetak, kraj);
+        return zeroSpan;
     }
 
     /**
      * PUT method for updating or creating an instance of GenericResource
+     *
+     * @param programId
      * @param zs
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    @Consumes("application/json")
-    public void putZeroSpanReferentnuVrijednost(ZeroSpanDTO zs) {
-        System.out.println(zs.getVrijeme() + ":" + zs.getVrsta() + ":" + zs.getVrijednost());
+    @Path("{program}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void putZeroSpanReferentnuVrijednost(@PathParam("program") Integer programId, ZeroSpanDTO zs) {
+        ProgramMjerenja program = programMjerenjaFacade.find(programId);
+        if (program != null) {
+            ZeroSpanReferentneVrijednosti zsr = new ZeroSpanReferentneVrijednosti();
+            zsr.setProgramMjerenjaId(program);
+            zsr.setPocetakPrimjene(new Date(1000*zs.getVrijeme()));
+            zsr.setVrsta(zs.getVrsta().toString());
+            zsr.setVrijednost(zs.getVrijednost());
+            zeroSpanReferentneVrijednostiFacade.create(zsr);
+        }
         
     }
 }

@@ -70,10 +70,10 @@ public class SiroviPodaci {
     @Path("{program}/{datum}")
     @Produces("application/json")
     public List<PodatakSiroviDTO> getPodaci(@PathParam("program") Integer programId,  @PathParam("datum") DateParam datum) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC+1"));
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, datum.getDate().toString());
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, datum.getDate().toString());
         cal.setTime(datum.getDate());
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, "XXXX::::::{0}::{1}" , new Object[]{cal.getTime().toString(), cal.toString()});
+        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "XXXX::::::{0}::{1}" , new Object[]{cal.getTime().toString(), cal.toString()});
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -81,7 +81,7 @@ public class SiroviPodaci {
         Date pocetak = cal.getTime();
         cal.add(Calendar.DATE, 1);
         Date kraj = cal.getTime();
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, "{0} -- {1}" , new Object[]{pocetak.toString(), kraj.toString()});
+        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}" , new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         try {
@@ -94,6 +94,7 @@ public class SiroviPodaci {
                 p.setValjan(Boolean.TRUE);
                 lista.add(p);
             }
+            
         } catch (NamingException ex) {
             Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, null, ex);
             throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)

@@ -36,7 +36,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakFacade extends AbstractFacade<Podatak> {
+public class PodatakFacade extends AbstractFacade<Podatak>  {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;

@@ -27,7 +27,7 @@ public class DateTimeParam {
       return;
     }
     final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC+1"));
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
     try {
       this.date = dateFormat.parse(dateStr);
     } catch (ParseException e) {
