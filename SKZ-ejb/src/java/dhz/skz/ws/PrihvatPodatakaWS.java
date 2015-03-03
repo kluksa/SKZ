@@ -48,7 +48,7 @@ public class PrihvatPodatakaWS {
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
     public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Omotnica od: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Poceo  prihvatiOmotnicu : {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
             InitialContext ctx = new InitialContext();
@@ -63,11 +63,12 @@ public class PrihvatPodatakaWS {
             log.log(Level.SEVERE, null, ex);
         }
         
-        log.log(Level.INFO, "Prihvatio omotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
     }
 
     @WebMethod(operationName = "getUnixTimeZadnjeg")
     public Long getUnixTimeZadnjeg(@WebParam(name = "izvorS") String izvorS, @WebParam(name = "postajaS") String postajaS, @WebParam(name = "datotekaS") String datotekaS) {
+        log.log(Level.INFO, "Poceo getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, datotekaS });
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
         Postaja postaja = postajaFacade.findByNacionalnaOznaka(postajaS);
 
@@ -78,6 +79,7 @@ public class PrihvatPodatakaWS {
             String naziv = str + izvor.getBean().trim();
             log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
+            log.log(Level.INFO, "Zavrsio getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, datotekaS });
             return parser.getVrijemeZadnjegPodatka(izvor, postaja, datotekaS).getTime();
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
@@ -96,7 +98,7 @@ public class PrihvatPodatakaWS {
 
     @WebMethod(operationName = "getZadnjiZaOmotnicu")
     public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Omotnica od: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
         Date vrijemeZadnjeg = ejbRef.getVrijemeZadnjeg(omotnica);
         
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
@@ -107,6 +109,8 @@ public class PrihvatPodatakaWS {
             String naziv = str + izvor.getBean().trim();
             log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
+            log.log(Level.INFO, "Zavrsio getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+
             return parser.getVrijemeZadnjegPodatka(omotnica).getTime();
 
         } catch (NamingException ex) {

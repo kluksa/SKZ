@@ -6,6 +6,7 @@
 package dhz.skz;
 
 import dhz.skz.citaci.CitacMainLocal;
+import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 
 /**
  *
@@ -29,23 +31,24 @@ public class MainTimerBean {
 
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
 
-    @Schedule(minute = "22", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "23", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         try {
-        log.log(Level.INFO, "Pokrecem diseminaciju");
-        diseminacijaMain.pokreni();
+            log.log(Level.INFO, "Pokrecem diseminaciju" );
+            
+            diseminacijaMain.pokreni();
         } catch (Exception ex) {
-            log.log(Level.SEVERE,"",ex);
+            log.log(Level.SEVERE, "", ex);
         }
     }
 
-    @Schedule(minute = "17", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {
-        citacMainBean.pokreniCitace();
+            citacMainBean.pokreniCitace();
         } catch (Exception ex) {
-            log.log(Level.SEVERE,"",ex);
+            log.log(Level.SEVERE, "", ex);
         }
     }
 
