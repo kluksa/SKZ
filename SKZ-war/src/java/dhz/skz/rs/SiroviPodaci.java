@@ -43,12 +43,12 @@ import javax.ws.rs.core.Response;
 @Stateless
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
+
+    public static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
     @EJB
     ProgramMjerenjaFacadeRemote programMjerenjaFacade;
     @EJB
     CitacMainRemote citacMainBean;
-    
-    
 
     @Context
     private UriInfo context;
@@ -69,11 +69,11 @@ public class SiroviPodaci {
     @GET
     @Path("{program}/{datum}")
     @Produces("application/json")
-    public List<PodatakSiroviDTO> getPodaci(@PathParam("program") Integer programId,  @PathParam("datum") DateParam datum) {
+    public List<PodatakSiroviDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateParam datum) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, datum.getDate().toString());
         cal.setTime(datum.getDate());
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "XXXX::::::{0}::{1}" , new Object[]{cal.getTime().toString(), cal.toString()});
+        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "XXXX::::::{0}::{1}", new Object[]{cal.getTime().toString(), cal.toString()});
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -81,7 +81,7 @@ public class SiroviPodaci {
         Date pocetak = cal.getTime();
         cal.add(Calendar.DATE, 1);
         Date kraj = cal.getTime();
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}" , new Object[]{pocetak.toString(), kraj.toString()});
+        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         try {
@@ -94,12 +94,12 @@ public class SiroviPodaci {
                 p.setValjan(Boolean.TRUE);
                 lista.add(p);
             }
-            
+
         } catch (NamingException ex) {
             Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, null, ex);
             throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Naming exception: " + ex.getMessage())
-                .build());
+                    .entity("Naming exception: " + ex.getMessage())
+                    .build());
         }
         return lista;
 
@@ -113,8 +113,52 @@ public class SiroviPodaci {
     @PUT
     @Consumes("application/json")
     public void putPodaci(List<PodatakDTO> podaci) {
-        for (PodatakDTO p: podaci) {
+        for (PodatakDTO p : podaci) {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}", new Object[]{p.getProgramMjerenjaId(), p.getVrijeme(), p.getVrijednost(), p.getObuhvat(), p.getStatus()});
         }
     }
+
+//    @GET
+//    @Path("zadnji_podatak/{izvor}/{postaja}/{vrsta}")
+//    @Produces("application/json")
+//    public long getZadnjiPodatak(@PathParam("izvor") String izvorS, @PathParam("izvor") String postajaS, @PathParam("izvor") String vrsta) {
+//        log.log(Level.INFO, "Poceo getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, vrsta });
+//        IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
+//        Postaja postaja = postajaFacade.findByNacionalnaOznaka(postajaS);
+//
+//        try {
+//            InitialContext ctx = new InitialContext();
+//            String str = "java:module/";
+//
+//            String naziv = str + izvor.getBean().trim();
+//            log.log(Level.FINE, "Bean: {0}", naziv);
+//            CsvParser parser = (CsvParser) ctx.lookup(naziv);
+//            log.log(Level.INFO, "Zavrsio getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, vrsta });
+//            return parser.getVrijemeZadnjegPodatka(izvor, postaja, vrsta).getTime();
+//        } catch (NamingException ex) {
+//            log.log(Level.SEVERE, null, ex);
+//        }
+//        return null;
+//    }
+    
+//    @PUT
+//    public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
+//        log.log(Level.INFO, "Poceo  prihvatiOmotnicu : {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
+//        IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
+//        try {
+//            InitialContext ctx = new InitialContext();
+//            String str = "java:module/";
+//
+//            String naziv = str + izvor.getBean().trim();
+//            log.log(Level.FINE, "Bean: {0}", naziv);
+//            CsvParser parser = (CsvParser) ctx.lookup(naziv);
+//            parser.obradi(omotnica);
+//
+//        } catch (NamingException ex) {
+//            log.log(Level.SEVERE, null, ex);
+//        }
+//
+//        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
+//    }
+
 }

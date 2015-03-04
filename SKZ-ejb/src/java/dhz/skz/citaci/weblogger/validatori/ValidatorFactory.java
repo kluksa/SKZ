@@ -5,17 +5,10 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import dhz.skz.aqdb.entity.ModelUredjaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.ProgramUredjajLink;
 import java.util.Date;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Singleton;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  *

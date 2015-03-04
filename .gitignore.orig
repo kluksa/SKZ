@@ -1,0 +1,36 @@
+/SKZ-lib/nbproject/private/
+/SKZ-lib/build/
+/SKZ-lib/dist/
+/SKZ-ejb/nbproject/private/
+/SKZ-ejb/build/
+/SKZ-ejb/dist/
+/SKZ-war/nbproject/private/
+/SKZ-war/build/
+/SKZ-war/dist/
+<<<<<<< HEAD
+/nbproject/private/
+/build/
+=======
+>>>>>>> nova_agregacija_u_Wl_moguce_sire
+/SKZ-ws/nbproject/private/
+/SKZ-ws/build/
+/SKZ-ws/dist/
+<<<<<<< HEAD
+/WebApplication1/nbproject/private/
+/SKZweb/nbproject/private/
+/SKZweb/build/
+/SKZweb/dist/
+/JavaApplication2/nbproject/private/
+/JavaApplication2/build/
+*.class
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+# Package Files #
+*.jar
+*.war
+*.ear
+=======
+/nbproject/private/
+/build/
+/dist/
+>>>>>>> nova_agregacija_u_Wl_moguce_sire

@@ -192,7 +192,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
-        AgregatorPodatka ap = new AgregatorPodatka();
+        AgregatorPodatka agregator = new AgregatorPodatka();
 
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
 
@@ -205,15 +205,15 @@ public class WebloggerCitacBean implements CitacIzvora {
                 Date po = sat.getVrijeme();
                 while (sat.next()) {
                     Date kr = sat.getVrijeme();
-                    ap.reset();
+                    agregator.reset();
                     NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
                     Validator v = validatorFactory.getValidator(program, po);
-                    ap.setValidator(v);
+                    agregator.setValidator(v);
                     for (Date d : podmapa.keySet()) {
                         PodatakSirovi pp = podmapa.get(d);
-                        ap.dodaj(pp);
+                        agregator.dodaj(pp);
                     }
-                    spremi(ap, program, kr);
+                    spremi(agregator, program, kr);
                     po = kr;
                 }
             }

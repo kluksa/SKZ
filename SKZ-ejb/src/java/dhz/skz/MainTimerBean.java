@@ -6,7 +6,6 @@
 package dhz.skz;
 
 import dhz.skz.citaci.CitacMainLocal;
-import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +13,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
-import javax.inject.Inject;
 
 /**
  *

@@ -36,20 +36,20 @@ public class Status {
         this.status &= ~s.toInt();
     }
 
-    public void dodajFlag(Flag s) {
-        this.status |= 1 << s.ordinal();
+    public void dodajFlag(Flag flag) {
+        this.status |= 1 << flag.ordinal();
     }
 
-    public void iskljuciFlag(Flag s) {
-        this.status &= ~1 << (s.ordinal() - 1);
+    public void iskljuciFlag(Flag flag) {
+        this.status &= ~1 << flag.ordinal();
     }
 
     public boolean isValid() {
         return status < Flag.NEVALJAN;
     }
 
-    public boolean isAktivan(Flag s) {
-        return ((this.status & 1 << s.ordinal()) != 0);
+    public boolean isAktivan(Flag flag) {
+        return ((this.status & 1 << flag.ordinal()) != 0);
     }
 
     public Status() {
