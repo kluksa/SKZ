@@ -34,13 +34,13 @@ public class MainTimerBean {
         try {
             log.log(Level.INFO, "Pokrecem diseminaciju" );
             
-//            diseminacijaMain.pokreni();
+            diseminacijaMain.pokreni();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }
     }
 
-    @Schedule(minute = "46", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {
