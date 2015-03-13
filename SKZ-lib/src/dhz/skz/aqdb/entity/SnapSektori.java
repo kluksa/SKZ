@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -28,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "snap_sektori", catalog = "aqdb_likz", schema = "")
+@Table(name = "snap_sektori")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SnapSektori.findAll", query = "SELECT s FROM SnapSektori s"),
@@ -41,20 +40,17 @@ public class SnapSektori implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "asocirana_oznaka", nullable = false)
+    @Column(name = "asocirana_oznaka")
     private int asociranaOznaka;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private short sektor;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, length = 255)
     private String naziv;
     @ManyToMany(mappedBy = "snapSektoriCollection")
     private Collection<IndustrijskePostajeSvojstva> industrijskePostajeSvojstvaCollection;

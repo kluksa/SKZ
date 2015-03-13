@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -29,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "ciljevi_pracenja", catalog = "aqdb_likz", schema = "")
+@Table(name = "ciljevi_pracenja")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "CiljeviPracenja.findAll", query = "SELECT c FROM CiljeviPracenja c"),
@@ -40,22 +39,20 @@ public class CiljeviPracenja implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(name = "tekstualna_definicija", nullable = false, length = 45)
+    @Column(name = "tekstualna_definicija")
     private String tekstualnaDefinicija;
     @Basic(optional = false)
     @NotNull
     @Lob
     @Size(min = 1, max = 65535)
-    @Column(nullable = false, length = 65535)
     private String opis;
     @JoinTable(name = "postaja_ciljevi_link", joinColumns = {
-        @JoinColumn(name = "ciljevi_pracenja_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)})
+        @JoinColumn(name = "ciljevi_pracenja_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "postaja_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<Postaja> postajaCollection;
 

@@ -22,7 +22,6 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
@@ -36,7 +35,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -48,8 +46,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -155,7 +151,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     }
 
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
+    public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
@@ -208,7 +204,6 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return null;
 
     }
 
@@ -267,7 +262,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //
 //    }
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -286,7 +281,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                 parseZSLinija(linija, it.next(), podaci);
             }
             log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
-            //       procitaj(izvor);
+            //       napraviSatne(izvor);
 //        } catch (ParseException ex) {
 //            log.log(Level.SEVERE, null, ex);
 //        }
@@ -411,13 +406,14 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
+            log.log(Level.INFO, "MLU Linija: {0}", linija[0]);
             Date vrijeme = new Date(it.next());
 //                if ( vrijeme.after(zadnji)){
             parseLinija(linija, vrijeme, podaci);
 //                }
 
         }
-        //       procitaj(izvor);
+        //       napraviSatne(izvor);
 //        } catch (ParseException ex) {
 //            log.log(Level.SEVERE, null, ex);
 //        }

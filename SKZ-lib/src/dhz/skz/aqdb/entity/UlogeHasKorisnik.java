@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "uloge_has_korisnik", catalog = "aqdb_likz", schema = "")
+@Table(name = "uloge_has_korisnik")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UlogeHasKorisnik.findAll", query = "SELECT u FROM UlogeHasKorisnik u"),
@@ -37,17 +35,15 @@ public class UlogeHasKorisnik implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Size(max = 45)
-    @Column(length = 45)
     private String version;
-    @JoinColumn(name = "uloge_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Uloge ulogeId;
-    @JoinColumn(name = "korisnik_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "korisnik_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Korisnik korisnikId;
+    @JoinColumn(name = "uloge_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Uloge ulogeId;
 
     public UlogeHasKorisnik() {
     }
@@ -72,20 +68,20 @@ public class UlogeHasKorisnik implements Serializable {
         this.version = version;
     }
 
-    public Uloge getUlogeId() {
-        return ulogeId;
-    }
-
-    public void setUlogeId(Uloge ulogeId) {
-        this.ulogeId = ulogeId;
-    }
-
     public Korisnik getKorisnikId() {
         return korisnikId;
     }
 
     public void setKorisnikId(Korisnik korisnikId) {
         this.korisnikId = korisnikId;
+    }
+
+    public Uloge getUlogeId() {
+        return ulogeId;
+    }
+
+    public void setUlogeId(Uloge ulogeId) {
+        this.ulogeId = ulogeId;
     }
 
     @Override

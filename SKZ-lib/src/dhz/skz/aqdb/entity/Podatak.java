@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -22,10 +21,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -35,8 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"program_mjerenja_id", "nivo_validacije_id", "vrijeme"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Podatak.findAll", query = "SELECT p FROM Podatak p"),
@@ -52,38 +47,37 @@ public class Podatak implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "podatak_id", nullable = false)
+    @Column(name = "podatak_id")
     private Integer podatakId;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(precision = 12)
     private Float vrijednost;
     private Short obuhvat;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa", nullable = false)
+    @Column(name = "vrijeme_upisa")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Column(name = "originalni_podatak_id")
     private Integer originalniPodatakId;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @NotNull
     private int status;
     @ManyToMany(mappedBy = "podatakCollection")
     private Collection<Flag> flagCollection;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
-    private Komentar komentar;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private ProgramMjerenja programMjerenjaId;
-    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private NivoValidacije nivoValidacijeId;
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
     @ManyToOne
     private Korisnik mjeriteljId;
+    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private NivoValidacije nivoValidacijeId;
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private ProgramMjerenja programMjerenjaId;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
+    private Komentar komentar;
 
     public Podatak() {
     }
@@ -164,20 +158,12 @@ public class Podatak implements Serializable {
         this.flagCollection = flagCollection;
     }
 
-    public Komentar getKomentar() {
-        return komentar;
+    public Korisnik getMjeriteljId() {
+        return mjeriteljId;
     }
 
-    public void setKomentar(Komentar komentar) {
-        this.komentar = komentar;
-    }
-
-    public ProgramMjerenja getProgramMjerenjaId() {
-        return programMjerenjaId;
-    }
-
-    public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
-        this.programMjerenjaId = programMjerenjaId;
+    public void setMjeriteljId(Korisnik mjeriteljId) {
+        this.mjeriteljId = mjeriteljId;
     }
 
     public NivoValidacije getNivoValidacijeId() {
@@ -188,12 +174,20 @@ public class Podatak implements Serializable {
         this.nivoValidacijeId = nivoValidacijeId;
     }
 
-    public Korisnik getMjeriteljId() {
-        return mjeriteljId;
+    public ProgramMjerenja getProgramMjerenjaId() {
+        return programMjerenjaId;
     }
 
-    public void setMjeriteljId(Korisnik mjeriteljId) {
-        this.mjeriteljId = mjeriteljId;
+    public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
+        this.programMjerenjaId = programMjerenjaId;
+    }
+
+    public Komentar getKomentar() {
+        return komentar;
+    }
+
+    public void setKomentar(Komentar komentar) {
+        this.komentar = komentar;
     }
 
     @Override

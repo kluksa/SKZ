@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -26,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "umjeravanje_komentar", catalog = "aqdb_likz", schema = "")
+@Table(name = "umjeravanje_komentar")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UmjeravanjeKomentar.findAll", query = "SELECT u FROM UmjeravanjeKomentar u"),
@@ -36,15 +35,14 @@ public class UmjeravanjeKomentar implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "umjeravanje_id", nullable = false)
+    @Column(name = "umjeravanje_id")
     private Integer umjeravanjeId;
     @Basic(optional = false)
     @NotNull
     @Lob
     @Size(min = 1, max = 65535)
-    @Column(nullable = false, length = 65535)
     private String komentar;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Umjeravanje umjeravanje;
 

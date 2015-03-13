@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -24,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "prometne_postaje_svojstva", catalog = "aqdb_likz", schema = "")
+@Table(name = "prometne_postaje_svojstva")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PrometnePostajeSvojstva.findAll", query = "SELECT p FROM PrometnePostajeSvojstva p"),
@@ -39,7 +38,7 @@ public class PrometnePostajeSvojstva implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "postaja_id", nullable = false)
+    @Column(name = "postaja_id")
     private Integer postajaId;
     @Column(name = "kolicina_prometa")
     private Integer kolicinaPrometa;
@@ -48,11 +47,11 @@ public class PrometnePostajeSvojstva implements Serializable {
     @Column(name = "udio_teskih_vozila")
     private Integer udioTeskihVozila;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "udaljenost_od_procelja", precision = 12)
+    @Column(name = "udaljenost_od_procelja")
     private Float udaljenostOdProcelja;
-    @Column(name = "visina_zgrade", precision = 12)
+    @Column(name = "visina_zgrade")
     private Float visinaZgrade;
-    @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "postaja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Postaja postaja;
 

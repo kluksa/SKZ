@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -35,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "program_mjerenja", catalog = "aqdb_likz", schema = "")
+@Table(name = "program_mjerenja")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ProgramMjerenja.findAll", query = "SELECT p FROM ProgramMjerenja p"),
@@ -49,11 +48,10 @@ public class ProgramMjerenja implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "usporedno_mjerenje", nullable = false)
+    @Column(name = "usporedno_mjerenje")
     private short usporednoMjerenje;
     @Column(name = "pocetak_mjerenja")
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,32 +63,33 @@ public class ProgramMjerenja implements Serializable {
     private Boolean prikazWeb;
     @ManyToMany(mappedBy = "programMjerenjaCollection")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
-    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private IzvorPodataka izvorPodatakaId;
-    @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Postaja postajaId;
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Komponenta komponentaId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenja")
-    private Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
-    private Collection<PodatakSirovi> podatakSiroviCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
-    private Collection<ZeroSpan> zeroSpanCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
-    private Collection<Podatak> podatakCollection;
+    private Collection<ProgramUredjajLink> programUredjajLinkCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "programMjerenja")
     private IzvorProgramKljuceviMap izvorProgramKljuceviMap;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
-    private Collection<ProgramUredjajLink> programUredjajLinkCollection;
-    
-    
-    private AnalitickeMetode metoda;
+    private Collection<Podatak> podatakCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenja")
+    private Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
+    private Collection<ZeroSpanReferentneVrijednosti> zeroSpanReferentneVrijednostiCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
+    private Collection<ZeroSpan> zeroSpanCollection;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Komponenta komponentaId;
+    @JoinColumn(name = "postaja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Postaja postajaId;
+    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private AnalitickeMetode metodaId;
+    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private IzvorPodataka izvorPodatakaId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
+    private Collection<PodatakSirovi> podatakSiroviCollection;
 
-    
     public ProgramMjerenja() {
     }
 
@@ -152,65 +151,21 @@ public class ProgramMjerenja implements Serializable {
         this.primateljiPodatakaCollection = primateljiPodatakaCollection;
     }
 
-    public IzvorPodataka getIzvorPodatakaId() {
-        return izvorPodatakaId;
-    }
-
-    public void setIzvorPodatakaId(IzvorPodataka izvorPodatakaId) {
-        this.izvorPodatakaId = izvorPodatakaId;
-    }
-
-    public Postaja getPostajaId() {
-        return postajaId;
-    }
-
-    public void setPostajaId(Postaja postajaId) {
-        this.postajaId = postajaId;
-    }
-
-    public Komponenta getKomponentaId() {
-        return komponentaId;
-    }
-
-    public void setKomponentaId(Komponenta komponentaId) {
-        this.komponentaId = komponentaId;
-    }
-
-    public AnalitickeMetode getMetoda() {
-        return metoda;
-    }
-
-    public void setMetoda(AnalitickeMetode metoda) {
-        this.metoda = metoda;
-    }
-    
-    
-
     @XmlTransient
-    public Collection<PrimateljProgramKljuceviMap> getPrimateljProgramKljuceviMapCollection() {
-        return primateljProgramKljuceviMapCollection;
+    public Collection<ProgramUredjajLink> getProgramUredjajLinkCollection() {
+        return programUredjajLinkCollection;
     }
 
-    public void setPrimateljProgramKljuceviMapCollection(Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection) {
-        this.primateljProgramKljuceviMapCollection = primateljProgramKljuceviMapCollection;
+    public void setProgramUredjajLinkCollection(Collection<ProgramUredjajLink> programUredjajLinkCollection) {
+        this.programUredjajLinkCollection = programUredjajLinkCollection;
     }
 
-    @XmlTransient
-    public Collection<PodatakSirovi> getPodatakSiroviCollection() {
-        return podatakSiroviCollection;
+    public IzvorProgramKljuceviMap getIzvorProgramKljuceviMap() {
+        return izvorProgramKljuceviMap;
     }
 
-    public void setPodatakSiroviCollection(Collection<PodatakSirovi> podatakSiroviCollection) {
-        this.podatakSiroviCollection = podatakSiroviCollection;
-    }
-
-    @XmlTransient
-    public Collection<ZeroSpan> getZeroSpanCollection() {
-        return zeroSpanCollection;
-    }
-
-    public void setZeroSpanCollection(Collection<ZeroSpan> zeroSpanCollection) {
-        this.zeroSpanCollection = zeroSpanCollection;
+    public void setIzvorProgramKljuceviMap(IzvorProgramKljuceviMap izvorProgramKljuceviMap) {
+        this.izvorProgramKljuceviMap = izvorProgramKljuceviMap;
     }
 
     @XmlTransient
@@ -223,21 +178,71 @@ public class ProgramMjerenja implements Serializable {
     }
 
     @XmlTransient
-    public IzvorProgramKljuceviMap getIzvorProgramKljuceviMap() {
-        return izvorProgramKljuceviMap;
+    public Collection<PrimateljProgramKljuceviMap> getPrimateljProgramKljuceviMapCollection() {
+        return primateljProgramKljuceviMapCollection;
     }
 
-    public void setIzvorProgramKljuceviMap(IzvorProgramKljuceviMap izvorProgramKljuceviMap) {
-        this.izvorProgramKljuceviMap = izvorProgramKljuceviMap;
+    public void setPrimateljProgramKljuceviMapCollection(Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection) {
+        this.primateljProgramKljuceviMapCollection = primateljProgramKljuceviMapCollection;
     }
 
     @XmlTransient
-    public Collection<ProgramUredjajLink> getProgramUredjajLinkCollection() {
-        return programUredjajLinkCollection;
+    public Collection<ZeroSpanReferentneVrijednosti> getZeroSpanReferentneVrijednostiCollection() {
+        return zeroSpanReferentneVrijednostiCollection;
     }
 
-    public void setProgramUredjajLinkCollection(Collection<ProgramUredjajLink> programUredjajLinkCollection) {
-        this.programUredjajLinkCollection = programUredjajLinkCollection;
+    public void setZeroSpanReferentneVrijednostiCollection(Collection<ZeroSpanReferentneVrijednosti> zeroSpanReferentneVrijednostiCollection) {
+        this.zeroSpanReferentneVrijednostiCollection = zeroSpanReferentneVrijednostiCollection;
+    }
+
+    @XmlTransient
+    public Collection<ZeroSpan> getZeroSpanCollection() {
+        return zeroSpanCollection;
+    }
+
+    public void setZeroSpanCollection(Collection<ZeroSpan> zeroSpanCollection) {
+        this.zeroSpanCollection = zeroSpanCollection;
+    }
+
+    public Komponenta getKomponentaId() {
+        return komponentaId;
+    }
+
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
+    }
+
+    public Postaja getPostajaId() {
+        return postajaId;
+    }
+
+    public void setPostajaId(Postaja postajaId) {
+        this.postajaId = postajaId;
+    }
+
+    public AnalitickeMetode getMetodaId() {
+        return metodaId;
+    }
+
+    public void setMetodaId(AnalitickeMetode metodaId) {
+        this.metodaId = metodaId;
+    }
+
+    public IzvorPodataka getIzvorPodatakaId() {
+        return izvorPodatakaId;
+    }
+
+    public void setIzvorPodatakaId(IzvorPodataka izvorPodatakaId) {
+        this.izvorPodatakaId = izvorPodatakaId;
+    }
+
+    @XmlTransient
+    public Collection<PodatakSirovi> getPodatakSiroviCollection() {
+        return podatakSiroviCollection;
+    }
+
+    public void setPodatakSiroviCollection(Collection<PodatakSirovi> podatakSiroviCollection) {
+        this.podatakSiroviCollection = podatakSiroviCollection;
     }
 
     @Override

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -21,7 +20,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -33,7 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Kvarovi.findAll", query = "SELECT k FROM Kvarovi k"),
@@ -46,26 +43,23 @@ public class Kvarovi implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date datum;
     @Basic(optional = false)
     @NotNull
     @Lob
     @Size(min = 1, max = 2147483647)
-    @Column(name = "opis_kvara", nullable = false, length = 2147483647)
+    @Column(name = "opis_kvara")
     private String opisKvara;
     @Column(name = "datum_popravka")
     @Temporal(TemporalType.DATE)
     private Date datumPopravka;
     @Size(max = 45)
-    @Column(length = 45)
     private String kvarovicol;
-    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "kvarovi")

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -22,8 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,8 +31,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"eol_oznaka"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Komponenta.findAll", query = "SELECT k FROM Komponenta k"),
@@ -54,58 +49,56 @@ public class Komponenta implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Column(name = "eol_oznaka")
     private Short eolOznaka;
     @Size(max = 2)
-    @Column(name = "iso_oznaka", length = 2)
+    @Column(name = "iso_oznaka")
     private String isoOznaka;
     @Size(max = 45)
-    @Column(length = 45)
     private String formula;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
-    @Column(nullable = false, length = 60)
     private String naziv;
     @Size(max = 45)
-    @Column(name = "izrazeno_kao", length = 45)
+    @Column(name = "izrazeno_kao")
     private String izrazenoKao;
     @Column(name = "vrsta_komponente")
     private Character vrstaKomponente;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "konv_v_u_m", nullable = false)
+    @Column(name = "konv_v_u_m")
     private float konvVUM;
     @Size(max = 60)
-    @Column(name = "naziv_eng", length = 60)
+    @Column(name = "naziv_eng")
     private String nazivEng;
     @Size(max = 45)
-    @Column(name = "prosijek_tijekom", length = 45)
+    @Column(name = "prosijek_tijekom")
     private String prosijekTijekom;
-    @JoinTable(name = "komponenta_has_relevantne_direktive", joinColumns = {
-        @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "relevantne_direktive_id", referencedColumnName = "id", nullable = false)})
-    @ManyToMany
-    private Collection<RelevantneDirektive> relevantneDirektiveCollection;
     @JoinTable(name = "model_uredjaja_komponenta_link", joinColumns = {
-        @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id", nullable = false)})
+        @JoinColumn(name = "komponenta_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<ModelUredjaja> modelUredjajaCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
-    private Collection<ProgramMjerenja> programMjerenjaCollection;
+    @ManyToMany(mappedBy = "komponentaCollection")
+    private Collection<AnalitickeMetode> analitickeMetodeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<KomponentaHasRelevantneDirektive> komponentaHasRelevantneDirektiveCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<Granice> graniceCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<Umjeravanje> umjeravanjeCollection;
-    @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private MjerneJedinice mjerneJediniceId;
-    @JoinColumn(name = "agregacije_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "agregacije_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Agregacije agregacijeId;
+    @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private MjerneJedinice mjerneJediniceId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
+    private Collection<ProgramMjerenja> programMjerenjaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
+    private Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection;
 
     public Komponenta() {
     }
@@ -201,15 +194,6 @@ public class Komponenta implements Serializable {
     }
 
     @XmlTransient
-    public Collection<RelevantneDirektive> getRelevantneDirektiveCollection() {
-        return relevantneDirektiveCollection;
-    }
-
-    public void setRelevantneDirektiveCollection(Collection<RelevantneDirektive> relevantneDirektiveCollection) {
-        this.relevantneDirektiveCollection = relevantneDirektiveCollection;
-    }
-
-    @XmlTransient
     public Collection<ModelUredjaja> getModelUredjajaCollection() {
         return modelUredjajaCollection;
     }
@@ -219,12 +203,21 @@ public class Komponenta implements Serializable {
     }
 
     @XmlTransient
-    public Collection<ProgramMjerenja> getProgramMjerenjaCollection() {
-        return programMjerenjaCollection;
+    public Collection<AnalitickeMetode> getAnalitickeMetodeCollection() {
+        return analitickeMetodeCollection;
     }
 
-    public void setProgramMjerenjaCollection(Collection<ProgramMjerenja> programMjerenjaCollection) {
-        this.programMjerenjaCollection = programMjerenjaCollection;
+    public void setAnalitickeMetodeCollection(Collection<AnalitickeMetode> analitickeMetodeCollection) {
+        this.analitickeMetodeCollection = analitickeMetodeCollection;
+    }
+
+    @XmlTransient
+    public Collection<KomponentaHasRelevantneDirektive> getKomponentaHasRelevantneDirektiveCollection() {
+        return komponentaHasRelevantneDirektiveCollection;
+    }
+
+    public void setKomponentaHasRelevantneDirektiveCollection(Collection<KomponentaHasRelevantneDirektive> komponentaHasRelevantneDirektiveCollection) {
+        this.komponentaHasRelevantneDirektiveCollection = komponentaHasRelevantneDirektiveCollection;
     }
 
     @XmlTransient
@@ -245,6 +238,14 @@ public class Komponenta implements Serializable {
         this.umjeravanjeCollection = umjeravanjeCollection;
     }
 
+    public Agregacije getAgregacijeId() {
+        return agregacijeId;
+    }
+
+    public void setAgregacijeId(Agregacije agregacijeId) {
+        this.agregacijeId = agregacijeId;
+    }
+
     public MjerneJedinice getMjerneJediniceId() {
         return mjerneJediniceId;
     }
@@ -253,12 +254,22 @@ public class Komponenta implements Serializable {
         this.mjerneJediniceId = mjerneJediniceId;
     }
 
-    public Agregacije getAgregacijeId() {
-        return agregacijeId;
+    @XmlTransient
+    public Collection<ProgramMjerenja> getProgramMjerenjaCollection() {
+        return programMjerenjaCollection;
     }
 
-    public void setAgregacijeId(Agregacije agregacijeId) {
-        this.agregacijeId = agregacijeId;
+    public void setProgramMjerenjaCollection(Collection<ProgramMjerenja> programMjerenjaCollection) {
+        this.programMjerenjaCollection = programMjerenjaCollection;
+    }
+
+    @XmlTransient
+    public Collection<KomponentaMetodaLink> getKomponentaMetodaLinkCollection() {
+        return komponentaMetodaLinkCollection;
+    }
+
+    public void setKomponentaMetodaLinkCollection(Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection) {
+        this.komponentaMetodaLinkCollection = komponentaMetodaLinkCollection;
     }
 
     @Override

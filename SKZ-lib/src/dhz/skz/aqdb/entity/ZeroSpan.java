@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -30,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "zero_span", catalog = "aqdb_likz", schema = "")
+@Table(name = "zero_span")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ZeroSpan.findAll", query = "SELECT z FROM ZeroSpan z"),
@@ -47,28 +46,23 @@ public class ZeroSpan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 2)
-    @Column(nullable = false, length = 2)
     private String vrsta;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(precision = 12)
     private Float vrijednost;
-    @Column(precision = 12)
     private Float minimum;
-    @Column(precision = 12)
     private Float maximum;
-    @Column(precision = 12)
     private Float stdev;
-    @Column(name = "referentna_vrijednost", precision = 12)
+    @Column(name = "referentna_vrijednost")
     private Float referentnaVrijednost;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 

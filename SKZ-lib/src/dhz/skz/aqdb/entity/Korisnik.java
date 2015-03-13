@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,8 +27,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"korisnicko_ime"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Korisnik.findAll", query = "SELECT k FROM Korisnik k"),
@@ -47,32 +42,28 @@ public class Korisnik implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
-    @Column(name = "korisnicko_ime", nullable = false, length = 50)
+    @Column(name = "korisnicko_ime")
     private String korisnickoIme;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
-    @Column(nullable = false, length = 100)
     private String lozinka;
     @Size(max = 50)
-    @Column(length = 50)
     private String ime;
     @Size(max = 50)
-    @Column(length = 50)
     private String prezime;
     private Boolean enabled;
     private Integer version;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "korisnikId")
-    private Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection;
     @OneToMany(mappedBy = "mjeriteljId")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "mjeriteljId")
     private Collection<Podatak> podatakCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "korisnikId")
+    private Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection;
 
     public Korisnik() {
     }
@@ -144,15 +135,6 @@ public class Korisnik implements Serializable {
     }
 
     @XmlTransient
-    public Collection<UlogeHasKorisnik> getUlogeHasKorisnikCollection() {
-        return ulogeHasKorisnikCollection;
-    }
-
-    public void setUlogeHasKorisnikCollection(Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection) {
-        this.ulogeHasKorisnikCollection = ulogeHasKorisnikCollection;
-    }
-
-    @XmlTransient
     public Collection<Umjeravanje> getUmjeravanjeCollection() {
         return umjeravanjeCollection;
     }
@@ -168,6 +150,15 @@ public class Korisnik implements Serializable {
 
     public void setPodatakCollection(Collection<Podatak> podatakCollection) {
         this.podatakCollection = podatakCollection;
+    }
+
+    @XmlTransient
+    public Collection<UlogeHasKorisnik> getUlogeHasKorisnikCollection() {
+        return ulogeHasKorisnikCollection;
+    }
+
+    public void setUlogeHasKorisnikCollection(Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection) {
+        this.ulogeHasKorisnikCollection = ulogeHasKorisnikCollection;
     }
 
     @Override

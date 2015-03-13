@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,7 +27,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Mreza.findAll", query = "SELECT m FROM Mreza m"),
@@ -42,27 +38,24 @@ public class Mreza implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 150)
-    @Column(nullable = false, length = 150)
     private String naziv;
     @Size(max = 45)
-    @Column(length = 45)
     private String kratica;
-    @JoinColumn(name = "vrsta_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private VrstaMreze vrstaId;
-    @JoinColumn(name = "tijelo_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private OdgovornoTijelo tijeloId;
-    @JoinColumn(name = "iskaz_vremena_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private IskazVremena iskazVremenaId;
     @OneToMany(mappedBy = "mrezaId")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
+    @JoinColumn(name = "iskaz_vremena_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private IskazVremena iskazVremenaId;
+    @JoinColumn(name = "tijelo_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private OdgovornoTijelo tijeloId;
+    @JoinColumn(name = "vrsta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private VrstaMreze vrstaId;
 
     public Mreza() {
     }
@@ -100,20 +93,13 @@ public class Mreza implements Serializable {
         this.kratica = kratica;
     }
 
-    public VrstaMreze getVrstaId() {
-        return vrstaId;
+    @XmlTransient
+    public Collection<PrimateljiPodataka> getPrimateljiPodatakaCollection() {
+        return primateljiPodatakaCollection;
     }
 
-    public void setVrstaId(VrstaMreze vrstaId) {
-        this.vrstaId = vrstaId;
-    }
-
-    public OdgovornoTijelo getTijeloId() {
-        return tijeloId;
-    }
-
-    public void setTijeloId(OdgovornoTijelo tijeloId) {
-        this.tijeloId = tijeloId;
+    public void setPrimateljiPodatakaCollection(Collection<PrimateljiPodataka> primateljiPodatakaCollection) {
+        this.primateljiPodatakaCollection = primateljiPodatakaCollection;
     }
 
     public IskazVremena getIskazVremenaId() {
@@ -124,13 +110,20 @@ public class Mreza implements Serializable {
         this.iskazVremenaId = iskazVremenaId;
     }
 
-    @XmlTransient
-    public Collection<PrimateljiPodataka> getPrimateljiPodatakaCollection() {
-        return primateljiPodatakaCollection;
+    public OdgovornoTijelo getTijeloId() {
+        return tijeloId;
     }
 
-    public void setPrimateljiPodatakaCollection(Collection<PrimateljiPodataka> primateljiPodatakaCollection) {
-        this.primateljiPodatakaCollection = primateljiPodatakaCollection;
+    public void setTijeloId(OdgovornoTijelo tijeloId) {
+        this.tijeloId = tijeloId;
+    }
+
+    public VrstaMreze getVrstaId() {
+        return vrstaId;
+    }
+
+    public void setVrstaId(VrstaMreze vrstaId) {
+        this.vrstaId = vrstaId;
     }
 
     @Override

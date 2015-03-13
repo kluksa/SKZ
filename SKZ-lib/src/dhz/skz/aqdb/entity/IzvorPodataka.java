@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +17,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,8 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "izvor_podataka", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"naziv"})})
+@Table(name = "izvor_podataka")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "IzvorPodataka.findAll", query = "SELECT i FROM IzvorPodataka i"),
@@ -45,23 +41,20 @@ public class IzvorPodataka implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
-    @Column(nullable = false, length = 30)
     private String naziv;
     @Size(max = 150)
-    @Column(length = 150)
     private String uri;
     @Size(max = 250)
-    @Column(length = 250)
     private String bean;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private boolean aktivan;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "izvorPodataka")
+    private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "izvorPodatakaId")
     private Collection<ProgramMjerenja> programMjerenjaCollection;
 
@@ -116,6 +109,15 @@ public class IzvorPodataka implements Serializable {
 
     public void setAktivan(boolean aktivan) {
         this.aktivan = aktivan;
+    }
+
+    @XmlTransient
+    public Collection<ValidatorModelIzvor> getValidatorModelIzvorCollection() {
+        return validatorModelIzvorCollection;
+    }
+
+    public void setValidatorModelIzvorCollection(Collection<ValidatorModelIzvor> validatorModelIzvorCollection) {
+        this.validatorModelIzvorCollection = validatorModelIzvorCollection;
     }
 
     @XmlTransient

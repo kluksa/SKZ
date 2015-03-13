@@ -43,7 +43,7 @@ public class CitacMainBean implements CitacMainRemote, CitacMainLocal {
                 log.log(Level.INFO, "JNDI: {0}", naziv);
                 try {
                     CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
-                    citac.procitaj(ip);
+                    citac.napraviSatne(ip);
                 } catch (NamingException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }

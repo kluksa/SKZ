@@ -6,8 +6,8 @@
 package dhz.skz.citaci.weblogger.validatori;
 
 import javax.ejb.Stateless;
-import dhz.skz.citaci.weblogger.util.Flag;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
+import dhz.skz.citaci.weblogger.util.Flag;
 import dhz.skz.citaci.weblogger.util.Status;
 
 /**
@@ -19,7 +19,12 @@ public class SynspecValidator implements Validator {
 
     @Override
     public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Status s = new Status();
+        s.setModRada(Status.ModRada.MJERENJE);
+        if (iznos == -999.f) {
+            s.dodajFlag(Flag.NEDOSTAJE);
+        }
+        return s;
     }
 
     @Override

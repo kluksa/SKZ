@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -27,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "umjeravanje_podaci", catalog = "aqdb_likz", schema = "")
+@Table(name = "umjeravanje_podaci")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UmjeravanjePodaci.findAll", query = "SELECT u FROM UmjeravanjePodaci u"),
@@ -39,18 +37,15 @@ public class UmjeravanjePodaci implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private long vrijednost;
-    @JoinColumn(name = "umjerne_to\u010dke_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "umjerne_to\u010dke_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UmjerneTocke umjerneTočkeId;
 

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -25,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "izvor_program_kljucevi_map", catalog = "aqdb_likz", schema = "")
+@Table(name = "izvor_program_kljucevi_map")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "IzvorProgramKljuceviMap.findAll", query = "SELECT i FROM IzvorProgramKljuceviMap i"),
@@ -39,21 +38,21 @@ public class IzvorProgramKljuceviMap implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "program_mjerenja_id", nullable = false)
+    @Column(name = "program_mjerenja_id")
     private Integer programMjerenjaId;
     @Size(max = 45)
-    @Column(name = "p_kljuc", length = 45)
+    @Column(name = "p_kljuc")
     private String pKljuc;
     @Size(max = 45)
-    @Column(name = "k_kljuc", length = 45)
+    @Column(name = "k_kljuc")
     private String kKljuc;
     @Size(max = 45)
-    @Column(name = "u_kljuc", length = 45)
+    @Column(name = "u_kljuc")
     private String uKljuc;
     @Size(max = 45)
-    @Column(name = "n_kljuc", length = 45)
+    @Column(name = "n_kljuc")
     private String nKljuc;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private ProgramMjerenja programMjerenja;
 

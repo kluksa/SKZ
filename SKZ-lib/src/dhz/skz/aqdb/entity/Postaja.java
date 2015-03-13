@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -22,8 +21,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,11 +31,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nacionalna_oznaka"}),
-    @UniqueConstraint(columnNames = {"kratka_oznaka"}),
-    @UniqueConstraint(columnNames = {"oznaka_postaje"}),
-    @UniqueConstraint(columnNames = {"naziv_postaje"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Postaja.findAll", query = "SELECT p FROM Postaja p"),
@@ -58,60 +50,61 @@ public class Postaja implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(name = "naziv_postaje", nullable = false, length = 45)
+    @Column(name = "naziv_postaje")
     private String nazivPostaje;
     @Size(max = 255)
-    @Column(name = "naziv_lokacije", length = 255)
+    @Column(name = "naziv_lokacije")
     private String nazivLokacije;
     @Size(max = 8)
-    @Column(name = "nacionalna_oznaka", length = 8)
+    @Column(name = "nacionalna_oznaka")
     private String nacionalnaOznaka;
     @Size(max = 8)
-    @Column(name = "oznaka_postaje", length = 8)
+    @Column(name = "oznaka_postaje")
     private String oznakaPostaje;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "geogr_duzina", precision = 12)
+    @Column(name = "geogr_duzina")
     private Float geogrDuzina;
-    @Column(name = "geogr_sirina", precision = 12)
+    @Column(name = "geogr_sirina")
     private Float geogrSirina;
     @Column(name = "nadmorska_visina")
     private Integer nadmorskaVisina;
     @Size(max = 45)
-    @Column(name = "nuts_oznaka", length = 45)
+    @Column(name = "nuts_oznaka")
     private String nutsOznaka;
     private Integer stanovnistvo;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 15)
-    @Column(name = "kratka_oznaka", nullable = false, length = 15)
+    @Column(name = "kratka_oznaka")
     private String kratkaOznaka;
     @ManyToMany(mappedBy = "postajaCollection")
-    private Collection<CiljeviPracenja> ciljeviPracenjaCollection;
-    @ManyToMany(mappedBy = "postajaCollection")
     private Collection<ZemljopisneKarakteristike> zemljopisneKarakteristikeCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "postajaId")
-    private Collection<ProgramMjerenja> programMjerenjaCollection;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "postaja")
-    private PrometnePostajeSvojstva prometnePostajeSvojstva;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "postaja")
-    private IndustrijskePostajeSvojstva industrijskePostajeSvojstva;
-    @JoinColumn(name = "vrsta_postaje_izvor_id", referencedColumnName = "id")
-    @ManyToOne
-    private VrstaPostajeIzvor vrstaPostajeIzvorId;
-    @JoinColumn(name = "reprezentativnost_id", referencedColumnName = "id")
-    @ManyToOne
-    private Reprezentativnost reprezentativnostId;
-    @JoinColumn(name = "podrucje_id", referencedColumnName = "id")
-    @ManyToOne
-    private Podrucje podrucjeId;
+    @ManyToMany(mappedBy = "postajaCollection")
+    private Collection<CiljeviPracenja> ciljeviPracenjaCollection;
     @JoinColumn(name = "odgovorno_tijelo_id", referencedColumnName = "id")
     @ManyToOne
     private OdgovornoTijelo odgovornoTijeloId;
+    @JoinColumn(name = "podrucje_id", referencedColumnName = "id")
+    @ManyToOne
+    private Podrucje podrucjeId;
+    @JoinColumn(name = "reprezentativnost_id", referencedColumnName = "id")
+    @ManyToOne
+    private Reprezentativnost reprezentativnostId;
+    @JoinColumn(name = "vrsta_postaje_izvor_id", referencedColumnName = "id")
+    @ManyToOne
+    private VrstaPostajeIzvor vrstaPostajeIzvorId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "postajaId")
+    private Collection<PostajaUredjajLink> postajaUredjajLinkCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "postaja")
+    private PrometnePostajeSvojstva prometnePostajeSvojstva;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "postajaId")
+    private Collection<ProgramMjerenja> programMjerenjaCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "postaja")
+    private IndustrijskePostajeSvojstva industrijskePostajeSvojstva;
 
     public Postaja() {
     }
@@ -215,6 +208,15 @@ public class Postaja implements Serializable {
     }
 
     @XmlTransient
+    public Collection<ZemljopisneKarakteristike> getZemljopisneKarakteristikeCollection() {
+        return zemljopisneKarakteristikeCollection;
+    }
+
+    public void setZemljopisneKarakteristikeCollection(Collection<ZemljopisneKarakteristike> zemljopisneKarakteristikeCollection) {
+        this.zemljopisneKarakteristikeCollection = zemljopisneKarakteristikeCollection;
+    }
+
+    @XmlTransient
     public Collection<CiljeviPracenja> getCiljeviPracenjaCollection() {
         return ciljeviPracenjaCollection;
     }
@@ -223,13 +225,53 @@ public class Postaja implements Serializable {
         this.ciljeviPracenjaCollection = ciljeviPracenjaCollection;
     }
 
-    @XmlTransient
-    public Collection<ZemljopisneKarakteristike> getZemljopisneKarakteristikeCollection() {
-        return zemljopisneKarakteristikeCollection;
+    public OdgovornoTijelo getOdgovornoTijeloId() {
+        return odgovornoTijeloId;
     }
 
-    public void setZemljopisneKarakteristikeCollection(Collection<ZemljopisneKarakteristike> zemljopisneKarakteristikeCollection) {
-        this.zemljopisneKarakteristikeCollection = zemljopisneKarakteristikeCollection;
+    public void setOdgovornoTijeloId(OdgovornoTijelo odgovornoTijeloId) {
+        this.odgovornoTijeloId = odgovornoTijeloId;
+    }
+
+    public Podrucje getPodrucjeId() {
+        return podrucjeId;
+    }
+
+    public void setPodrucjeId(Podrucje podrucjeId) {
+        this.podrucjeId = podrucjeId;
+    }
+
+    public Reprezentativnost getReprezentativnostId() {
+        return reprezentativnostId;
+    }
+
+    public void setReprezentativnostId(Reprezentativnost reprezentativnostId) {
+        this.reprezentativnostId = reprezentativnostId;
+    }
+
+    public VrstaPostajeIzvor getVrstaPostajeIzvorId() {
+        return vrstaPostajeIzvorId;
+    }
+
+    public void setVrstaPostajeIzvorId(VrstaPostajeIzvor vrstaPostajeIzvorId) {
+        this.vrstaPostajeIzvorId = vrstaPostajeIzvorId;
+    }
+
+    @XmlTransient
+    public Collection<PostajaUredjajLink> getPostajaUredjajLinkCollection() {
+        return postajaUredjajLinkCollection;
+    }
+
+    public void setPostajaUredjajLinkCollection(Collection<PostajaUredjajLink> postajaUredjajLinkCollection) {
+        this.postajaUredjajLinkCollection = postajaUredjajLinkCollection;
+    }
+
+    public PrometnePostajeSvojstva getPrometnePostajeSvojstva() {
+        return prometnePostajeSvojstva;
+    }
+
+    public void setPrometnePostajeSvojstva(PrometnePostajeSvojstva prometnePostajeSvojstva) {
+        this.prometnePostajeSvojstva = prometnePostajeSvojstva;
     }
 
     @XmlTransient
@@ -241,52 +283,12 @@ public class Postaja implements Serializable {
         this.programMjerenjaCollection = programMjerenjaCollection;
     }
 
-    public PrometnePostajeSvojstva getPrometnePostajeSvojstva() {
-        return prometnePostajeSvojstva;
-    }
-
-    public void setPrometnePostajeSvojstva(PrometnePostajeSvojstva prometnePostajeSvojstva) {
-        this.prometnePostajeSvojstva = prometnePostajeSvojstva;
-    }
-
     public IndustrijskePostajeSvojstva getIndustrijskePostajeSvojstva() {
         return industrijskePostajeSvojstva;
     }
 
     public void setIndustrijskePostajeSvojstva(IndustrijskePostajeSvojstva industrijskePostajeSvojstva) {
         this.industrijskePostajeSvojstva = industrijskePostajeSvojstva;
-    }
-
-    public VrstaPostajeIzvor getVrstaPostajeIzvorId() {
-        return vrstaPostajeIzvorId;
-    }
-
-    public void setVrstaPostajeIzvorId(VrstaPostajeIzvor vrstaPostajeIzvorId) {
-        this.vrstaPostajeIzvorId = vrstaPostajeIzvorId;
-    }
-
-    public Reprezentativnost getReprezentativnostId() {
-        return reprezentativnostId;
-    }
-
-    public void setReprezentativnostId(Reprezentativnost reprezentativnostId) {
-        this.reprezentativnostId = reprezentativnostId;
-    }
-
-    public Podrucje getPodrucjeId() {
-        return podrucjeId;
-    }
-
-    public void setPodrucjeId(Podrucje podrucjeId) {
-        this.podrucjeId = podrucjeId;
-    }
-
-    public OdgovornoTijelo getOdgovornoTijeloId() {
-        return odgovornoTijeloId;
-    }
-
-    public void setOdgovornoTijeloId(OdgovornoTijelo odgovornoTijeloId) {
-        this.odgovornoTijeloId = odgovornoTijeloId;
     }
 
     @Override

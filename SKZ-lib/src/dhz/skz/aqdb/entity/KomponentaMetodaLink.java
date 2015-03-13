@@ -6,48 +6,44 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author kraljevic
  */
 @Entity
+@Table(name = "komponenta_metoda_link")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Flag.findAll", query = "SELECT f FROM Flag f"),
-    @NamedQuery(name = "Flag.findById", query = "SELECT f FROM Flag f WHERE f.id = :id"),
-    @NamedQuery(name = "Flag.findByOpis", query = "SELECT f FROM Flag f WHERE f.opis = :opis")})
-public class Flag implements Serializable {
+    @NamedQuery(name = "KomponentaMetodaLink.findAll", query = "SELECT k FROM KomponentaMetodaLink k"),
+    @NamedQuery(name = "KomponentaMetodaLink.findById", query = "SELECT k FROM KomponentaMetodaLink k WHERE k.id = :id")})
+public class KomponentaMetodaLink implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @NotNull
     private Integer id;
-    @Size(max = 45)
-    private String opis;
-    @JoinTable(name = "podatak_has_flag", joinColumns = {
-        @JoinColumn(name = "flag_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "podatak_id", referencedColumnName = "podatak_id")})
-    @ManyToMany
-    private Collection<Podatak> podatakCollection;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Komponenta komponentaId;
+    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private AnalitickeMetode metodaId;
 
-    public Flag() {
+    public KomponentaMetodaLink() {
     }
 
-    public Flag(Integer id) {
+    public KomponentaMetodaLink(Integer id) {
         this.id = id;
     }
 
@@ -59,21 +55,20 @@ public class Flag implements Serializable {
         this.id = id;
     }
 
-    public String getOpis() {
-        return opis;
+    public Komponenta getKomponentaId() {
+        return komponentaId;
     }
 
-    public void setOpis(String opis) {
-        this.opis = opis;
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
     }
 
-    @XmlTransient
-    public Collection<Podatak> getPodatakCollection() {
-        return podatakCollection;
+    public AnalitickeMetode getMetodaId() {
+        return metodaId;
     }
 
-    public void setPodatakCollection(Collection<Podatak> podatakCollection) {
-        this.podatakCollection = podatakCollection;
+    public void setMetodaId(AnalitickeMetode metodaId) {
+        this.metodaId = metodaId;
     }
 
     @Override
@@ -86,10 +81,10 @@ public class Flag implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Flag)) {
+        if (!(object instanceof KomponentaMetodaLink)) {
             return false;
         }
-        Flag other = (Flag) object;
+        KomponentaMetodaLink other = (KomponentaMetodaLink) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -98,7 +93,7 @@ public class Flag implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.Flag[ id=" + id + " ]";
+        return "dhz.skz.aqdb.entity.KomponentaMetodaLink[ id=" + id + " ]";
     }
     
 }

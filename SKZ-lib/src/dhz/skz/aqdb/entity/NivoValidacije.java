@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -27,7 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "nivo_validacije", catalog = "aqdb_likz", schema = "")
+@Table(name = "nivo_validacije")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "NivoValidacije.findAll", query = "SELECT n FROM NivoValidacije n"),
@@ -38,10 +36,8 @@ public class NivoValidacije implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Short id;
     @Size(max = 45)
-    @Column(length = 45)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nivoValidacijeId")
     private Collection<Podatak> podatakCollection;

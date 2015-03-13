@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "umjerni_laboratorij", catalog = "aqdb_likz", schema = "")
+@Table(name = "umjerni_laboratorij")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UmjerniLaboratorij.findAll", query = "SELECT u FROM UmjerniLaboratorij u"),
@@ -40,18 +38,15 @@ public class UmjerniLaboratorij implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Lob
     @Size(min = 1, max = 65535)
-    @Column(nullable = false, length = 65535)
     private String naziv;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
-    @Column(nullable = false, length = 200)
     private String adresa;
     @OneToMany(mappedBy = "umjerniLaboratorijId")
     private Collection<Umjeravanje> umjeravanjeCollection;

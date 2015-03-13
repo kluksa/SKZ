@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,7 +25,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Podrucje.findAll", query = "SELECT p FROM Podrucje p"),
@@ -40,27 +36,24 @@ public class Podrucje implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 6)
-    @Column(nullable = false, length = 6)
     private String oznaka;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
     private String opis;
+    @OneToMany(mappedBy = "podrucjeId")
+    private Collection<Postaja> postajaCollection;
+    @OneToMany(mappedBy = "podrucjeId")
+    private Collection<Reprezentativnost> reprezentativnostCollection;
     @OneToMany(mappedBy = "nadredjenoPodrucjeId")
     private Collection<Podrucje> podrucjeCollection;
     @JoinColumn(name = "nadredjeno_podrucje_id", referencedColumnName = "id")
     @ManyToOne
     private Podrucje nadredjenoPodrucjeId;
-    @OneToMany(mappedBy = "podrucjeId")
-    private Collection<Reprezentativnost> reprezentativnostCollection;
-    @OneToMany(mappedBy = "podrucjeId")
-    private Collection<Postaja> postajaCollection;
 
     public Podrucje() {
     }
@@ -100,6 +93,24 @@ public class Podrucje implements Serializable {
     }
 
     @XmlTransient
+    public Collection<Postaja> getPostajaCollection() {
+        return postajaCollection;
+    }
+
+    public void setPostajaCollection(Collection<Postaja> postajaCollection) {
+        this.postajaCollection = postajaCollection;
+    }
+
+    @XmlTransient
+    public Collection<Reprezentativnost> getReprezentativnostCollection() {
+        return reprezentativnostCollection;
+    }
+
+    public void setReprezentativnostCollection(Collection<Reprezentativnost> reprezentativnostCollection) {
+        this.reprezentativnostCollection = reprezentativnostCollection;
+    }
+
+    @XmlTransient
     public Collection<Podrucje> getPodrucjeCollection() {
         return podrucjeCollection;
     }
@@ -114,24 +125,6 @@ public class Podrucje implements Serializable {
 
     public void setNadredjenoPodrucjeId(Podrucje nadredjenoPodrucjeId) {
         this.nadredjenoPodrucjeId = nadredjenoPodrucjeId;
-    }
-
-    @XmlTransient
-    public Collection<Reprezentativnost> getReprezentativnostCollection() {
-        return reprezentativnostCollection;
-    }
-
-    public void setReprezentativnostCollection(Collection<Reprezentativnost> reprezentativnostCollection) {
-        this.reprezentativnostCollection = reprezentativnostCollection;
-    }
-
-    @XmlTransient
-    public Collection<Postaja> getPostajaCollection() {
-        return postajaCollection;
-    }
-
-    public void setPostajaCollection(Collection<Postaja> postajaCollection) {
-        this.postajaCollection = postajaCollection;
     }
 
     @Override

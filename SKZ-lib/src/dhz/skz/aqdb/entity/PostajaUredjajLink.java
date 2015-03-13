@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -29,45 +28,49 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "program_uredjaj_link", catalog = "aqdb_likz", schema = "")
+@Table(name = "postaja_uredjaj_link")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PostajaUredjajLink.findAll", query = "SELECT p FROM ProgramUredjajLink p"),
-    @NamedQuery(name = "PostajaUredjajLink.findById", query = "SELECT p FROM ProgramUredjajLink p WHERE p.id = :id"),
-    @NamedQuery(name = "PostajaUredjajLink.findByPostaja", query = "SELECT p FROM ProgramUredjajLink p WHERE p.id = :id"),
-    @NamedQuery(name = "PostajaUredjajLink.findByUredjaj", query = "SELECT p FROM ProgramUredjajLink p WHERE p.id = :id"),
-    @NamedQuery(name = "PostajaUredjajLink.findByVrijemePostavljanja", query = "SELECT p FROM ProgramUredjajLink p WHERE p.vrijemePostavljanja = :vrijemePostavljanja"),
-    @NamedQuery(name = "PostajaUredjajLink.findByVrijemeUklanjanja", query = "SELECT p FROM ProgramUredjajLink p WHERE p.vrijemeUklanjanja = :vrijemeUklanjanja")})
+    @NamedQuery(name = "PostajaUredjajLink.findAll", query = "SELECT p FROM PostajaUredjajLink p"),
+    @NamedQuery(name = "PostajaUredjajLink.findById", query = "SELECT p FROM PostajaUredjajLink p WHERE p.id = :id"),
+    @NamedQuery(name = "PostajaUredjajLink.findByVrijemePostavljanja", query = "SELECT p FROM PostajaUredjajLink p WHERE p.vrijemePostavljanja = :vrijemePostavljanja"),
+    @NamedQuery(name = "PostajaUredjajLink.findByVrijemeUklanjanja", query = "SELECT p FROM PostajaUredjajLink p WHERE p.vrijemeUklanjanja = :vrijemeUklanjanja"),
+    @NamedQuery(name = "PostajaUredjajLink.findByUsporedno", query = "SELECT p FROM PostajaUredjajLink p WHERE p.usporedno = :usporedno")})
 public class PostajaUredjajLink implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "vrijeme_postavljanja")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemePostavljanja;
     @Column(name = "vrijeme_uklanjanja")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUklanjanja;
-    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Uredjaj uredjajId;
-    @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Postaja postajaId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "usporedno_mjerenje", nullable = false)
-    private short usporednoMjerenje;
-
+    private short usporedno;
+    @JoinColumn(name = "postaja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Postaja postajaId;
+    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Uredjaj uredjajId;
 
     public PostajaUredjajLink() {
     }
 
     public PostajaUredjajLink(Integer id) {
         this.id = id;
+    }
+
+    public PostajaUredjajLink(Integer id, Date vrijemePostavljanja, short usporedno) {
+        this.id = id;
+        this.vrijemePostavljanja = vrijemePostavljanja;
+        this.usporedno = usporedno;
     }
 
     public Integer getId() {
@@ -94,12 +97,12 @@ public class PostajaUredjajLink implements Serializable {
         this.vrijemeUklanjanja = vrijemeUklanjanja;
     }
 
-    public Uredjaj getUredjajId() {
-        return uredjajId;
+    public short getUsporedno() {
+        return usporedno;
     }
 
-    public void setUredjajId(Uredjaj uredjajId) {
-        this.uredjajId = uredjajId;
+    public void setUsporedno(short usporedno) {
+        this.usporedno = usporedno;
     }
 
     public Postaja getPostajaId() {
@@ -110,12 +113,12 @@ public class PostajaUredjajLink implements Serializable {
         this.postajaId = postajaId;
     }
 
-    public short getUsporednoMjerenje() {
-        return usporednoMjerenje;
+    public Uredjaj getUredjajId() {
+        return uredjajId;
     }
 
-    public void setUsporednoMjerenje(short usporednoMjerenje) {
-        this.usporednoMjerenje = usporednoMjerenje;
+    public void setUredjajId(Uredjaj uredjajId) {
+        this.uredjajId = uredjajId;
     }
 
     @Override

@@ -3,30 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author kraljevic
  */
 @Entity
-@Table(name = "relevantne_direktive", catalog = "aqdb_likz", schema = "")
+@Table(name = "relevantne_direktive")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "RelevantneDirektive.findAll", query = "SELECT r FROM RelevantneDirektive r"),
@@ -37,13 +32,9 @@ public class RelevantneDirektive implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Size(max = 45)
-    @Column(length = 45)
     private String naziv;
-    @ManyToMany(mappedBy = "relevantneDirektiveCollection")
-    private Collection<Komponenta> komponentaCollection;
 
     public RelevantneDirektive() {
     }
@@ -66,15 +57,6 @@ public class RelevantneDirektive implements Serializable {
 
     public void setNaziv(String naziv) {
         this.naziv = naziv;
-    }
-
-    @XmlTransient
-    public Collection<Komponenta> getKomponentaCollection() {
-        return komponentaCollection;
-    }
-
-    public void setKomponentaCollection(Collection<Komponenta> komponentaCollection) {
-        this.komponentaCollection = komponentaCollection;
     }
 
     @Override

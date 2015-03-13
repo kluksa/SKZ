@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "model_uredjaja", catalog = "aqdb_likz", schema = "")
+@Table(name = "model_uredjaja")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ModelUredjaja.findAll", query = "SELECT m FROM ModelUredjaja m"),
@@ -45,17 +45,15 @@ public class ModelUredjaja implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(name = "oznaka_modela", nullable = false, length = 45)
+    @Column(name = "oznaka_modela")
     private String oznakaModela;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1)
-    @Column(nullable = false, length = 1)
     private String vrsta;
     @Column(name = "broj_mjerenja_u_satu")
     private Integer brojMjerenjaUSatu;
@@ -63,17 +61,19 @@ public class ModelUredjaja implements Serializable {
     private Boolean imaZeroSpanCal;
     @ManyToMany(mappedBy = "modelUredjajaCollection")
     private Collection<Komponenta> komponentaCollection;
-    @OneToMany(mappedBy = "modelUredjajaId")
-    private Collection<Uredjaj> uredjajCollection;
-    @JoinColumn(name = "validator_id", referencedColumnName = "id")
-    @ManyToOne
-    private Validatori validatorId;
-    @JoinColumn(name = "proizvodjac_id", referencedColumnName = "id")
-    @ManyToOne
-    private Proizvodjac proizvodjacId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelUredjaja")
+    private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;
     @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")
     @ManyToOne
     private AnalitickeMetode analitickeMetodeId;
+    @JoinColumn(name = "proizvodjac_id", referencedColumnName = "id")
+    @ManyToOne
+    private Proizvodjac proizvodjacId;
+    @JoinColumn(name = "validator_id", referencedColumnName = "id")
+    @ManyToOne
+    private Validatori validatorId;
+    @OneToMany(mappedBy = "modelUredjajaId")
+    private Collection<Uredjaj> uredjajCollection;
 
     public ModelUredjaja() {
     }
@@ -138,20 +138,20 @@ public class ModelUredjaja implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Uredjaj> getUredjajCollection() {
-        return uredjajCollection;
+    public Collection<ValidatorModelIzvor> getValidatorModelIzvorCollection() {
+        return validatorModelIzvorCollection;
     }
 
-    public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
-        this.uredjajCollection = uredjajCollection;
+    public void setValidatorModelIzvorCollection(Collection<ValidatorModelIzvor> validatorModelIzvorCollection) {
+        this.validatorModelIzvorCollection = validatorModelIzvorCollection;
     }
 
-    public Validatori getValidatorId() {
-        return validatorId;
+    public AnalitickeMetode getAnalitickeMetodeId() {
+        return analitickeMetodeId;
     }
 
-    public void setValidatorId(Validatori validatorId) {
-        this.validatorId = validatorId;
+    public void setAnalitickeMetodeId(AnalitickeMetode analitickeMetodeId) {
+        this.analitickeMetodeId = analitickeMetodeId;
     }
 
     public Proizvodjac getProizvodjacId() {
@@ -162,12 +162,21 @@ public class ModelUredjaja implements Serializable {
         this.proizvodjacId = proizvodjacId;
     }
 
-    public AnalitickeMetode getAnalitickeMetodeId() {
-        return analitickeMetodeId;
+    public Validatori getValidatorId() {
+        return validatorId;
     }
 
-    public void setAnalitickeMetodeId(AnalitickeMetode analitickeMetodeId) {
-        this.analitickeMetodeId = analitickeMetodeId;
+    public void setValidatorId(Validatori validatorId) {
+        this.validatorId = validatorId;
+    }
+
+    @XmlTransient
+    public Collection<Uredjaj> getUredjajCollection() {
+        return uredjajCollection;
+    }
+
+    public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
+        this.uredjajCollection = uredjajCollection;
     }
 
     @Override

@@ -15,7 +15,6 @@ import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import java.util.ArrayList;
@@ -57,12 +56,12 @@ public class AqdbCitacBean implements CitacIzvora {
     private List<ZeroSpan> zslista = new ArrayList<>();
 
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
+    public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         em.refresh(izvor);
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -88,7 +87,6 @@ public class AqdbCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return null;
     }
 
     private void obradiSat(ProgramMjerenja program, Collection<PodatakSirovi> pod, Calendar cal) {
@@ -176,7 +174,7 @@ public class AqdbCitacBean implements CitacIzvora {
     }
 
 //    @Override
-//    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
+//    public Map<ProgramMjerenja, NizOcitanja> napraviSatne(IzvorPodataka izvor) {
 //        log.log(Level.INFO, "POCETAK CITANJA");
 //        em.refresh(izvor);
 //        for ( ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {

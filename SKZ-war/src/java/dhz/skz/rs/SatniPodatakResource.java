@@ -79,6 +79,7 @@ public class SatniPodatakResource {
         Date kraj = cal.getTime();
         cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, "program", programId);
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();

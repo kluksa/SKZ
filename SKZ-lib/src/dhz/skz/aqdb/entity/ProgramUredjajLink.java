@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -28,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "program_uredjaj_link", catalog = "aqdb_likz", schema = "")
+@Table(name = "program_uredjaj_link")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ProgramUredjajLink.findAll", query = "SELECT p FROM ProgramUredjajLink p"),
@@ -41,7 +40,6 @@ public class ProgramUredjajLink implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Column(name = "vrijeme_postavljanja")
     @Temporal(TemporalType.TIMESTAMP)
@@ -51,12 +49,12 @@ public class ProgramUredjajLink implements Serializable {
     @Column(name = "vrijeme_uklanjanja")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUklanjanja;
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private ProgramMjerenja programMjerenjaId;
     @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne
     private Uredjaj uredjajId;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private ProgramMjerenja programMjerenjaId;
 
     public ProgramUredjajLink() {
     }
@@ -97,20 +95,20 @@ public class ProgramUredjajLink implements Serializable {
         this.vrijemeUklanjanja = vrijemeUklanjanja;
     }
 
-    public Uredjaj getUredjajId() {
-        return uredjajId;
-    }
-
-    public void setUredjajId(Uredjaj uredjajId) {
-        this.uredjajId = uredjajId;
-    }
-
     public ProgramMjerenja getProgramMjerenjaId() {
         return programMjerenjaId;
     }
 
     public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
         this.programMjerenjaId = programMjerenjaId;
+    }
+
+    public Uredjaj getUredjajId() {
+        return uredjajId;
+    }
+
+    public void setUredjajId(Uredjaj uredjajId) {
+        this.uredjajId = uredjajId;
     }
 
     @Override

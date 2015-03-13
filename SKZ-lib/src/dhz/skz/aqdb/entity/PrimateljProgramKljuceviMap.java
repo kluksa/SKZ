@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -23,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "primatelj_program_kljucevi_map", catalog = "aqdb_likz", schema = "")
+@Table(name = "primatelj_program_kljucevi_map")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PrimateljProgramKljuceviMap.findAll", query = "SELECT p FROM PrimateljProgramKljuceviMap p"),
@@ -39,24 +38,24 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     @EmbeddedId
     protected PrimateljProgramKljuceviMapPK primateljProgramKljuceviMapPK;
     @Size(max = 45)
-    @Column(name = "p_kljuc", length = 45)
+    @Column(name = "p_kljuc")
     private String pKljuc;
     @Size(max = 45)
-    @Column(name = "k_kljuc", length = 45)
+    @Column(name = "k_kljuc")
     private String kKljuc;
     @Size(max = 45)
-    @Column(name = "u_kljuc", length = 45)
+    @Column(name = "u_kljuc")
     private String uKljuc;
     @Size(max = 45)
-    @Column(name = "n_kljuc", length = 45)
+    @Column(name = "n_kljuc")
     private String nKljuc;
     private Integer aktivan;
-    @JoinColumn(name = "primatelj_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private PrimateljiPodataka primateljiPodataka;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenja;
+    @JoinColumn(name = "primatelj_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private PrimateljiPodataka primateljiPodataka;
 
     public PrimateljProgramKljuceviMap() {
     }
@@ -117,20 +116,20 @@ public class PrimateljProgramKljuceviMap implements Serializable {
         this.aktivan = aktivan;
     }
 
-    public PrimateljiPodataka getPrimateljiPodataka() {
-        return primateljiPodataka;
-    }
-
-    public void setPrimateljiPodataka(PrimateljiPodataka primateljiPodataka) {
-        this.primateljiPodataka = primateljiPodataka;
-    }
-
     public ProgramMjerenja getProgramMjerenja() {
         return programMjerenja;
     }
 
     public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
         this.programMjerenja = programMjerenja;
+    }
+
+    public PrimateljiPodataka getPrimateljiPodataka() {
+        return primateljiPodataka;
+    }
+
+    public void setPrimateljiPodataka(PrimateljiPodataka primateljiPodataka) {
+        this.primateljiPodataka = primateljiPodataka;
     }
 
     @Override

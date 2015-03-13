@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -27,7 +26,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "vrsta_mreze", catalog = "aqdb_likz", schema = "")
+@Table(name = "vrsta_mreze")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "VrstaMreze.findAll", query = "SELECT v FROM VrstaMreze v"),
@@ -39,15 +38,14 @@ public class VrstaMreze implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(name = "terenska_oznaka", nullable = false, length = 45)
+    @Column(name = "terenska_oznaka")
     private String terenskaOznaka;
     @Size(max = 255)
-    @Column(name = "opis_razine", length = 255)
+    @Column(name = "opis_razine")
     private String opisRazine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vrstaId")
     private Collection<Mreza> mrezaCollection;

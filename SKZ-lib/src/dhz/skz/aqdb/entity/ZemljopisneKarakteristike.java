@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "zemljopisne_karakteristike", catalog = "aqdb_likz", schema = "")
+@Table(name = "zemljopisne_karakteristike")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ZemljopisneKarakteristike.findAll", query = "SELECT z FROM ZemljopisneKarakteristike z"),
@@ -41,16 +39,14 @@ public class ZemljopisneKarakteristike implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
     private String opis;
     @JoinTable(name = "zemljopisne_karakteristike_postaja_link", joinColumns = {
-        @JoinColumn(name = "zemljopisne_karakteristike_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "postaja_id", referencedColumnName = "id", nullable = false)})
+        @JoinColumn(name = "zemljopisne_karakteristike_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "postaja_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<Postaja> postajaCollection;
 

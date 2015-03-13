@@ -21,26 +21,9 @@ public class GrimmValidator implements Validator {
     @Override
     public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
         Status s = new Status();
+        s.setModRada(Status.ModRada.MJERENJE);
         if (iznos == -999.f) {
             s.dodajFlag(Flag.NEDOSTAJE);
-        } else if (!statusStr.isEmpty()) {
-            try {
-                int stInt = Integer.parseInt(statusStr, 16);
-                if (stInt > 255) {
-                    s.dodajFlag(Flag.FAULT);
-                }
-                if ((stInt & 1) == 1) {
-                    s.dodajFlag(Flag.MAINTENENCE);
-                }
-                if ((stInt & 2) == 2) {
-                    s.dodajFlag(Flag.ZERO);
-                }
-                if ((stInt & 4) == 4) {
-                    s.dodajFlag(Flag.SPAN);
-                }
-            } catch (NumberFormatException ex) {
-                throw new NevaljanStatusException(ex);
-            }
         }
         return s;
     }

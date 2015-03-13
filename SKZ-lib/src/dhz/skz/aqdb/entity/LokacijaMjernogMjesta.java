@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -23,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "lokacija_mjernog_mjesta", catalog = "aqdb_likz", schema = "")
+@Table(name = "lokacija_mjernog_mjesta")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "LokacijaMjernogMjesta.findAll", query = "SELECT l FROM LokacijaMjernogMjesta l"),
@@ -34,10 +32,8 @@ public class LokacijaMjernogMjesta implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Short id;
     @Size(max = 255)
-    @Column(length = 255)
     private String tekst;
 
     public LokacijaMjernogMjesta() {

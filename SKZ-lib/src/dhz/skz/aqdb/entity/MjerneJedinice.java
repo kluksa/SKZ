@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "mjerne_jedinice", catalog = "aqdb_likz", schema = "")
+@Table(name = "mjerne_jedinice")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "MjerneJedinice.findAll", query = "SELECT m FROM MjerneJedinice m"),
@@ -40,12 +38,10 @@ public class MjerneJedinice implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
     private Collection<Komponenta> komponentaCollection;

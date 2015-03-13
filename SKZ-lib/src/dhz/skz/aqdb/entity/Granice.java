@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -18,10 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,13 +27,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"kategorije_granica_id", "komponenta_id", "u_primjeni_od"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Granice.findAll", query = "SELECT g FROM Granice g"),
     @NamedQuery(name = "Granice.findById", query = "SELECT g FROM Granice g WHERE g.id = :id"),
-    @NamedQuery(name = "Granice.findByKomponenta", query = "SELECT g FROM Granice g WHERE g.komponentaId = :komponenta"),
     @NamedQuery(name = "Granice.findByVrijednost", query = "SELECT g FROM Granice g WHERE g.vrijednost = :vrijednost"),
     @NamedQuery(name = "Granice.findByDozvoljeniBrojPrekoracenja", query = "SELECT g FROM Granice g WHERE g.dozvoljeniBrojPrekoracenja = :dozvoljeniBrojPrekoracenja"),
     @NamedQuery(name = "Granice.findByPocetakPrimjene", query = "SELECT g FROM Granice g WHERE g.pocetakPrimjene = :pocetakPrimjene"),
@@ -46,33 +40,29 @@ public class Granice implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
-    private double vrijednost;
+    private float vrijednost;
     @Column(name = "dozvoljeni_broj_prekoracenja")
     private Integer dozvoljeniBrojPrekoracenja;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "pocetak_primjene", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "pocetak_primjene")
+    @Temporal(TemporalType.DATE)
     private Date pocetakPrimjene;
-    @Basic(optional = true)
-    @Column(name = "kraj_primjene", nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "kraj_primjene")
+    @Temporal(TemporalType.DATE)
     private Date krajPrimjene;
-
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Komponenta komponentaId;
-    @JoinColumn(name = "kategorije_granica_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private KategorijeGranica kategorijeGranicaId;
-    @JoinColumn(name = "agregacije_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "agregacije_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Agregacije agregacijeId;
+    @JoinColumn(name = "kategorije_granica_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private KategorijeGranica kategorijeGranicaId;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Komponenta komponentaId;
 
     public Granice() {
     }
@@ -81,10 +71,10 @@ public class Granice implements Serializable {
         this.id = id;
     }
 
-    public Granice(Integer id, double vrijednost, Date uPrimjeniOd) {
+    public Granice(Integer id, float vrijednost, Date pocetakPrimjene) {
         this.id = id;
         this.vrijednost = vrijednost;
-        this.pocetakPrimjene = uPrimjeniOd;
+        this.pocetakPrimjene = pocetakPrimjene;
     }
 
     public Integer getId() {
@@ -95,11 +85,11 @@ public class Granice implements Serializable {
         this.id = id;
     }
 
-    public double getVrijednost() {
+    public float getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(double vrijednost) {
+    public void setVrijednost(float vrijednost) {
         this.vrijednost = vrijednost;
     }
 
@@ -118,7 +108,7 @@ public class Granice implements Serializable {
     public void setPocetakPrimjene(Date pocetakPrimjene) {
         this.pocetakPrimjene = pocetakPrimjene;
     }
-    
+
     public Date getKrajPrimjene() {
         return krajPrimjene;
     }
@@ -127,12 +117,12 @@ public class Granice implements Serializable {
         this.krajPrimjene = krajPrimjene;
     }
 
-    public Komponenta getKomponentaId() {
-        return komponentaId;
+    public Agregacije getAgregacijeId() {
+        return agregacijeId;
     }
 
-    public void setKomponentaId(Komponenta komponentaId) {
-        this.komponentaId = komponentaId;
+    public void setAgregacijeId(Agregacije agregacijeId) {
+        this.agregacijeId = agregacijeId;
     }
 
     public KategorijeGranica getKategorijeGranicaId() {
@@ -143,12 +133,12 @@ public class Granice implements Serializable {
         this.kategorijeGranicaId = kategorijeGranicaId;
     }
 
-    public Agregacije getAgregacijeId() {
-        return agregacijeId;
+    public Komponenta getKomponentaId() {
+        return komponentaId;
     }
 
-    public void setAgregacijeId(Agregacije agregacijeId) {
-        this.agregacijeId = agregacijeId;
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
     }
 
     @Override

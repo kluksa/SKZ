@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -30,31 +29,33 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "zero_span_referentne_vrijednosti", catalog = "aqdb_likz", schema = "")
+@Table(name = "zero_span_referentne_vrijednosti")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findAll", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z"),
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findById", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.id = :id"),
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByPocetakPrimjene", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.pocetakPrimjene = :pocetakPrimjene"),
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByVrsta", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.vrsta = :vrsta"),
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByVrijednost", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.vrijednost = :vrijednost")})
 public class ZeroSpanReferentneVrijednosti implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
-    
     @Basic(optional = false)
-    @Column(name = "pocetak_primjene", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    @Column(name = "pocetak_primjene")
+    @Temporal(TemporalType.DATE)
     private Date pocetakPrimjene;
-    
     @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 2)
-    @Column(nullable = false, length = 2)
     private String vrsta;
-    
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(precision = 12)
-    private Float vrijednost;
-    
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
+    @Basic(optional = false)
+    @NotNull
+    private float vrijednost;
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 
@@ -65,12 +66,27 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
         this.id = id;
     }
 
+    public ZeroSpanReferentneVrijednosti(Integer id, Date pocetakPrimjene, String vrsta, float vrijednost) {
+        this.id = id;
+        this.pocetakPrimjene = pocetakPrimjene;
+        this.vrsta = vrsta;
+        this.vrijednost = vrijednost;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Date getPocetakPrimjene() {
+        return pocetakPrimjene;
+    }
+
+    public void setPocetakPrimjene(Date pocetakPrimjene) {
+        this.pocetakPrimjene = pocetakPrimjene;
     }
 
     public String getVrsta() {
@@ -81,11 +97,11 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
         this.vrsta = vrsta;
     }
 
-    public Float getVrijednost() {
+    public float getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(Float vrijednost) {
+    public void setVrijednost(float vrijednost) {
         this.vrijednost = vrijednost;
     }
 
@@ -96,15 +112,6 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
     public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
         this.programMjerenjaId = programMjerenjaId;
     }
-
-    public Date getPocetakPrimjene() {
-        return pocetakPrimjene;
-    }
-
-    public void setPocetakPrimjene(Date pocetakPrimjene) {
-        this.pocetakPrimjene = pocetakPrimjene;
-    }
-    
 
     @Override
     public int hashCode() {
@@ -128,7 +135,7 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.ZeroSpan[ id=" + id + " ]";
+        return "dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti[ id=" + id + " ]";
     }
     
 }

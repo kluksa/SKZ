@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -21,7 +20,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -34,7 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Uredjaj.findAll", query = "SELECT u FROM Uredjaj u"),
@@ -43,21 +40,16 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Uredjaj.findByGodinaProizvodnje", query = "SELECT u FROM Uredjaj u WHERE u.godinaProizvodnje = :godinaProizvodnje"),
     @NamedQuery(name = "Uredjaj.findByDatumIsporuke", query = "SELECT u FROM Uredjaj u WHERE u.datumIsporuke = :datumIsporuke"),
     @NamedQuery(name = "Uredjaj.findByDatumOtpisa", query = "SELECT u FROM Uredjaj u WHERE u.datumOtpisa = :datumOtpisa")})
-//SELECT * FROM aqdb_likz.uredjaj u 
-//join model_uredjaja m on m.id = u.model_uredjaja_id
-//join model_uredjaja_komponenta_link mk on mk.model_uredjaja_id = m.id
-//join komponenta k on k.id = mk.komponenta_id;
 public class Uredjaj implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(name = "serijska_oznaka", nullable = false, length = 45)
+    @Column(name = "serijska_oznaka")
     private String serijskaOznaka;
     @Column(name = "godina_proizvodnje")
     private Integer godinaProizvodnje;
@@ -67,15 +59,17 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
+    @OneToMany(mappedBy = "uredjajId")
+    private Collection<ProgramUredjajLink> programUredjajLinkCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<Kvarovi> kvaroviCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
+    private Collection<Umjeravanje> umjeravanjeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
+    private Collection<PostajaUredjajLink> postajaUredjajLinkCollection;
     @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")
     @ManyToOne
     private ModelUredjaja modelUredjajaId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
-    private Collection<Umjeravanje> umjeravanjeCollection;
-    @OneToMany(mappedBy = "uredjajId")
-    private Collection<ProgramUredjajLink> programUredjajLinkCollection;
 
     public Uredjaj() {
     }
@@ -130,20 +124,21 @@ public class Uredjaj implements Serializable {
     }
 
     @XmlTransient
+    public Collection<ProgramUredjajLink> getProgramUredjajLinkCollection() {
+        return programUredjajLinkCollection;
+    }
+
+    public void setProgramUredjajLinkCollection(Collection<ProgramUredjajLink> programUredjajLinkCollection) {
+        this.programUredjajLinkCollection = programUredjajLinkCollection;
+    }
+
+    @XmlTransient
     public Collection<Kvarovi> getKvaroviCollection() {
         return kvaroviCollection;
     }
 
     public void setKvaroviCollection(Collection<Kvarovi> kvaroviCollection) {
         this.kvaroviCollection = kvaroviCollection;
-    }
-
-    public ModelUredjaja getModelUredjajaId() {
-        return modelUredjajaId;
-    }
-
-    public void setModelUredjajaId(ModelUredjaja modelUredjajaId) {
-        this.modelUredjajaId = modelUredjajaId;
     }
 
     @XmlTransient
@@ -156,12 +151,20 @@ public class Uredjaj implements Serializable {
     }
 
     @XmlTransient
-    public Collection<ProgramUredjajLink> getProgramUredjajLinkCollection() {
-        return programUredjajLinkCollection;
+    public Collection<PostajaUredjajLink> getPostajaUredjajLinkCollection() {
+        return postajaUredjajLinkCollection;
     }
 
-    public void setProgramUredjajLinkCollection(Collection<ProgramUredjajLink> programUredjajLinkCollection) {
-        this.programUredjajLinkCollection = programUredjajLinkCollection;
+    public void setPostajaUredjajLinkCollection(Collection<PostajaUredjajLink> postajaUredjajLinkCollection) {
+        this.postajaUredjajLinkCollection = postajaUredjajLinkCollection;
+    }
+
+    public ModelUredjaja getModelUredjajaId() {
+        return modelUredjajaId;
+    }
+
+    public void setModelUredjajaId(ModelUredjaja modelUredjajaId) {
+        this.modelUredjajaId = modelUredjajaId;
     }
 
     @Override

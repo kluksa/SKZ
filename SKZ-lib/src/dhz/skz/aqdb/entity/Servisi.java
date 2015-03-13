@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -16,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(catalog = "aqdb_likz", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Servisi.findAll", query = "SELECT s FROM Servisi s"),
@@ -36,14 +33,14 @@ public class Servisi implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "kvarovi_id", nullable = false)
+    @Column(name = "kvarovi_id")
     private Integer kvaroviId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
-    @Column(name = "cijena_kn", nullable = false, precision = 10, scale = 2)
+    @Column(name = "cijena_kn")
     private BigDecimal cijenaKn;
-    @JoinColumn(name = "kvarovi_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "kvarovi_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Kvarovi kvarovi;
 

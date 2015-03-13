@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -29,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "odgovorno_tijelo", catalog = "aqdb_likz", schema = "")
+@Table(name = "odgovorno_tijelo")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "OdgovornoTijelo.findAll", query = "SELECT o FROM OdgovornoTijelo o"),
@@ -46,45 +45,40 @@ public class OdgovornoTijelo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, length = 255)
     private String naziv;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "odgovorna_osoba", nullable = false, length = 255)
+    @Column(name = "odgovorna_osoba")
     private String odgovornaOsoba;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, length = 255)
     private String adresa;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, length = 255)
     private String telefon;
     // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, length = 255)
     private String fax;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 255)
-    @Column(name = "e_mail", length = 255)
+    @Column(name = "e_mail")
     private String eMail;
     @Size(max = 255)
-    @Column(name = "internet_adresa", length = 255)
+    @Column(name = "internet_adresa")
     private String internetAdresa;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tijeloId")
-    private Collection<Mreza> mrezaCollection;
     @OneToMany(mappedBy = "odgovornoTijeloId")
     private Collection<Postaja> postajaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tijeloId")
+    private Collection<Mreza> mrezaCollection;
 
     public OdgovornoTijelo() {
     }
@@ -167,21 +161,21 @@ public class OdgovornoTijelo implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Mreza> getMrezaCollection() {
-        return mrezaCollection;
-    }
-
-    public void setMrezaCollection(Collection<Mreza> mrezaCollection) {
-        this.mrezaCollection = mrezaCollection;
-    }
-
-    @XmlTransient
     public Collection<Postaja> getPostajaCollection() {
         return postajaCollection;
     }
 
     public void setPostajaCollection(Collection<Postaja> postajaCollection) {
         this.postajaCollection = postajaCollection;
+    }
+
+    @XmlTransient
+    public Collection<Mreza> getMrezaCollection() {
+        return mrezaCollection;
+    }
+
+    public void setMrezaCollection(Collection<Mreza> mrezaCollection) {
+        this.mrezaCollection = mrezaCollection;
     }
 
     @Override

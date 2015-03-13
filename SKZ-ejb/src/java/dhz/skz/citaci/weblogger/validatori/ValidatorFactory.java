@@ -6,39 +6,47 @@
 package dhz.skz.citaci.weblogger.validatori;
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.ProgramUredjajLink;
+import dhz.skz.aqdb.entity.Validatori;
+import dhz.skz.aqdb.facades.ValidatoriFacade;
 import java.util.Date;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
-import javax.ejb.Singleton;
+import javax.ejb.EJB;
+import javax.ejb.Stateful;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  *
  * @author kraljevic
  */
-@Singleton
+@Stateful
 public class ValidatorFactory {
-
+    @EJB
+    private ValidatoriFacade validatoriFacade;
+    private NavigableMap<Date, Validator> validatori;
+    
+    
     private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
 
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
-        return new API100EValidator();
+        return validatori.floorEntry(vrijeme).getValue();
     }
     
-//    public NavigableMap<Date, Validator> getValidatori(ProgramMjerenja pm) {
-//        NavigableMap<Date, Validator> validatori = new TreeMap<>();
-//        for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {
-//            try {
-//                Validator val = lookupValidator(pul.getUredjajId().getModelUredjajaId());
-//                validatori.put(pul.getVrijemePostavljanja(), val);
-//            } catch (NamingException ex) {
-//                log.log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        return validatori;
-//    }
-//
-//    public Validator lookupValidator(ModelUredjaja model) throws NamingException {
-//        String str = "java:module/" + model.getValidatorId().getNaziv().trim();
-//        Validator v = (Validator) new InitialContext().lookup(str);
-//        return v;
-//    }
+    public Validator lookupValidatorBean(Validatori model) throws NamingException {
+        String str = "java:module/" + model.getNaziv().trim();
+        Validator v = (Validator) new InitialContext().lookup(str);
+        return v;
+    }
+
+    public void init(ProgramMjerenja pm) throws NamingException {
+        validatori = new TreeMap<>();
+        for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {
+            Validatori val = validatoriFacade.find(pul.getUredjajId().getModelUredjajaId(), pm.getIzvorPodatakaId());
+            Validator lookupValidatorBean = lookupValidatorBean(val);
+            validatori.put(pul.getVrijemePostavljanja(),lookupValidatorBean);
+        }
+    }
 }

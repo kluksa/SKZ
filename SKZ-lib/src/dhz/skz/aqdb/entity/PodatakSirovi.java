@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -21,7 +20,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,8 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "podatak_sirovi", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"program_mjerenja_id", "vrijeme"})})
+@Table(name = "podatak_sirovi")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PodatakSirovi.findAll", query = "SELECT p FROM PodatakSirovi p"),
@@ -48,25 +45,25 @@ public class PodatakSirovi implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @NotNull
     private float vrijednost;
     private Integer status;
     private Integer greska;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa", nullable = false)
+    @NotNull
+    @Column(name = "vrijeme_upisa")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Size(max = 60)
-    @Column(name = "status_string", length = 60)
+    @Column(name = "status_string")
     private String statusString;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
 

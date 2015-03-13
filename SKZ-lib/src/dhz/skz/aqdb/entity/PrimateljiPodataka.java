@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -23,7 +22,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,8 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "primatelji_podataka", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"naziv"})})
+@Table(name = "primatelji_podataka")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PrimateljiPodataka.findAll", query = "SELECT p FROM PrimateljiPodataka p"),
@@ -51,35 +48,30 @@ public class PrimateljiPodataka implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
     private String naziv;
     @Size(max = 255)
-    @Column(length = 255)
     private String url;
     @Size(max = 45)
-    @Column(length = 45)
     private String tip;
     @Size(max = 45)
-    @Column(length = 45)
     private String xsd;
     private Short aktivan;
     @Column(name = "cestina_sati")
     private Integer cestinaSati;
     @JoinTable(name = "primatelji_podataka_has_program_mjerenja", joinColumns = {
-        @JoinColumn(name = "primatelji_podataka_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", nullable = false)})
+        @JoinColumn(name = "primatelji_podataka_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<ProgramMjerenja> programMjerenjaCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "primateljiPodataka")
-    private Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection;
     @JoinColumn(name = "mreza_id", referencedColumnName = "id")
     @ManyToOne
     private Mreza mrezaId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "primateljiPodataka")
+    private Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection;
 
     public PrimateljiPodataka() {
     }
@@ -158,6 +150,14 @@ public class PrimateljiPodataka implements Serializable {
         this.programMjerenjaCollection = programMjerenjaCollection;
     }
 
+    public Mreza getMrezaId() {
+        return mrezaId;
+    }
+
+    public void setMrezaId(Mreza mrezaId) {
+        this.mrezaId = mrezaId;
+    }
+
     @XmlTransient
     public Collection<PrimateljProgramKljuceviMap> getPrimateljProgramKljuceviMapCollection() {
         return primateljProgramKljuceviMapCollection;
@@ -165,14 +165,6 @@ public class PrimateljiPodataka implements Serializable {
 
     public void setPrimateljProgramKljuceviMapCollection(Collection<PrimateljProgramKljuceviMap> primateljProgramKljuceviMapCollection) {
         this.primateljProgramKljuceviMapCollection = primateljProgramKljuceviMapCollection;
-    }
-
-    public Mreza getMrezaId() {
-        return mrezaId;
-    }
-
-    public void setMrezaId(Mreza mrezaId) {
-        this.mrezaId = mrezaId;
     }
 
     @Override

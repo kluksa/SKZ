@@ -15,7 +15,6 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.NizOcitanja;
 import dhz.skz.citaci.weblogger.util.Status;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,7 +58,7 @@ public class DcsCitacBean implements CitacIzvora {
     private final String selektSql = "SELECT endtime, value, validity, opestatus, errstatus FROM sirovi_2 WHERE station=? AND component=? AND vrijeme > ?";
 
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor) {
+    public void napraviSatne(IzvorPodataka izvor) {
         for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
             Date zadnji = podatakFacade.getZadnjiPodatak(pm);
             try (Connection con = dcsDS.getConnection()) {
@@ -70,11 +69,10 @@ public class DcsCitacBean implements CitacIzvora {
             }
 
         }
-        return null;
     }
 
     @Override
-    public Map<ProgramMjerenja, NizOcitanja> procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
+    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

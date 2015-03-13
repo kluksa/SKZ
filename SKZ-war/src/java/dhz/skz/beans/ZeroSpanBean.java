@@ -43,9 +43,8 @@ public class ZeroSpanBean {
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refS = new TreeMap<>();
         NavigableMap<Date, ZeroSpan> zero = new TreeMap<>();
         
-        
-        float deltaz = pm.getMetoda().getZeroDriftAbs();
-        float deltas = pm.getMetoda().getSpanDriftRelativ();
+        float deltaz = pm.getMetodaId().getZeroDriftAbsolut();
+        float deltas = pm.getMetodaId().getSpanDriftRelativ();
         
         for (ZeroSpanReferentneVrijednosti rzs : refZS){
             if (rzs.getVrsta().contains("Z")) {

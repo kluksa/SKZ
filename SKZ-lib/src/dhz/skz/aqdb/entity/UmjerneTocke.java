@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
@@ -28,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "umjerne_tocke", catalog = "aqdb_likz", schema = "")
+@Table(name = "umjerne_tocke")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UmjerneTocke.findAll", query = "SELECT u FROM UmjerneTocke u"),
@@ -41,23 +40,22 @@ public class UmjerneTocke implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "referentna_vrijednost", nullable = false)
+    @Column(name = "referentna_vrijednost")
     private long referentnaVrijednost;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "mjerena_vrijednost", nullable = false)
+    @Column(name = "mjerena_vrijednost")
     private long mjerenaVrijednost;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "mjerna_nesigurnost", nullable = false)
+    @Column(name = "mjerna_nesigurnost")
     private long mjernaNesigurnost;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjerneTo\u010dkeId")
     private Collection<UmjeravanjePodaci> umjeravanjePodaciCollection;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Umjeravanje umjeravanjeId;
 

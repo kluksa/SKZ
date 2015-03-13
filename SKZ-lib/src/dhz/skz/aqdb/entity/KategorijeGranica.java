@@ -3,21 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,8 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
-@Table(name = "kategorije_granica", catalog = "aqdb_likz", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"oznaka"})})
+@Table(name = "kategorije_granica")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "KategorijeGranica.findAll", query = "SELECT k FROM KategorijeGranica k"),
@@ -41,13 +37,10 @@ public class KategorijeGranica implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
     private Integer id;
     @Size(max = 45)
-    @Column(length = 45)
     private String oznaka;
     @Size(max = 300)
-    @Column(length = 300)
     private String opis;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "kategorijeGranicaId")
     private Collection<Granice> graniceCollection;
