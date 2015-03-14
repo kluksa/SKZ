@@ -6,8 +6,6 @@
 
 package dhz.skz.aqdb.facades;
 
-import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.Postaja_;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
@@ -18,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 

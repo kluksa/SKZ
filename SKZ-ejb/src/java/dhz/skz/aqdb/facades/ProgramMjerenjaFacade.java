@@ -9,6 +9,8 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap_;
+import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
@@ -180,6 +182,21 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
                         )
                 )
         );
+        return em.createQuery(cq).getResultList();
+    }
+    
+    @Override
+    public Collection<ProgramMjerenja> find(PrimateljiPodataka primatelj) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+
+        Root<ProgramMjerenja> pmT = cq.from(ProgramMjerenja.class);
+        Expression<PrimateljiPodataka> primateljE = pmT.join(ProgramMjerenja_.primateljProgramKljuceviMapCollection)
+                .get(PrimateljProgramKljuceviMap_.primateljiPodataka);
+        cq.where(
+                cb.equal(primateljE, primatelj)
+        );
+        cq.select(pmT);
         return em.createQuery(cq).getResultList();
     }
 

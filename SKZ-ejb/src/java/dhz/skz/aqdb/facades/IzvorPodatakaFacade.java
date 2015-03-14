@@ -7,22 +7,11 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorPodataka_;
-import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
-import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
-import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.ProgramMjerenja_;
-import java.util.Collection;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**

@@ -24,7 +24,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka> implements PrimateljiPodatakaFacadeRemote, PrimateljiPodatakaFacadeLocal {
+public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka> implements  PrimateljiPodatakaFacadeLocal {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -38,25 +38,25 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
         super(PrimateljiPodataka.class);
     }
 
-    @Override
-    public Collection<ProgramMjerenja> getProgramZaPrimatelje(PrimateljiPodataka primatelj) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
-
-        Root<ProgramMjerenja> pmT = cq.from(ProgramMjerenja.class);
-        Expression<PrimateljiPodataka> primateljE = pmT.join(ProgramMjerenja_.primateljProgramKljuceviMapCollection)
-                .get(PrimateljProgramKljuceviMap_.primateljiPodataka);
-        cq.where(
-                cb.equal(primateljE, primatelj)
-        );
-        cq.select(pmT);
-        return em.createQuery(cq).getResultList();
-    }
-
-    @Override
-    public Collection<ProgramMjerenja> getProgram(PrimateljiPodataka primatelj) {
-        return getProgramZaPrimatelje(primatelj);
-    }
+//    @Override
+//    public Collection<ProgramMjerenja> getProgramZaPrimatelje(PrimateljiPodataka primatelj) {
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+//
+//        Root<ProgramMjerenja> pmT = cq.from(ProgramMjerenja.class);
+//        Expression<PrimateljiPodataka> primateljE = pmT.join(ProgramMjerenja_.primateljProgramKljuceviMapCollection)
+//                .get(PrimateljProgramKljuceviMap_.primateljiPodataka);
+//        cq.where(
+//                cb.equal(primateljE, primatelj)
+//        );
+//        cq.select(pmT);
+//        return em.createQuery(cq).getResultList();
+//    }
+//
+//    @Override
+//    public Collection<ProgramMjerenja> getProgram(PrimateljiPodataka primatelj) {
+//        return getProgramZaPrimatelje(primatelj);
+//    }
 
     @Override
     public Iterable<PrimateljiPodataka> getAktivniPrimatelji() {
@@ -70,15 +70,15 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
         return em.createQuery(cq).getResultList();
     }
 
-    @Override
-    public PrimateljiPodataka findByNaziv(String naziv) {
-        em.flush();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<PrimateljiPodataka> cq = cb.createQuery(PrimateljiPodataka.class);
-        Root<PrimateljiPodataka> from = cq.from(PrimateljiPodataka.class);
-        cq.where(cb.equal(from.get(PrimateljiPodataka_.naziv), naziv));
-        cq.select(from);
-        return em.createQuery(cq).getSingleResult();
-    }
+//    @Override
+//    public PrimateljiPodataka findByNaziv(String naziv) {
+//        em.flush();
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<PrimateljiPodataka> cq = cb.createQuery(PrimateljiPodataka.class);
+//        Root<PrimateljiPodataka> from = cq.from(PrimateljiPodataka.class);
+//        cq.where(cb.equal(from.get(PrimateljiPodataka_.naziv), naziv));
+//        cq.select(from);
+//        return em.createQuery(cq).getSingleResult();
+//    }
 
 }
