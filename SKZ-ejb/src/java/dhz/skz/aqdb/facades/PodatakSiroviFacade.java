@@ -8,8 +8,10 @@ package dhz.skz.aqdb.facades;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
+import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.PodatakSirovi_;
+import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
@@ -84,6 +86,8 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
 
+        Date zadnjiSatni = getVrijemeZadnjegS(izvor,postaja, datoteka);
+        
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
@@ -93,12 +97,13 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         Predicate datotekaP = cb.equal(programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
         Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
         Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
+        Predicate zadnjiSatniP = cb.greaterThanOrEqualTo(from.get(PodatakSirovi_.vrijeme), zadnjiSatni);
 
         Expression<Date> vrijeme = from.get(PodatakSirovi_.vrijeme);
 
 
         CriteriaQuery<Date> select = cq.select(cb.greatest(vrijeme))
-                                        .where(cb.and(izvorP, postajaP, datotekaP));
+                                        .where(cb.and(izvorP, postajaP, datotekaP, zadnjiSatniP));
         List<Date> rl = em.createQuery(cq).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
             return new Date(0L);
@@ -107,6 +112,32 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return rl.get(0);
     }
 
+    public Date getVrijemeZadnjegS(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+        Root<Podatak> from = cq.from(Podatak.class);
+
+        Join<Podatak, ProgramMjerenja> programJ = from.join(Podatak_.programMjerenjaId);
+        
+        Predicate datotekaP = cb.equal(programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
+        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
+        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
+
+        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
+
+
+        CriteriaQuery<Date> select = cq.select(cb.greatest(vrijeme))
+                                        .where(cb.and(izvorP, postajaP, datotekaP));
+        List<Date> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
+            return new Date(0L);
+        }
+
+        return rl.get(0);
+    }
+
+    
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
         return getPodaci(pm, pocetak, kraj, false, true); 
     }

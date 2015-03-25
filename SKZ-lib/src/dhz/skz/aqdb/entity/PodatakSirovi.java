@@ -56,7 +56,6 @@ public class PodatakSirovi implements Serializable {
     private Integer status;
     private Integer greska;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "vrijeme_upisa")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;

@@ -7,6 +7,7 @@ package dhz.skz.rs.service;
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import java.util.List;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +24,7 @@ import javax.ws.rs.Produces;
  *
  * @author kraljevic
  */
+@LocalBean
 @Stateless
 @Path("dhz.skz.aqdb.entity.programmjerenja")
 public class ProgramMjerenjaFacadeREST extends AbstractFacade<ProgramMjerenja> {
