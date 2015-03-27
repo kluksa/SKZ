@@ -87,8 +87,10 @@ public class Komponenta implements Serializable {
     private Collection<KomponentaHasRelevantneDirektive> komponentaHasRelevantneDirektiveCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<Granice> graniceCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
-    private Collection<Umjeravanje> umjeravanjeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection;
     @JoinColumn(name = "agregacije_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Agregacije agregacijeId;
@@ -99,6 +101,8 @@ public class Komponenta implements Serializable {
     private Collection<ProgramMjerenja> programMjerenjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<UmjerneTocke> umjerneTockeCollection;
 
     public Komponenta() {
     }
@@ -230,12 +234,21 @@ public class Komponenta implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Umjeravanje> getUmjeravanjeCollection() {
-        return umjeravanjeCollection;
+    public Collection<UmjeravanjeHasIspitneVelicine> getUmjeravanjeHasIspitneVelicineCollection() {
+        return umjeravanjeHasIspitneVelicineCollection;
     }
 
-    public void setUmjeravanjeCollection(Collection<Umjeravanje> umjeravanjeCollection) {
-        this.umjeravanjeCollection = umjeravanjeCollection;
+    public void setUmjeravanjeHasIspitneVelicineCollection(Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection) {
+        this.umjeravanjeHasIspitneVelicineCollection = umjeravanjeHasIspitneVelicineCollection;
+    }
+
+    @XmlTransient
+    public Collection<EtalonCistiZrakKvaliteta> getEtalonCistiZrakKvalitetaCollection() {
+        return etalonCistiZrakKvalitetaCollection;
+    }
+
+    public void setEtalonCistiZrakKvalitetaCollection(Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection) {
+        this.etalonCistiZrakKvalitetaCollection = etalonCistiZrakKvalitetaCollection;
     }
 
     public Agregacije getAgregacijeId() {
@@ -270,6 +283,15 @@ public class Komponenta implements Serializable {
 
     public void setKomponentaMetodaLinkCollection(Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection) {
         this.komponentaMetodaLinkCollection = komponentaMetodaLinkCollection;
+    }
+
+    @XmlTransient
+    public Collection<UmjerneTocke> getUmjerneTockeCollection() {
+        return umjerneTockeCollection;
+    }
+
+    public void setUmjerneTockeCollection(Collection<UmjerneTocke> umjerneTockeCollection) {
+        this.umjerneTockeCollection = umjerneTockeCollection;
     }
 
     @Override

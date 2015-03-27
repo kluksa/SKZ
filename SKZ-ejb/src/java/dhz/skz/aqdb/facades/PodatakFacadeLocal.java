@@ -15,11 +15,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.Local;
 
 /**
  *
  * @author kraljevic
  */
+@Local
 public interface PodatakFacadeLocal {
 
     void flush();

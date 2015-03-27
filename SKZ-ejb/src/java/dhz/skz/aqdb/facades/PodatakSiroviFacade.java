@@ -6,7 +6,6 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
@@ -20,9 +19,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -35,12 +37,18 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
+public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implements PodatakSiroviFacadeLocal, PodatakSiroviFacadeRemote  {
+    @EJB
+    private PostajaFacade postajaFacade;
+    @EJB
+    private IzvorPodatakaFacade izvorPodatakaFacade;
+    
 
     private static final Logger log = Logger.getLogger(PodatakSiroviFacade.class.getName());
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
+    
 
     @Override
     protected EntityManager getEntityManager() {
@@ -51,6 +59,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         super(PodatakSirovi.class);
     }
 
+    @Override
     public void spremi(Collection<PodatakSirovi> podaci) {
         for (PodatakSirovi ps : podaci) {
             if (!postoji(ps)) {
@@ -69,6 +78,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 //            });
 //        }
 //    }
+    @Override
     public boolean postoji(PodatakSirovi podatak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -84,7 +94,8 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return (resultList != null) && (!resultList.isEmpty());
     }
 
-    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+    @Override
+    public Date getVrijemeZadnjegOptimizirano(IzvorPodataka izvor, Postaja postaja, String datoteka) {
 
         Date zadnjiSatni = getVrijemeZadnjegS(izvor,postaja, datoteka);
         
@@ -112,6 +123,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return rl.get(0);
     }
 
+    @Override
     public Date getVrijemeZadnjegS(IzvorPodataka izvor, Postaja postaja, String datoteka) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -138,10 +150,12 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
 
     
+    @Override
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
         return getPodaci(pm, pocetak, kraj, false, true); 
     }
 
+    @Override
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -162,6 +176,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
 
     
+    @Override
     public Collection<PodatakSirovi> getPodatkeZaSat(ProgramMjerenja pm, Date kraj) {
 
 //        Date kraj = sat.getTime();
@@ -170,6 +185,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return getPodaci(pm, pocetak, kraj);
     }
 
+    @Override
     public Date getZadnjiPodatak(ProgramMjerenja program) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -188,4 +204,42 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         }
         return rl.get(0);
     }
+
+    @Override
+    public void getVrijemeZadnjegTest() {
+        IzvorPodataka izvor = izvorPodatakaFacade.find(5);
+        Postaja postaja = postajaFacade.find(32);
+        String s = "A";
+        Date pocetak = new Date();
+        Date sada;
+        getVrijemeZadnjeg(izvor, postaja, s);
+        sada = new Date();
+        log.log(Level.INFO, "1. vrijeme {0}s", (sada.getTime()-pocetak.getTime())/1000.);
+        pocetak = sada;
+        getVrijemeZadnjegOptimizirano(izvor,postaja,s);
+        sada = new Date();
+        log.log(Level.INFO, "2. vrijeme {0}s", (sada.getTime()-pocetak.getTime())/1000.);
+
+    }
+    
+    
+    @Override
+    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+
+        StoredProcedureQuery storedProcedure = em.createStoredProcedureQuery("get_vrijeme_zadnjeg_sirovog_za_postaju_izvor_nkljuc");
+        storedProcedure.registerStoredProcedureParameter("_postaja", Integer.class, ParameterMode.IN);
+        storedProcedure.registerStoredProcedureParameter("_izvor", Integer.class, ParameterMode.IN);
+        storedProcedure.registerStoredProcedureParameter("_nkljuc", String.class, ParameterMode.IN);
+        storedProcedure.registerStoredProcedureParameter("_vrijeme", java.sql.Timestamp.class, ParameterMode.OUT);
+
+        log.log(Level.INFO, "{0}, {1}, {2}", new Object[]{postaja.getId(), izvor.getId(), datoteka});
+        storedProcedure.setParameter("_postaja", postaja.getId());
+        storedProcedure.setParameter("_izvor", izvor.getId());
+        storedProcedure.setParameter("_nkljuc", datoteka);
+        storedProcedure.execute();
+        java.sql.Timestamp vrijeme = (java.sql.Timestamp) storedProcedure.getOutputParameterValue("_vrijeme");
+
+        return ( vrijeme == null ) ? null : new Date(vrijeme.getTime());
+    }
+
 }

@@ -69,11 +69,10 @@ public class ModelUredjaja implements Serializable {
     @JoinColumn(name = "proizvodjac_id", referencedColumnName = "id")
     @ManyToOne
     private Proizvodjac proizvodjacId;
-    @JoinColumn(name = "validator_id", referencedColumnName = "id")
-    @ManyToOne
-    private Validatori validatorId;
     @OneToMany(mappedBy = "modelUredjajaId")
     private Collection<Uredjaj> uredjajCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelUredjaja")
+    private Collection<Dijelovi> dijeloviCollection;
 
     public ModelUredjaja() {
     }
@@ -162,14 +161,6 @@ public class ModelUredjaja implements Serializable {
         this.proizvodjacId = proizvodjacId;
     }
 
-    public Validatori getValidatorId() {
-        return validatorId;
-    }
-
-    public void setValidatorId(Validatori validatorId) {
-        this.validatorId = validatorId;
-    }
-
     @XmlTransient
     public Collection<Uredjaj> getUredjajCollection() {
         return uredjajCollection;
@@ -177,6 +168,15 @@ public class ModelUredjaja implements Serializable {
 
     public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
         this.uredjajCollection = uredjajCollection;
+    }
+
+    @XmlTransient
+    public Collection<Dijelovi> getDijeloviCollection() {
+        return dijeloviCollection;
+    }
+
+    public void setDijeloviCollection(Collection<Dijelovi> dijeloviCollection) {
+        this.dijeloviCollection = dijeloviCollection;
     }
 
     @Override

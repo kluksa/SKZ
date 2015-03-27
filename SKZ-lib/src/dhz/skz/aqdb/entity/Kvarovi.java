@@ -8,7 +8,6 @@ package dhz.skz.aqdb.entity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +18,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -35,9 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Kvarovi.findAll", query = "SELECT k FROM Kvarovi k"),
     @NamedQuery(name = "Kvarovi.findById", query = "SELECT k FROM Kvarovi k WHERE k.id = :id"),
-    @NamedQuery(name = "Kvarovi.findByDatum", query = "SELECT k FROM Kvarovi k WHERE k.datum = :datum"),
-    @NamedQuery(name = "Kvarovi.findByDatumPopravka", query = "SELECT k FROM Kvarovi k WHERE k.datumPopravka = :datumPopravka"),
-    @NamedQuery(name = "Kvarovi.findByKvarovicol", query = "SELECT k FROM Kvarovi k WHERE k.kvarovicol = :kvarovicol")})
+    @NamedQuery(name = "Kvarovi.findByDatum", query = "SELECT k FROM Kvarovi k WHERE k.datum = :datum")})
 public class Kvarovi implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,16 +50,12 @@ public class Kvarovi implements Serializable {
     @Size(min = 1, max = 2147483647)
     @Column(name = "opis_kvara")
     private String opisKvara;
-    @Column(name = "datum_popravka")
-    @Temporal(TemporalType.DATE)
-    private Date datumPopravka;
-    @Size(max = 45)
-    private String kvarovicol;
+    @JoinColumn(name = "odrzavanje_id", referencedColumnName = "id")
+    @ManyToOne
+    private Odrzavanje odrzavanjeId;
     @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "kvarovi")
-    private Servisi servisi;
 
     public Kvarovi() {
     }
@@ -102,20 +94,12 @@ public class Kvarovi implements Serializable {
         this.opisKvara = opisKvara;
     }
 
-    public Date getDatumPopravka() {
-        return datumPopravka;
+    public Odrzavanje getOdrzavanjeId() {
+        return odrzavanjeId;
     }
 
-    public void setDatumPopravka(Date datumPopravka) {
-        this.datumPopravka = datumPopravka;
-    }
-
-    public String getKvarovicol() {
-        return kvarovicol;
-    }
-
-    public void setKvarovicol(String kvarovicol) {
-        this.kvarovicol = kvarovicol;
+    public void setOdrzavanjeId(Odrzavanje odrzavanjeId) {
+        this.odrzavanjeId = odrzavanjeId;
     }
 
     public Uredjaj getUredjajId() {
@@ -124,14 +108,6 @@ public class Kvarovi implements Serializable {
 
     public void setUredjajId(Uredjaj uredjajId) {
         this.uredjajId = uredjajId;
-    }
-
-    public Servisi getServisi() {
-        return servisi;
-    }
-
-    public void setServisi(Servisi servisi) {
-        this.servisi = servisi;
     }
 
     @Override

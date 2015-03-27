@@ -55,6 +55,19 @@
     <class>dhz.skz.aqdb.entity.ZemljopisneKarakteristike</class>
     <class>dhz.skz.aqdb.entity.ZeroSpan</class>
     <class>dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti</class>
+    <class>dhz.skz.aqdb.entity.Dijelovi</class>
+    <class>dhz.skz.aqdb.entity.VrstaUmjeravanja</class>
+    <class>dhz.skz.aqdb.entity.UmjeravanjeHasIspitneVelicine</class>
+    <class>dhz.skz.aqdb.entity.DozvoljeneGranice</class>
+    <class>dhz.skz.aqdb.entity.Odrzavanje</class>
+    <class>dhz.skz.aqdb.entity.PlanOdrzavanja</class>
+    <class>dhz.skz.aqdb.entity.EtalonDilucijska</class>
+    <class>dhz.skz.aqdb.entity.EtalonBoca</class>
+    <class>dhz.skz.aqdb.entity.VrstaOdrzavanja</class>
+    <class>dhz.skz.aqdb.entity.PlanUmjeravanja</class>
+    <class>dhz.skz.aqdb.entity.IspitneVelicine</class>
+    <class>dhz.skz.aqdb.entity.VrstaOpreme</class>
+    <class>dhz.skz.aqdb.entity.EtalonCistiZrakKvaliteta</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aqdb_likz?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.password" value="C6bm7@MySqL"/>

@@ -14,7 +14,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -62,8 +62,6 @@ import javax.transaction.UserTransaction;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
 
-    @EJB
-    private PodatakSiroviFacade podatakSiroviFacade1;
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
 
@@ -76,7 +74,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
-    private PodatakSiroviFacade podatakSiroviFacade;
+    private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     
@@ -446,7 +444,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     @Override
     public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
-        return podatakSiroviFacade1.getPodaci(program, pocetak, kraj, false, true);
+        return podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true);
     }
 
 }

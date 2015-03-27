@@ -10,12 +10,11 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,34 +25,35 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "vrsta_opreme")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Validatori.findAll", query = "SELECT v FROM Validatori v"),
-    @NamedQuery(name = "Validatori.findById", query = "SELECT v FROM Validatori v WHERE v.id = :id"),
-    @NamedQuery(name = "Validatori.findByNaziv", query = "SELECT v FROM Validatori v WHERE v.naziv = :naziv")})
-public class Validatori implements Serializable {
+    @NamedQuery(name = "VrstaOpreme.findAll", query = "SELECT v FROM VrstaOpreme v"),
+    @NamedQuery(name = "VrstaOpreme.findById", query = "SELECT v FROM VrstaOpreme v WHERE v.id = :id"),
+    @NamedQuery(name = "VrstaOpreme.findByOznaka", query = "SELECT v FROM VrstaOpreme v WHERE v.oznaka = :oznaka")})
+public class VrstaOpreme implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
-    private String naziv;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "validatoriId")
-    private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;
+    @Size(min = 1, max = 30)
+    private String oznaka;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vrstaOpremeId")
+    private Collection<Uredjaj> uredjajCollection;
 
-    public Validatori() {
+    public VrstaOpreme() {
     }
 
-    public Validatori(Integer id) {
+    public VrstaOpreme(Integer id) {
         this.id = id;
     }
 
-    public Validatori(Integer id, String naziv) {
+    public VrstaOpreme(Integer id, String oznaka) {
         this.id = id;
-        this.naziv = naziv;
+        this.oznaka = oznaka;
     }
 
     public Integer getId() {
@@ -64,21 +64,21 @@ public class Validatori implements Serializable {
         this.id = id;
     }
 
-    public String getNaziv() {
-        return naziv;
+    public String getOznaka() {
+        return oznaka;
     }
 
-    public void setNaziv(String naziv) {
-        this.naziv = naziv;
+    public void setOznaka(String oznaka) {
+        this.oznaka = oznaka;
     }
 
     @XmlTransient
-    public Collection<ValidatorModelIzvor> getValidatorModelIzvorCollection() {
-        return validatorModelIzvorCollection;
+    public Collection<Uredjaj> getUredjajCollection() {
+        return uredjajCollection;
     }
 
-    public void setValidatorModelIzvorCollection(Collection<ValidatorModelIzvor> validatorModelIzvorCollection) {
-        this.validatorModelIzvorCollection = validatorModelIzvorCollection;
+    public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
+        this.uredjajCollection = uredjajCollection;
     }
 
     @Override
@@ -91,10 +91,10 @@ public class Validatori implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Validatori)) {
+        if (!(object instanceof VrstaOpreme)) {
             return false;
         }
-        Validatori other = (Validatori) object;
+        VrstaOpreme other = (VrstaOpreme) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -103,7 +103,7 @@ public class Validatori implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.Validatori[ id=" + id + " ]";
+        return "dhz.skz.aqdb.entity.VrstaOpreme[ id=" + id + " ]";
     }
     
 }

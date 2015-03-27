@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
@@ -48,7 +49,7 @@ public class AqdbCitacBean implements CitacIzvora {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
     @EJB
-    private PodatakSiroviFacade podatakSiroviFacade;
+    private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private PodatakFacade podatakFacade;
 

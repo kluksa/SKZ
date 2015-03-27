@@ -65,6 +65,10 @@ public class AnalitickeMetode implements Serializable {
         @JoinColumn(name = "komponenta_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<Komponenta> komponentaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "analitickeMetode")
+    private Collection<DozvoljeneGranice> dozvoljeneGraniceCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "analitickeMetodeId")
+    private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "analitickeMetodeId")
     private Collection<ModelUredjaja> modelUredjajaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "metodaId")
@@ -139,6 +143,24 @@ public class AnalitickeMetode implements Serializable {
 
     public void setKomponentaCollection(Collection<Komponenta> komponentaCollection) {
         this.komponentaCollection = komponentaCollection;
+    }
+
+    @XmlTransient
+    public Collection<DozvoljeneGranice> getDozvoljeneGraniceCollection() {
+        return dozvoljeneGraniceCollection;
+    }
+
+    public void setDozvoljeneGraniceCollection(Collection<DozvoljeneGranice> dozvoljeneGraniceCollection) {
+        this.dozvoljeneGraniceCollection = dozvoljeneGraniceCollection;
+    }
+
+    @XmlTransient
+    public Collection<Umjeravanje> getUmjeravanjeCollection() {
+        return umjeravanjeCollection;
+    }
+
+    public void setUmjeravanjeCollection(Collection<Umjeravanje> umjeravanjeCollection) {
+        this.umjeravanjeCollection = umjeravanjeCollection;
     }
 
     @XmlTransient

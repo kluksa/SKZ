@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -38,9 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Umjeravanje.findAll", query = "SELECT u FROM Umjeravanje u"),
     @NamedQuery(name = "Umjeravanje.findById", query = "SELECT u FROM Umjeravanje u WHERE u.id = :id"),
     @NamedQuery(name = "Umjeravanje.findByDatum", query = "SELECT u FROM Umjeravanje u WHERE u.datum = :datum"),
-    @NamedQuery(name = "Umjeravanje.findByOznakaUmjernice", query = "SELECT u FROM Umjeravanje u WHERE u.oznakaUmjernice = :oznakaUmjernice"),
-    @NamedQuery(name = "Umjeravanje.findBySlope", query = "SELECT u FROM Umjeravanje u WHERE u.slope = :slope"),
-    @NamedQuery(name = "Umjeravanje.findByOffset", query = "SELECT u FROM Umjeravanje u WHERE u.offset = :offset")})
+    @NamedQuery(name = "Umjeravanje.findByOznakaUmjernice", query = "SELECT u FROM Umjeravanje u WHERE u.oznakaUmjernice = :oznakaUmjernice")})
 public class Umjeravanje implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,28 +56,32 @@ public class Umjeravanje implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "oznaka_umjernice")
     private String oznakaUmjernice;
-    @Basic(optional = false)
-    @NotNull
-    private float slope;
-    @Basic(optional = false)
-    @NotNull
-    private float offset;
+    @JoinTable(name = "umjeravanje_etalon_link", joinColumns = {
+        @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "oprema_id", referencedColumnName = "id")})
+    @ManyToMany
+    private Collection<Uredjaj> uredjajCollection;
     @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Komponenta komponentaId;
+    private AnalitickeMetode analitickeMetodeId;
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
     @ManyToOne
     private Korisnik mjeriteljId;
     @JoinColumn(name = "umjerni_laboratorij_id", referencedColumnName = "id")
     @ManyToOne
     private UmjerniLaboratorij umjerniLaboratorijId;
+    @JoinColumn(name = "vrsta_umjeravanja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private VrstaUmjeravanja vrstaUmjeravanjaId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
+    private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
     private UmjeravanjeKomentar umjeravanjeKomentar;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
-    private UmjerniKoeficijenti umjerniKoeficijenti;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanjeId")
+    private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanjeId")
     private Collection<UmjerneTocke> umjerneTockeCollection;
 
@@ -88,12 +92,10 @@ public class Umjeravanje implements Serializable {
         this.id = id;
     }
 
-    public Umjeravanje(Integer id, Date datum, String oznakaUmjernice, float slope, float offset) {
+    public Umjeravanje(Integer id, Date datum, String oznakaUmjernice) {
         this.id = id;
         this.datum = datum;
         this.oznakaUmjernice = oznakaUmjernice;
-        this.slope = slope;
-        this.offset = offset;
     }
 
     public Integer getId() {
@@ -120,20 +122,13 @@ public class Umjeravanje implements Serializable {
         this.oznakaUmjernice = oznakaUmjernice;
     }
 
-    public float getSlope() {
-        return slope;
+    @XmlTransient
+    public Collection<Uredjaj> getUredjajCollection() {
+        return uredjajCollection;
     }
 
-    public void setSlope(float slope) {
-        this.slope = slope;
-    }
-
-    public float getOffset() {
-        return offset;
-    }
-
-    public void setOffset(float offset) {
-        this.offset = offset;
+    public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
+        this.uredjajCollection = uredjajCollection;
     }
 
     public Uredjaj getUredjajId() {
@@ -144,12 +139,12 @@ public class Umjeravanje implements Serializable {
         this.uredjajId = uredjajId;
     }
 
-    public Komponenta getKomponentaId() {
-        return komponentaId;
+    public AnalitickeMetode getAnalitickeMetodeId() {
+        return analitickeMetodeId;
     }
 
-    public void setKomponentaId(Komponenta komponentaId) {
-        this.komponentaId = komponentaId;
+    public void setAnalitickeMetodeId(AnalitickeMetode analitickeMetodeId) {
+        this.analitickeMetodeId = analitickeMetodeId;
     }
 
     public Korisnik getMjeriteljId() {
@@ -168,6 +163,23 @@ public class Umjeravanje implements Serializable {
         this.umjerniLaboratorijId = umjerniLaboratorijId;
     }
 
+    public VrstaUmjeravanja getVrstaUmjeravanjaId() {
+        return vrstaUmjeravanjaId;
+    }
+
+    public void setVrstaUmjeravanjaId(VrstaUmjeravanja vrstaUmjeravanjaId) {
+        this.vrstaUmjeravanjaId = vrstaUmjeravanjaId;
+    }
+
+    @XmlTransient
+    public Collection<UmjeravanjeHasIspitneVelicine> getUmjeravanjeHasIspitneVelicineCollection() {
+        return umjeravanjeHasIspitneVelicineCollection;
+    }
+
+    public void setUmjeravanjeHasIspitneVelicineCollection(Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection) {
+        this.umjeravanjeHasIspitneVelicineCollection = umjeravanjeHasIspitneVelicineCollection;
+    }
+
     public UmjeravanjeKomentar getUmjeravanjeKomentar() {
         return umjeravanjeKomentar;
     }
@@ -176,12 +188,13 @@ public class Umjeravanje implements Serializable {
         this.umjeravanjeKomentar = umjeravanjeKomentar;
     }
 
-    public UmjerniKoeficijenti getUmjerniKoeficijenti() {
-        return umjerniKoeficijenti;
+    @XmlTransient
+    public Collection<PlanUmjeravanja> getPlanUmjeravanjaCollection() {
+        return planUmjeravanjaCollection;
     }
 
-    public void setUmjerniKoeficijenti(UmjerniKoeficijenti umjerniKoeficijenti) {
-        this.umjerniKoeficijenti = umjerniKoeficijenti;
+    public void setPlanUmjeravanjaCollection(Collection<PlanUmjeravanja> planUmjeravanjaCollection) {
+        this.planUmjeravanjaCollection = planUmjeravanjaCollection;
     }
 
     @XmlTransient

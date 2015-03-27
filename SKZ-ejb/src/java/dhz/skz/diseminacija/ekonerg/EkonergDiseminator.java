@@ -77,8 +77,10 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 //            odrediPocetakKraj();
             Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);
             for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
-                prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
-                prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
+                if (pm.getAktivan()>0) {
+                    prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
+                    prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
+                }
             }
 
 //            for (PrimateljProgramKljuceviMap pm : ppmFac.find(primatelj)) {
@@ -219,9 +221,8 @@ public class EkonergDiseminator implements DiseminatorPodataka {
             for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak)) {
                 log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(),
                     p.getProgramMjerenjaId().getId(), pm.getPKljuc(), pm.getKKljuc(), p.getVrijednost()});
-
-                stmt.setString(1, pm.getPKljuc());
-                stmt.setString(2, pm.getKKljuc());
+                stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
+                stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
                 stmt.setFloat(4, p.getVrijednost());
                 stmt.setInt(5, p.getStatus());
@@ -237,8 +238,8 @@ public class EkonergDiseminator implements DiseminatorPodataka {
             for (ZeroSpan zs : zsDao.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
                 log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
                     pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
-                stmt.setString(1, pm.getPKljuc());
-                stmt.setString(2, pm.getKKljuc());
+                stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
+                stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
                 stmt.setFloat(4, zs.getVrijednost());
                 stmt.setString(5, zs.getVrsta());

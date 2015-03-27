@@ -10,12 +10,11 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,34 +25,30 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "vrsta_odrzavanja")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Validatori.findAll", query = "SELECT v FROM Validatori v"),
-    @NamedQuery(name = "Validatori.findById", query = "SELECT v FROM Validatori v WHERE v.id = :id"),
-    @NamedQuery(name = "Validatori.findByNaziv", query = "SELECT v FROM Validatori v WHERE v.naziv = :naziv")})
-public class Validatori implements Serializable {
+    @NamedQuery(name = "VrstaOdrzavanja.findAll", query = "SELECT v FROM VrstaOdrzavanja v"),
+    @NamedQuery(name = "VrstaOdrzavanja.findById", query = "SELECT v FROM VrstaOdrzavanja v WHERE v.id = :id"),
+    @NamedQuery(name = "VrstaOdrzavanja.findByNaziv", query = "SELECT v FROM VrstaOdrzavanja v WHERE v.naziv = :naziv")})
+public class VrstaOdrzavanja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    private Integer id;
+    @Size(max = 45)
     private String naziv;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "validatoriId")
-    private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vrstaOdrzavanjaId")
+    private Collection<Odrzavanje> odrzavanjeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vrstaOdrzavanja")
+    private Collection<PlanOdrzavanja> planOdrzavanjaCollection;
 
-    public Validatori() {
+    public VrstaOdrzavanja() {
     }
 
-    public Validatori(Integer id) {
+    public VrstaOdrzavanja(Integer id) {
         this.id = id;
-    }
-
-    public Validatori(Integer id, String naziv) {
-        this.id = id;
-        this.naziv = naziv;
     }
 
     public Integer getId() {
@@ -73,12 +68,21 @@ public class Validatori implements Serializable {
     }
 
     @XmlTransient
-    public Collection<ValidatorModelIzvor> getValidatorModelIzvorCollection() {
-        return validatorModelIzvorCollection;
+    public Collection<Odrzavanje> getOdrzavanjeCollection() {
+        return odrzavanjeCollection;
     }
 
-    public void setValidatorModelIzvorCollection(Collection<ValidatorModelIzvor> validatorModelIzvorCollection) {
-        this.validatorModelIzvorCollection = validatorModelIzvorCollection;
+    public void setOdrzavanjeCollection(Collection<Odrzavanje> odrzavanjeCollection) {
+        this.odrzavanjeCollection = odrzavanjeCollection;
+    }
+
+    @XmlTransient
+    public Collection<PlanOdrzavanja> getPlanOdrzavanjaCollection() {
+        return planOdrzavanjaCollection;
+    }
+
+    public void setPlanOdrzavanjaCollection(Collection<PlanOdrzavanja> planOdrzavanjaCollection) {
+        this.planOdrzavanjaCollection = planOdrzavanjaCollection;
     }
 
     @Override
@@ -91,10 +95,10 @@ public class Validatori implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Validatori)) {
+        if (!(object instanceof VrstaOdrzavanja)) {
             return false;
         }
-        Validatori other = (Validatori) object;
+        VrstaOdrzavanja other = (VrstaOdrzavanja) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -103,7 +107,7 @@ public class Validatori implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.Validatori[ id=" + id + " ]";
+        return "dhz.skz.aqdb.entity.VrstaOdrzavanja[ id=" + id + " ]";
     }
     
 }

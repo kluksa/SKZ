@@ -44,7 +44,15 @@ public class MjerneJedinice implements Serializable {
     @Size(min = 1, max = 45)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
+    private Collection<EtalonBoca> etalonBocaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
+    private Collection<DozvoljeneGranice> dozvoljeneGraniceCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
+    private Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
     private Collection<Komponenta> komponentaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
+    private Collection<UmjerneTocke> umjerneTockeCollection;
 
     public MjerneJedinice() {
     }
@@ -75,12 +83,48 @@ public class MjerneJedinice implements Serializable {
     }
 
     @XmlTransient
+    public Collection<EtalonBoca> getEtalonBocaCollection() {
+        return etalonBocaCollection;
+    }
+
+    public void setEtalonBocaCollection(Collection<EtalonBoca> etalonBocaCollection) {
+        this.etalonBocaCollection = etalonBocaCollection;
+    }
+
+    @XmlTransient
+    public Collection<DozvoljeneGranice> getDozvoljeneGraniceCollection() {
+        return dozvoljeneGraniceCollection;
+    }
+
+    public void setDozvoljeneGraniceCollection(Collection<DozvoljeneGranice> dozvoljeneGraniceCollection) {
+        this.dozvoljeneGraniceCollection = dozvoljeneGraniceCollection;
+    }
+
+    @XmlTransient
+    public Collection<EtalonCistiZrakKvaliteta> getEtalonCistiZrakKvalitetaCollection() {
+        return etalonCistiZrakKvalitetaCollection;
+    }
+
+    public void setEtalonCistiZrakKvalitetaCollection(Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection) {
+        this.etalonCistiZrakKvalitetaCollection = etalonCistiZrakKvalitetaCollection;
+    }
+
+    @XmlTransient
     public Collection<Komponenta> getKomponentaCollection() {
         return komponentaCollection;
     }
 
     public void setKomponentaCollection(Collection<Komponenta> komponentaCollection) {
         this.komponentaCollection = komponentaCollection;
+    }
+
+    @XmlTransient
+    public Collection<UmjerneTocke> getUmjerneTockeCollection() {
+        return umjerneTockeCollection;
+    }
+
+    public void setUmjerneTockeCollection(Collection<UmjerneTocke> umjerneTockeCollection) {
+        this.umjerneTockeCollection = umjerneTockeCollection;
     }
 
     @Override

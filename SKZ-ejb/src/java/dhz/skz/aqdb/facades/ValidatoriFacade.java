@@ -43,6 +43,7 @@ public class ValidatoriFacade extends AbstractFacade<Validatori> {
         Predicate izvorP = cb.equal(from.get(ValidatorModelIzvor_.izvorPodataka), izvor);
         Predicate modelP = cb.equal(from.get(ValidatorModelIzvor_.modelUredjaja), model);
         cq.select(from).where(cb.and(izvorP,modelP));
+        
         return em.createQuery(cq).getSingleResult().getValidatoriId();
     }
 }

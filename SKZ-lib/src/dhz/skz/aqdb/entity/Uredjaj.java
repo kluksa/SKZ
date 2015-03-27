@@ -16,10 +16,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -59,14 +61,29 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
+    @ManyToMany(mappedBy = "uredjajCollection")
+    private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "uredjajId")
     private Collection<ProgramUredjajLink> programUredjajLinkCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private EtalonBoca etalonBoca;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<Kvarovi> kvaroviCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
-    private Collection<Umjeravanje> umjeravanjeCollection;
+    private Collection<Umjeravanje> umjeravanjeCollection1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private Collection<EtalonDilucijska> etalonDilucijskaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<PostajaUredjajLink> postajaUredjajLinkCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private Collection<PlanOdrzavanja> planOdrzavanjaCollection;
+    @JoinColumn(name = "vrsta_opreme_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private VrstaOpreme vrstaOpremeId;
     @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")
     @ManyToOne
     private ModelUredjaja modelUredjajaId;
@@ -124,12 +141,29 @@ public class Uredjaj implements Serializable {
     }
 
     @XmlTransient
+    public Collection<Umjeravanje> getUmjeravanjeCollection() {
+        return umjeravanjeCollection;
+    }
+
+    public void setUmjeravanjeCollection(Collection<Umjeravanje> umjeravanjeCollection) {
+        this.umjeravanjeCollection = umjeravanjeCollection;
+    }
+
+    @XmlTransient
     public Collection<ProgramUredjajLink> getProgramUredjajLinkCollection() {
         return programUredjajLinkCollection;
     }
 
     public void setProgramUredjajLinkCollection(Collection<ProgramUredjajLink> programUredjajLinkCollection) {
         this.programUredjajLinkCollection = programUredjajLinkCollection;
+    }
+
+    public EtalonBoca getEtalonBoca() {
+        return etalonBoca;
+    }
+
+    public void setEtalonBoca(EtalonBoca etalonBoca) {
+        this.etalonBoca = etalonBoca;
     }
 
     @XmlTransient
@@ -142,12 +176,21 @@ public class Uredjaj implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Umjeravanje> getUmjeravanjeCollection() {
-        return umjeravanjeCollection;
+    public Collection<Umjeravanje> getUmjeravanjeCollection1() {
+        return umjeravanjeCollection1;
     }
 
-    public void setUmjeravanjeCollection(Collection<Umjeravanje> umjeravanjeCollection) {
-        this.umjeravanjeCollection = umjeravanjeCollection;
+    public void setUmjeravanjeCollection1(Collection<Umjeravanje> umjeravanjeCollection1) {
+        this.umjeravanjeCollection1 = umjeravanjeCollection1;
+    }
+
+    @XmlTransient
+    public Collection<EtalonDilucijska> getEtalonDilucijskaCollection() {
+        return etalonDilucijskaCollection;
+    }
+
+    public void setEtalonDilucijskaCollection(Collection<EtalonDilucijska> etalonDilucijskaCollection) {
+        this.etalonDilucijskaCollection = etalonDilucijskaCollection;
     }
 
     @XmlTransient
@@ -157,6 +200,41 @@ public class Uredjaj implements Serializable {
 
     public void setPostajaUredjajLinkCollection(Collection<PostajaUredjajLink> postajaUredjajLinkCollection) {
         this.postajaUredjajLinkCollection = postajaUredjajLinkCollection;
+    }
+
+    @XmlTransient
+    public Collection<EtalonCistiZrakKvaliteta> getEtalonCistiZrakKvalitetaCollection() {
+        return etalonCistiZrakKvalitetaCollection;
+    }
+
+    public void setEtalonCistiZrakKvalitetaCollection(Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection) {
+        this.etalonCistiZrakKvalitetaCollection = etalonCistiZrakKvalitetaCollection;
+    }
+
+    @XmlTransient
+    public Collection<PlanUmjeravanja> getPlanUmjeravanjaCollection() {
+        return planUmjeravanjaCollection;
+    }
+
+    public void setPlanUmjeravanjaCollection(Collection<PlanUmjeravanja> planUmjeravanjaCollection) {
+        this.planUmjeravanjaCollection = planUmjeravanjaCollection;
+    }
+
+    @XmlTransient
+    public Collection<PlanOdrzavanja> getPlanOdrzavanjaCollection() {
+        return planOdrzavanjaCollection;
+    }
+
+    public void setPlanOdrzavanjaCollection(Collection<PlanOdrzavanja> planOdrzavanjaCollection) {
+        this.planOdrzavanjaCollection = planOdrzavanjaCollection;
+    }
+
+    public VrstaOpreme getVrstaOpremeId() {
+        return vrstaOpremeId;
+    }
+
+    public void setVrstaOpremeId(VrstaOpreme vrstaOpremeId) {
+        this.vrstaOpremeId = vrstaOpremeId;
     }
 
     public ModelUredjaja getModelUredjajaId() {
