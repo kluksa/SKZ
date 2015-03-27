@@ -9,8 +9,8 @@
             <name>SKZ-ejb</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <included-library dirs="200">libs.JavaCSV.classpath</included-library>
-            <included-library dirs="200">libs.Commons_NET_3.classpath</included-library>
             <included-library dirs="200">reference.SKZ-lib.jar</included-library>
+            <included-library dirs="200">libs.Apachee_Commons_Net.classpath</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>

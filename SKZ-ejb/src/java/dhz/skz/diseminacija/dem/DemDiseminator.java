@@ -13,6 +13,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
 import dhz.skz.diseminacija.datatransfer.DataTransferFactory;
@@ -40,7 +41,7 @@ import javax.ejb.Stateless;
 public class DemDiseminator implements DiseminatorPodataka {
 
     @EJB
-    private PrimateljiPodatakaFacadeLocal ppf;
+    private ProgramMjerenjaFacadeLocal ppf;
 
     @EJB
     private PodatakFacade dao;
@@ -50,7 +51,7 @@ public class DemDiseminator implements DiseminatorPodataka {
 //        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
 //                getProgramPoKomponentama(primatelj.getProgramMjerenjaCollection());
         Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama
-                = getProgramPoKomponentama(ppf.getProgramZaPrimatelje(primatelj));
+                = getProgramPoKomponentama(ppf.find(primatelj));
 
         DEMTransformation demT = new DEMTransformation(primatelj);
         NivoValidacije nv = new NivoValidacije((short) 0);

@@ -19,6 +19,6 @@ public interface PrimateljiPodatakaFacadeLocal {
 
     Iterable<PrimateljiPodataka> getAktivniPrimatelji();
 
-    Collection<ProgramMjerenja> getProgramZaPrimatelje(PrimateljiPodataka primatelj);
+//    Collection<ProgramMjerenja> getProgramZaPrimatelje(PrimateljiPodataka primatelj);
 
 }

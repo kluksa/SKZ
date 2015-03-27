@@ -73,28 +73,6 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         return pm;
     }
 
-    public Date getVrijemeZadnjegNaPostajiZaIzvor(Postaja p, IzvorPodataka i) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
-        Root<Podatak> from = cq.from(Podatak.class);
-        Join<Podatak, ProgramMjerenja> podatakProgram = from.join(Podatak_.programMjerenjaId);
-
-        Expression<NivoValidacije> nivoValidacijeE = from.get(Podatak_.nivoValidacijeId);
-        Expression<Postaja> postaja = podatakProgram.get(ProgramMjerenja_.postajaId);
-        Expression<IzvorPodataka> izvor = podatakProgram.get(ProgramMjerenja_.izvorPodatakaId);
-        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
-
-        cq.where(
-                cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
-                        cb.equal(postaja, p),
-                        cb.equal(izvor, i)
-                )
-        );
-        cq.select(cb.greatest(vrijeme));
-        return em.createQuery(cq).getSingleResult();
-    }
-
     public Collection<Podatak> getPodaciZaKomponentu(Date pocetak, Date kraj, Komponenta k, NivoValidacije nv, short usporedno) {
         em.refresh(k);
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -216,6 +194,29 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
             return rl.get(0);
         }
     }
+
+//    public Date getVrijemeZadnjegNaPostajiZaIzvor(Postaja p, IzvorPodataka i) {
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+//        Root<Podatak> from = cq.from(Podatak.class);
+//        Join<Podatak, ProgramMjerenja> podatakProgram = from.join(Podatak_.programMjerenjaId);
+//
+//        Expression<NivoValidacije> nivoValidacijeE = from.get(Podatak_.nivoValidacijeId);
+//        Expression<Postaja> postaja = podatakProgram.get(ProgramMjerenja_.postajaId);
+//        Expression<IzvorPodataka> izvor = podatakProgram.get(ProgramMjerenja_.izvorPodatakaId);
+//        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
+//
+//        cq.where(
+//                cb.and(
+//                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+//                        cb.equal(postaja, p),
+//                        cb.equal(izvor, i)
+//                )
+//        );
+//        cq.select(cb.greatest(vrijeme));
+//        return em.createQuery(cq).getSingleResult();
+//    }
+
 
     public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});

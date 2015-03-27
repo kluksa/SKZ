@@ -7,6 +7,7 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import java.util.Collection;
 import java.util.Date;
@@ -35,5 +36,6 @@ public interface ProgramMjerenjaFacadeLocal {
     
     Collection<ProgramMjerenja> findZaTermin(Postaja p, IzvorPodataka i, Date termin);
 
+    public Collection<ProgramMjerenja> find(PrimateljiPodataka primatelj);
     
 }
