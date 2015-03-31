@@ -27,6 +27,4 @@ public class ValidatorModelIzvorFacade extends AbstractFacade<ValidatorModelIzvo
     public ValidatorModelIzvorFacade() {
         super(ValidatorModelIzvor.class);
     }
-    
-    
 }

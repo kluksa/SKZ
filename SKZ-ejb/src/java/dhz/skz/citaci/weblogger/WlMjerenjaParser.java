@@ -147,17 +147,20 @@ class WlMjerenjaParser implements WlFileParser {
             }
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
-            NizProcitanihWl nizPodataka = nizKanala.get(wlStupacProgram.get(stupac));
-
+            ProgramMjerenja pm = wlStupacProgram.get(stupac);
+            NizProcitanihWl nizPodataka = nizKanala.get(pm);
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
             if (!iznosStr.equals("-999.00") && !iznosStr.isEmpty()) {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
                     PodatakSirovi pod = new PodatakSirovi();
+                    pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
                     pod.setVrijednost(iznos);
+                    
+// tu bi trebali zvati validator i zapisati rezultat u PodatakSirovi.status ( status == 0 = OK)
                     nizPodataka.dodajPodatak(pod);
 
                 } catch (NumberFormatException  ex) {

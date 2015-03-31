@@ -6,19 +6,8 @@
 /SKZ-ejb/dist/
 /SKZ-war/nbproject/private/
 /SKZ-war/build/
-/SKZ-war/dist/
-/nbproject/private/
-/build/
+/SKZ-war/dist/*
+/nbproject/private/*
+/build/*
+/dist/*
 
-/SKZ-ws/nbproject/private/
-/Calculator/CalculatorApp/nbproject/private/
-/Calculator/CalculatorClientApp/nbproject/private/
-/Calculator/CalculatorClientApp/build/
-/SKZ-ws/build/
-/SKZ-ws/dist/
-/WebApplication1/nbproject/private/
-/SKZweb/nbproject/private/
-/SKZweb/build/
-/SKZweb/dist/
-/JavaApplication2/nbproject/private/
-/JavaApplication2/build/
