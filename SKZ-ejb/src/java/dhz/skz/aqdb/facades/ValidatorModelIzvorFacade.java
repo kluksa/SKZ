@@ -5,10 +5,15 @@
  */
 package dhz.skz.aqdb.facades;
 
+import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.ValidatorModelIzvor;
+import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -16,6 +21,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class ValidatorModelIzvorFacade extends AbstractFacade<ValidatorModelIzvor> {
+
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -26,5 +32,14 @@ public class ValidatorModelIzvorFacade extends AbstractFacade<ValidatorModelIzvo
 
     public ValidatorModelIzvorFacade() {
         super(ValidatorModelIzvor.class);
+    }
+
+    public Collection<ValidatorModelIzvor> findAll(IzvorPodataka ip) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ValidatorModelIzvor> cq = cb.createQuery(ValidatorModelIzvor.class);
+        Root<ValidatorModelIzvor> from = cq.from(ValidatorModelIzvor.class);
+
+        cq.select(from).where(cb.equal(from, ip));
+        return em.createQuery(cq).getResultList();
     }
 }

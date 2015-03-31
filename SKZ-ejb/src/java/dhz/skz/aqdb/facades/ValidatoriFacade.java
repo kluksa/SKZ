@@ -63,12 +63,8 @@ public class ValidatoriFacade extends AbstractFacade<Validatori> {
         Root<Validatori> from = cq.from(Validatori.class);
         CollectionJoin<Validatori, ValidatorModelIzvor> vmiJ = from.join(Validatori_.validatorModelIzvorCollection);
         Join<ValidatorModelIzvor, IzvorPodataka> ipJ = vmiJ.join(ValidatorModelIzvor_.izvorPodataka);
-        Join<ValidatorModelIzvor, ModelUredjaja> muJ = vmiJ.join(ValidatorModelIzvor_.modelUredjaja);
-        CollectionJoin<ModelUredjaja, Uredjaj> uJ = muJ.join(ModelUredjaja_.uredjajCollection);
-        CollectionJoin<Uredjaj, ProgramUredjajLink> pulJ = uJ.join(Uredjaj_.programUredjajLinkCollection);
-        Join<ProgramUredjajLink, ProgramMjerenja> pmJ = pulJ.join(ProgramUredjajLink_.programMjerenjaId);
         
-        cq.select(from).where(cb.equal(uJ, izvor));
+        cq.select(from).where(cb.equal(ipJ, izvor));
         return em.createQuery(cq).getResultList();
     }
 }
