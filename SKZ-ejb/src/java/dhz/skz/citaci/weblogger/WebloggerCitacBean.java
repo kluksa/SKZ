@@ -13,6 +13,8 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -36,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -85,6 +88,9 @@ public class WebloggerCitacBean implements CitacIzvora {
     @EJB
     private ValidatorFactory validatorFac;
 
+    @EJB
+    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
@@ -217,7 +223,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                             PodatakSirovi pp = podmapa.get(d);
                             agregator.dodaj(pp);
                         }
-                        spremi(agregator, program, kr);
+                        spremi(agregator, program, kr, podmapa);
                         po = kr;
                     }
                 }
@@ -231,10 +237,9 @@ public class WebloggerCitacBean implements CitacIzvora {
         }
     }
     
-    @TransactionAttribute(REQUIRES_NEW)
-    private void spremi(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+    private void spremi(AgregatorPodatka ap, ProgramMjerenja program, Date kr, Map<Date, PodatakSirovi> podmapa) {
         if (ap.imaMjerenje()) {
-            spremiMjerenje(ap, program, kr);
+            spremiMjerenje(ap, program, kr, podmapa);
         }
         if (ap.imaZero()) {
             spremiZero(ap, program, kr);
@@ -245,12 +250,15 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @TransactionAttribute(REQUIRES_NEW)
-    private void spremiMjerenje(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
+    private void spremiMjerenje(AgregatorPodatka ap, ProgramMjerenja program, Date kr, Map<Date, PodatakSirovi> sirovi) {
         Podatak p = ap.getPodatak();
         p.setVrijeme(kr);
         p.setProgramMjerenjaId(program);
         p.setNivoValidacijeId(new NivoValidacije((short) 0));
         podatakFacade.create(p);
+        for ( Entry<Date,PodatakSirovi> e : sirovi.entrySet() ){
+            podatakSiroviFacade.create(e.getValue());
+        }
     }
 
     @TransactionAttribute(REQUIRES_NEW)

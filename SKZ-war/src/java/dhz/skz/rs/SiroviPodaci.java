@@ -7,6 +7,7 @@ package dhz.skz.rs;
 
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeRemote;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.citaci.CitacMainRemote;
 import dhz.skz.rs.dto.PodatakDTO;
@@ -49,7 +50,9 @@ public class SiroviPodaci {
     ProgramMjerenjaFacadeRemote programMjerenjaFacade;
     @EJB
     CitacMainRemote citacMainBean;
-
+    @EJB
+    PodatakSiroviFacadeRemote podatakSiroviFacade;
+    
     @Context
     private UriInfo context;
 
@@ -84,8 +87,8 @@ public class SiroviPodaci {
         Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        try {
-            for (PodatakSirovi ps : citacMainBean.dohvatiSirove(program, pocetak, kraj, false, true)) {
+            
+            for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true)) {
                 PodatakSiroviDTO p = new PodatakSiroviDTO();
                 p.setId(ps.getId());
                 p.setStatusString(ps.getStatusString());
@@ -95,12 +98,6 @@ public class SiroviPodaci {
                 lista.add(p);
             }
 
-        } catch (NamingException ex) {
-            Logger.getLogger(SiroviPodaci.class.getName()).log(Level.SEVERE, null, ex);
-            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Naming exception: " + ex.getMessage())
-                    .build());
-        }
         return lista;
 
     }

@@ -18,7 +18,7 @@ import javax.ejb.Local;
  * @author kraljevic
  */
 @Local
-public interface PodatakSiroviFacadeLocal {
+public interface PodatakSiroviFacadeLocal extends AbstractFacadeInterface<PodatakSirovi>  {
     Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj);
 
     Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k);

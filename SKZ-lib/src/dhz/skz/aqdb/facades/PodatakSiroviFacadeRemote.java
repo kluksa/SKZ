@@ -5,6 +5,9 @@
  */
 package dhz.skz.aqdb.facades;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Collection;
 import java.util.Date;
 import javax.ejb.Remote;
 
@@ -16,5 +19,8 @@ import javax.ejb.Remote;
 public interface PodatakSiroviFacadeRemote {
 
     void getVrijemeZadnjegTest();
+    
+    Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k);
+
     
 }
