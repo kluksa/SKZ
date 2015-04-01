@@ -31,7 +31,7 @@ import javax.naming.NamingException;
  * @author kraljevic
  */
 @Stateful
-public class ValidatorFactory {
+public class ValidatorFactoryNovi {
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 
@@ -40,7 +40,7 @@ public class ValidatorFactory {
     
     private Map<ProgramMjerenja,NavigableMap<Date,Validator>> programVrijemeValidatorMapa;
     
-    private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
+    private static final Logger log = Logger.getLogger(ValidatorFactoryNovi.class.getName());
 
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
         return programVrijemeValidatorMapa.get(pm).floorEntry(vrijeme).getValue();
