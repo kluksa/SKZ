@@ -23,6 +23,8 @@ import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
 import dhz.skz.citaci.weblogger.util.Status;
+import dhz.skz.citaci.weblogger.validatori.Validator;
+import dhz.skz.validatori.ValidatorFactoryNovi;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,6 +48,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.naming.NamingException;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -77,6 +80,8 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    @EJB
+    private ValidatorFactoryNovi validatorFactory;
     
     @Resource
     private EJBContext context;
@@ -91,19 +96,24 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     @Override
     public void obradi(CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Idem obraditi.");
-        postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
-        izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        this.omotnica = omotnica;
-        mapa = new HashMap<>();
-
-        if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
-            log.log(Level.INFO, "ZERO/SPAN");
-            obradiZeroSpan(omotnica);
-        } else {
-            log.log(Level.INFO, "MJERENJE");
-            obradiMjerenja(omotnica);
+        try {
+            log.log(Level.INFO, "Idem obraditi.");
+            postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
+            izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            this.omotnica = omotnica;
+            mapa = new HashMap<>();
+            validatorFactory.init(izvor);
+            
+            if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
+                log.log(Level.INFO, "ZERO/SPAN");
+                obradiZeroSpan(omotnica);
+            } else {
+                log.log(Level.INFO, "MJERENJE");
+                obradiMjerenja(omotnica);
+            }
+        } catch (NamingException ex) {
+            log.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -121,6 +131,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private void parseLinija(String[] linija, Date vrijeme, Collection<PodatakSirovi> podaci) {
         for (Integer i : mapa.keySet()) {
             ProgramMjerenja pm = mapa.get(i);
+            Validator v = validatorFactory.getValidator(pm, vrijeme);
             if (!linija[i].equalsIgnoreCase("null")) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -353,46 +364,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         }
     }
 
-    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
-        Status s = new Status();
-        String[] st = statusStr.split(";");
-        int ss = Integer.parseInt(st[0]);
-        int bs = Integer.parseInt(st[1]);
-        int fs = Integer.parseInt(st[2]);
-        int nc = Integer.parseInt(st[3]);
-
-        if (iznos == -9999.f) {
-            s.dodajFlag(Flag.NEDOSTAJE);
-        }
-        if (fs != 0) {
-            s.dodajFlag(Flag.FAULT);
-        }
-        if (ss != 0) {
-            s.dodajFlag(Flag.FAULT);
-        }
-        if ((bs & 1) == 1) {
-            s.dodajFlag(Flag.MAINTENENCE);
-        }
-        if ((bs & 2) == 2) {
-            s.dodajFlag(Flag.ZERO);
-        }
-        if ((bs & 4) == 4) {
-            s.dodajFlag(Flag.SPAN);
-        }
-        if ((bs & 8) == 8) {
-            s.dodajFlag(Flag.MAINTENENCE);
-        }
-        if ((bs & 16) == 16) {
-            s.dodajFlag(Flag.MAINTENENCE);
-        }
-        if ((bs & 32) == 32) {
-        }
-        if ((bs & 64) == 64) {
-        }
-        if ((bs & 128) == 128) {
-        }
-        return s;
-    }
+    
 
     private void obradiMjerenja(CsvOmotnica omotnica) {
         Collection<PodatakSirovi> podaci = new ArrayList<>();

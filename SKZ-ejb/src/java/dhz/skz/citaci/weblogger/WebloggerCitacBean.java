@@ -25,7 +25,7 @@ import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import dhz.skz.citaci.weblogger.util.SatniIterator;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
-import dhz.skz.citaci.weblogger.validatori.ValidatorFactory;
+import dhz.skz.validatori.ValidatorFactoryNovi;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,9 +60,6 @@ import org.apache.commons.net.ftp.FTPFile;
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
 
-    @EJB
-    private ValidatorFactory validatorFactory;
-
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -83,7 +80,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private PostajaFacade posajaFacade;
 
     @EJB
-    private ValidatorFactory validatorFac;
+    private ValidatorFactoryNovi validatorFactory;
 
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
@@ -101,23 +98,28 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
-        log.log(Level.INFO, "POCETAK CITANJA");
-        this.izvor = izvor;
-        for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
+        try {
+            log.log(Level.INFO, "POCETAK CITANJA");
+            this.izvor = izvor;
+            validatorFactory.init(izvor);
+            for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
 
-            aktivnaPostaja = it.next();
-            log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
+                aktivnaPostaja = it.next();
+                log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
-            Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova = napraviMapuNizova();
+                Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova = napraviMapuNizova();
 
-            odrediVrijemeZadnjegPodatka(aktivnaPostaja);
+                odrediVrijemeZadnjegPodatka(aktivnaPostaja);
 
-            pokupiMjerenja(mapaMjernihNizova);
+                pokupiMjerenja(mapaMjernihNizova);
 
-            obradiISpremi(mapaMjernihNizova);
+                obradiISpremi(mapaMjernihNizova);
 
+            }
+            log.log(Level.INFO, "KRAJ CITANJA");
+        } catch (NamingException ex) {
+            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        log.log(Level.INFO, "KRAJ CITANJA");
     }
 
     private Map<ProgramMjerenja, NizProcitanihWl> napraviMapuNizova() {
@@ -190,47 +192,42 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
+    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws NamingException {
         AgregatorPodatka agregator = new AgregatorPodatka();
 
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
-            try {
-                validatorFactory.init(program);
-                
-                NizProcitanihWl niz = mapaMjernihNizova.get(program);
-                if ( program.getKomponentaId().getId()==263) {
-                    log.log(Level.INFO,"Benzen");
-                }
-                
-                if (!niz.getPodaci().isEmpty()) {
-                    NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
-                    
-                    SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
-                    Date po = sat.getVrijeme();
-                    while (sat.next()) {
-                        Date kr = sat.getVrijeme();
-                        agregator.reset();
-                        NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
-                        Validator v = validatorFactory.getValidator(program, po);
-                        agregator.setValidator(v);
-                        for (Date d : podmapa.keySet()) {
-                            PodatakSirovi pp = podmapa.get(d);
-                            agregator.dodaj(pp);
-                        }
-                        spremi(agregator, program, kr);
-                        po = kr;
-                    }
-                }
-                if (!niz.getZs().isEmpty()) {
-                    pospremiZsNiz(niz);
-                }
-                log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
-            } catch (NamingException ex) {
-                Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+
+            NizProcitanihWl niz = mapaMjernihNizova.get(program);
+            if (program.getKomponentaId().getId() == 263) {
+                log.log(Level.INFO, "Benzen");
             }
+
+            if (!niz.getPodaci().isEmpty()) {
+                NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
+
+                SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
+                Date po = sat.getVrijeme();
+                while (sat.next()) {
+                    Date kr = sat.getVrijeme();
+                    agregator.reset();
+                    NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
+                    Validator v = validatorFactory.getValidator(program, po);
+                    agregator.setValidator(v);
+                    for (Date d : podmapa.keySet()) {
+                        PodatakSirovi pp = podmapa.get(d);
+                        agregator.dodaj(pp);
+                    }
+                    spremi(agregator, program, kr);
+                    po = kr;
+                }
+            }
+            if (!niz.getZs().isEmpty()) {
+                pospremiZsNiz(niz);
+            }
+            log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
         }
     }
-    
+
     @TransactionAttribute(REQUIRES_NEW)
     private void spremi(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
         if (ap.imaMjerenje()) {
@@ -260,7 +257,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         pod.setProgramMjerenjaId(program);
         zeroSpanFacade.create(pod);
     }
-    
+
     @TransactionAttribute(REQUIRES_NEW)
     private void spremiSpan(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
         ZeroSpan pod = ap.getSpan();

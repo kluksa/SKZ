@@ -14,7 +14,6 @@ import dhz.skz.aqdb.entity.ValidatorModelIzvor;
 import dhz.skz.aqdb.entity.Validatori;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ValidatorModelIzvorFacade;
-import dhz.skz.aqdb.facades.ValidatoriFacade;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +31,8 @@ import javax.naming.NamingException;
  */
 @Stateful
 public class ValidatorFactoryNovi {
+    private static final Logger log = Logger.getLogger(ValidatorFactoryNovi.class.getName());
+    
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 
@@ -40,8 +41,6 @@ public class ValidatorFactoryNovi {
     
     private Map<ProgramMjerenja,NavigableMap<Date,Validator>> programVrijemeValidatorMapa;
     
-    private static final Logger log = Logger.getLogger(ValidatorFactoryNovi.class.getName());
-
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
         return programVrijemeValidatorMapa.get(pm).floorEntry(vrijeme).getValue();
     }
@@ -59,7 +58,6 @@ public class ValidatorFactoryNovi {
             validatorModel.put(v.getModelUredjaja(), 
                                 lookupValidatorBean(v.getValidatoriId()));
         }
-        
         programVrijemeValidatorMapa = new HashMap<>();
         for(ProgramMjerenja pm : programMjerenjaFacade.find(ip)){
             NavigableMap<Date,Validator> dm = new TreeMap<>();
