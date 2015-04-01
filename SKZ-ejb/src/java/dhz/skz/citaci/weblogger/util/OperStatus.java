@@ -9,21 +9,11 @@ package dhz.skz.citaci.weblogger.util;
  *
  * @author kraljevic
  */
-public enum Flag {
-
-    OK,
-    ALARM,
-    UPOZORENJE,
-    VAN_PODRUCJA,
-    LDL,
-    NEDOSTAJE,
+public enum OperStatus {
+    MJERENJE,
+    ODRZAVANJE,
     ZERO,
     SPAN,
-    CALIBRATION,
-    MAINTENENCE,
-    FAULT,
-    TEMPERATURA,
-    OBUHVAT,
-    NEMA_PODATKA;
-    public static final int NEVALJAN = 1 << Flag.NEDOSTAJE.ordinal();
+    KALIBRACIJA,
+    NEDEFINIRANO
 }

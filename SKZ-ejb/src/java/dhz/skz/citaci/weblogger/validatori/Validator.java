@@ -5,6 +5,7 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Status;
 
@@ -19,5 +20,7 @@ public interface Validator {
     public Status getStatus(String status);
     
     int getBrojUSatu();
+
+    public void validiraj(PodatakSirovi ps);
 
 }

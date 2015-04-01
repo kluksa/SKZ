@@ -5,19 +5,17 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.util.Flag;
+import dhz.skz.citaci.weblogger.util.OperStatus;
 import dhz.skz.citaci.weblogger.util.Status;
 
 /**
  *
  * @author kraljevic
  */
-public class MLUValidator implements Validator{
-    
-    public void validiraj(PodatakSirovi ps) {
-        
-    }
+public class MLUValidator implements Validator {
 
     @Override
     public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
@@ -70,5 +68,44 @@ public class MLUValidator implements Validator{
     public int getBrojUSatu() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public void validiraj(PodatakSirovi ps) {
+
+        String[] st = ps.getStatusString().split(";");
+        int ss = Integer.parseInt(st[0]);
+        int bs = Integer.parseInt(st[1]);
+        int fs = Integer.parseInt(st[2]);
+        int nc = Integer.parseInt(st[3]);
+
+        if (ps.getVrijednost() == -9999.f) {
+            ps.setGreska(Flag.NEDOSTAJE.ordinal());
+        } else {
+
+            if (fs != 0) {
+                ps.setGreska(Flag.FAULT.ordinal());
+            }
+
+            if (ss != 0) {
+                ps.setGreska(Flag.FAULT.ordinal());
+            }
+
+            if (bs == 0) {
+                ps.setStatus(OperStatus.MJERENJE.ordinal());
+            } else {
+                if ((bs & 1) == 1) {
+                    ps.setStatus(OperStatus.KALIBRACIJA.ordinal());
+                } else if ((bs & 2) == 2) {
+                    ps.setStatus(OperStatus.ZERO.ordinal());
+                } else if ((bs & 4) == 4) {
+                    ps.setStatus(OperStatus.SPAN.ordinal());
+                } else if ((bs & 8) == 8) {
+                    ps.setStatus(OperStatus.ODRZAVANJE.ordinal());
+                } else {
+                    ps.setStatus(OperStatus.NEDEFINIRANO.ordinal());
+                    ps.setGreska(Flag.FAULT.ordinal());
+                }
+            }
+        }
+    }
 }

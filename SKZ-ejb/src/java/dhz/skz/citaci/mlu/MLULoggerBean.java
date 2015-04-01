@@ -151,6 +151,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     String vs = linija[i + 4];
 
                     ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
+                    v.validiraj(ps);
                     podaci.add(ps);
                 } catch (NumberFormatException | ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
@@ -228,8 +229,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         for (PodatakSirovi p : pod) {
             try {
-                Status s = getStatus(p.getVrijednost(), p.getStatusString());
-                if (s.isValid()) {
+                if (p.getStatus()==0 && p.getGreska()==0) {
                     count++;
                     kum_sum += p.getVrijednost();
                 }
