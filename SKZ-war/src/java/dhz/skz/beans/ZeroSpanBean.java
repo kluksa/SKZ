@@ -80,7 +80,7 @@ public class ZeroSpanBean {
                 
                 if ( najbliziZero!=null && refZ.floorEntry(najbliziZero.getKey())!= null && refS.floorEntry(zs.getVrijeme())!=null){
                     float dz =  najbliziZero.getValue().getVrijednost() - refZ.floorEntry(najbliziZero.getKey()).getValue().getVrijednost();
-                    zz.setMinDozvoljeno((1-deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
+                    zz.setMinDozvoljeno((1-deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()-dz);
                     zz.setMaxDozvoljeno((1+deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
                 }
             }
