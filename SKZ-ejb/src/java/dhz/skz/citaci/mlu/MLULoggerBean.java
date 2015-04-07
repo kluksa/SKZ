@@ -121,11 +121,11 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private void parseLinija(String[] linija, Date vrijeme, Collection<PodatakSirovi> podaci) {
         for (Integer i : mapa.keySet()) {
             ProgramMjerenja pm = mapa.get(i);
-            if (!linija[i].equalsIgnoreCase("null")) {
+            if (!linija[i].equalsIgnoreCase("null") && !linija[i].equals("-9999")) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(',');
-                    DecimalFormat format = new DecimalFormat("#.#");
+                    symbols.setDecimalSeparator('.');
+                    DecimalFormat format = new DecimalFormat("#.###");
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost = format.parse(linija[i]).floatValue();
 
@@ -404,7 +404,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
-            log.log(Level.INFO, "MLU Linija: {0}", linija[0]);
+            log.log(Level.INFO, "MLU Linija: {0}", linija);
             Date vrijeme = new Date(it.next());
 //                if ( vrijeme.after(zadnji)){
             parseLinija(linija, vrijeme, podaci);
