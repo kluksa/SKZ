@@ -9,9 +9,10 @@ package dhz.skz.citaci.weblogger.util;
  *
  * @author kraljevic
  */
-public enum OperStatus {
-    G1, G2, ISKLJUCENO, FAULT, OPSEG, OKOLISNI_UVJETI, ODRZAVANJE, G3, G4,
-    KONTROLA_PROVEDENA, KONTROLA_ODBACENO, LDL, ZERO, SPAN, KALIBRACIJA, 
-    G5, G6,
-    KONTROLA_SATNI, OBUHVAT
+public enum GreskaBitovi {
+    KONTROLA,
+    OPSEG,
+    LDL,
+    OKOLISNI_UVJETI,
+    FAULT
 }

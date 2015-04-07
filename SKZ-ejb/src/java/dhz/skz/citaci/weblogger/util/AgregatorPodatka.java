@@ -10,6 +10,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
 import dhz.skz.citaci.weblogger.validatori.Validator;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,15 +22,58 @@ import java.util.logging.Logger;
 public class AgregatorPodatka {
 
     EnumMap<Status.ModRada, AgPodatak> pod = new EnumMap<>(Status.ModRada.class);
+    EnumMap<OperStatus, AgPodatak> pod2 = new EnumMap<>(OperStatus.class);
+    private int mjBroj;
+    private float mjIznos;
+    private int mjStatus;
+
+    private Collection<OperStatus> dodatniAgregati;
+    private int dodatniAgregatiMask;
+    private final int neprihvatljiviMask;
+
+    enum Nivo {
+
+        L1, L2
+    };
+
+    int mjerenjeMask = (1 >> OperStatus.ZERO.ordinal())
+            | (1 >> OperStatus.SPAN.ordinal())
+            | (1 >> OperStatus.KALIBRACIJA.ordinal())
+            | (1 >> OperStatus.G5.ordinal())
+            | (1 >> OperStatus.G6.ordinal());
+
+    int invalidMask;
+    int maxPrihvatljivi;
 
     private class AgPodatak {
+
         Float iznos = 0.f;
-        Status status = new Status();
+        int status = 0;
         int broj = 0;
     }
 
     private int minimalniBroj = 45;
 
+    public void dodaj2(PodatakSirovi ps) {
+
+        if ((ps.getStatus() & neprihvatljiviMask) == 0) {
+            mjBroj++;
+            mjIznos += ps.getVrijednost();
+            if (mjBroj >= minimalniBroj) {
+                mjStatus &= ~(1 >> OperStatus.OBUHVAT.ordinal());
+            }
+        } else if ((ps.getStatus() & dodatniAgregatiMask) != 0) {
+            for (OperStatus o : dodatniAgregati) {
+                if ((ps.getStatus() & (1 >> o.ordinal())) != 0) {
+                    pod2.get(o).broj++;
+                    pod2.get(o).iznos += ps.getVrijednost();
+                    pod2.get(o).status |= ps.getStatus();
+                }
+            }
+        }
+        mjStatus |= ps.getStatus();
+
+    }
     private Validator validator;
 
     public void setValidator(Validator validator) {
@@ -38,13 +82,18 @@ public class AgregatorPodatka {
     }
 
     public AgregatorPodatka() {
-        for (Status.ModRada mr : Status.ModRada.values()) {
-            pod.put(mr, new AgPodatak());
-        }
-        pod.get(Status.ModRada.MJERENJE).status.dodajFlag(Flag.OBUHVAT);
+        reset();
+    }
+
+    public AgregatorPodatka(Nivo n) {
+    }
+
+    public AgregatorPodatka(Collection<OperStatus> neprihvatljivi) {
     }
 
     public void reset() {
+        mjStatus = (1 >> (OperStatus.OBUHVAT.ordinal() - 1));
+
         for (Status.ModRada mr : Status.ModRada.values()) {
             pod.put(mr, new AgPodatak());
         }
@@ -55,7 +104,7 @@ public class AgregatorPodatka {
         try {
             Status s = validator.getStatus(ps.getVrijednost(), ps.getStatusString());
             Status.ModRada vrsta = s.getModRada();
-            
+
             switch (vrsta) {
                 case ZERO:
                 case SPAN:
@@ -65,10 +114,10 @@ public class AgregatorPodatka {
                     pod.get(Status.ModRada.MJERENJE).status.dodajStatus(s);
                     break;
                 case MJERENJE:
-                    if ( s.isValid()) {
+                    if (s.isValid()) {
                         pod.get(vrsta).broj = pod.get(vrsta).broj + 1;
                         pod.get(vrsta).iznos = pod.get(vrsta).iznos + ps.getVrijednost();
-                        if ( pod.get(vrsta).broj >= minimalniBroj){
+                        if (pod.get(vrsta).broj >= minimalniBroj) {
                             pod.get(Status.ModRada.MJERENJE).status.iskljuciFlag(Flag.OBUHVAT);
                         }
                     }
@@ -109,7 +158,6 @@ public class AgregatorPodatka {
 //            kumulativniStatus.get(s.getModRada()).dodajStatus(s);
 //        }
 //    }
-
     private Float getIznos(Status.ModRada mod) {
         if (pod.get(mod).broj != 0) {
             return pod.get(mod).iznos / pod.get(mod).broj;
@@ -162,10 +210,10 @@ public class AgregatorPodatka {
     }
 
     public boolean imaZero() {
-        return pod.get(Status.ModRada.ZERO).broj != 0; 
+        return pod.get(Status.ModRada.ZERO).broj != 0;
     }
 
     public boolean imaSpan() {
-        return pod.get(Status.ModRada.SPAN).broj != 0; 
+        return pod.get(Status.ModRada.SPAN).broj != 0;
     }
 }

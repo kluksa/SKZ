@@ -65,7 +65,6 @@ import javax.transaction.UserTransaction;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
 
-
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
 
     @EJB
@@ -82,7 +81,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     @EJB
     private ValidatorFactoryNovi validatorFactory;
-    
+
     @Resource
     private EJBContext context;
 
@@ -104,7 +103,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             this.omotnica = omotnica;
             mapa = new HashMap<>();
             validatorFactory.init(izvor);
-            
+
             if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
                 log.log(Level.INFO, "ZERO/SPAN");
                 obradiZeroSpan(omotnica);
@@ -132,7 +131,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         for (Integer i : mapa.keySet()) {
             ProgramMjerenja pm = mapa.get(i);
             Validator v = validatorFactory.getValidator(pm, vrijeme);
-            if (!linija[i].equalsIgnoreCase("null")) {
+            if (!linija[i].equalsIgnoreCase("null") & linija[i].equals("-9999")) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                     symbols.setDecimalSeparator(',');
@@ -140,19 +139,22 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost = format.parse(linija[i]).floatValue();
 
-                    PodatakSirovi ps = new PodatakSirovi();
-                    ps.setProgramMjerenjaId(pm);
-                    ps.setVrijeme(vrijeme);
-                    ps.setVrijednost(vrijednost);
+                    if (vrijednost > -999.f) {
+                        PodatakSirovi ps = new PodatakSirovi();
+                        ps.setProgramMjerenjaId(pm);
+                        ps.setVrijeme(vrijeme);
+                        ps.setVrijednost(vrijednost);
 
-                    String ss = linija[i + 1];
-                    String ns = linija[i + 2];
-                    String cs = linija[i + 3];
-                    String vs = linija[i + 4];
+                        String ss = linija[i + 1];
+                        String ns = linija[i + 2];
+                        String cs = linija[i + 3];
+                        String vs = linija[i + 4];
 
-                    ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
-                    v.validiraj(ps);
-                    podaci.add(ps);
+                        ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
+                        ps.setGreska(0);
+                        v.validiraj(ps);
+                        podaci.add(ps);
+                    }
                 } catch (NumberFormatException | ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
@@ -216,7 +218,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         log.log(Level.INFO, "KRAJ CITANJA");
 
     }
-
+    
     private Podatak obradiSat(ProgramMjerenja program, Collection<PodatakSirovi> pod, Date vrijeme) {
 
         Podatak podatak = new Podatak();
@@ -229,7 +231,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         for (PodatakSirovi p : pod) {
             try {
-                if (p.getStatus()==0 && p.getGreska()==0) {
+                if (p.getStatus() == 0 && p.getGreska() == 0) {
                     count++;
                     kum_sum += p.getVrijednost();
                 }
@@ -363,8 +365,6 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             }
         }
     }
-
-    
 
     private void obradiMjerenja(CsvOmotnica omotnica) {
         Collection<PodatakSirovi> podaci = new ArrayList<>();
