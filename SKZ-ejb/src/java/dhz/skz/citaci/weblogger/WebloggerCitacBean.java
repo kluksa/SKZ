@@ -11,7 +11,6 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
@@ -21,10 +20,9 @@ import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
+import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import dhz.skz.citaci.weblogger.util.SatniIterator;
-import dhz.skz.citaci.weblogger.util.Status;
-import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactoryNovi;
 import java.io.InputStream;
 import java.net.URI;
@@ -45,8 +43,6 @@ import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -192,15 +188,12 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws NamingException {
-        AgregatorPodatka agregator = new AgregatorPodatka();
+    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws MijesaniProgramiException {
+        AgregatorPodatka agregator = new AgregatorPodatka(new NivoValidacije((short)0));
 
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
 
             NizProcitanihWl niz = mapaMjernihNizova.get(program);
-            if (program.getKomponentaId().getId() == 263) {
-                log.log(Level.INFO, "Benzen");
-            }
 
             if (!niz.getPodaci().isEmpty()) {
                 NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
@@ -211,66 +204,20 @@ public class WebloggerCitacBean implements CitacIzvora {
                     Date kr = sat.getVrijeme();
                     agregator.reset();
                     NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
-                    Validator v = validatorFactory.getValidator(program, po);
-                    agregator.setValidator(v);
-                    for (Date d : podmapa.keySet()) {
-                        PodatakSirovi pp = podmapa.get(d);
-                        agregator.dodaj(pp);
+                    agregator.agregiraj(podmapa.values(), kr);
+                    if ( agregator.hasPodatak()){
+                        podatakFacade.create(agregator.getPodatak());
                     }
-                    spremi(agregator, program, kr);
+                    if ( agregator.hasZero()){
+                        zeroSpanFacade.create(agregator.getZero());
+                    }
+                    if (agregator.hasSpan()){
+                        zeroSpanFacade.create(agregator.getSpan());
+                    }
                     po = kr;
                 }
             }
-            if (!niz.getZs().isEmpty()) {
-                pospremiZsNiz(niz);
-            }
             log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
-        }
-    }
-
-    @TransactionAttribute(REQUIRES_NEW)
-    private void spremi(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
-        if (ap.imaMjerenje()) {
-            spremiMjerenje(ap, program, kr);
-        }
-        if (ap.imaZero()) {
-            spremiZero(ap, program, kr);
-        }
-        if (ap.imaSpan()) {
-            spremiSpan(ap, program, kr);
-        }
-    }
-
-    @TransactionAttribute(REQUIRES_NEW)
-    private void spremiMjerenje(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
-        Podatak p = ap.getPodatak();
-        p.setVrijeme(kr);
-        p.setProgramMjerenjaId(program);
-        p.setNivoValidacijeId(new NivoValidacije((short) 0));
-        podatakFacade.create(p);
-    }
-
-    @TransactionAttribute(REQUIRES_NEW)
-    private void spremiZero(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
-        ZeroSpan pod = ap.getZero();
-        pod.setVrijeme(kr);
-        pod.setProgramMjerenjaId(program);
-        zeroSpanFacade.create(pod);
-    }
-
-    @TransactionAttribute(REQUIRES_NEW)
-    private void spremiSpan(AgregatorPodatka ap, ProgramMjerenja program, Date kr) {
-        ZeroSpan pod = ap.getSpan();
-        pod.setVrijeme(kr);
-        pod.setProgramMjerenjaId(program);
-        zeroSpanFacade.create(pod);
-    }
-
-    @TransactionAttribute(REQUIRES_NEW)
-    public void pospremiZsNiz(NizProcitanihWl niz) {
-        for (Date d : niz.getZs().keySet()) {
-            ZeroSpan zs = niz.getZs().get(d);
-            zeroSpanFacade.create(zs);
         }
     }
 

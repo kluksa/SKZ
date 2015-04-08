@@ -21,7 +21,9 @@ import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
+import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
 import dhz.skz.citaci.weblogger.util.Flag;
+import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
 import dhz.skz.citaci.weblogger.util.Status;
 import dhz.skz.citaci.weblogger.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactoryNovi;
@@ -135,26 +137,23 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                     symbols.setDecimalSeparator(',');
-                    DecimalFormat format = new DecimalFormat("#.#");
+                    DecimalFormat format = new DecimalFormat("#.###");
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost = format.parse(linija[i]).floatValue();
 
-                    if (vrijednost > -999.f) {
-                        PodatakSirovi ps = new PodatakSirovi();
-                        ps.setProgramMjerenjaId(pm);
-                        ps.setVrijeme(vrijeme);
-                        ps.setVrijednost(vrijednost);
+                    PodatakSirovi ps = new PodatakSirovi();
+                    ps.setProgramMjerenjaId(pm);
+                    ps.setVrijeme(vrijeme);
+                    ps.setVrijednost(vrijednost);
 
-                        String ss = linija[i + 1];
-                        String ns = linija[i + 2];
-                        String cs = linija[i + 3];
-                        String vs = linija[i + 4];
-
-                        ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
-                        ps.setGreska(0);
-                        v.validiraj(ps);
-                        podaci.add(ps);
-                    }
+                    String ss = linija[i + 1];
+                    String ns = linija[i + 2];
+                    String cs = linija[i + 3];
+                    String vs = linija[i + 4];
+                    ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
+                    
+                    v.validiraj(ps);
+                    podaci.add(ps);
                 } catch (NumberFormatException | ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
@@ -165,6 +164,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
+        AgregatorPodatka agregator = new AgregatorPodatka(new NivoValidacije((short)0));
 
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
             try {
@@ -193,9 +193,15 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     cal.add(Calendar.HOUR, 1);
                     Date krajD = cal.getTime();
                     Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
-                    if (!sirovi.isEmpty()) {
-                        Podatak p = obradiSat(program, sirovi, krajD);
-                        podatakFacade.spremi(p);
+                    agregator.agregiraj(sirovi, krajD);
+                    if ( agregator.hasPodatak()){
+                        podatakFacade.create(agregator.getPodatak());
+                    }
+                    if ( agregator.hasZero()){
+                        zeroSpanFacade.create(agregator.getZero());
+                    }
+                    if (agregator.hasSpan()){
+                        zeroSpanFacade.create(agregator.getSpan());
                     }
                 }
                 utx.commit();
@@ -213,65 +219,14 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                 Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalStateException ex) {
                 Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MijesaniProgramiException ex) {
+                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
 
     }
-    
-    private Podatak obradiSat(ProgramMjerenja program, Collection<PodatakSirovi> pod, Date vrijeme) {
 
-        Podatak podatak = new Podatak();
-
-        float kum_sum = 0;
-        int count = 0;
-        Status status = new Status();
-
-        podatak.setProgramMjerenjaId(program);
-
-        for (PodatakSirovi p : pod) {
-            try {
-                if (p.getStatus() == 0 && p.getGreska() == 0) {
-                    count++;
-                    kum_sum += p.getVrijednost();
-                }
-                status.dodajStatus(s);
-            } catch (NevaljanStatusException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
-        }
-
-        int obuhvat = 100 * count / 60;
-        if (obuhvat < MIN_OBUHVAT) {
-            status.dodajFlag(Flag.OBUHVAT);
-        }
-
-        podatak.setObuhvat((short) obuhvat);
-        podatak.setStatus(status.toInt());
-
-        if (count > 0) {
-            float iznos = kum_sum / count;
-            podatak.setVrijednost(iznos);
-
-        } else {
-            podatak.setVrijednost(-999.f);
-        }
-        podatak.setVrijeme(vrijeme);
-        podatak.setNivoValidacijeId(new NivoValidacije((short) 0));
-        return podatak;
-//        log.log(Level.INFO,"MLU PODATAK: {0}:{1}:{2}:{3}:{4}:{5}:{6}", new Object[]{podatak.getProgramMjerenjaId().getId(), 
-//            podatak.getVrijeme(), 
-//            podatak.getVrijednost(), 
-//            podatak.toInt(), 
-//            podatak.getObuhvat(), 
-//            count,
-//            podatak.getNivoValidacijeId().getId()});
-//        podatakFacade.spremiPspremik);
-    }
-
-//    private void odradi(Date zadnjiSat, ProgramMjerenja program) {
-//
-//    }
     @Override
     public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
