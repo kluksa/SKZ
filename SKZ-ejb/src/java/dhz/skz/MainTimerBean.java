@@ -34,7 +34,7 @@ public class MainTimerBean {
         try {
             log.log(Level.INFO, "Pokrecem diseminaciju" );
             
-            diseminacijaMain.pokreni();
+//            diseminacijaMain.pokreni();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }
@@ -44,7 +44,7 @@ public class MainTimerBean {
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {
-            citacMainBean.pokreniCitace();
+//            citacMainBean.pokreniCitace();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }
