@@ -3,16 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dhz.skz.citaci.weblogger.util;
+package dhz.skz.validatori;
+
+import javax.ejb.Stateless;
 
 /**
  *
  * @author kraljevic
  */
-public enum GreskaBitovi {
-    KONTROLA,
-    OPSEG,
-    LDL,
-    OKOLISNI_UVJETI,
-    FAULT
+@Stateless
+public class SynspecValidator extends ValidatorImpl {
+
+    @Override
+    public int provjeraStatusa(String statusStr) {
+        return 0;
+    }
 }

@@ -24,6 +24,8 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
+import dhz.skz.validatori.Validator;
+import dhz.skz.validatori.ValidatorFactory;
 import java.util.Collection;
 
 /**
@@ -49,14 +51,17 @@ class WlMjerenjaParser implements WlFileParser {
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
     private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
+    private final ValidatorFactory validatorFactory;
 
-    public WlMjerenjaParser(TimeZone tz) {
+    public WlMjerenjaParser(TimeZone tz, ValidatorFactory validatorFactory) {
         this.temperatura = -999.f;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
         this.chareset = Charset.forName("UTF-8");
         sdf.setTimeZone(tz);
+        this.validatorFactory = validatorFactory;
     }
+
 
     @Override
     public void setZadnjiPodatak(Date zadnjiPodatak) {
@@ -148,6 +153,7 @@ class WlMjerenjaParser implements WlFileParser {
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
             ProgramMjerenja pm = wlStupacProgram.get(stupac);
+            Validator v = validatorFactory.getValidator(pm, trenutnoVrijeme);
             NizProcitanihWl nizPodataka = nizKanala.get(pm);
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
@@ -159,6 +165,7 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
                     pod.setVrijednost(iznos);
+                    v.validiraj(pod);
                     
 // tu bi trebali zvati validator i zapisati rezultat u PodatakSirovi.status ( status == 0 = OK)
                     nizPodataka.dodajPodatak(pod);

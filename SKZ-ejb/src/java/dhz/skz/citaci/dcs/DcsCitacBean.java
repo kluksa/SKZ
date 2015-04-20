@@ -11,11 +11,10 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
-import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.Status;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,6 +40,8 @@ import javax.sql.DataSource;
 @Stateless
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 
@@ -80,6 +81,8 @@ public class DcsCitacBean implements CitacIzvora {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        
         try (PreparedStatement prepStmt = con.prepareStatement(selektSql)) {
             prepStmt.setInt(1, station);
             prepStmt.setInt(2, component);
@@ -95,7 +98,7 @@ public class DcsCitacBean implements CitacIzvora {
                     Integer status = getStatus(statusStr, greskaStr, obuhvat);
                     Podatak p = new Podatak();
                     p.setProgramMjerenjaId(pm);
-                    p.setNivoValidacijeId(new NivoValidacije((short) 0));
+                    p.setNivoValidacijeId(nv);
                     p.setObuhvat(obuhvat);
                     p.setStatus(status);
                     p.setVrijeme(new Date(timestamp.getTime()));
@@ -108,27 +111,7 @@ public class DcsCitacBean implements CitacIzvora {
     }
 
     private Integer getStatus(String statusStr, String greskaStr, Short obuhvat) {
-        Status s = new Status();
-
-        if (greskaStr != null && greskaStr.trim().isEmpty()) {
-            s.dodajFlag(Flag.FAULT);
-        }
-        if (statusStr != null && !statusStr.trim().isEmpty()) {
-            s.dodajFlag(Flag.UPOZORENJE);
-            if (statusStr.contains("S")) {
-                s.dodajFlag(Flag.SPAN);
-            }
-            if (statusStr.contains("Z")) {
-                s.dodajFlag(Flag.ZERO);
-            }
-            if (statusStr.contains("M")) {
-                s.dodajFlag(Flag.MAINTENENCE);
-            }
-        }
-        if (obuhvat < 75) {
-            s.dodajFlag(Flag.OBUHVAT);
-        }
-        return s.toInt();
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

@@ -11,13 +11,9 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
-import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
-import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.Status;
-import dhz.skz.citaci.weblogger.validatori.Validator;
+import dhz.skz.validatori.Validator;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -100,7 +96,6 @@ public class AqdbCitacBean implements CitacIzvora {
 
         float kum_sum = 0, zskum_sum = 0;
         int count = 0, zscount = 0;
-        Status status = new Status();
 
         podatak.setProgramMjerenjaId(program);
 

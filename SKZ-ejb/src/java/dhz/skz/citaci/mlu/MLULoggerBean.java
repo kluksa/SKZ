@@ -13,6 +13,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.PostajaFacade;
@@ -20,23 +21,19 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
-import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
-import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
-import dhz.skz.citaci.weblogger.util.Flag;
+import dhz.skz.citaci.util.AgregatorPodatka;
 import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
-import dhz.skz.citaci.weblogger.util.Status;
-import dhz.skz.citaci.weblogger.validatori.Validator;
-import dhz.skz.validatori.ValidatorFactoryNovi;
+import dhz.skz.citaci.weblogger.util.SatniIterator;
+import dhz.skz.validatori.Validator;
+import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -66,6 +63,8 @@ import javax.transaction.UserTransaction;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
 
@@ -82,7 +81,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     @EJB
-    private ValidatorFactoryNovi validatorFactory;
+    private ValidatorFactory validatorFactory;
 
     @Resource
     private EJBContext context;
@@ -151,7 +150,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     String cs = linija[i + 3];
                     String vs = linija[i + 4];
                     ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
-                    
+
                     v.validiraj(ps);
                     podaci.add(ps);
                 } catch (NumberFormatException | ParseException ex) {
@@ -164,63 +163,56 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        AgregatorPodatka agregator = new AgregatorPodatka(new NivoValidacije((short)0));
-
+        
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
+            int ocekivavniBroj = 60;
             try {
                 Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
                 Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
-                Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                Calendar kraj = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-
                 log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
-
-                kraj.setTime(zadnjiSirovi);
-                kraj.set(Calendar.MINUTE, 0);
-                kraj.set(Calendar.SECOND, 0);
-                kraj.set(Calendar.MILLISECOND, 0);
-
-                cal.setTime(zadnjiSatni);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
 
                 UserTransaction utx = context.getUserTransaction();
                 utx.begin();
 
-                while (cal.getTime().before(kraj.getTime())) {
-                    Date pocetakD = cal.getTime();
-                    cal.add(Calendar.HOUR, 1);
-                    Date krajD = cal.getTime();
-                    Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
-                    agregator.agregiraj(sirovi, krajD);
-                    if ( agregator.hasPodatak()){
-                        podatakFacade.create(agregator.getPodatak());
+                SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi);
+                Date po = sat.getVrijeme();
+                while (sat.next()) {
+                    Date kr = sat.getVrijeme();
+                    AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivavniBroj);
+                    
+                    Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, po, kr, false, true);
+                    try {
+                        agregator.agregiraj(sirovi, kr);
+                        if (agregator.hasPodatak()) {
+                            podatakFacade.create(agregator.getPodatak());
+                        }
+                        if (agregator.hasZero()) {
+                            zeroSpanFacade.create(agregator.getZero());
+                        }
+                        if (agregator.hasSpan()) {
+                            zeroSpanFacade.create(agregator.getSpan());
+                        }
+                    } catch (MijesaniProgramiException ex) {
+                        log.log(Level.SEVERE, null, ex);
                     }
-                    if ( agregator.hasZero()){
-                        zeroSpanFacade.create(agregator.getZero());
-                    }
-                    if (agregator.hasSpan()){
-                        zeroSpanFacade.create(agregator.getSpan());
-                    }
+                    po = kr;
                 }
                 utx.commit();
             } catch (NotSupportedException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (SystemException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (RollbackException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (HeuristicMixedException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (HeuristicRollbackException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (SecurityException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             } catch (IllegalStateException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (MijesaniProgramiException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");

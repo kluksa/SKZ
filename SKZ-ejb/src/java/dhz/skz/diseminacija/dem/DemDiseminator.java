@@ -10,6 +10,7 @@ import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
@@ -39,6 +40,8 @@ import javax.ejb.Stateless;
 @Stateless
 @LocalBean
 public class DemDiseminator implements DiseminatorPodataka {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     @EJB
     private ProgramMjerenjaFacadeLocal ppf;
@@ -54,7 +57,7 @@ public class DemDiseminator implements DiseminatorPodataka {
                 = getProgramPoKomponentama(ppf.find(primatelj));
 
         DEMTransformation demT = new DEMTransformation(primatelj);
-        NivoValidacije nv = new NivoValidacije((short) 0);
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         Date zadnji = getZadnji();
         Date prvi = getPrvi();
 

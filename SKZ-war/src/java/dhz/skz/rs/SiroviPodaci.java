@@ -112,9 +112,10 @@ public class SiroviPodaci {
      */
     @PUT
     @Consumes("application/json")
-    public void putPodaci(List<PodatakDTO> podaci) {
-        for (PodatakDTO p : podaci) {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}", new Object[]{p.getProgramMjerenjaId(), p.getVrijeme(), p.getVrijednost(), p.getObuhvat(), p.getStatus()});
+    @Path("{program}")
+    public void putPodaci(@PathParam("program") Integer programId, List<PodatakSiroviDTO> podaci) {
+        for (PodatakSiroviDTO p : podaci) {
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}", new Object[]{programId, p.getVrijeme(), p.getVrijednost(), p.getValjan()});
         }
     }
 

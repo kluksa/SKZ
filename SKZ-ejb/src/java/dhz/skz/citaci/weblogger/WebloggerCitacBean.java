@@ -11,6 +11,7 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
@@ -19,11 +20,11 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.util.AgregatorPodatka;
+import dhz.skz.citaci.util.AgregatorPodatka;
 import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import dhz.skz.citaci.weblogger.util.SatniIterator;
-import dhz.skz.validatori.ValidatorFactoryNovi;
+import dhz.skz.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,6 +56,8 @@ import org.apache.commons.net.ftp.FTPFile;
 @Stateless
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
@@ -76,7 +79,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private PostajaFacade posajaFacade;
 
     @EJB
-    private ValidatorFactoryNovi validatorFactory;
+    private ValidatorFactory validatorFactory;
 
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
@@ -188,10 +191,11 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws MijesaniProgramiException {
-        AgregatorPodatka agregator = new AgregatorPodatka(new NivoValidacije((short)0));
-
+    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
+        
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
+            int ocekivaniBroj = 60;
 
             NizProcitanihWl niz = mapaMjernihNizova.get(program);
 
@@ -202,17 +206,21 @@ public class WebloggerCitacBean implements CitacIzvora {
                 Date po = sat.getVrijeme();
                 while (sat.next()) {
                     Date kr = sat.getVrijeme();
-                    agregator.reset();
+                    AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivaniBroj);
                     NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
-                    agregator.agregiraj(podmapa.values(), kr);
-                    if ( agregator.hasPodatak()){
-                        podatakFacade.create(agregator.getPodatak());
-                    }
-                    if ( agregator.hasZero()){
-                        zeroSpanFacade.create(agregator.getZero());
-                    }
-                    if (agregator.hasSpan()){
-                        zeroSpanFacade.create(agregator.getSpan());
+                    try {
+                        agregator.agregiraj(podmapa.values(), kr);
+                        if (agregator.hasPodatak()) {
+                            podatakFacade.create(agregator.getPodatak());
+                        }
+                        if (agregator.hasZero()) {
+                            zeroSpanFacade.create(agregator.getZero());
+                        }
+                        if (agregator.hasSpan()) {
+                            zeroSpanFacade.create(agregator.getSpan());
+                        }
+                    } catch (MijesaniProgramiException ex) {
+                        log.log(Level.SEVERE, null, ex);
                     }
                     po = kr;
                 }
@@ -266,7 +274,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private WlFileParser napraviParser(Vrsta vrstaDatoteke) {
         WlFileParser parser;
         if (vrstaDatoteke == Vrsta.MJERENJE) {
-            parser = new WlMjerenjaParser(timeZone);
+            parser = new WlMjerenjaParser(timeZone, validatorFactory);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         } else {
             parser = new WlZeroSpanParser(timeZone);
