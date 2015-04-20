@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.citaci.CitacMainRemote;
 import dhz.skz.rs.dto.PodatakDTO;
 import dhz.skz.rs.dto.PodatakSiroviDTO;
+import dhz.skz.rs.dto.StatusDTO;
 import dhz.skz.rs.util.DateParam;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -104,6 +105,23 @@ public class SiroviPodaci {
         return lista;
 
     }
+    
+    enum Test{
+        NULA, JEDAN, DVA
+    }
+    @GET
+    @Path("statusi")
+    @Produces("application/json")
+    public List<StatusDTO> getStatusiMapiranje() {
+        List<StatusDTO> lista = new ArrayList<>();
+        for ( Test t : Test.values()){
+            int i = t.ordinal();
+            String s = t.toString();
+            lista.add(new StatusDTO(i,s));
+        }
+        return lista;
+    }
+    
 
     /**
      * PUT method for updating or creating an instance of SiroviPodaci
@@ -118,6 +136,8 @@ public class SiroviPodaci {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}", new Object[]{programId, p.getVrijeme(), p.getVrijednost(), p.getValjan()});
         }
     }
+    
+    
 
 //    @GET
 //    @Path("zadnji_podatak/{izvor}/{postaja}/{vrsta}")
