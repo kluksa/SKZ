@@ -52,7 +52,7 @@ public class ProgramMjerenja implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "usporedno_mjerenje")
-    private short usporednoMjerenje;
+    private int usporednoMjerenje;
     @Column(name = "pocetak_mjerenja")
     @Temporal(TemporalType.TIMESTAMP)
     private Date pocetakMjerenja;
@@ -75,18 +75,18 @@ public class ProgramMjerenja implements Serializable {
     private Collection<ZeroSpanReferentneVrijednosti> zeroSpanReferentneVrijednostiCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
     private Collection<ZeroSpan> zeroSpanCollection;
+    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
+    @ManyToOne
+    private AnalitickeMetode metodaId;
+    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private IzvorPodataka izvorPodatakaId;
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
     @JoinColumn(name = "postaja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Postaja postajaId;
-    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private AnalitickeMetode metodaId;
-    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private IzvorPodataka izvorPodatakaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
     private Collection<PodatakSirovi> podatakSiroviCollection;
 
@@ -97,7 +97,7 @@ public class ProgramMjerenja implements Serializable {
         this.id = id;
     }
 
-    public ProgramMjerenja(Integer id, short usporednoMjerenje) {
+    public ProgramMjerenja(Integer id, int usporednoMjerenje) {
         this.id = id;
         this.usporednoMjerenje = usporednoMjerenje;
     }
@@ -110,11 +110,11 @@ public class ProgramMjerenja implements Serializable {
         this.id = id;
     }
 
-    public short getUsporednoMjerenje() {
+    public int getUsporednoMjerenje() {
         return usporednoMjerenje;
     }
 
-    public void setUsporednoMjerenje(short usporednoMjerenje) {
+    public void setUsporednoMjerenje(int usporednoMjerenje) {
         this.usporednoMjerenje = usporednoMjerenje;
     }
 
@@ -134,7 +134,6 @@ public class ProgramMjerenja implements Serializable {
         this.zavrsetakMjerenja = zavrsetakMjerenja;
     }
 
-    @XmlTransient
     public Boolean getPrikazWeb() {
         return prikazWeb;
     }
@@ -161,7 +160,6 @@ public class ProgramMjerenja implements Serializable {
         this.programUredjajLinkCollection = programUredjajLinkCollection;
     }
 
-    @XmlTransient
     public IzvorProgramKljuceviMap getIzvorProgramKljuceviMap() {
         return izvorProgramKljuceviMap;
     }
@@ -206,6 +204,22 @@ public class ProgramMjerenja implements Serializable {
         this.zeroSpanCollection = zeroSpanCollection;
     }
 
+    public AnalitickeMetode getMetodaId() {
+        return metodaId;
+    }
+
+    public void setMetodaId(AnalitickeMetode metodaId) {
+        this.metodaId = metodaId;
+    }
+
+    public IzvorPodataka getIzvorPodatakaId() {
+        return izvorPodatakaId;
+    }
+
+    public void setIzvorPodatakaId(IzvorPodataka izvorPodatakaId) {
+        this.izvorPodatakaId = izvorPodatakaId;
+    }
+
     public Komponenta getKomponentaId() {
         return komponentaId;
     }
@@ -220,24 +234,6 @@ public class ProgramMjerenja implements Serializable {
 
     public void setPostajaId(Postaja postajaId) {
         this.postajaId = postajaId;
-    }
-
-    @XmlTransient
-    public AnalitickeMetode getMetodaId() {
-        return metodaId;
-    }
-
-    public void setMetodaId(AnalitickeMetode metodaId) {
-        this.metodaId = metodaId;
-    }
-
-    @XmlTransient
-    public IzvorPodataka getIzvorPodatakaId() {
-        return izvorPodatakaId;
-    }
-
-    public void setIzvorPodatakaId(IzvorPodataka izvorPodatakaId) {
-        this.izvorPodatakaId = izvorPodatakaId;
     }
 
     @XmlTransient

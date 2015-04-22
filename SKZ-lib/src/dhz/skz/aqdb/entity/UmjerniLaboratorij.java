@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -32,6 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "UmjerniLaboratorij.findAll", query = "SELECT u FROM UmjerniLaboratorij u"),
     @NamedQuery(name = "UmjerniLaboratorij.findById", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.id = :id"),
+    @NamedQuery(name = "UmjerniLaboratorij.findByNaziv", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.naziv = :naziv"),
     @NamedQuery(name = "UmjerniLaboratorij.findByAdresa", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.adresa = :adresa")})
 public class UmjerniLaboratorij implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -41,12 +41,11 @@ public class UmjerniLaboratorij implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
+    @Size(min = 1, max = 2147483647)
     private String naziv;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 400)
     private String adresa;
     @OneToMany(mappedBy = "umjerniLaboratorijId")
     private Collection<Umjeravanje> umjeravanjeCollection;

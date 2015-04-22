@@ -37,16 +37,16 @@ public class EtalonDilucijska implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected EtalonDilucijskaPK etalonDilucijskaPK;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "mfcs_nesigurnost")
     private String mfcsNesigurnost;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "mfcs_sljedivost")
     private String mfcsSljedivost;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "mfcz_nesigurnost")
     private String mfczNesigurnost;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "mfcz_sljedivost")
     private String mfczSljedivost;
     @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)

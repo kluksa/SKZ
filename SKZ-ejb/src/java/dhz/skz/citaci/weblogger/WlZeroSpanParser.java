@@ -135,9 +135,9 @@ class WlZeroSpanParser implements WlFileParser{
 //            Uredjaj uredjaj = nizPodataka.getUredjaji().floorEntry(trenutnoVrijeme).getValue();
             if (!modStr.isEmpty()) {
                 try {
-                    Float iznos = Float.parseFloat(vrijednostStr);
-                    Float varijanca = Float.parseFloat(varStr);
-                    Float refV = Float.parseFloat(certStr);
+                    Double iznos = Double.parseDouble(vrijednostStr);
+                    Double varijanca = Double.parseDouble(varStr);
+                    Double refV = Double.parseDouble(certStr);
 
                     ZeroSpan pod = new ZeroSpan();
                     pod.setVrijeme(trenutnoVrijeme);

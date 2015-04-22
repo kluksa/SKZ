@@ -10,10 +10,11 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,22 +34,22 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "CiljeviPracenja.findAll", query = "SELECT c FROM CiljeviPracenja c"),
     @NamedQuery(name = "CiljeviPracenja.findById", query = "SELECT c FROM CiljeviPracenja c WHERE c.id = :id"),
-    @NamedQuery(name = "CiljeviPracenja.findByTekstualnaDefinicija", query = "SELECT c FROM CiljeviPracenja c WHERE c.tekstualnaDefinicija = :tekstualnaDefinicija")})
+    @NamedQuery(name = "CiljeviPracenja.findByTekstualnaDefinicija", query = "SELECT c FROM CiljeviPracenja c WHERE c.tekstualnaDefinicija = :tekstualnaDefinicija"),
+    @NamedQuery(name = "CiljeviPracenja.findByOpis", query = "SELECT c FROM CiljeviPracenja c WHERE c.opis = :opis")})
 public class CiljeviPracenja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "tekstualna_definicija")
     private String tekstualnaDefinicija;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
+    @Size(min = 1, max = 2147483647)
     private String opis;
     @JoinTable(name = "postaja_ciljevi_link", joinColumns = {
         @JoinColumn(name = "ciljevi_pracenja_id", referencedColumnName = "id")}, inverseJoinColumns = {

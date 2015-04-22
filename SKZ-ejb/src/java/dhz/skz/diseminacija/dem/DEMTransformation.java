@@ -63,7 +63,7 @@ public class DEMTransformation {
 
                     for (Date sat : sati) {
                         Integer status;
-                        Float vrijednost;
+                        Double vrijednost;
                         if (podaciNaPostaji.containsKey(postaja)
                                 && podaciNaPostaji.get(postaja).containsKey(sat)) {
                             Podatak pod = podaciNaPostaji.get(postaja).get(sat);
@@ -71,7 +71,7 @@ public class DEMTransformation {
                             vrijednost = pod.getVrijednost();
                         } else {
                             status = 0;
-                            vrijednost = -999.f;
+                            vrijednost = -999.;
                         }
                         ps.printf("%s, %8.1f, %d\n", sdf.format(sat), vrijednost, status);
                     }

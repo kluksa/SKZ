@@ -12,7 +12,7 @@ package dhz.skz.rs.dto;
 public class PodatakDTO {
     private Integer programMjerenjaId;
     private long vrijeme;
-    private float vrijednost;
+    private Double vrijednost;
     private Integer status;
     private Integer obuhvat;
 
@@ -32,11 +32,11 @@ public class PodatakDTO {
         this.vrijeme = vrijeme;
     }
 
-    public float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 

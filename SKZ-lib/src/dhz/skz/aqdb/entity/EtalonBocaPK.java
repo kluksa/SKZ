@@ -16,28 +16,30 @@ import javax.validation.constraints.NotNull;
  * @author kraljevic
  */
 @Embeddable
-public class UmjerneTockePK implements Serializable {
+public class EtalonBocaPK implements Serializable {
     @Basic(optional = false)
-    private int id;
+    @NotNull
+    @Column(name = "oprema_id")
+    private int opremaId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "komponenta_id")
     private int komponentaId;
 
-    public UmjerneTockePK() {
+    public EtalonBocaPK() {
     }
 
-    public UmjerneTockePK(int id, int komponentaId) {
-        this.id = id;
+    public EtalonBocaPK(int opremaId, int komponentaId) {
+        this.opremaId = opremaId;
         this.komponentaId = komponentaId;
     }
 
-    public int getId() {
-        return id;
+    public int getOpremaId() {
+        return opremaId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOpremaId(int opremaId) {
+        this.opremaId = opremaId;
     }
 
     public int getKomponentaId() {
@@ -51,7 +53,7 @@ public class UmjerneTockePK implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (int) id;
+        hash += (int) opremaId;
         hash += (int) komponentaId;
         return hash;
     }
@@ -59,11 +61,11 @@ public class UmjerneTockePK implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof UmjerneTockePK)) {
+        if (!(object instanceof EtalonBocaPK)) {
             return false;
         }
-        UmjerneTockePK other = (UmjerneTockePK) object;
-        if (this.id != other.id) {
+        EtalonBocaPK other = (EtalonBocaPK) object;
+        if (this.opremaId != other.opremaId) {
             return false;
         }
         if (this.komponentaId != other.komponentaId) {
@@ -74,7 +76,7 @@ public class UmjerneTockePK implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.UmjerneTockePK[ id=" + id + ", komponentaId=" + komponentaId + " ]";
+        return "dhz.skz.aqdb.entity.EtalonBocaPK[ opremaId=" + opremaId + ", komponentaId=" + komponentaId + " ]";
     }
     
 }

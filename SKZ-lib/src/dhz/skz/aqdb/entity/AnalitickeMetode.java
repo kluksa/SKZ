@@ -49,17 +49,17 @@ public class AnalitickeMetode implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 510)
     private String naziv;
-    @Size(max = 45)
+    @Size(max = 90)
     private String norma;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "ponovljivost_u_nuli")
-    private Float ponovljivostUNuli;
+    private Double ponovljivostUNuli;
     @Column(name = "zero_drift_absolut")
-    private Float zeroDriftAbsolut;
+    private Double zeroDriftAbsolut;
     @Column(name = "span_drift_relativ")
-    private Float spanDriftRelativ;
+    private Double spanDriftRelativ;
     @JoinTable(name = "metoda_komponenta_link", joinColumns = {
         @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "komponenta_id", referencedColumnName = "id")})
@@ -71,7 +71,7 @@ public class AnalitickeMetode implements Serializable {
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "analitickeMetodeId")
     private Collection<ModelUredjaja> modelUredjajaCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "metodaId")
+    @OneToMany(mappedBy = "metodaId")
     private Collection<ProgramMjerenja> programMjerenjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "metodaId")
     private Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection;
@@ -112,27 +112,27 @@ public class AnalitickeMetode implements Serializable {
         this.norma = norma;
     }
 
-    public Float getPonovljivostUNuli() {
+    public Double getPonovljivostUNuli() {
         return ponovljivostUNuli;
     }
 
-    public void setPonovljivostUNuli(Float ponovljivostUNuli) {
+    public void setPonovljivostUNuli(Double ponovljivostUNuli) {
         this.ponovljivostUNuli = ponovljivostUNuli;
     }
 
-    public Float getZeroDriftAbsolut() {
+    public Double getZeroDriftAbsolut() {
         return zeroDriftAbsolut;
     }
 
-    public void setZeroDriftAbsolut(Float zeroDriftAbsolut) {
+    public void setZeroDriftAbsolut(Double zeroDriftAbsolut) {
         this.zeroDriftAbsolut = zeroDriftAbsolut;
     }
 
-    public Float getSpanDriftRelativ() {
+    public Double getSpanDriftRelativ() {
         return spanDriftRelativ;
     }
 
-    public void setSpanDriftRelativ(Float spanDriftRelativ) {
+    public void setSpanDriftRelativ(Double spanDriftRelativ) {
         this.spanDriftRelativ = spanDriftRelativ;
     }
 

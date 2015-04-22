@@ -6,17 +6,13 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -29,57 +25,62 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "EtalonBoca.findAll", query = "SELECT e FROM EtalonBoca e"),
-    @NamedQuery(name = "EtalonBoca.findByOpremaId", query = "SELECT e FROM EtalonBoca e WHERE e.opremaId = :opremaId"),
+    @NamedQuery(name = "EtalonBoca.findByOpremaId", query = "SELECT e FROM EtalonBoca e WHERE e.etalonBocaPK.opremaId = :opremaId"),
+    @NamedQuery(name = "EtalonBoca.findByKomponentaId", query = "SELECT e FROM EtalonBoca e WHERE e.etalonBocaPK.komponentaId = :komponentaId"),
     @NamedQuery(name = "EtalonBoca.findByKoncentracija", query = "SELECT e FROM EtalonBoca e WHERE e.koncentracija = :koncentracija"),
     @NamedQuery(name = "EtalonBoca.findByNesigurnost", query = "SELECT e FROM EtalonBoca e WHERE e.nesigurnost = :nesigurnost"),
     @NamedQuery(name = "EtalonBoca.findBySljedivost", query = "SELECT e FROM EtalonBoca e WHERE e.sljedivost = :sljedivost")})
 public class EtalonBoca implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "oprema_id")
-    private Integer opremaId;
+    @EmbeddedId
+    protected EtalonBocaPK etalonBocaPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float koncentracija;
-    private Float nesigurnost;
-    @Size(max = 45)
+    private Double koncentracija;
+    private Double nesigurnost;
+    @Size(max = 90)
     private String sljedivost;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Komponenta komponenta;
     @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private MjerneJedinice mjerneJediniceId;
     @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     private Uredjaj uredjaj;
 
     public EtalonBoca() {
     }
 
-    public EtalonBoca(Integer opremaId) {
-        this.opremaId = opremaId;
+    public EtalonBoca(EtalonBocaPK etalonBocaPK) {
+        this.etalonBocaPK = etalonBocaPK;
     }
 
-    public Integer getOpremaId() {
-        return opremaId;
+    public EtalonBoca(int opremaId, int komponentaId) {
+        this.etalonBocaPK = new EtalonBocaPK(opremaId, komponentaId);
     }
 
-    public void setOpremaId(Integer opremaId) {
-        this.opremaId = opremaId;
+    public EtalonBocaPK getEtalonBocaPK() {
+        return etalonBocaPK;
     }
 
-    public Float getKoncentracija() {
+    public void setEtalonBocaPK(EtalonBocaPK etalonBocaPK) {
+        this.etalonBocaPK = etalonBocaPK;
+    }
+
+    public Double getKoncentracija() {
         return koncentracija;
     }
 
-    public void setKoncentracija(Float koncentracija) {
+    public void setKoncentracija(Double koncentracija) {
         this.koncentracija = koncentracija;
     }
 
-    public Float getNesigurnost() {
+    public Double getNesigurnost() {
         return nesigurnost;
     }
 
-    public void setNesigurnost(Float nesigurnost) {
+    public void setNesigurnost(Double nesigurnost) {
         this.nesigurnost = nesigurnost;
     }
 
@@ -89,6 +90,14 @@ public class EtalonBoca implements Serializable {
 
     public void setSljedivost(String sljedivost) {
         this.sljedivost = sljedivost;
+    }
+
+    public Komponenta getKomponenta() {
+        return komponenta;
+    }
+
+    public void setKomponenta(Komponenta komponenta) {
+        this.komponenta = komponenta;
     }
 
     public MjerneJedinice getMjerneJediniceId() {
@@ -110,7 +119,7 @@ public class EtalonBoca implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (opremaId != null ? opremaId.hashCode() : 0);
+        hash += (etalonBocaPK != null ? etalonBocaPK.hashCode() : 0);
         return hash;
     }
 
@@ -121,7 +130,7 @@ public class EtalonBoca implements Serializable {
             return false;
         }
         EtalonBoca other = (EtalonBoca) object;
-        if ((this.opremaId == null && other.opremaId != null) || (this.opremaId != null && !this.opremaId.equals(other.opremaId))) {
+        if ((this.etalonBocaPK == null && other.etalonBocaPK != null) || (this.etalonBocaPK != null && !this.etalonBocaPK.equals(other.etalonBocaPK))) {
             return false;
         }
         return true;
@@ -129,7 +138,7 @@ public class EtalonBoca implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.EtalonBoca[ opremaId=" + opremaId + " ]";
+        return "dhz.skz.aqdb.entity.EtalonBoca[ etalonBocaPK=" + etalonBocaPK + " ]";
     }
     
 }

@@ -28,6 +28,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -60,7 +61,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
         Expression<ProgramMjerenja> program = from.get(Podatak_.programMjerenjaId);
 
-        cq.where(cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)));
+        cq.where(cb.equal(nivoValidacijeE, new NivoValidacije(0)));
         cq.groupBy(program);
         cq.multiselect(cb.greatest(vrijeme), from);
 
@@ -81,7 +82,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Join<Podatak, ProgramMjerenja> podatakProgram = from.join(Podatak_.programMjerenjaId);
 
         Expression<Komponenta> komponentaE = podatakProgram.get(ProgramMjerenja_.komponentaId);
-        Expression<Short> usporednoE = podatakProgram.get(ProgramMjerenja_.usporednoMjerenje);
+        Path<Integer> usporednoE = podatakProgram.get(ProgramMjerenja_.usporednoMjerenje);
         Expression<NivoValidacije> nivoE = from.get(Podatak_.nivoValidacijeId);
         Expression<Date> vrijemeE = from.get(Podatak_.vrijeme);
 
@@ -107,7 +108,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, pm),
                         cb.greaterThan(vrijemeE, pocetak)
                 )
@@ -139,7 +140,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Predicate uvjet = cb.and(pocetakP, krajP); 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, pm),
                         uvjet
                 )
@@ -164,7 +165,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, program)
                 )
         );
@@ -184,7 +185,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Join<Podatak, ProgramMjerenja> pmJ = from.join(Podatak_.programMjerenjaId);
         Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId),p);
         Predicate izvor = cb.equal(pmJ.join(ProgramMjerenja_.izvorPodatakaId), i);
-        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije((short) 0));
+        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
         Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
         cq.select(from).where(cb.and(postaja, izvor, nivo)).orderBy(cb.desc(vrijeme));
         List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();

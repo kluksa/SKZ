@@ -12,8 +12,6 @@ import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;

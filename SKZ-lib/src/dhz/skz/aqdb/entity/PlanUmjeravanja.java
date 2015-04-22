@@ -32,12 +32,12 @@ public class PlanUmjeravanja implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PlanUmjeravanjaPK planUmjeravanjaPK;
-    @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Uredjaj uredjaj;
     @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Umjeravanje umjeravanjeId;
+    @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Uredjaj uredjaj;
     @JoinColumn(name = "vrsta_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private VrstaUmjeravanja vrstaUmjeravanja;
@@ -61,20 +61,20 @@ public class PlanUmjeravanja implements Serializable {
         this.planUmjeravanjaPK = planUmjeravanjaPK;
     }
 
-    public Uredjaj getUredjaj() {
-        return uredjaj;
-    }
-
-    public void setUredjaj(Uredjaj uredjaj) {
-        this.uredjaj = uredjaj;
-    }
-
     public Umjeravanje getUmjeravanjeId() {
         return umjeravanjeId;
     }
 
     public void setUmjeravanjeId(Umjeravanje umjeravanjeId) {
         this.umjeravanjeId = umjeravanjeId;
+    }
+
+    public Uredjaj getUredjaj() {
+        return uredjaj;
+    }
+
+    public void setUredjaj(Uredjaj uredjaj) {
+        this.uredjaj = uredjaj;
     }
 
     public VrstaUmjeravanja getVrstaUmjeravanja() {

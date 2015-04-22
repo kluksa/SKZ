@@ -38,7 +38,7 @@ public class Proizvodjac implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 1, max = 200)
     private String naziv;
     @OneToMany(mappedBy = "proizvodjacId")
     private Collection<ModelUredjaja> modelUredjajaCollection;

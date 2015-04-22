@@ -50,11 +50,11 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
     private Date pocetakPrimjene;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 2)
+    @Size(min = 1, max = 4)
     private String vrsta;
     @Basic(optional = false)
     @NotNull
-    private float vrijednost;
+    private double vrijednost;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
@@ -66,7 +66,7 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
         this.id = id;
     }
 
-    public ZeroSpanReferentneVrijednosti(Integer id, Date pocetakPrimjene, String vrsta, float vrijednost) {
+    public ZeroSpanReferentneVrijednosti(Integer id, Date pocetakPrimjene, String vrsta, double vrijednost) {
         this.id = id;
         this.pocetakPrimjene = pocetakPrimjene;
         this.vrsta = vrsta;
@@ -97,11 +97,11 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
         this.vrsta = vrsta;
     }
 
-    public float getVrijednost() {
+    public double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(double vrijednost) {
         this.vrijednost = vrijednost;
     }
 

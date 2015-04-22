@@ -35,14 +35,14 @@ public abstract class ValidatorImpl implements Validator {
     }
     
     @Override
-    public void setPodaciUmjeravanja(float a, float b, float ldl, float opseg){
+    public void setPodaciUmjeravanja(Double a, Double b, Double ldl, Double opseg){
         this.a = a;
         this.b = b;
         this.ldl = ldl;
         this.opseg = opseg;
     }
 
-    private int provjeraIznosa(float iznos){
+    private int provjeraIznosa(Double iznos){
         int status = 0;
         iznos = iznos*a+b;
         if ( iznos < -998.) 

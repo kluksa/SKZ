@@ -44,11 +44,11 @@ public class IzvorPodataka implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 60)
     private String naziv;
-    @Size(max = 150)
+    @Size(max = 300)
     private String uri;
-    @Size(max = 250)
+    @Size(max = 500)
     private String bean;
     @Basic(optional = false)
     @NotNull

@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class PodatakSiroviDTO implements Serializable {
     private Integer id;
     private long vrijeme;
-    private float vrijednost;
+    private Double vrijednost;
     private String statusString;
     private Boolean valjan;
 
@@ -34,11 +34,11 @@ public class PodatakSiroviDTO implements Serializable {
         this.vrijeme = vrijeme;
     }
 
-    public float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 

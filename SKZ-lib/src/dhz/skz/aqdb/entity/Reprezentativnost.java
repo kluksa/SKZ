@@ -42,12 +42,12 @@ public class Reprezentativnost implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "asocirana_oznaka")
     private String asociranaOznaka;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     private String definicija;
     @OneToMany(mappedBy = "reprezentativnostId")
     private Collection<Postaja> postajaCollection;

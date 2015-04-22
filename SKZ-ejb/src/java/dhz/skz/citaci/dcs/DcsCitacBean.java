@@ -90,8 +90,8 @@ public class DcsCitacBean implements CitacIzvora {
             try (ResultSet rs = prepStmt.executeQuery()) {
                 while (rs.next()) {
                     Timestamp timestamp = rs.getTimestamp(1);
-                    float aFloat = rs.getFloat(2);
-                    short obuhvat = rs.getShort(3);
+                    double aFloat = rs.getDouble(2);
+                    int obuhvat = rs.getInt(3);
                     String statusStr = rs.getString(4);
                     String greskaStr = rs.getString(5);
                     
@@ -110,7 +110,7 @@ public class DcsCitacBean implements CitacIzvora {
         return podaci;
     }
 
-    private Integer getStatus(String statusStr, String greskaStr, Short obuhvat) {
+    private Integer getStatus(String statusStr, String greskaStr, Integer obuhvat) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -15,10 +15,10 @@ import javax.ejb.Stateless;
 public class GrimmValidator extends ValidatorImpl {
 
     public GrimmValidator() {
-        a = 1;
-        b = 0; 
-        ldl = 0;
-        opseg = 1000;
+        a = 1.;
+        b = 0.; 
+        ldl = 0.;
+        opseg = 1000.;
     }
 
     @Override

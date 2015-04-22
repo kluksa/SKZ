@@ -48,15 +48,15 @@ public class UmjerneTocke implements Serializable {
     @NotNull
     @Column(name = "mjerna_nesigurnost")
     private long mjernaNesigurnost;
-    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Umjeravanje umjeravanjeId;
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Komponenta komponenta;
     @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private MjerneJedinice mjerneJediniceId;
+    @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Umjeravanje umjeravanjeId;
 
     public UmjerneTocke() {
     }
@@ -108,14 +108,6 @@ public class UmjerneTocke implements Serializable {
         this.mjernaNesigurnost = mjernaNesigurnost;
     }
 
-    public Umjeravanje getUmjeravanjeId() {
-        return umjeravanjeId;
-    }
-
-    public void setUmjeravanjeId(Umjeravanje umjeravanjeId) {
-        this.umjeravanjeId = umjeravanjeId;
-    }
-
     public Komponenta getKomponenta() {
         return komponenta;
     }
@@ -130,6 +122,14 @@ public class UmjerneTocke implements Serializable {
 
     public void setMjerneJediniceId(MjerneJedinice mjerneJediniceId) {
         this.mjerneJediniceId = mjerneJediniceId;
+    }
+
+    public Umjeravanje getUmjeravanjeId() {
+        return umjeravanjeId;
+    }
+
+    public void setUmjeravanjeId(Umjeravanje umjeravanjeId) {
+        this.umjeravanjeId = umjeravanjeId;
     }
 
     @Override

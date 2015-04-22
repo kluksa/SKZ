@@ -42,7 +42,7 @@ public class ZemljopisneKarakteristike implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     private String opis;
     @JoinTable(name = "zemljopisne_karakteristike_postaja_link", joinColumns = {
         @JoinColumn(name = "zemljopisne_karakteristike_id", referencedColumnName = "id")}, inverseJoinColumns = {
