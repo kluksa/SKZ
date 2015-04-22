@@ -45,6 +45,9 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import static javax.ejb.TransactionAttributeType.REQUIRED;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.naming.NamingException;
@@ -61,8 +64,9 @@ import javax.transaction.UserTransaction;
  */
 @Stateless
 @LocalBean
-@TransactionManagement(TransactionManagementType.BEAN)
+//@TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
+
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
 
@@ -95,7 +99,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private Map<Integer, String> modMapa;
 
     @Override
-    public void obradi(CsvOmotnica omotnica) {
+    public void prihvati(CsvOmotnica omotnica) {
         try {
             log.log(Level.INFO, "Idem obraditi.");
             postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
@@ -107,10 +111,10 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
             if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
                 log.log(Level.INFO, "ZERO/SPAN");
-                obradiZeroSpan(omotnica);
+                prihvatiZeroSpan(omotnica);
             } else {
                 log.log(Level.INFO, "MJERENJE");
-                obradiMjerenja(omotnica);
+                prihvatiMjerenja(omotnica);
             }
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
@@ -163,98 +167,33 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        
+
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
-            int ocekivavniBroj = 60;
-            try {
-                Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
-                Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
-                log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
+            Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
+            napraviSatne(program, zadnjiSatni, nv);
 
-                UserTransaction utx = context.getUserTransaction();
-                utx.begin();
-
-                SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi);
-                Date po = sat.getVrijeme();
-                while (sat.next()) {
-                    Date kr = sat.getVrijeme();
-                    AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivavniBroj);
-                    
-                    Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, po, kr, false, true);
-                    try {
-                        agregator.agregiraj(sirovi, kr);
-                        if (agregator.hasPodatak()) {
-                            podatakFacade.create(agregator.getPodatak());
-                        }
-                        if (agregator.hasZero()) {
-                            zeroSpanFacade.create(agregator.getZero());
-                        }
-                        if (agregator.hasSpan()) {
-                            zeroSpanFacade.create(agregator.getSpan());
-                        }
-                    } catch (MijesaniProgramiException ex) {
-                        log.log(Level.SEVERE, null, ex);
-                    }
-                    po = kr;
-                }
-                utx.commit();
-            } catch (NotSupportedException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (SystemException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (RollbackException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (HeuristicMixedException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (HeuristicRollbackException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (IllegalStateException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-
     }
 
     @Override
     public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void obradiZeroSpan(CsvOmotnica omotnica) {
-        UserTransaction utx = context.getUserTransaction();
-        try {
-            Collection<ZeroSpan> podaci = new ArrayList<>();
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void prihvatiZeroSpan(CsvOmotnica omotnica) {
+        Collection<ZeroSpan> podaci = new ArrayList<>();
 
-//        try {
-//                String pocetniDatumStr = omotnica.getLinije().get(0)[0];
-//                Date pocetak = sdf.parse(pocetniDatumStr);
-            parseZSHeaders(omotnica.getHeaderi());
+        parseZSHeaders(omotnica.getHeaderi());
 
-            Iterator<Long> it = omotnica.getVremena().iterator();
-            for (String[] linija : omotnica.getLinije()) {
-                parseZSLinija(linija, it.next(), podaci);
-            }
-            log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
-            //       napraviSatne(izvor);
-//        } catch (ParseException ex) {
-//            log.log(Level.SEVERE, null, ex);
-//        }
-
-            utx.begin();
-            zeroSpanFacade.spremi(podaci);
-            utx.commit();
-        } catch (NotSupportedException ex) {
-            log.log(Level.SEVERE, null, ex);
-        } catch (SystemException ex) {
-            log.log(Level.SEVERE, null, ex);
-        } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            log.log(Level.SEVERE, null, ex);
+        Iterator<Long> it = omotnica.getVremena().iterator();
+        for (String[] linija : omotnica.getLinije()) {
+            parseZSLinija(linija, it.next(), podaci);
         }
+        log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
 
+        zeroSpanFacade.spremi(podaci);
     }
 
     private void parseZSHeaders(String[] headeri) {
@@ -294,11 +233,11 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     symbols.setDecimalSeparator(',');
                     DecimalFormat format = new DecimalFormat("#.#");
                     format.setDecimalFormatSymbols(symbols);
-                    Float vrijednost;
+                    Double vrijednost;
                     if ("-9999".equals(linija[i])) {
-                        vrijednost = -999.f;
+                        vrijednost = -999.;
                     } else {
-                        vrijednost = format.parse(linija[i]).floatValue();
+                        vrijednost = format.parse(linija[i]).doubleValue();
                     }
                     ZeroSpan ps = new ZeroSpan();
                     ps.setProgramMjerenjaId(pm);
@@ -313,27 +252,18 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         }
     }
 
-    private void obradiMjerenja(CsvOmotnica omotnica) {
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void prihvatiMjerenja(CsvOmotnica omotnica) {
         Collection<PodatakSirovi> podaci = new ArrayList<>();
 
-//        try {
-//                String pocetniDatumStr = omotnica.getLinije().get(0)[0];
-//                Date pocetak = sdf.parse(pocetniDatumStr);
         parseHeaders(omotnica.getHeaderi());
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
             log.log(Level.INFO, "MLU Linija: {0}", linija[0]);
             Date vrijeme = new Date(it.next());
-//                if ( vrijeme.after(zadnji)){
             parseLinija(linija, vrijeme, podaci);
-//                }
-
         }
-        //       napraviSatne(izvor);
-//        } catch (ParseException ex) {
-//            log.log(Level.SEVERE, null, ex);
-//        }
         podatakSiroviFacade.spremi(podaci);
     }
 
@@ -364,6 +294,36 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
         return podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    protected void napraviSatne(ProgramMjerenja program, Date zadnjiSatni, NivoValidacije nv) {
+        int ocekivaniBroj = 60;
+        Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
+        log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
+
+        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi);
+        Date po = sat.getVrijeme();
+        while (sat.next()) {
+            Date kr = sat.getVrijeme();
+            AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivaniBroj);
+            Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, po, kr, false, true);
+            try {
+                agregator.agregiraj(sirovi, kr);
+                if (agregator.hasPodatak()) {
+                    podatakFacade.create(agregator.getPodatak());
+                }
+                if (agregator.hasZero()) {
+                    zeroSpanFacade.create(agregator.getZero());
+                }
+                if (agregator.hasSpan()) {
+                    zeroSpanFacade.create(agregator.getSpan());
+                }
+            } catch (MijesaniProgramiException ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+            po = kr;
+        }
     }
 
 }

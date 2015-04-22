@@ -52,16 +52,16 @@ public class Komponenta implements Serializable {
     private Integer id;
     @Column(name = "eol_oznaka")
     private Short eolOznaka;
-    @Size(max = 2)
+    @Size(max = 4)
     @Column(name = "iso_oznaka")
     private String isoOznaka;
-    @Size(max = 45)
+    @Size(max = 90)
     private String formula;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 60)
+    @Size(min = 1, max = 120)
     private String naziv;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "izrazeno_kao")
     private String izrazenoKao;
     @Column(name = "vrsta_komponente")
@@ -69,11 +69,11 @@ public class Komponenta implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "konv_v_u_m")
-    private float konvVUM;
-    @Size(max = 60)
+    private double konvVUM;
+    @Size(max = 120)
     @Column(name = "naziv_eng")
     private String nazivEng;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "prosijek_tijekom")
     private String prosijekTijekom;
     @JoinTable(name = "model_uredjaja_komponenta_link", joinColumns = {
@@ -87,6 +87,8 @@ public class Komponenta implements Serializable {
     private Collection<KomponentaHasRelevantneDirektive> komponentaHasRelevantneDirektiveCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponentaId")
     private Collection<Granice> graniceCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<EtalonBoca> etalonBocaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
     private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
@@ -111,7 +113,7 @@ public class Komponenta implements Serializable {
         this.id = id;
     }
 
-    public Komponenta(Integer id, String naziv, float konvVUM) {
+    public Komponenta(Integer id, String naziv, double konvVUM) {
         this.id = id;
         this.naziv = naziv;
         this.konvVUM = konvVUM;
@@ -173,11 +175,11 @@ public class Komponenta implements Serializable {
         this.vrstaKomponente = vrstaKomponente;
     }
 
-    public float getKonvVUM() {
+    public double getKonvVUM() {
         return konvVUM;
     }
 
-    public void setKonvVUM(float konvVUM) {
+    public void setKonvVUM(double konvVUM) {
         this.konvVUM = konvVUM;
     }
 
@@ -231,6 +233,15 @@ public class Komponenta implements Serializable {
 
     public void setGraniceCollection(Collection<Granice> graniceCollection) {
         this.graniceCollection = graniceCollection;
+    }
+
+    @XmlTransient
+    public Collection<EtalonBoca> getEtalonBocaCollection() {
+        return etalonBocaCollection;
+    }
+
+    public void setEtalonBocaCollection(Collection<EtalonBoca> etalonBocaCollection) {
+        this.etalonBocaCollection = etalonBocaCollection;
     }
 
     @XmlTransient

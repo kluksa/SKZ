@@ -52,7 +52,7 @@ public class PostajaUredjajLink implements Serializable {
     private Date vrijemeUklanjanja;
     @Basic(optional = false)
     @NotNull
-    private short usporedno;
+    private int usporedno;
     @JoinColumn(name = "postaja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Postaja postajaId;
@@ -67,7 +67,7 @@ public class PostajaUredjajLink implements Serializable {
         this.id = id;
     }
 
-    public PostajaUredjajLink(Integer id, Date vrijemePostavljanja, short usporedno) {
+    public PostajaUredjajLink(Integer id, Date vrijemePostavljanja, int usporedno) {
         this.id = id;
         this.vrijemePostavljanja = vrijemePostavljanja;
         this.usporedno = usporedno;
@@ -97,11 +97,11 @@ public class PostajaUredjajLink implements Serializable {
         this.vrijemeUklanjanja = vrijemeUklanjanja;
     }
 
-    public short getUsporedno() {
+    public int getUsporedno() {
         return usporedno;
     }
 
-    public void setUsporedno(short usporedno) {
+    public void setUsporedno(int usporedno) {
         this.usporedno = usporedno;
     }
 

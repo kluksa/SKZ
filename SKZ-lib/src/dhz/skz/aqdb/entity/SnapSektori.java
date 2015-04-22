@@ -47,10 +47,10 @@ public class SnapSektori implements Serializable {
     private int asociranaOznaka;
     @Basic(optional = false)
     @NotNull
-    private short sektor;
+    private int sektor;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 510)
     private String naziv;
     @ManyToMany(mappedBy = "snapSektoriCollection")
     private Collection<IndustrijskePostajeSvojstva> industrijskePostajeSvojstvaCollection;
@@ -62,7 +62,7 @@ public class SnapSektori implements Serializable {
         this.id = id;
     }
 
-    public SnapSektori(Integer id, int asociranaOznaka, short sektor, String naziv) {
+    public SnapSektori(Integer id, int asociranaOznaka, int sektor, String naziv) {
         this.id = id;
         this.asociranaOznaka = asociranaOznaka;
         this.sektor = sektor;
@@ -85,11 +85,11 @@ public class SnapSektori implements Serializable {
         this.asociranaOznaka = asociranaOznaka;
     }
 
-    public short getSektor() {
+    public int getSektor() {
         return sektor;
     }
 
-    public void setSektor(short sektor) {
+    public void setSektor(int sektor) {
         this.sektor = sektor;
     }
 

@@ -52,16 +52,20 @@ public class PodatakSirovi implements Serializable {
     private Date vrijeme;
     @Basic(optional = false)
     @NotNull
-    private float vrijednost;
+    private double vrijednost;
     private Integer status;
     private Integer greska;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "vrijeme_upisa")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
-    @Size(max = 60)
+    @Size(max = 120)
     @Column(name = "status_string")
     private String statusString;
+    @JoinColumn(name = "korisnik_id", referencedColumnName = "id")
+    @ManyToOne
+    private Korisnik korisnikId;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
@@ -73,7 +77,7 @@ public class PodatakSirovi implements Serializable {
         this.id = id;
     }
 
-    public PodatakSirovi(Integer id, Date vrijeme, float vrijednost, Date vrijemeUpisa) {
+    public PodatakSirovi(Integer id, Date vrijeme, double vrijednost, Date vrijemeUpisa) {
         this.id = id;
         this.vrijeme = vrijeme;
         this.vrijednost = vrijednost;
@@ -96,11 +100,11 @@ public class PodatakSirovi implements Serializable {
         this.vrijeme = vrijeme;
     }
 
-    public float getVrijednost() {
+    public double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
@@ -134,6 +138,14 @@ public class PodatakSirovi implements Serializable {
 
     public void setStatusString(String statusString) {
         this.statusString = statusString;
+    }
+
+    public Korisnik getKorisnikId() {
+        return korisnikId;
+    }
+
+    public void setKorisnikId(Korisnik korisnikId) {
+        this.korisnikId = korisnikId;
     }
 
     public ProgramMjerenja getProgramMjerenjaId() {

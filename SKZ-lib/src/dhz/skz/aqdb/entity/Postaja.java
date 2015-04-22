@@ -53,32 +53,32 @@ public class Postaja implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "naziv_postaje")
     private String nazivPostaje;
-    @Size(max = 255)
+    @Size(max = 510)
     @Column(name = "naziv_lokacije")
     private String nazivLokacije;
-    @Size(max = 8)
+    @Size(max = 16)
     @Column(name = "nacionalna_oznaka")
     private String nacionalnaOznaka;
-    @Size(max = 8)
+    @Size(max = 16)
     @Column(name = "oznaka_postaje")
     private String oznakaPostaje;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "geogr_duzina")
-    private Float geogrDuzina;
+    private Double geogrDuzina;
     @Column(name = "geogr_sirina")
-    private Float geogrSirina;
+    private Double geogrSirina;
     @Column(name = "nadmorska_visina")
     private Integer nadmorskaVisina;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "nuts_oznaka")
     private String nutsOznaka;
     private Integer stanovnistvo;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 15)
+    @Size(min = 1, max = 30)
     @Column(name = "kratka_oznaka")
     private String kratkaOznaka;
     @ManyToMany(mappedBy = "postajaCollection")
@@ -159,19 +159,19 @@ public class Postaja implements Serializable {
         this.oznakaPostaje = oznakaPostaje;
     }
 
-    public Float getGeogrDuzina() {
+    public Double getGeogrDuzina() {
         return geogrDuzina;
     }
 
-    public void setGeogrDuzina(Float geogrDuzina) {
+    public void setGeogrDuzina(Double geogrDuzina) {
         this.geogrDuzina = geogrDuzina;
     }
 
-    public Float getGeogrSirina() {
+    public Double getGeogrSirina() {
         return geogrSirina;
     }
 
-    public void setGeogrSirina(Float geogrSirina) {
+    public void setGeogrSirina(Double geogrSirina) {
         this.geogrSirina = geogrSirina;
     }
 

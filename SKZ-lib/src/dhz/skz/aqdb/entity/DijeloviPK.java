@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class DijeloviPK implements Serializable {
     @Basic(optional = false)
-    @NotNull
     private int id;
     @Basic(optional = false)
     @NotNull

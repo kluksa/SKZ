@@ -41,7 +41,7 @@ public class MjerneJedinice implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mjerneJediniceId")
     private Collection<EtalonBoca> etalonBocaCollection;

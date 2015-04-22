@@ -35,7 +35,7 @@ public class Komentar implements Serializable {
     @NotNull
     @Column(name = "podatak_id")
     private Integer podatakId;
-    @Size(max = 255)
+    @Size(max = 510)
     private String tekst;
     @JoinColumn(name = "podatak_id", referencedColumnName = "podatak_id", insertable = false, updatable = false)
     @OneToOne(optional = false)

@@ -67,11 +67,12 @@ public class UmjeravanjeHasIspitneVelicineFacade extends AbstractFacade<Umjerava
         Join<ProgramUredjajLink, ProgramMjerenja> pmJ = pulJ.join(ProgramUredjajLink_.programMjerenjaId);
         Join<UmjeravanjeHasIspitneVelicine, IspitneVelicine> ispJ = from.join(UmjeravanjeHasIspitneVelicine_.ispitneVelicine);
         
-        Predicate programP = cb.equal(pmJ.get(ProgramMjerenja_.id), pm);
+        Predicate programP = cb.equal(pulJ.get(ProgramUredjajLink_.programMjerenjaId), pm);
+        
         Predicate vrijemeOdP = cb.lessThanOrEqualTo(pulJ.get(ProgramUredjajLink_.vrijemePostavljanja), umjJ.get(Umjeravanje_.datum));
         Predicate vrijemeDoP = cb.greaterThanOrEqualTo(pulJ.get(ProgramUredjajLink_.vrijemeUklanjanja), umjJ.get(Umjeravanje_.datum));
         Predicate uklanjanjeNulP = cb.isNull(pulJ.get(ProgramUredjajLink_.vrijemeUklanjanja));
-        Predicate ispitneVelicineP = cb.equal(ispJ.get(IspitneVelicine_.id), iv);
+        Predicate ispitneVelicineP = cb.equal(from.get(UmjeravanjeHasIspitneVelicine_.ispitneVelicine), iv);
         
         cq.select(from).where(cb.and(programP, ispitneVelicineP, cb.or(uklanjanjeNulP, vrijemeDoP)));
         return em.createQuery(cq).getResultList();

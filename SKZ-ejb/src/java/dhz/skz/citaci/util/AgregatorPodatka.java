@@ -43,7 +43,7 @@ public class AgregatorPodatka {
 
     private class AgPodatak {
 
-        Float iznos = 0.f;
+        Double iznos = 0.;
         int status = 0;
         int broj = 0;
     }
@@ -116,7 +116,7 @@ public class AgregatorPodatka {
             agregirani.setVrijeme(vrijeme);
             agregirani.setNivoValidacijeId(nivo);
             agregirani.setStatus(mjerenje.status);
-            agregirani.setObuhvat((short) (100 * mjerenje.broj / ocekivaniBroj));
+            agregirani.setObuhvat((100 * mjerenje.broj / ocekivaniBroj));
             return agregirani;
         } else {
             return null;

@@ -224,7 +224,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
-                stmt.setFloat(4, p.getVrijednost());
+                stmt.setDouble(4, p.getVrijednost());
                 stmt.setInt(5, p.getStatus());
                 stmt.setInt(6, p.getObuhvat());
                 stmt.addBatch();
@@ -241,7 +241,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
-                stmt.setFloat(4, zs.getVrijednost());
+                stmt.setDouble(4, zs.getVrijednost());
                 stmt.setString(5, zs.getVrsta());
                 stmt.addBatch();
             }

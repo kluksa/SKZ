@@ -25,17 +25,17 @@ import dhz.skz.citaci.util.OperStatus;
  */
 public abstract class ValidatorImpl implements Validator {
     
-    float a, b, ldl, opseg;
+    Double a, b, ldl, opseg;
     
     @Override
-    public void setPodaciUmjeravanja(float a, float b, float ldl, float opseg){
+    public void setPodaciUmjeravanja(Double a, Double b, Double ldl, Double opseg){
         this.a = a;
         this.b = b;
         this.ldl = ldl;
         this.opseg = opseg;
     }
 
-    private int provjeraIznosa(float iznos){
+    private int provjeraIznosa(Double iznos){
         int status = 0;
         iznos = iznos*a+b;
         if ( iznos < -998.) 
@@ -49,7 +49,7 @@ public abstract class ValidatorImpl implements Validator {
         return status;
     }
     
-    private int provjeraOkolisnihUvjeta(float temperatura) {
+    private int provjeraOkolisnihUvjeta(Double temperatura) {
         if (temperatura < 15 || temperatura > 30) {
             return 1 << OperStatus.OKOLISNI_UVJETI.ordinal();
         }
@@ -61,7 +61,7 @@ public abstract class ValidatorImpl implements Validator {
     public void validiraj(PodatakSirovi ps) {
         int status = 0;
         status |= provjeraIznosa(ps.getVrijednost());
-        status |= provjeraOkolisnihUvjeta(0.f);
+        status |= provjeraOkolisnihUvjeta(0.);
         status |= provjeraStatusa(ps.getStatusString());
         ps.setStatus(status);
     }

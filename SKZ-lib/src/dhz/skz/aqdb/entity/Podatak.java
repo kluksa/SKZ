@@ -12,8 +12,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -45,8 +43,8 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Podatak implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(name = "podatak_id")
     private Integer podatakId;
     @Basic(optional = false)
@@ -54,9 +52,10 @@ public class Podatak implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float vrijednost;
-    private Short obuhvat;
+    private Double vrijednost;
+    private Integer obuhvat;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "vrijeme_upisa")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
@@ -109,19 +108,19 @@ public class Podatak implements Serializable {
         this.vrijeme = vrijeme;
     }
 
-    public Float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(Float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
-    public Short getObuhvat() {
+    public Integer getObuhvat() {
         return obuhvat;
     }
 
-    public void setObuhvat(Short obuhvat) {
+    public void setObuhvat(Integer obuhvat) {
         this.obuhvat = obuhvat;
     }
 

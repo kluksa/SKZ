@@ -48,12 +48,12 @@ public class ModelUredjaja implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "oznaka_modela")
     private String oznakaModela;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 1)
+    @Size(min = 1, max = 2)
     private String vrsta;
     @Column(name = "broj_mjerenja_u_satu")
     private Integer brojMjerenjaUSatu;

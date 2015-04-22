@@ -9,7 +9,6 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.citaci.CitacMainRemote;
-import dhz.skz.rs.dto.PodatakDTO;
 import dhz.skz.rs.dto.PodatakSiroviDTO;
 import dhz.skz.rs.dto.StatusDTO;
 import dhz.skz.rs.util.DateParam;

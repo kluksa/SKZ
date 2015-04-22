@@ -36,7 +36,7 @@ public class UlogeHasKorisnik implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    @Size(max = 45)
+    @Size(max = 90)
     private String version;
     @JoinColumn(name = "korisnik_id", referencedColumnName = "id")
     @ManyToOne(optional = false)

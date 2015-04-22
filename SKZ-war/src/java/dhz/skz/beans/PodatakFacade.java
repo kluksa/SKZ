@@ -54,7 +54,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         Predicate uvjet = cb.and(pocetakP, krajP);
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, pm),
                         uvjet
                 )

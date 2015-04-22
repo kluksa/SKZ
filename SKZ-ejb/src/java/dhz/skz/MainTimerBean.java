@@ -13,6 +13,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 
 /**
  *
@@ -20,6 +22,7 @@ import javax.ejb.Singleton;
  */
 @Singleton
 @LocalBean
+@TransactionAttribute(NOT_SUPPORTED)
 public class MainTimerBean {
 
     @EJB
@@ -40,11 +43,11 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "02", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {
-//            citacMainBean.pokreniCitace();
+            citacMainBean.pokreniCitace();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }

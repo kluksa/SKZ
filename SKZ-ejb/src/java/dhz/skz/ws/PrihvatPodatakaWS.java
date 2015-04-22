@@ -57,7 +57,7 @@ public class PrihvatPodatakaWS {
             String naziv = str + izvor.getBean().trim();
             log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
-            parser.obradi(omotnica);
+            parser.prihvati(omotnica);
 
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);

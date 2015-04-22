@@ -43,8 +43,8 @@ public class ZeroSpanBean {
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refS = new TreeMap<>();
         NavigableMap<Date, ZeroSpan> zero = new TreeMap<>();
         
-        float deltaz = pm.getMetodaId().getZeroDriftAbsolut();
-        float deltas = pm.getMetodaId().getSpanDriftRelativ();
+        Double deltaz = pm.getMetodaId().getZeroDriftAbsolut();
+        Double deltas = pm.getMetodaId().getSpanDriftRelativ();
         
         for (ZeroSpanReferentneVrijednosti rzs : refZS){
             if (rzs.getVrsta().contains("Z")) {
@@ -79,7 +79,7 @@ public class ZeroSpanBean {
                 Map.Entry<Date, ZeroSpan> najbliziZero = zero.floorEntry(new Date(zs.getVrijeme().getTime()+3600*1000));
                 
                 if ( najbliziZero!=null && refZ.floorEntry(najbliziZero.getKey())!= null && refS.floorEntry(zs.getVrijeme())!=null){
-                    float dz =  najbliziZero.getValue().getVrijednost() - refZ.floorEntry(najbliziZero.getKey()).getValue().getVrijednost();
+                    Double dz =  najbliziZero.getValue().getVrijednost() - refZ.floorEntry(najbliziZero.getKey()).getValue().getVrijednost();
                     zz.setMinDozvoljeno((1-deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
                     zz.setMaxDozvoljeno((1+deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
                 }

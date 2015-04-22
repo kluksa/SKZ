@@ -33,6 +33,7 @@ public class CitacMainBean implements CitacMainRemote, CitacMainLocal {
     private IzvorPodatakaFacade izvorPodatakaFacade;
 
     @Override
+    @TransactionAttribute(NOT_SUPPORTED)
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {

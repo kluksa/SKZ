@@ -12,9 +12,9 @@ package dhz.skz.rs.dto;
 public class ZeroSpanDTO {    
     
     private long vrijeme;
-    private float vrijednost;
+    private Double vrijednost;
     private Character vrsta;
-    private float minDozvoljeno, maxDozvoljeno;
+    private Double minDozvoljeno, maxDozvoljeno;
 
 
     public long getVrijeme() {
@@ -25,11 +25,11 @@ public class ZeroSpanDTO {
         this.vrijeme = vrijeme;
     }
 
-    public float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
@@ -41,19 +41,19 @@ public class ZeroSpanDTO {
         this.vrsta = vrsta;
     }
 
-    public float getMinDozvoljeno() {
+    public Double getMinDozvoljeno() {
         return minDozvoljeno;
     }
 
-    public void setMinDozvoljeno(float minDozvoljeno) {
+    public void setMinDozvoljeno(Double minDozvoljeno) {
         this.minDozvoljeno = minDozvoljeno;
     }
 
-    public float getMaxDozvoljeno() {
+    public Double getMaxDozvoljeno() {
         return maxDozvoljeno;
     }
 
-    public void setMaxDozvoljeno(float maxDozvoljeno) {
+    public void setMaxDozvoljeno(Double maxDozvoljeno) {
         this.maxDozvoljeno = maxDozvoljeno;
     }
     

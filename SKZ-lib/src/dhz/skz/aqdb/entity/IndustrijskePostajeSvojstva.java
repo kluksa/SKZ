@@ -42,7 +42,7 @@ public class IndustrijskePostajeSvojstva implements Serializable {
     private Integer postajaId;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "udaljenost_od_izvora")
-    private Float udaljenostOdIzvora;
+    private Double udaljenostOdIzvora;
     @JoinTable(name = "industrijske_postaje_svojstva_has_snap_sektori", joinColumns = {
         @JoinColumn(name = "industrijske_postaje_svojstva_postaja_id", referencedColumnName = "postaja_id")}, inverseJoinColumns = {
         @JoinColumn(name = "snap_sektori_id", referencedColumnName = "id")})
@@ -67,11 +67,11 @@ public class IndustrijskePostajeSvojstva implements Serializable {
         this.postajaId = postajaId;
     }
 
-    public Float getUdaljenostOdIzvora() {
+    public Double getUdaljenostOdIzvora() {
         return udaljenostOdIzvora;
     }
 
-    public void setUdaljenostOdIzvora(Float udaljenostOdIzvora) {
+    public void setUdaljenostOdIzvora(Double udaljenostOdIzvora) {
         this.udaljenostOdIzvora = udaljenostOdIzvora;
     }
 

@@ -51,15 +51,15 @@ public class PrimateljiPodataka implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     private String naziv;
-    @Size(max = 255)
+    @Size(max = 510)
     private String url;
-    @Size(max = 45)
+    @Size(max = 90)
     private String tip;
-    @Size(max = 45)
+    @Size(max = 90)
     private String xsd;
-    private Short aktivan;
+    private Integer aktivan;
     @Column(name = "cestina_sati")
     private Integer cestinaSati;
     @JoinTable(name = "primatelji_podataka_has_program_mjerenja", joinColumns = {
@@ -125,11 +125,11 @@ public class PrimateljiPodataka implements Serializable {
         this.xsd = xsd;
     }
 
-    public Short getAktivan() {
+    public Integer getAktivan() {
         return aktivan;
     }
 
-    public void setAktivan(Short aktivan) {
+    public void setAktivan(Integer aktivan) {
         this.aktivan = aktivan;
     }
 

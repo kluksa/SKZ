@@ -18,7 +18,6 @@ public class SatniIterator {
     
     private final Calendar trenutni_termin;
     private final Calendar zadnji_termin;
-    private boolean prvi = true;
 
     public SatniIterator(Date pocetak, Date kraj) {
         trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -42,6 +41,4 @@ public class SatniIterator {
     public Date getVrijeme(){
         return trenutni_termin.getTime();
     }
-
-    
 }

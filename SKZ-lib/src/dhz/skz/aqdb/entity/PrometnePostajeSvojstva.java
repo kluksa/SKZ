@@ -48,9 +48,9 @@ public class PrometnePostajeSvojstva implements Serializable {
     private Integer udioTeskihVozila;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "udaljenost_od_procelja")
-    private Float udaljenostOdProcelja;
+    private Double udaljenostOdProcelja;
     @Column(name = "visina_zgrade")
-    private Float visinaZgrade;
+    private Double visinaZgrade;
     @JoinColumn(name = "postaja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Postaja postaja;
@@ -94,19 +94,19 @@ public class PrometnePostajeSvojstva implements Serializable {
         this.udioTeskihVozila = udioTeskihVozila;
     }
 
-    public Float getUdaljenostOdProcelja() {
+    public Double getUdaljenostOdProcelja() {
         return udaljenostOdProcelja;
     }
 
-    public void setUdaljenostOdProcelja(Float udaljenostOdProcelja) {
+    public void setUdaljenostOdProcelja(Double udaljenostOdProcelja) {
         this.udaljenostOdProcelja = udaljenostOdProcelja;
     }
 
-    public Float getVisinaZgrade() {
+    public Double getVisinaZgrade() {
         return visinaZgrade;
     }
 
-    public void setVisinaZgrade(Float visinaZgrade) {
+    public void setVisinaZgrade(Double visinaZgrade) {
         this.visinaZgrade = visinaZgrade;
     }
 

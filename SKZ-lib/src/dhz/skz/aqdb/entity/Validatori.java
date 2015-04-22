@@ -39,7 +39,7 @@ public class Validatori implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 510)
     private String naziv;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "validatoriId")
     private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;

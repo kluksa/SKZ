@@ -37,25 +37,25 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PrimateljProgramKljuceviMapPK primateljProgramKljuceviMapPK;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "p_kljuc")
     private String pKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "k_kljuc")
     private String kKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "u_kljuc")
     private String uKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "n_kljuc")
     private String nKljuc;
     private Integer aktivan;
-    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private ProgramMjerenja programMjerenja;
     @JoinColumn(name = "primatelj_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private PrimateljiPodataka primateljiPodataka;
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private ProgramMjerenja programMjerenja;
 
     public PrimateljProgramKljuceviMap() {
     }
@@ -116,20 +116,20 @@ public class PrimateljProgramKljuceviMap implements Serializable {
         this.aktivan = aktivan;
     }
 
-    public ProgramMjerenja getProgramMjerenja() {
-        return programMjerenja;
-    }
-
-    public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
-        this.programMjerenja = programMjerenja;
-    }
-
     public PrimateljiPodataka getPrimateljiPodataka() {
         return primateljiPodataka;
     }
 
     public void setPrimateljiPodataka(PrimateljiPodataka primateljiPodataka) {
         this.primateljiPodataka = primateljiPodataka;
+    }
+
+    public ProgramMjerenja getProgramMjerenja() {
+        return programMjerenja;
+    }
+
+    public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
+        this.programMjerenja = programMjerenja;
     }
 
     @Override

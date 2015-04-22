@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Kvarovi.findAll", query = "SELECT k FROM Kvarovi k"),
     @NamedQuery(name = "Kvarovi.findById", query = "SELECT k FROM Kvarovi k WHERE k.id = :id"),
-    @NamedQuery(name = "Kvarovi.findByDatum", query = "SELECT k FROM Kvarovi k WHERE k.datum = :datum")})
+    @NamedQuery(name = "Kvarovi.findByDatum", query = "SELECT k FROM Kvarovi k WHERE k.datum = :datum"),
+    @NamedQuery(name = "Kvarovi.findByOpisKvara", query = "SELECT k FROM Kvarovi k WHERE k.opisKvara = :opisKvara")})
 public class Kvarovi implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,7 +46,6 @@ public class Kvarovi implements Serializable {
     private Date datum;
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Size(min = 1, max = 2147483647)
     @Column(name = "opis_kvara")
     private String opisKvara;
