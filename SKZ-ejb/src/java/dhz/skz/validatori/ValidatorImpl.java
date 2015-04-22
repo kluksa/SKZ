@@ -25,12 +25,12 @@ import dhz.skz.citaci.util.OperStatus;
  */
 public abstract class ValidatorImpl implements Validator {
     
-    protected float a, b, ldl, opseg;
-    private float temperatura;
+    protected Double a, b, ldl, opseg;
+    private Double temperatura;
     private final int mask = 0b1111100111111000;
     
     @Override
-    public void setTemperatura(float temperatura){
+    public void setTemperatura(Double temperatura){
         this.temperatura = temperatura;
     }
     

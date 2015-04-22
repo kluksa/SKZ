@@ -15,8 +15,8 @@ public interface Validator {
 
     public void validiraj(PodatakSirovi ps);
 
-    public void setPodaciUmjeravanja(float a, float b, float ldl, float opseg);
+    public void setPodaciUmjeravanja(Double a, Double b, Double ldl, Double opseg);
     
-    public void setTemperatura(float temperatura);
+    public void setTemperatura(Double temperatura);
 
 }

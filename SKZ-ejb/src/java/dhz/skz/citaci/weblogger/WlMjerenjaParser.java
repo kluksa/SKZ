@@ -42,7 +42,7 @@ class WlMjerenjaParser implements WlFileParser {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm z");
 
-    private float temperatura;
+    private Double temperatura;
     private Date zadnjiPodatak;
     private int brojStupaca;
     private Date trenutnoVrijeme;
@@ -54,7 +54,7 @@ class WlMjerenjaParser implements WlFileParser {
     private final ValidatorFactory validatorFactory;
 
     public WlMjerenjaParser(TimeZone tz, ValidatorFactory validatorFactory) {
-        this.temperatura = -999.f;
+        this.temperatura = -999.;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
         this.chareset = Charset.forName("UTF-8");
@@ -144,7 +144,7 @@ class WlMjerenjaParser implements WlFileParser {
             try {
                 String tmpStr = csv.get(temperaturaKontejneraStupac);
                 if (!tmpStr.isEmpty()) {
-                    temperatura = Float.parseFloat(tmpStr);
+                    temperatura = Double.parseDouble(tmpStr);
                 }
             } catch (NumberFormatException ex) {
                 log.log(Level.SEVERE, null, ex);
