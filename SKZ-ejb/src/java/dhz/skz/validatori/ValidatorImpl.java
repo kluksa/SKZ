@@ -25,7 +25,14 @@ import dhz.skz.citaci.util.OperStatus;
  */
 public abstract class ValidatorImpl implements Validator {
     
-    float a, b, ldl, opseg;
+    protected float a, b, ldl, opseg;
+    private float temperatura;
+    private final int mask = 0b1111100111111000;
+    
+    @Override
+    public void setTemperatura(float temperatura){
+        this.temperatura = temperatura;
+    }
     
     @Override
     public void setPodaciUmjeravanja(float a, float b, float ldl, float opseg){
@@ -49,19 +56,18 @@ public abstract class ValidatorImpl implements Validator {
         return status;
     }
     
-    private int provjeraOkolisnihUvjeta(float temperatura) {
+    private int provjeraOkolisnihUvjeta() {
         if (temperatura < 15 || temperatura > 30) {
             return 1 << OperStatus.OKOLISNI_UVJETI.ordinal();
         }
         return 0;
     }
     
-    
     @Override
     public void validiraj(PodatakSirovi ps) {
-        int status = 0;
+        int status  = ps.getStatus() & ~mask;
         status |= provjeraIznosa(ps.getVrijednost());
-        status |= provjeraOkolisnihUvjeta(0.f);
+        status |= provjeraOkolisnihUvjeta();
         status |= provjeraStatusa(ps.getStatusString());
         ps.setStatus(status);
     }

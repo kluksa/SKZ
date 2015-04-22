@@ -143,7 +143,6 @@ class WlMjerenjaParser implements WlFileParser {
         if (temperaturaKontejneraStupac > 0) {
             try {
                 String tmpStr = csv.get(temperaturaKontejneraStupac);
-
                 if (!tmpStr.isEmpty()) {
                     temperatura = Float.parseFloat(tmpStr);
                 }
@@ -165,9 +164,8 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
                     pod.setVrijednost(iznos);
+                    v.setTemperatura(temperatura);
                     v.validiraj(pod);
-                    
-// tu bi trebali zvati validator i zapisati rezultat u PodatakSirovi.status ( status == 0 = OK)
                     nizPodataka.dodajPodatak(pod);
 
                 } catch (NumberFormatException  ex) {
