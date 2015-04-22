@@ -13,6 +13,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -58,38 +59,38 @@ import org.apache.commons.net.ftp.FTPFile;
 @Stateless
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
-    @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
-
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
-
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
-
     @EJB
     private PodatakFacade podatakFacade;
-
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
-
     @EJB
     private PostajaFacade posajaFacade;
-
     @EJB
     private ValidatorFactory validatorFactory;
+    @EJB
+    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
 
-    enum Vrsta {
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
+        podatakSiroviFacade.spremi(podaci.values());
+    }
 
+    enum Vrsta {
         MJERENJE, KALIBRACIJA
     }
 
@@ -98,7 +99,6 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         try {
             log.log(Level.INFO, "POCETAK CITANJA");
@@ -139,7 +139,6 @@ public class WebloggerCitacBean implements CitacIzvora {
         FtpKlijent ftp = new FtpKlijent();
 
         try {
-
             ftp.connect(new URI(izvor.getUri()));
 
             String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)\\.csv";
@@ -194,8 +193,8 @@ public class WebloggerCitacBean implements CitacIzvora {
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
-        
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
             int ocekivaniBroj = 60;
@@ -204,7 +203,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 
             if (!niz.getPodaci().isEmpty()) {
                 NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
-
+                spremi(podaci);    
                 SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
                 Date po = sat.getVrijeme();
                 while (sat.next()) {
@@ -283,7 +282,6 @@ public class WebloggerCitacBean implements CitacIzvora {
             parser = new WlZeroSpanParser(timeZone);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         }
-
         return parser;
     }
 
