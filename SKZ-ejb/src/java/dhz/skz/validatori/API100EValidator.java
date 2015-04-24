@@ -5,8 +5,8 @@
  */
 package dhz.skz.validatori;
 
+import dhz.skz.util.OperStatus;
 import javax.ejb.Stateless;
-import dhz.skz.citaci.util.OperStatus;
 
 /**
  *

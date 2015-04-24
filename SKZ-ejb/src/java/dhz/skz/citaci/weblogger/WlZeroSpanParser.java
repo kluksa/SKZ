@@ -46,6 +46,7 @@ class WlZeroSpanParser implements WlFileParser{
     private int brojStupaca;
     private Date trenutnoVrijeme;
     private Collection<ProgramMjerenja> aktivniProgram;
+    private Date terminDatoteke;
 
     public WlZeroSpanParser(TimeZone timeZone) {
         this.wlKanalProgram = new HashMap<>();
@@ -175,5 +176,15 @@ class WlZeroSpanParser implements WlFileParser{
                 log.log(Level.SEVERE, "izvor_program_kljucevi_map ne sadrzi program_mjerenja_id = {0}", kljuc.getId());
             }
         }
+    }
+    
+    @Override
+    public void setTerminDatoteke(Date terminDatoteke) {
+        this.terminDatoteke = terminDatoteke;
+    }
+
+    @Override
+    public boolean isDobarTermin() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

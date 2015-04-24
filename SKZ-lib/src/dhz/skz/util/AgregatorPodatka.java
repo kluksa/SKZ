@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dhz.skz.citaci.util;
+package dhz.skz.util;
 
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -22,24 +22,12 @@ import java.util.Iterator;
 public class AgregatorPodatka {
 
     private AgPodatak mjerenje, zero, span;
-    private final int falseMask; 
+    private final int falseMask;
     private final int trueMask;
     private final int ocekivaniBroj;
     private final NivoValidacije nivo;
     private Date vrijeme;
     private ProgramMjerenja pm;
-
-    public boolean hasZero() {
-        return zero.broj > 0;
-    }
-
-    public boolean hasSpan() {
-        return span.broj > 0;
-    }
-
-    public boolean hasPodatak() {
-        return mjerenje.broj > 0;
-    }
 
     private class AgPodatak {
 
@@ -63,7 +51,7 @@ public class AgregatorPodatka {
                 falseMask = ~0;
         }
     }
-    
+
     private void reset() {
         mjerenje = new AgPodatak();
         zero = new AgPodatak();
@@ -91,7 +79,7 @@ public class AgregatorPodatka {
     }
 
     private void dodaj(PodatakSirovi ps) {
-        if (((ps.getStatus() & falseMask) == 0) && ((ps.getStatus() & trueMask) == trueMask)) {
+        if (OperStatus.isValidSirovi(ps.getStatus(), nivo)) {
             mjerenje.broj++;
             mjerenje.iznos += ps.getVrijednost();
         } else if ((ps.getStatus() & (1 << OperStatus.ZERO.ordinal())) != 0) {
@@ -107,39 +95,38 @@ public class AgregatorPodatka {
     }
 
     public Podatak getPodatak() {
-        if (mjerenje.broj > 0) {
-            if (mjerenje.broj < 3 * this.ocekivaniBroj / 4) {
-                mjerenje.status |= (1 << OperStatus.OBUHVAT.ordinal());
-            }
-            Podatak agregirani = new Podatak();
-            agregirani.setProgramMjerenjaId(pm);
-            agregirani.setVrijeme(vrijeme);
-            agregirani.setNivoValidacijeId(nivo);
-            agregirani.setStatus(mjerenje.status);
-            agregirani.setObuhvat((100 * mjerenje.broj / ocekivaniBroj));
-            return agregirani;
+        if (mjerenje.broj < 3 * this.ocekivaniBroj / 4) {
+            mjerenje.status |= (1 << OperStatus.OBUHVAT.ordinal());
+        }
+        Podatak agregirani = new Podatak();
+        agregirani.setProgramMjerenjaId(pm);
+        agregirani.setVrijeme(vrijeme);
+        agregirani.setNivoValidacijeId(nivo);
+        agregirani.setStatus(mjerenje.status);
+
+        agregirani.setObuhvat((100 * mjerenje.broj / ocekivaniBroj));
+        if ( mjerenje.broj > 0 ) {
+            agregirani.setVrijednost(mjerenje.iznos/mjerenje.broj);
         } else {
-            return null;
+            agregirani.setVrijednost(-999.);
         }
+        return agregirani;
     }
 
-    public ZeroSpan getZero() {
-        if (zero.broj == 0) {
-            return null;
+    public HashSet<ZeroSpan> getZeroSpan() {
+        HashSet<ZeroSpan> zs = new HashSet<>();
+        if (zero.broj != 0) {
+            ZeroSpan z = new ZeroSpan();
+            z.setVrijednost(zero.iznos / zero.broj);
+            z.setVrsta("AZ");
+            zs.add(z);
         }
-        ZeroSpan z = new ZeroSpan();
-        z.setVrijednost(zero.iznos / zero.broj);
-        z.setVrsta("AZ");
-        return z;
-    }
-
-    public ZeroSpan getSpan() {
-        if (zero.broj == 0) {
-            return null;
+        if (span.broj != 0) {
+            ZeroSpan s = new ZeroSpan();
+            s.setVrijednost(zero.iznos / zero.broj);
+            s.setVrsta("AS");
+            zs.add(s);
         }
-        ZeroSpan s = new ZeroSpan();
-        s.setVrijednost(zero.iznos / zero.broj);
-        s.setVrsta("AS");
-        return s;
+        return zs;
     }
 }

@@ -5,6 +5,7 @@
  */
 package dhz.skz.rs;
 
+import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
@@ -12,6 +13,7 @@ import dhz.skz.citaci.CitacMainRemote;
 import dhz.skz.rs.dto.PodatakSiroviDTO;
 import dhz.skz.rs.dto.StatusDTO;
 import dhz.skz.rs.util.DateParam;
+import dhz.skz.util.OperStatus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -91,7 +93,8 @@ public class SiroviPodaci {
                 p.setStatusString(ps.getStatusString());
                 p.setVrijeme(ps.getVrijeme().getTime());
                 p.setVrijednost(ps.getVrijednost());
-                p.setValjan(Boolean.TRUE);
+                p.setStatusInt(ps.getStatus());
+                p.setValjan(OperStatus.isValidSirovi(ps.getStatus(), new NivoValidacije(0)));
                 lista.add(p);
             }
 
@@ -105,16 +108,15 @@ public class SiroviPodaci {
 
     }
     
-    enum Test{
-        NULA, JEDAN, DVA
-    }
+    
     @GET
     @Path("statusi")
     @Produces("application/json")
     public List<StatusDTO> getStatusiMapiranje() {
         List<StatusDTO> lista = new ArrayList<>();
-        for ( Test t : Test.values()){
+        for ( OperStatus t : OperStatus.values()){
             int i = t.ordinal();
+            
             String s = t.toString();
             lista.add(new StatusDTO(i,s));
         }

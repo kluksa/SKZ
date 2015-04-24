@@ -12,8 +12,6 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
-import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -34,8 +32,6 @@ import javax.naming.NamingException;
 public class PrihvatPodatakaWS {
 
     public static final Logger log = Logger.getLogger(PrihvatPodatakaWS.class.getName());
-    @EJB
-    private PrihvatSirovihPodatakaRemote ejbRef;
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
     @EJB
@@ -99,7 +95,6 @@ public class PrihvatPodatakaWS {
     @WebMethod(operationName = "getZadnjiZaOmotnicu")
     public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
         log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
-        Date vrijemeZadnjeg = ejbRef.getVrijemeZadnjeg(omotnica);
         
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {

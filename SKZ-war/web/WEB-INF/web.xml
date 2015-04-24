@@ -27,6 +27,7 @@
             <web-resource-name>rest</web-resource-name>
             <description/>
             <url-pattern>/webresources/*</url-pattern>
+            <http-method>GET</http-method>
             <http-method>PUT</http-method>
             <http-method>POST</http-method>
             <http-method>DELETE</http-method>

@@ -14,15 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dhz.skz.citaci.weblogger.util;
+package dhz.skz.citaci.mlu;
+
+import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.webservis.omotnica.CsvOmotnica;
 
 /**
  *
  * @author kraljevic
  */
-class NemaPodatakaException extends Exception {
-
-    public NemaPodatakaException() {
-    }
+public interface OmotnicaPrihvat {
+    public void prihvati(CsvOmotnica omotnica, Postaja postaja, IzvorPodataka izvor);
     
 }

@@ -21,9 +21,10 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
-import dhz.skz.citaci.util.AgregatorPodatka;
-import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
-import dhz.skz.citaci.weblogger.util.SatniIterator;
+import dhz.skz.citaci.SiroviUSatneBean;
+import dhz.skz.citaci.SatniIterator;
+import dhz.skz.util.AgregatorPodatka;
+import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
@@ -47,16 +48,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import static javax.ejb.TransactionAttributeType.REQUIRED;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.naming.NamingException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 /**
  *
@@ -64,14 +56,13 @@ import javax.transaction.UserTransaction;
  */
 @Stateless
 @LocalBean
-//@TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
 
+    private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
+    @EJB
+    private SiroviUSatneBean siroviUSatneBean;
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
-
-    private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
-
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
@@ -79,24 +70,15 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private PostajaFacade postajaFacade;
     @EJB
-    private PodatakFacade podatakFacade;
-    @EJB
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     @EJB
     private ValidatorFactory validatorFactory;
 
-    @Resource
-    private EJBContext context;
-
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private Map<Integer, ProgramMjerenja> mapa;
     private Postaja postaja;
-    private CsvOmotnica omotnica;
     private IzvorPodataka izvor;
-    private final int MIN_OBUHVAT = 45;
-    private Map<Integer, String> modMapa;
 
     @Override
     public void prihvati(CsvOmotnica omotnica) {
@@ -105,166 +87,34 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
             izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            this.omotnica = omotnica;
-            mapa = new HashMap<>();
             validatorFactory.init(izvor);
 
-            if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
-                log.log(Level.INFO, "ZERO/SPAN");
-                prihvatiZeroSpan(omotnica);
-            } else {
-                log.log(Level.INFO, "MJERENJE");
-                prihvatiMjerenja(omotnica);
-            }
+            OmotnicaPrihvat op = parserFactory(omotnica);
+            op.prihvati(omotnica, postaja, izvor);
+
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
     }
 
-    private void parseHeaders(String[] headeri) {
-        for (int i = 1; i < headeri.length; i += 5) {
-            String str = headeri[i];
-            String datoteka = omotnica.getDatoteka();
-            ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, str, datoteka);
-            if (pm != null) {
-                mapa.put(i, pm);
-            }
-        }
-    }
-
-    private void parseLinija(String[] linija, Date vrijeme, Collection<PodatakSirovi> podaci) {
-        for (Integer i : mapa.keySet()) {
-            ProgramMjerenja pm = mapa.get(i);
-            Validator v = validatorFactory.getValidator(pm, vrijeme);
-            if (!linija[i].equalsIgnoreCase("null") & linija[i].equals("-9999")) {
-                try {
-                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(',');
-                    DecimalFormat format = new DecimalFormat("#.###");
-                    format.setDecimalFormatSymbols(symbols);
-                    Float vrijednost = format.parse(linija[i]).floatValue();
-
-                    PodatakSirovi ps = new PodatakSirovi();
-                    ps.setProgramMjerenjaId(pm);
-                    ps.setVrijeme(vrijeme);
-                    ps.setVrijednost(vrijednost);
-
-                    String ss = linija[i + 1];
-                    String ns = linija[i + 2];
-                    String cs = linija[i + 3];
-                    String vs = linija[i + 4];
-                    ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
-
-                    v.validiraj(ps);
-                    podaci.add(ps);
-                } catch (NumberFormatException | ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-            }
+    private OmotnicaPrihvat parserFactory(CsvOmotnica omotnica) {
+        if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
+            log.log(Level.INFO, "ZERO/SPAN");
+            return new ZeroSpanPrihvat(programMjerenjaFacade, zeroSpanFacade );
+        } else {
+            log.log(Level.INFO, "MJERENJE");
+            return new MjerenjaPrihvat(programMjerenjaFacade, podatakSiroviFacade, validatorFactory);
         }
     }
 
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
-            Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
-            napraviSatne(program, zadnjiSatni, nv);
-
+            siroviUSatneBean.spremiSatneIzSirovih(program, nv);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-    }
-
-    @Override
-    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void prihvatiZeroSpan(CsvOmotnica omotnica) {
-        Collection<ZeroSpan> podaci = new ArrayList<>();
-
-        parseZSHeaders(omotnica.getHeaderi());
-
-        Iterator<Long> it = omotnica.getVremena().iterator();
-        for (String[] linija : omotnica.getLinije()) {
-            parseZSLinija(linija, it.next(), podaci);
-        }
-        log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
-
-        zeroSpanFacade.spremi(podaci);
-    }
-
-    private void parseZSHeaders(String[] headeri) {
-        modMapa = new HashMap<>();
-        String datoteka = omotnica.getDatoteka();
-        for (Integer i = 1; i < headeri.length; i++) {
-            String str = headeri[i];
-            if (str.length() > 5) {
-                String kraj = str.substring(str.length() - 5);
-                String pocetak = str.substring(0, str.length() - 5);
-                ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, pocetak, datoteka);
-                if (pm != null) {
-                    mapa.put(i, pm);
-                    if (kraj.compareToIgnoreCase("_Span") == 0) {
-                        modMapa.put(i, "AS");
-                    } else if (kraj.compareToIgnoreCase("_Zero") == 0) {
-                        modMapa.put(i, "AZ");
-                    } else {
-                        log.log(Level.INFO, "Los header {0} na poziciji {1}", new Object[]{str, i});
-                    }
-                } else {
-                    log.log(Level.SEVERE, "NEMA PROGRAMA");
-                }
-            } else {
-                log.log(Level.INFO, "Los header {0} na poziciji {1}", new Object[]{str, i});
-            }
-        }
-    }
-
-    private void parseZSLinija(String[] linija, Long next, Collection<ZeroSpan> podaci) {
-        Date vrijeme = new Date(next);
-        for (Integer i : mapa.keySet()) {
-            ProgramMjerenja pm = mapa.get(i);
-            if (!linija[i].equalsIgnoreCase("null")) {
-                try {
-                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(',');
-                    DecimalFormat format = new DecimalFormat("#.#");
-                    format.setDecimalFormatSymbols(symbols);
-                    Double vrijednost;
-                    if ("-9999".equals(linija[i])) {
-                        vrijednost = -999.;
-                    } else {
-                        vrijednost = format.parse(linija[i]).doubleValue();
-                    }
-                    ZeroSpan ps = new ZeroSpan();
-                    ps.setProgramMjerenjaId(pm);
-                    ps.setVrijeme(vrijeme);
-                    ps.setVrijednost(vrijednost);
-                    ps.setVrsta(modMapa.get(i));
-                    podaci.add(ps);
-                } catch (NumberFormatException | ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void prihvatiMjerenja(CsvOmotnica omotnica) {
-        Collection<PodatakSirovi> podaci = new ArrayList<>();
-
-        parseHeaders(omotnica.getHeaderi());
-
-        Iterator<Long> it = omotnica.getVremena().iterator();
-        for (String[] linija : omotnica.getLinije()) {
-            log.log(Level.INFO, "MLU Linija: {0}", linija[0]);
-            Date vrijeme = new Date(it.next());
-            parseLinija(linija, vrijeme, podaci);
-        }
-        podatakSiroviFacade.spremi(podaci);
     }
 
     @Override
@@ -290,40 +140,4 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             return podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
         }
     }
-
-    @Override
-    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
-        return podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true);
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    protected void napraviSatne(ProgramMjerenja program, Date zadnjiSatni, NivoValidacije nv) {
-        int ocekivaniBroj = 60;
-        Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
-        log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
-
-        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi);
-        Date po = sat.getVrijeme();
-        while (sat.next()) {
-            Date kr = sat.getVrijeme();
-            AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivaniBroj);
-            Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, po, kr, false, true);
-            try {
-                agregator.agregiraj(sirovi, kr);
-                if (agregator.hasPodatak()) {
-                    podatakFacade.create(agregator.getPodatak());
-                }
-                if (agregator.hasZero()) {
-                    zeroSpanFacade.create(agregator.getZero());
-                }
-                if (agregator.hasSpan()) {
-                    zeroSpanFacade.create(agregator.getSpan());
-                }
-            } catch (MijesaniProgramiException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
-            po = kr;
-        }
-    }
-
 }

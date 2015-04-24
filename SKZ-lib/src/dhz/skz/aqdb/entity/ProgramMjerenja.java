@@ -160,6 +160,7 @@ public class ProgramMjerenja implements Serializable {
         this.programUredjajLinkCollection = programUredjajLinkCollection;
     }
 
+    @XmlTransient
     public IzvorProgramKljuceviMap getIzvorProgramKljuceviMap() {
         return izvorProgramKljuceviMap;
     }
@@ -212,6 +213,7 @@ public class ProgramMjerenja implements Serializable {
         this.metodaId = metodaId;
     }
 
+    @XmlTransient
     public IzvorPodataka getIzvorPodatakaId() {
         return izvorPodatakaId;
     }

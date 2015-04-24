@@ -26,4 +26,8 @@ interface WlFileParser {
 
     void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova, Collection<ProgramMjerenja> aktivniProgram);
     
+    boolean isDobarTermin();
+    
+    void setTerminDatoteke(Date terminDatoteke);
+    
 }

@@ -16,7 +16,16 @@ public class PodatakSiroviDTO implements Serializable {
     private long vrijeme;
     private Double vrijednost;
     private String statusString;
+    private Integer statusInt;
     private Boolean valjan;
+
+    public Integer getStatusInt() {
+        return statusInt;
+    }
+
+    public void setStatusInt(Integer statusInt) {
+        this.statusInt = statusInt;
+    }
 
     public Integer getId() {
         return id;

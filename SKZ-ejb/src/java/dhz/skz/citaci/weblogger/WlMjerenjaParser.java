@@ -52,6 +52,7 @@ class WlMjerenjaParser implements WlFileParser {
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
     private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
     private final ValidatorFactory validatorFactory;
+    private Date terminDatoteke;
 
     public WlMjerenjaParser(TimeZone tz, ValidatorFactory validatorFactory) {
         this.temperatura = -999.;
@@ -160,6 +161,7 @@ class WlMjerenjaParser implements WlFileParser {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
                     PodatakSirovi pod = new PodatakSirovi();
+                    pod.setStatus(0);
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
@@ -192,5 +194,15 @@ class WlMjerenjaParser implements WlFileParser {
                 log.log(Level.SEVERE, "izvor_program_kljucevi_map ne sadrzi program_mjerenja_id = {0}", pm.getId());
             }
         }
+    }
+
+    @Override
+    public boolean isDobarTermin() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setTerminDatoteke(Date terminDatoteke) {
+        this.terminDatoteke = terminDatoteke;
     }
 }

@@ -72,11 +72,6 @@ public class DcsCitacBean implements CitacIzvora {
         }
     }
 
-    @Override
-    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private List<Podatak> getPodaci(Connection con, ProgramMjerenja pm, Date zadnji) throws SQLException {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
@@ -111,11 +106,6 @@ public class DcsCitacBean implements CitacIzvora {
     }
 
     private Integer getStatus(String statusStr, String greskaStr, Integer obuhvat) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

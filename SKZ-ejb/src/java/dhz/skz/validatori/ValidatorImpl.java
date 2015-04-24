@@ -17,7 +17,7 @@
 package dhz.skz.validatori;
 
 import dhz.skz.aqdb.entity.PodatakSirovi;
-import dhz.skz.citaci.util.OperStatus;
+import dhz.skz.util.OperStatus;
 
 /**
  *

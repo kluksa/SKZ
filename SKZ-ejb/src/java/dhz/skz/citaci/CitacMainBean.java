@@ -9,6 +9,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
@@ -27,6 +28,8 @@ import javax.naming.NamingException;
 @Stateless
 @TransactionAttribute(NOT_SUPPORTED)
 public class CitacMainBean implements CitacMainRemote, CitacMainLocal {
+    @EJB
+    private PodatakSiroviFacadeLocal podatakSiroviFacade;
 
     private static final Logger log = Logger.getLogger(CitacMainBean.class.getName());
     @EJB
@@ -57,12 +60,7 @@ public class CitacMainBean implements CitacMainRemote, CitacMainLocal {
 
     @Override
     public Collection<PodatakSirovi> dohvatiSirove(final ProgramMjerenja program, final Date pocetak, final Date kraj, final boolean p, final boolean k) throws NamingException {
-        IzvorPodataka izvor = program.getIzvorPodatakaId();
-        InitialContext ctx = new InitialContext();
-        String naziv = "java:module/" + izvor.getBean().trim();
-        log.log(Level.INFO, "JNDI: {0}", naziv);
-        CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
-        return citac.dohvatiSirove(program, pocetak, kraj, p, k);
+        return podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true);
     }
 
 }

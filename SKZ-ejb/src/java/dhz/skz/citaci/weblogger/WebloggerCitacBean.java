@@ -21,10 +21,10 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.util.AgregatorPodatka;
-import dhz.skz.citaci.weblogger.util.MijesaniProgramiException;
 import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
-import dhz.skz.citaci.weblogger.util.SatniIterator;
+import dhz.skz.citaci.SatniIterator;
+import dhz.skz.util.AgregatorPodatka;
+import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,6 +59,7 @@ import org.apache.commons.net.ftp.FTPFile;
 @Stateless
 @LocalBean
 public class WebloggerCitacBean implements CitacIzvora {
+
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -91,6 +92,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     enum Vrsta {
+
         MJERENJE, KALIBRACIJA
     }
 
@@ -115,12 +117,13 @@ public class WebloggerCitacBean implements CitacIzvora {
 
                 pokupiMjerenja(mapaMjernihNizova);
 
-                obradiISpremi(mapaMjernihNizova);
-
+                napraviSatne(mapaMjernihNizova);
             }
             log.log(Level.INFO, "KRAJ CITANJA");
         } catch (NamingException ex) {
             Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MijesaniProgramiException ex) {
+            log.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -152,7 +155,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 
                         if (isDobarTermin(terminDatoteke, vrstaDatoteke)) {
 
-                            WlFileParser citac = napraviParser(vrstaDatoteke);
+                            WlFileParser citac = napraviParser(vrstaDatoteke, terminDatoteke);
 
                             Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
 
@@ -194,7 +197,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void obradiISpremi(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
+    private void napraviSatne(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws MijesaniProgramiException {
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
             int ocekivaniBroj = 60;
@@ -203,26 +206,17 @@ public class WebloggerCitacBean implements CitacIzvora {
 
             if (!niz.getPodaci().isEmpty()) {
                 NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
-                spremi(podaci);    
+//                spremi(podaci);    
                 SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
                 Date po = sat.getVrijeme();
                 while (sat.next()) {
                     Date kr = sat.getVrijeme();
                     AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivaniBroj);
                     NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
-                    try {
+                    if (!podmapa.isEmpty()) {
                         agregator.agregiraj(podmapa.values(), kr);
-                        if (agregator.hasPodatak()) {
-                            podatakFacade.create(agregator.getPodatak());
-                        }
-                        if (agregator.hasZero()) {
-                            zeroSpanFacade.create(agregator.getZero());
-                        }
-                        if (agregator.hasSpan()) {
-                            zeroSpanFacade.create(agregator.getSpan());
-                        }
-                    } catch (MijesaniProgramiException ex) {
-                        log.log(Level.SEVERE, null, ex);
+                        podatakFacade.create(agregator.getPodatak());
+                        zeroSpanFacade.spremi(agregator.getZeroSpan());
                     }
                     po = kr;
                 }
@@ -247,9 +241,6 @@ public class WebloggerCitacBean implements CitacIzvora {
                 boolean a = t.compareTo(pm.getPocetakMjerenja()) >= 0;
                 boolean b = (pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0);
                 aktivna |= (a && b);
-
-//                aktivna |= t.compareTo(pm.getPocetakMjerenja()) >= 0
-//                    && ((pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0));
             }
         }
         dobroVrijeme = (vrijemeZadnjegMjerenja == null) || (vrijemeZadnjegMjerenja.getTime() - t.getTime() < 24 * 3600 * 1000);
@@ -264,24 +255,22 @@ public class WebloggerCitacBean implements CitacIzvora {
                 boolean a = t.compareTo(pm.getPocetakMjerenja()) >= 0;
                 boolean b = (pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0);
                 aktivna |= (a && b);
-
-//                aktivna |= t.compareTo(pm.getPocetakMjerenja()) >= 0
-//                    && ((pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0));
             }
         }
         dobroVrijeme = (vrijemeZadnjegZeroSpan == null) || (vrijemeZadnjegZeroSpan.getTime() - t.getTime() < 24 * 3600 * 1000);
         return aktivna && dobroVrijeme;
     }
 
-    private WlFileParser napraviParser(Vrsta vrstaDatoteke) {
+    private WlFileParser napraviParser(Vrsta vrstaDatoteke, Date terminDatoteke) {
         WlFileParser parser;
         if (vrstaDatoteke == Vrsta.MJERENJE) {
             parser = new WlMjerenjaParser(timeZone, validatorFactory);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         } else {
             parser = new WlZeroSpanParser(timeZone);
-            parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
+            parser.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
         }
+        parser.setTerminDatoteke(terminDatoteke);
         return parser;
     }
 
@@ -292,58 +281,4 @@ public class WebloggerCitacBean implements CitacIzvora {
             return Vrsta.KALIBRACIJA;
         }
     }
-
-    @Override
-    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> pocetak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-//    private Date getVrijemePocetka(Postaja p) {
-//        Date zadnji;
-//        Podatak zadnjiP = dao.getZadnji(izvor, p);
-//        if (zadnjiP != null) {
-//            zadnji = zadnjiP.getVrijeme();
-//        } else {
-//            zadnji = programMjerenjaFacade.getPocetakMjerenja(izvor, p);
-//        }
-//
-////        Collection<ProgramMjerenja> programi = izvorPodatakaFacade.getProgram(p, izvor);
-////        Date zadnji = new Date(0L);
-////        for (ProgramMjerenja pm : programi) {
-////            Date tmp;
-////            if (pm.getZavrsetakMjerenja() == null) {
-////                tmp = dao.getZadnjiPodatak(pm);
-////
-////            } else {
-////                tmp = pm.getZavrsetakMjerenja();
-////            }
-////            if (zadnji.before(tmp)) {
-////                zadnji = tmp;
-////            }
-////
-////        }
-//        log.log(Level.INFO, "Zadnji podatak na {0} u {1}", new Object[]{p.getNazivPostaje(), zadnji});
-//        return zadnji;
-//    }
-//    private NavigableMap<Date, Uredjaj> getUredjajiMapa(ProgramMjerenja pm) {
-//        NavigableMap<Date, Uredjaj> mapa = new TreeMap<>();
-//        for (ProgramUredjajLink pul : pm.getProgramUredjajLinkCollection()) {
-//            mapa.put(pul.getVrijemePostavljanja(), pul.getUredjajId());
-//        }
-//        return mapa;
-//    }
-//    private Map<ProgramMjerenja, NizZeroSpanPodataka> getMapaZeroSpanNizova() {
-//        Map<ProgramMjerenja, NizZeroSpanPodataka> tmp = new HashMap<>();
-//        for (ProgramMjerenja pm : programNaPostaji) {
-//            NizZeroSpanPodataka np = new NizZeroSpanPodataka();
-//            np.setKljuc(pm);
-//            tmp.put(pm, np);
-//        }
-//        return tmp;
-//    }
 }

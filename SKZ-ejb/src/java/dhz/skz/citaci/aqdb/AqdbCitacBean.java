@@ -53,11 +53,6 @@ public class AqdbCitacBean implements CitacIzvora {
     private List<ZeroSpan> zslista = new ArrayList<>();
 
     @Override
-    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         em.refresh(izvor);
@@ -348,8 +343,4 @@ public class AqdbCitacBean implements CitacIzvora {
 //        return listaVremena;
 //    }    
 
-    @Override
-    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
