@@ -34,7 +34,7 @@ public class SynspecValidator implements Validator {
 
     @Override
     public int getBrojUSatu() {
-       return 4;
+       return 60;
     }
 
 }
