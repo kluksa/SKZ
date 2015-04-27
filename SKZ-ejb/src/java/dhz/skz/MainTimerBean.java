@@ -5,7 +5,7 @@
  */
 package dhz.skz;
 
-import dhz.skz.citaci.CitacMainLocal;
+import dhz.skz.citaci.CitacMainBean;
 import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +28,7 @@ public class MainTimerBean {
     @EJB
     private DiseminacijaMainBean diseminacijaMain;
     @EJB
-    private CitacMainLocal citacMainBean;
+    private CitacMainBean citacMainBean;
 
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
 
@@ -43,7 +43,7 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "38", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "57", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {

@@ -23,7 +23,8 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import java.util.Collection;
@@ -50,19 +51,24 @@ class WlMjerenjaParser implements WlFileParser {
 
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
-    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
+//    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
     private final ValidatorFactory validatorFactory;
     private Date terminDatoteke;
+    private final PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private final Collection<ProgramMjerenja> programNaPostaji;
+    private final PodatakFacade podatakFacade;
 
-    public WlMjerenjaParser(TimeZone tz, ValidatorFactory validatorFactory) {
+    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactory validatorFactory, PodatakSiroviFacadeLocal podatakSiroviFacade, PodatakFacade podatakFacade) {
         this.temperatura = -999.;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
         this.chareset = Charset.forName("UTF-8");
         sdf.setTimeZone(tz);
         this.validatorFactory = validatorFactory;
+        this.podatakSiroviFacade = podatakSiroviFacade;
+        this.podatakFacade = podatakFacade;
+        this.programNaPostaji = programNaPostaji;
     }
-
 
     @Override
     public void setZadnjiPodatak(Date zadnjiPodatak) {
@@ -71,16 +77,11 @@ class WlMjerenjaParser implements WlFileParser {
 
     @Override
     public void parse(InputStream fileStream) throws WlFileException, IOException {
-//        log.log(Level.INFO, "Pocinjem parsati {0} od {1}", new Object[]{
-//            nizKanala.getPostaja().getNazivPostaje(), zadnjiPodatak});
-        if (nizKanala == null) {
-            throw new WlFileException("Niz kanala nije postavljen");
-        }
-
+        
         CsvReader csv = new CsvReader(fileStream, separator, chareset);
+        setNizKanala();
         try {
             parsaj_zaglavlje(csv);
-
             while (csv.readRecord()) {
                 int nc = csv.getColumnCount();
                 if (brojStupaca != nc) {
@@ -154,7 +155,6 @@ class WlMjerenjaParser implements WlFileParser {
         for (Integer stupac : wlStupacProgram.keySet()) {
             ProgramMjerenja pm = wlStupacProgram.get(stupac);
             Validator v = validatorFactory.getValidator(pm, trenutnoVrijeme);
-            NizProcitanihWl nizPodataka = nizKanala.get(pm);
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
             if (!iznosStr.equals("-999.00") && !iznosStr.isEmpty()) {
@@ -168,8 +168,7 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setVrijednost(iznos);
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);
-                    nizPodataka.dodajPodatak(pod);
-
+                    podatakSiroviFacade.spremi(pod);
                 } catch (NumberFormatException  ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
@@ -177,12 +176,8 @@ class WlMjerenjaParser implements WlFileParser {
         }
     }
 
-    @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
-        this.nizKanala = nizKanala;
-        // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
-        // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala
-        for (ProgramMjerenja pm : aktivniProgram) {
+    private void setNizKanala() {
+        for (ProgramMjerenja pm : programNaPostaji) {
             if (pm.getIzvorProgramKljuceviMap() != null) {
                 IzvorProgramKljuceviMap ipm = pm.getIzvorProgramKljuceviMap();
                 if (ipm == null || ipm.getKKljuc().isEmpty()) {
@@ -198,9 +193,20 @@ class WlMjerenjaParser implements WlFileParser {
 
     @Override
     public boolean isDobarTermin() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean aktivna = false;
+        boolean dobroVrijeme;
+        for (ProgramMjerenja pm : programNaPostaji) {
+            if (pm.getIzvorProgramKljuceviMap() != null) {
+                boolean a = terminDatoteke.compareTo(pm.getPocetakMjerenja()) >= 0;
+                boolean b = (pm.getZavrsetakMjerenja() == null) || (terminDatoteke.compareTo(pm.getZavrsetakMjerenja()) <= 0);
+                aktivna |= (a && b);
+            }
+        }
+        dobroVrijeme = (zadnjiPodatak == null) || (zadnjiPodatak.getTime() - terminDatoteke.getTime() < 24 * 3600 * 1000);
+        return aktivna && dobroVrijeme;
     }
 
+    
     @Override
     public void setTerminDatoteke(Date terminDatoteke) {
         this.terminDatoteke = terminDatoteke;

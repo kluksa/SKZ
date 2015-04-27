@@ -7,8 +7,6 @@ package dhz.skz.citaci.weblogger;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
-import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
@@ -20,11 +18,7 @@ import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
-import dhz.skz.citaci.weblogger.exceptions.WlFileException;
-import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
-import dhz.skz.citaci.SatniIterator;
-import dhz.skz.util.AgregatorPodatka;
-import dhz.skz.util.MijesaniProgramiException;
+import dhz.skz.citaci.SiroviUSatneBean;
 import dhz.skz.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
@@ -33,23 +27,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.NavigableMap;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -58,7 +54,11 @@ import org.apache.commons.net.ftp.FTPFile;
  */
 @Stateless
 @LocalBean
+@TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
+
+    @EJB
+    private SiroviUSatneBean siroviUSatneBean;
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
     private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
@@ -80,17 +80,18 @@ public class WebloggerCitacBean implements CitacIzvora {
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
+    @Resource
+    private EJBContext context;
 
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
-        podatakSiroviFacade.spremi(podaci.values());
-    }
-
+//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+//    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
+//        podatakSiroviFacade.spremi(podaci.values());
+//    }
     enum Vrsta {
 
         MJERENJE, KALIBRACIJA
@@ -102,6 +103,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         try {
             log.log(Level.INFO, "POCETAK CITANJA");
             this.izvor = izvor;
@@ -111,35 +113,26 @@ public class WebloggerCitacBean implements CitacIzvora {
                 aktivnaPostaja = it.next();
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
-                Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova = napraviMapuNizova();
+                programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
 
                 odrediVrijemeZadnjegPodatka(aktivnaPostaja);
 
-                pokupiMjerenja(mapaMjernihNizova);
+                pokupiMjerenja();
 
-                napraviSatne(mapaMjernihNizova);
+                for (ProgramMjerenja pm : programNaPostaji) {
+                    siroviUSatneBean.spremiSatneIzSirovih(pm, nv);
+                }
             }
             log.log(Level.INFO, "KRAJ CITANJA");
         } catch (NamingException ex) {
             Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MijesaniProgramiException ex) {
-            log.log(Level.SEVERE, null, ex);
         }
     }
 
-    private Map<ProgramMjerenja, NizProcitanihWl> napraviMapuNizova() {
-
-        Map<ProgramMjerenja, NizProcitanihWl> tmp = new HashMap<>();
-        programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-        for (ProgramMjerenja pm : programNaPostaji) {
-            log.log(Level.FINEST, "Program: {0}: {1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
-            tmp.put(pm, new NizProcitanihWl());
-        }
-        return tmp;
-    }
-
-    private void pokupiMjerenja(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) {
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void pokupiMjerenja() {
         FtpKlijent ftp = new FtpKlijent();
+        UserTransaction utx = context.getUserTransaction();
 
         try {
             ftp.connect(new URI(izvor.getUri()));
@@ -150,24 +143,22 @@ public class WebloggerCitacBean implements CitacIzvora {
                 Matcher m = pattern.matcher(file.getName().toLowerCase());
                 if (m.matches()) {
                     try {
-                        Vrsta vrstaDatoteke = odrediVrstuDatoteke(m.group(2));
                         Date terminDatoteke = formatter.parse(m.group(3));
+                        WlFileParser citac = napraviParser(m.group(2), terminDatoteke);
 
-                        if (isDobarTermin(terminDatoteke, vrstaDatoteke)) {
-
-                            WlFileParser citac = napraviParser(vrstaDatoteke, terminDatoteke);
-
-                            Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
-
-                            citac.setNizKanala(mapaMjernihNizova, aktivniProgram);
+                        if (citac.isDobarTermin()) {
 
                             log.log(Level.INFO, "Datoteka :{0}", file.getName());
                             try (InputStream ifs = ftp.getFileStream(file)) {
+                                utx.begin();
                                 citac.parse(ifs);
-                            } catch (WlFileException ex) {
-                                log.log(Level.SEVERE, null, ex);
-                            } catch (Exception ex) { // kakva god da se iznimka dogodi, nastavljamo
-                                log.log(Level.SEVERE, null, ex);
+                                utx.commit();
+                            } catch (Exception ex) {
+                                log.log(Level.SEVERE, "Datoteka :{0}, {1}", new Object[]{file.getName(), ex});
+                                //When something is wrong, just rollback to the state before calling<!--DVFMTSC--> latest utx.begin();
+                                utx.rollback();
+
+                                throw ex;
                             } finally {
                                 ftp.zavrsi();
                             }
@@ -187,98 +178,22 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     private void odrediVrijemeZadnjegPodatka(Postaja p) {
-        Podatak zadnjiP = podatakFacade.getZadnji(izvor, p);
-        if (zadnjiP != null) {
-            vrijemeZadnjegMjerenja = zadnjiP.getVrijeme();
-        } else {
-            vrijemeZadnjegMjerenja = null;
-        }
+        vrijemeZadnjegMjerenja = podatakSiroviFacade.getVrijemeZadnjeg(izvor, p);
         vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void napraviSatne(Map<ProgramMjerenja, NizProcitanihWl> mapaMjernihNizova) throws MijesaniProgramiException {
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
-        for (ProgramMjerenja program : mapaMjernihNizova.keySet()) {
-            int ocekivaniBroj = 60;
-
-            NizProcitanihWl niz = mapaMjernihNizova.get(program);
-
-            if (!niz.getPodaci().isEmpty()) {
-                NavigableMap<Date, PodatakSirovi> podaci = niz.getPodaci();
-//                spremi(podaci);    
-                SatniIterator sat = new SatniIterator(niz.getPodaci().firstKey(), niz.getPodaci().lastKey());
-                Date po = sat.getVrijeme();
-                while (sat.next()) {
-                    Date kr = sat.getVrijeme();
-                    AgregatorPodatka agregator = new AgregatorPodatka(nv, ocekivaniBroj);
-                    NavigableMap<Date, PodatakSirovi> podmapa = podaci.subMap(po, false, kr, true);
-                    if (!podmapa.isEmpty()) {
-                        agregator.agregiraj(podmapa.values(), kr);
-                        podatakFacade.create(agregator.getPodatak());
-                        zeroSpanFacade.spremi(agregator.getZeroSpan());
-                    }
-                    po = kr;
-                }
-            }
-            log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
-        }
-    }
-
-    private boolean isDobarTermin(Date t, Vrsta vrsta) {
-        if (vrsta == Vrsta.MJERENJE) {
-            return isDobarTerminMjerenje(t);
-        } else {
-            return isDobarTerminZeroSpan(t);
-        }
-    }
-
-    private boolean isDobarTerminMjerenje(Date t) {
-        boolean aktivna = false;
-        boolean dobroVrijeme;
-        for (ProgramMjerenja pm : programNaPostaji) {
-            if (pm.getIzvorProgramKljuceviMap() != null) {
-                boolean a = t.compareTo(pm.getPocetakMjerenja()) >= 0;
-                boolean b = (pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0);
-                aktivna |= (a && b);
-            }
-        }
-        dobroVrijeme = (vrijemeZadnjegMjerenja == null) || (vrijemeZadnjegMjerenja.getTime() - t.getTime() < 24 * 3600 * 1000);
-        return aktivna && dobroVrijeme;
-    }
-
-    private boolean isDobarTerminZeroSpan(Date t) {
-        boolean aktivna = false;
-        boolean dobroVrijeme;
-        for (ProgramMjerenja pm : programNaPostaji) {
-            if ((pm.getIzvorProgramKljuceviMap() != null) && (pm.getIzvorProgramKljuceviMap().getUKljuc() != null)) {
-                boolean a = t.compareTo(pm.getPocetakMjerenja()) >= 0;
-                boolean b = (pm.getZavrsetakMjerenja() == null) || (t.compareTo(pm.getZavrsetakMjerenja()) <= 0);
-                aktivna |= (a && b);
-            }
-        }
-        dobroVrijeme = (vrijemeZadnjegZeroSpan == null) || (vrijemeZadnjegZeroSpan.getTime() - t.getTime() < 24 * 3600 * 1000);
-        return aktivna && dobroVrijeme;
-    }
-
-    private WlFileParser napraviParser(Vrsta vrstaDatoteke, Date terminDatoteke) {
+    private WlFileParser napraviParser(String group, Date terminDatoteke) {
         WlFileParser parser;
-        if (vrstaDatoteke == Vrsta.MJERENJE) {
-            parser = new WlMjerenjaParser(timeZone, validatorFactory);
+        Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
+
+        if (group == null || group.isEmpty()) {
+            parser = new WlMjerenjaParser(aktivniProgram, timeZone, validatorFactory, podatakSiroviFacade, podatakFacade);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         } else {
-            parser = new WlZeroSpanParser(timeZone);
+            parser = new WlZeroSpanParser(aktivniProgram, timeZone, zeroSpanFacade);
             parser.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
         }
         parser.setTerminDatoteke(terminDatoteke);
         return parser;
-    }
-
-    private Vrsta odrediVrstuDatoteke(String group) {
-        if (group == null || group.isEmpty()) {
-            return Vrsta.MJERENJE;
-        } else {
-            return Vrsta.KALIBRACIJA;
-        }
     }
 }

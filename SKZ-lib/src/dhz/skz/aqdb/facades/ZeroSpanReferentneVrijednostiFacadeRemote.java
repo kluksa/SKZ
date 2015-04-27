@@ -7,7 +7,6 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;

@@ -6,6 +6,7 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
@@ -19,19 +20,12 @@ import javax.ejb.Local;
  */
 @Local
 public interface PodatakSiroviFacadeLocal {
-    Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj);
-
+    
     Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k);
-
-    Collection<PodatakSirovi> getPodatkeZaSat(ProgramMjerenja pm, Date kraj);
 
     Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka);
 
-    Date getVrijemeZadnjegOptimizirano(IzvorPodataka izvor, Postaja postaja, String datoteka);
-
-    Date getVrijemeZadnjegS(IzvorPodataka izvor, Postaja postaja, String datoteka);
-
-    void getVrijemeZadnjegTest();
+    Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja);
 
     Date getZadnjiPodatak(ProgramMjerenja program);
 
@@ -48,4 +42,5 @@ public interface PodatakSiroviFacadeLocal {
 
     void spremi(Collection<PodatakSirovi> podaci);
  
+    void spremi(PodatakSirovi ps);
 }

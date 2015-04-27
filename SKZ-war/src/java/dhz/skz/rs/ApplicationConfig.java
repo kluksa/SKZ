@@ -32,8 +32,23 @@ public class ApplicationConfig extends Application {
         resources.add(dhz.skz.rs.GZIPWriterInterceptor.class);
         resources.add(dhz.skz.rs.SatniPodatakResource.class);
         resources.add(dhz.skz.rs.SiroviPodaci.class);
+        resources.add(dhz.skz.rs.UmjeravanjeResource.class);
+        resources.add(dhz.skz.rs.UredjajResource.class);
         resources.add(dhz.skz.rs.ZeroSpanResource.class);
         resources.add(dhz.skz.rs.service.ProgramMjerenjaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.AnalitickeMetodeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.IndustrijskePostajeSvojstvaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.ModelUredjajaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.OdgovornoTijeloFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.PodrucjeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.PostajaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.PostajaUredjajLinkFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.ProizvodjacFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.PrometnePostajeSvojstvaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.ReprezentativnostFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.UredjajFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.VrstaOpremeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.service.VrstaPostajeIzvorFacadeREST.class);
     }
     
 }

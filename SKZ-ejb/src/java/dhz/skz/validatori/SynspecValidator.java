@@ -7,6 +7,7 @@ package dhz.skz.validatori;
 
 import javax.ejb.Stateless;
 
+
 /**
  *
  * @author kraljevic

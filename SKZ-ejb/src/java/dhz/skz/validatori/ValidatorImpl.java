@@ -48,7 +48,7 @@ public abstract class ValidatorImpl implements Validator {
         if ( iznos < -998.) 
             return 1 << OperStatus.NEDOSTAJE.ordinal();
         if (iznos > opseg){
-            status |= (1 << OperStatus.OBUHVAT.ordinal());
+            status |= (1 << OperStatus.OPSEG.ordinal());
         }
         if ( iznos < -Math.abs(ldl)) {
             status |= (1 << OperStatus.LDL.ordinal());

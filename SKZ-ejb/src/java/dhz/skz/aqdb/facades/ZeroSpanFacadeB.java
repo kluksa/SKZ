@@ -204,25 +204,30 @@ public class ZeroSpanFacadeB extends AbstractFacade<ZeroSpan> implements ZeroSpa
     }
 
     @Override
+    public void spremi(ZeroSpan zs) {
+        create(zs);
+    }
+
+    @Override
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<ZeroSpan> zsT = cq.from(ZeroSpan.class);
         Join<ZeroSpan, ProgramMjerenja> programT = zsT.join(ZeroSpan_.programMjerenjaId);
-        Predicate datotekaP = cb.equal(programT.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc),datoteka);
+        Predicate datotekaP = cb.equal(programT.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
 //        Join<ZeroSpan, Uredjaj>  uredjajT= zsT.join(ZeroSpan_.uredjajId);
 //        Join<Uredjaj, ProgramUredjajLink> uredjajProgramT = uredjajT.join(Uredjaj_.programUredjajLinkCollection);
 //        Join<ProgramUredjajLink, ProgramMjerenja> programT = uredjajProgramT.join(ProgramUredjajLink_.programMjerenjaId);
 //        Join<ProgramMjerenja, IzvorPodataka> izvorT = programT.join(ProgramMjerenja_.izvorPodatakaId);
 //        Join<ProgramMjerenja, Postaja> postajaT = programT.join(ProgramMjerenja_.postajaId);
         Expression<Date> vrijemeE = zsT.get(ZeroSpan_.vrijeme);
-        Predicate postajaP = cb.equal(programT.get(ProgramMjerenja_.postajaId),postaja);
-        Predicate izvorP =cb.equal( programT.get(ProgramMjerenja_.izvorPodatakaId), izvor);
-        cq.select(cb.greatest(vrijemeE)).where(cb.and(postajaP,izvorP));
+        Predicate postajaP = cb.equal(programT.get(ProgramMjerenja_.postajaId), postaja);
+        Predicate izvorP = cb.equal(programT.get(ProgramMjerenja_.izvorPodatakaId), izvor);
+        cq.select(cb.greatest(vrijemeE)).where(cb.and(postajaP, izvorP));
         List<Date> rl = em.createQuery(cq).getResultList();
-        if ( rl == null || rl.isEmpty() || rl.get(0) == null) {
+        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
             return new Date(0L);
-        } else  {
+        } else {
             return rl.get(0);
         }
     }

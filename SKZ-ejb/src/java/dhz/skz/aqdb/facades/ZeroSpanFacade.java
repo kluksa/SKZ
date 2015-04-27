@@ -80,5 +80,7 @@ public interface ZeroSpanFacade extends AbstractFacadeInterface<ZeroSpan> {
     List<ZeroSpan> getZeroSpanOd(ProgramMjerenja programMjerenja, Date pocetak);
 
     void spremi(Collection<ZeroSpan> podaci);
+
+    void spremi(ZeroSpan podaci);
     
 }
