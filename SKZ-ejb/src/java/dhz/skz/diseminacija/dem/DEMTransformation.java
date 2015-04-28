@@ -10,16 +10,13 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.citaci.SatniIterator;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TimeZone;
@@ -42,9 +39,11 @@ public class DEMTransformation {
     private Map<Postaja, SortedMap<Date, Podatak>> podaciNaPostaji;
     private Date pocetak;
     private Date kraj;
+    private final TimeZone tzone;
 
-    DEMTransformation(PrimateljiPodataka primatelj) {
+    DEMTransformation(PrimateljiPodataka primatelj, TimeZone tzone ) {
         this.primatelj = primatelj;
+        this.tzone = tzone;
         sdf.setTimeZone(LokalnaZona.getZone());
 
     }
@@ -54,19 +53,20 @@ public class DEMTransformation {
             transferobj.pripremiTransfer(getNazivDatoteke());
             try (PrintStream ps = new PrintStream(transferobj.getOutputStream())) {
                 ps.printf("COMPONENT %s, %s\n", komponenta.getNazivEng(), "hour");
-                List<Date> sati = napraviListuSati();
                 for (ProgramMjerenja pr : program) {
                     Postaja postaja = pr.getPostajaId();
                     ps.printf("STATION %s\n", postaja.getOznakaPostaje());
 
                     log.info(postaja.getNazivPostaje());
-
-                    for (Date sat : sati) {
+                    
+                    SatniIterator sat = new SatniIterator(pocetak, kraj, tzone);
+                    while (sat.next()) {
                         Integer status;
+                        Date vr = sat.getVrijeme();
                         Double vrijednost;
                         if (podaciNaPostaji.containsKey(postaja)
                                 && podaciNaPostaji.get(postaja).containsKey(sat)) {
-                            Podatak pod = podaciNaPostaji.get(postaja).get(sat);
+                            Podatak pod = podaciNaPostaji.get(postaja).get(vr);
                             status = -1;
                             vrijednost = pod.getVrijednost();
                         } else {
@@ -118,27 +118,5 @@ public class DEMTransformation {
 
     void setKraj(Date kraj) {
         this.kraj = kraj;
-    }
-
-    protected List<Date> napraviListuSati() {
-        List<Date> listaVremena = new ArrayList<>();
-
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        trenutni_termin.setTime(pocetak);
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        Calendar zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        zadnji_termin.setTime(kraj);
-        zadnji_termin.set(Calendar.MINUTE, 0);
-        zadnji_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-
-        while (!trenutni_termin.after(zadnji_termin)) {
-            listaVremena.add(trenutni_termin.getTime());
-            trenutni_termin.add(Calendar.HOUR, 1);
-        }
-        return listaVremena;
     }
 }

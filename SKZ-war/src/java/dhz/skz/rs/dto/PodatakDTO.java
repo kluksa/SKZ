@@ -15,6 +15,7 @@ public class PodatakDTO {
     private Double vrijednost;
     private Integer status;
     private Integer obuhvat;
+    private boolean valjan;
 
     public Integer getProgramMjerenjaId() {
         return programMjerenjaId;
@@ -55,4 +56,14 @@ public class PodatakDTO {
     public void setObuhvat(Integer obuhvat) {
         this.obuhvat = obuhvat;
     }
+
+    public boolean isValjan() {
+        return valjan;
+    }
+
+    public void setValjan(boolean valjan) {
+        this.valjan = valjan;
+    }
+    
+    
 }

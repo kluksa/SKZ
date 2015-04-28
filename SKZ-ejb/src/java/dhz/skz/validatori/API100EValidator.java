@@ -28,8 +28,8 @@ public class API100EValidator extends ValidatorImpl {
     public int provjeraStatusa(String statusStr) {
         int status = 0;
         if (!statusStr.isEmpty()) {
-            int stInt = Integer.parseInt(statusStr);
-            if ((stInt & 255) != 0) {
+            int stInt = Integer.parseInt(statusStr,16);
+            if ((stInt & 0xff) != 0) {
                 status |= 1 << OperStatus.FAULT.ordinal();
             }
             if ((stInt & 0x0100) == 0x0100) {

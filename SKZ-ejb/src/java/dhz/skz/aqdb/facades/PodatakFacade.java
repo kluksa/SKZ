@@ -37,7 +37,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakFacade extends AbstractFacade<Podatak>  {
+public class PodatakFacade extends AbstractFacade<Podatak> {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -126,18 +126,18 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Expression<Date> vrijemeE = from.get(Podatak_.vrijeme);
         Expression<ProgramMjerenja> programE = from.get(Podatak_.programMjerenjaId);
         Predicate pocetakP, krajP;
-        if ( p ) {
+        if (p) {
             pocetakP = cb.greaterThanOrEqualTo(vrijemeE, pocetak);
-        } else  {
+        } else {
             pocetakP = cb.greaterThan(vrijemeE, pocetak);
         }
-        if ( k ) {
+        if (k) {
             krajP = cb.lessThanOrEqualTo(vrijemeE, kraj);
-        } else  {
+        } else {
             krajP = cb.lessThan(vrijemeE, kraj);
         }
-       
-        Predicate uvjet = cb.and(pocetakP, krajP); 
+
+        Predicate uvjet = cb.and(pocetakP, krajP);
         cq.where(
                 cb.and(
                         cb.equal(nivoValidacijeE, new NivoValidacije(0)),
@@ -148,8 +148,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         cq.select(from);
         return em.createQuery(cq).getResultList();
     }
-    
-    
+
     public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
         return getPodatak(pm, pocetak, kraj, false, true);
     }
@@ -177,19 +176,19 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         }
         return rl.get(0);
     }
-    
+
     public Podatak getZadnji(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
         Join<Podatak, ProgramMjerenja> pmJ = from.join(Podatak_.programMjerenjaId);
-        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId),p);
+        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId), p);
         Predicate izvor = cb.equal(pmJ.join(ProgramMjerenja_.izvorPodatakaId), i);
         Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
         Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
         cq.select(from).where(cb.and(postaja, izvor, nivo)).orderBy(cb.desc(vrijeme));
         List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if ( rl.isEmpty()) {
+        if (rl.isEmpty()) {
             return null;
         } else {
             return rl.get(0);
@@ -197,27 +196,52 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
     }
 
     public Date getVrijemeZadnjeg(IzvorPodataka i, Postaja p) {
-        Podatak pod = getZadnji(i,p);
-        if ( pod != null ) {
+        Podatak pod = getZadnji(i, p);
+        if (pod != null) {
             return pod.getVrijeme();
         } else {
             return null;
         }
     }
 
+    public Podatak find(Podatak pod) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
+        Root<Podatak> from = cq.from(Podatak.class);
+        cq.select(from)
+                .where(
+                        cb.and(
+                                cb.equal(from.get(Podatak_.vrijeme), pod.getVrijeme()),
+                                cb.equal(from.get(Podatak_.programMjerenjaId), pod.getProgramMjerenjaId()),
+                                cb.equal(from.get(Podatak_.nivoValidacijeId), pod.getNivoValidacijeId())));
+        List<Podatak> resultList = em.createQuery(cq).getResultList();
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return resultList.get(0);
+        }
+    }
+
+
 
     public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});
-        em.persist(ps);
-    }
-    
-    public void spremi(Collection<Podatak> ps) {
-        for ( Podatak p : ps ) {
-            em.persist(p);
+        Podatak pod = find(ps);
+        if (pod == null) {
+            em.persist(ps);
+        } else {
+            ps.setPodatakId(pod.getPodatakId());
+            em.merge(ps);
         }
     }
-    
-    public void flush(){
+
+    public void spremi(Collection<Podatak> ps) {
+        for (Podatak p : ps) {
+            spremi(ps);
+        }
+    }
+
+    public void flush() {
         em.flush();
     }
 }

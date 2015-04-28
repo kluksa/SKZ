@@ -43,7 +43,7 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "57", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "34", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {

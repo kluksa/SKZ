@@ -17,7 +17,7 @@ public class ConfigProducer {
     @Produces
     @Config
     public TimeZone injectTimeZone(InjectionPoint ip) {
-        return TimeZone.getTimeZone("UTC");
+        return TimeZone.getTimeZone("GMT");
     }
     
     @Produces

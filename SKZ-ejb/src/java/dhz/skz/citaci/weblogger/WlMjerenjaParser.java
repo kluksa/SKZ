@@ -165,7 +165,7 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
-                    pod.setVrijednost(iznos);
+                    pod.setVrijednost(iznos*pm.getKomponentaId().getKonvVUM());
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);
                     podatakSiroviFacade.spremi(pod);

@@ -48,6 +48,11 @@ public class UredjajResource {
     public UredjajResource() {
     }
 
+    /**
+     *
+     * @param sernum
+     * @return
+     */
     @GET
     @Path("{sernum}")
     @Produces({"application/xml", "application/json"})
@@ -55,6 +60,11 @@ public class UredjajResource {
         return uredjajFacade.findBySn(sernum);
     }
     
+    /**
+     *
+     * @param sernum
+     * @return
+     */
     @GET
     @Path("{sernum}/lokacija/")
     @Produces({"application/xml", "application/json"})
@@ -62,6 +72,11 @@ public class UredjajResource {
         return postajaFacade.findByUredjajSn(sernum);
     }
 
+    /**
+     *
+     * @param sernum
+     * @return
+     */
     @GET
     @Path("{sernum}/komponente/")
     @Produces({"application/xml", "application/json"})

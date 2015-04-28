@@ -18,7 +18,8 @@ import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
-import dhz.skz.citaci.SiroviUSatneBean;
+import dhz.skz.citaci.MinutniUSatne;
+import dhz.skz.config.Config;
 import dhz.skz.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
@@ -42,6 +43,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -58,10 +60,10 @@ import org.apache.commons.net.ftp.FTPFile;
 public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
-    private SiroviUSatneBean siroviUSatneBean;
+    private MinutniUSatne siroviUSatneBean;
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
-    private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    @Inject @Config private TimeZone timeZone;
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")

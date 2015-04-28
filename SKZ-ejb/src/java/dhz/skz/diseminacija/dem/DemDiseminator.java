@@ -13,6 +13,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
+import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
 import dhz.skz.diseminacija.datatransfer.DataTransferFactory;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 /**
  *
@@ -40,13 +42,13 @@ import javax.ejb.Stateless;
 public class DemDiseminator implements DiseminatorPodataka {
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
-
     @EJB
     private ProgramMjerenjaFacadeLocal ppf;
-
     @EJB
     private PodatakFacade dao;
 
+    @Inject @Config private TimeZone tzone;
+    
     @Override
     public void salji(PrimateljiPodataka primatelj) {
 //        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
@@ -54,7 +56,7 @@ public class DemDiseminator implements DiseminatorPodataka {
         Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama
                 = getProgramPoKomponentama(ppf.find(primatelj));
 
-        DEMTransformation demT = new DEMTransformation(primatelj);
+        DEMTransformation demT = new DEMTransformation(primatelj, tzone);
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         Date zadnji = getZadnji();
         Date prvi = getPrvi();
@@ -89,7 +91,7 @@ public class DemDiseminator implements DiseminatorPodataka {
     }
 
     private Date getZadnji() {
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar trenutni_termin = new GregorianCalendar(tzone);
         trenutni_termin.setTime(new Date());
         trenutni_termin.set(Calendar.MINUTE, 0);
         trenutni_termin.set(Calendar.SECOND, 0);
@@ -99,7 +101,7 @@ public class DemDiseminator implements DiseminatorPodataka {
     }
 
     private Date getPrvi() {
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar trenutni_termin = new GregorianCalendar(tzone);
         trenutni_termin.setTime(new Date());
         trenutni_termin.set(Calendar.MINUTE, 0);
         trenutni_termin.set(Calendar.SECOND, 0);

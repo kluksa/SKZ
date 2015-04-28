@@ -17,7 +17,8 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
-import dhz.skz.citaci.SiroviUSatneBean;
+import dhz.skz.citaci.MinutniUSatne;
+import dhz.skz.config.Config;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 
 /**
@@ -40,7 +42,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
     @EJB
-    private SiroviUSatneBean siroviUSatneBean;
+    private MinutniUSatne siroviUSatneBean;
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
     @EJB
@@ -59,6 +61,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Postaja postaja;
     private IzvorPodataka izvor;
+    @Inject @Config private TimeZone tzone;
 
     @Override
     public void prihvati(CsvOmotnica omotnica) {
@@ -66,7 +69,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             log.log(Level.INFO, "Idem obraditi.");
             postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
             izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            sdf.setTimeZone(tzone);
             validatorFactory.init(izvor);
 
             OmotnicaPrihvat op = parserFactory(omotnica);

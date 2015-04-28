@@ -24,11 +24,13 @@ import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
+import dhz.skz.config.Config;
 import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.util.OperStatus;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -36,6 +38,7 @@ import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 
 /**
  *
@@ -43,15 +46,16 @@ import javax.ejb.TransactionAttributeType;
  */
 @Stateless
 @LocalBean
-public class SiroviUSatneBean {
+public class MinutniUSatne {
 
-    private static final Logger log = Logger.getLogger(SiroviUSatneBean.class.getName());
+    private static final Logger log = Logger.getLogger(MinutniUSatne.class.getName());
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    @Inject @Config private TimeZone tzone;
 
     private AgPodatak mjerenje, zero, span;
     private int ocekivaniBroj;
@@ -138,7 +142,7 @@ public class SiroviUSatneBean {
         Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
 
-        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi);
+        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi, tzone);
         Date pocetnoVrijeme = sat.getVrijeme();
         while (sat.next()) {
             zavrsnoVrijeme = sat.getVrijeme();
@@ -146,7 +150,7 @@ public class SiroviUSatneBean {
             Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetnoVrijeme, zavrsnoVrijeme, false, true);
             try {
                 agregiraj(sirovi);
-                podatakFacade.create(izracunajPodatak());
+                podatakFacade.spremi(izracunajPodatak());
                 zeroSpanFacade.spremi(izracunajZeroSpan());
             } catch (MijesaniProgramiException ex) {
                 log.log(Level.SEVERE, null, ex);

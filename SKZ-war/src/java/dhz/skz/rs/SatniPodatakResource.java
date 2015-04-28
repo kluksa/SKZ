@@ -5,12 +5,14 @@
  */
 package dhz.skz.rs;
 
+import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.beans.PodatakFacade;
 import dhz.skz.rs.dto.PodatakDTO;
 import dhz.skz.rs.util.DateTimeParam;
+import dhz.skz.util.OperStatus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,12 +27,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
@@ -62,13 +60,20 @@ public class SatniPodatakResource {
      * Retrieves representation of an instance of
      * dhz.skz.rs.SatniPodatakResource
      *
+     * @param programId
+     * @param datum
+     * @param broj_dana
+     * @param samo_valjani
+     * @param nivo
      * @return an instance of java.lang.String
      */
     @GET
     @Path("{program}/{datum}")
     @Produces("application/json")
     public List<PodatakDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateTimeParam datum,
-            @DefaultValue("1") @QueryParam("broj_dana") Integer broj_dana, @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani) {
+            @DefaultValue("1") @QueryParam("broj_dana") Integer broj_dana, 
+            @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
+            @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
         //TODO return proper representation object
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC+1"));
         cal.setTime(datum.getDate());
@@ -84,37 +89,18 @@ public class SatniPodatakResource {
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
         for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj)) {
-            if (!samo_valjani || p.getObuhvat() > 75) {
+            boolean valjan = OperStatus.isValidSatni(p.getStatus(), new NivoValidacije(nivo));
+            if (!samo_valjani || valjan) {
                 PodatakDTO po = new PodatakDTO();
                 po.setProgramMjerenjaId(programId);
                 po.setVrijeme(p.getVrijeme().getTime() / 1000);
                 po.setVrijednost(p.getVrijednost());
                 po.setObuhvat((int) p.getObuhvat());
                 po.setStatus(p.getStatus());
+                po.setValjan(valjan);
                 lista.add(po);
             }
         }
         return lista;
-    }
-
-    /**
-     * PUT method for updating or creating an instance of SatniPodatakResource
-     *
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
-     */
-    @PUT
-    @Consumes("application/json")
-    public void putJson(String content) {
-    }
-
-    private PodatakFacade lookupPodatakFacadeBean() {
-        try {
-            javax.naming.Context c = new InitialContext();
-            return (PodatakFacade) c.lookup("java:global/SKZ/SKZ-war/PodatakFacade!dhz.skz.beans.PodatakFacade");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
     }
 }

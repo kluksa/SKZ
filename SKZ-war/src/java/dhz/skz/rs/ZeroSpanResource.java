@@ -5,7 +5,6 @@
  */
 package dhz.skz.rs;
 
-import static com.google.common.net.MediaType.GZIP;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;

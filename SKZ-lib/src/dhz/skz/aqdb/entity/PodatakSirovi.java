@@ -49,6 +49,7 @@ public class PodatakSirovi implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date vrijeme;
     @Basic(optional = false)
     @NotNull

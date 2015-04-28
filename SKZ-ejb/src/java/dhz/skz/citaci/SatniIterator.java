@@ -5,10 +5,12 @@
  */
 package dhz.skz.citaci;
 
+import dhz.skz.config.Config;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import javax.inject.Inject;
 
 /**
  *
@@ -19,14 +21,14 @@ public class SatniIterator {
     private final Calendar trenutni_termin;
     private final Calendar zadnji_termin;
 
-    public SatniIterator(Date pocetak, Date kraj) {
-        trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+    public SatniIterator(Date pocetak, Date kraj, TimeZone tz) {
+        trenutni_termin = new GregorianCalendar(tz);
         trenutni_termin.setTime(pocetak);
         trenutni_termin.set(Calendar.MINUTE, 0);
         trenutni_termin.set(Calendar.SECOND, 0);
         trenutni_termin.set(Calendar.MILLISECOND, 0);
 
-        zadnji_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        zadnji_termin = new GregorianCalendar(tz);
         zadnji_termin.setTime(kraj);
         zadnji_termin.set(Calendar.MINUTE, 0);
         zadnji_termin.set(Calendar.SECOND, 0);

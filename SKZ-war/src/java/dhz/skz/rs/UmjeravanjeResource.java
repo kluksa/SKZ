@@ -6,20 +6,12 @@
 package dhz.skz.rs;
 
 import dhz.skz.aqdb.entity.IspitneVelicine;
-import dhz.skz.aqdb.entity.Komponenta;
-import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.Umjeravanje;
 import dhz.skz.aqdb.entity.UmjerneTocke;
-import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.facades.IspitneVelicineFacade;
-import dhz.skz.facades.KomponentaFacade;
-import dhz.skz.facades.PostajaFacade;
 import dhz.skz.facades.UmjeravanjeFacade;
 import dhz.skz.facades.UmjerneTockeFacade;
-import dhz.skz.facades.UredjajFacade;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,8 +20,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.ws.rs.PathParam;
 
 /**
@@ -46,7 +36,7 @@ public class UmjeravanjeResource {
     @EJB
     private UmjeravanjeFacade umjeravanjeFacade;
     @EJB
-    IspitneVelicineFacade ispitneVelicineFacade;
+    private IspitneVelicineFacade ispitneVelicineFacade;
 
     /**
      * Creates a new instance of UmjeravanjeResource
@@ -93,6 +83,4 @@ public class UmjeravanjeResource {
     public Collection<UmjerneTocke> getUmjerneTocke(@PathParam("id") Integer id){
         return umjerneTockeFacade.findBy(umjeravanjeFacade.find(id));
     }
-    
-
 }

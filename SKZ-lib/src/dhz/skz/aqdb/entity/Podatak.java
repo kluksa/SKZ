@@ -72,9 +72,11 @@ public class Podatak implements Serializable {
     private Korisnik mjeriteljId;
     @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @NotNull
     private NivoValidacije nivoValidacijeId;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @NotNull
     private ProgramMjerenja programMjerenjaId;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
     private Komentar komentar;
