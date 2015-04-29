@@ -28,6 +28,7 @@ import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  *
@@ -77,7 +78,8 @@ class WlMjerenjaParser implements WlFileParser {
 
     @Override
     public void parse(InputStream fileStream) throws WlFileException, IOException {
-        
+        HashSet<Date> procitanaVremena = new HashSet<>();
+
         CsvReader csv = new CsvReader(fileStream, separator, chareset);
         setNizKanala();
         try {
@@ -90,8 +92,13 @@ class WlMjerenjaParser implements WlFileParser {
                 }
                 try {
                     trenutnoVrijeme = sdf.parse(csv.get(0) + " " + csv.get(1) + " " + csv.get(brojStupaca - 1));
-                    if (trenutnoVrijeme.after(zadnjiPodatak)) {
-                        parsaj_record(csv);
+                    if (trenutnoVrijeme.after(zadnjiPodatak) ) {
+                        if ( !procitanaVremena.contains(trenutnoVrijeme)) {
+                            parsaj_record(csv);
+                            procitanaVremena.add(trenutnoVrijeme);
+                        } else {
+                            log.log(Level.SEVERE, "DUPLICIRANI TERMINI U DATOTECI!!!! {0}::{1}", new Object[]{csv.getCurrentRecord(),csv.getRawRecord()});
+                        }
                     }
                 } catch (ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
@@ -165,11 +172,11 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
-                    pod.setVrijednost(iznos*pm.getKomponentaId().getKonvVUM());
+                    pod.setVrijednost(iznos * pm.getKomponentaId().getKonvVUM());
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);
                     podatakSiroviFacade.spremi(pod);
-                } catch (NumberFormatException  ex) {
+                } catch (NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
@@ -206,7 +213,6 @@ class WlMjerenjaParser implements WlFileParser {
         return aktivna && dobroVrijeme;
     }
 
-    
     @Override
     public void setTerminDatoteke(Date terminDatoteke) {
         this.terminDatoteke = terminDatoteke;

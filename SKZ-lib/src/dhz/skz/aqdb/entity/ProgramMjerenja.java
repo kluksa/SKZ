@@ -53,10 +53,10 @@ public class ProgramMjerenja implements Serializable {
     @NotNull
     @Column(name = "usporedno_mjerenje")
     private int usporednoMjerenje;
-    @Column(name = "pocetak_mjerenja")
+    @Column(name = "pocetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date pocetakMjerenja;
-    @Column(name = "zavrsetak_mjerenja")
+    @Column(name = "zavrsetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date zavrsetakMjerenja;
     @Column(name = "prikaz_web")

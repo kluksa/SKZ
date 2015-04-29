@@ -33,12 +33,22 @@ import java.util.HashSet;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 /**
  *
@@ -46,16 +56,21 @@ import javax.inject.Inject;
  */
 @Stateless
 @LocalBean
+@TransactionManagement(TransactionManagementType.BEAN)
 public class MinutniUSatne {
 
     private static final Logger log = Logger.getLogger(MinutniUSatne.class.getName());
+    @Resource
+    private EJBContext context;
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
-    @Inject @Config private TimeZone tzone;
+    @Inject
+    @Config
+    private TimeZone tzone;
 
     private AgPodatak mjerenje, zero, span;
     private int ocekivaniBroj;
@@ -64,6 +79,7 @@ public class MinutniUSatne {
     private ProgramMjerenja program;
 
     private class AgPodatak {
+
         Double iznos = 0.;
         int status = 0;
         int broj = 0;
@@ -95,10 +111,12 @@ public class MinutniUSatne {
                 throw (new MijesaniProgramiException());
             }
         }
+
     }
 
     private Podatak izracunajPodatak() {
-        if (mjerenje.broj < 3 * this.ocekivaniBroj / 4) {
+        int obuhvat = 100 * mjerenje.broj / ocekivaniBroj;
+        if (obuhvat < 75) {
             mjerenje.status |= (1 << OperStatus.OBUHVAT.ordinal());
         }
         Podatak agregirani = new Podatak();
@@ -107,7 +125,7 @@ public class MinutniUSatne {
         agregirani.setNivoValidacijeId(nivo);
         agregirani.setStatus(mjerenje.status);
 
-        agregirani.setObuhvat((100 * mjerenje.broj / ocekivaniBroj));
+        agregirani.setObuhvat(obuhvat);
         if (mjerenje.broj > 0) {
             agregirani.setVrijednost(mjerenje.iznos / mjerenje.broj);
         } else {
@@ -120,12 +138,16 @@ public class MinutniUSatne {
         HashSet<ZeroSpan> zs = new HashSet<>();
         if (zero.broj != 0) {
             ZeroSpan z = new ZeroSpan();
+            z.setProgramMjerenjaId(program);
+            z.setVrijeme(zavrsnoVrijeme);
             z.setVrijednost(zero.iznos / zero.broj);
             z.setVrsta("AZ");
             zs.add(z);
         }
         if (span.broj != 0) {
             ZeroSpan s = new ZeroSpan();
+            s.setProgramMjerenjaId(program);
+            s.setVrijeme(zavrsnoVrijeme);
             s.setVrijednost(zero.iznos / zero.broj);
             s.setVrsta("AS");
             zs.add(s);
@@ -133,29 +155,46 @@ public class MinutniUSatne {
         return zs;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv) {
+    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv) throws Throwable {
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
         Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
         Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
-        log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
-
+        log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
+        UserTransaction utx = context.getUserTransaction();
+        
         SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi, tzone);
         Date pocetnoVrijeme = sat.getVrijeme();
-        while (sat.next()) {
-            zavrsnoVrijeme = sat.getVrijeme();
-            reset();
-            Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetnoVrijeme, zavrsnoVrijeme, false, true);
-            try {
-                agregiraj(sirovi);
-                podatakFacade.spremi(izracunajPodatak());
-                zeroSpanFacade.spremi(izracunajZeroSpan());
-            } catch (MijesaniProgramiException ex) {
-                log.log(Level.SEVERE, null, ex);
+        try {
+            utx.begin();
+            int n = 1;
+            while (sat.next()) {
+                zavrsnoVrijeme = sat.getVrijeme();
+                reset();
+                Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetnoVrijeme, zavrsnoVrijeme, false, true);
+                if (!sirovi.isEmpty()) {
+                    try {
+                        agregiraj(sirovi);
+                        podatakFacade.spremi(izracunajPodatak());
+                        zeroSpanFacade.spremi(izracunajZeroSpan());
+                    } catch (MijesaniProgramiException ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                }
+                if ((n % 24) == 0) {
+                    log.log(Level.INFO, "SAT: {0}", zavrsnoVrijeme);
+                    utx.commit();
+                    utx.begin();
+                }
+                n++;
+                pocetnoVrijeme = zavrsnoVrijeme;
             }
-            pocetnoVrijeme = zavrsnoVrijeme;
+            utx.commit();
+        } catch (Throwable ex) {
+            log.log(Level.SEVERE, null, ex);
+            utx.rollback();
+            throw ex;
         }
     }
 }

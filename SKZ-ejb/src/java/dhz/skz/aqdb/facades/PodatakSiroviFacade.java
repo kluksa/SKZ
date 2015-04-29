@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -212,7 +213,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
 
         List<Date> rl = em.createQuery(cq).setMaxResults(1).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
-            return new Date(1427846400000L);
+            return new Date(1388534400000L);
         }
         return rl.get(0);
     }

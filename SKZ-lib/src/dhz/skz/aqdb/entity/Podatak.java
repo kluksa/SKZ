@@ -51,13 +51,14 @@ public class Podatak implements Serializable {
     private Integer podatakId;
     @Basic(optional = false)
     @NotNull
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     private Double vrijednost;
     private Integer obuhvat;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa", insertable = false, updatable=false)
+    @Column(name = "vrijeme_upisa", insertable = false, updatable=false, columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Column(name = "originalni_podatak_id")

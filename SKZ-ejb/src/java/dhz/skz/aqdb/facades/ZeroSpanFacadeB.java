@@ -71,7 +71,11 @@ public class ZeroSpanFacadeB extends AbstractFacade<ZeroSpan> implements ZeroSpa
                 )
         );
         cq.select(cb.greatest(vrijemeE));
-        return em.createQuery(cq).getSingleResult();
+        List<Date> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
+            return new Date(1388534400000L);
+        }
+        return rl.get(0);
     }
 
     @Override
@@ -193,9 +197,7 @@ public class ZeroSpanFacadeB extends AbstractFacade<ZeroSpan> implements ZeroSpa
     public void spremi(Collection<ZeroSpan> podaci) {
         for (ZeroSpan ps : podaci) {
             try {
-                log.log(Level.INFO, "PODATAK: {0}: {1} : {2} : {3}", new Object[]{ps.getProgramMjerenjaId().getKomponentaId().getFormula(),
-                    ps.getVrijeme(), ps.getVrijednost(), ps.getVrsta()});
-                create(ps);
+                spremi(ps);
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             }

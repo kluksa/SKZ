@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -98,13 +99,16 @@ public class WebloggerCitacBean implements CitacIzvora {
 
         MJERENJE, KALIBRACIJA
     }
-
-    public WebloggerCitacBean() {
+    @PostConstruct
+    public void init(){
         formatter.setTimeZone(timeZone);
     }
+    
 
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
+        
+
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         try {
             log.log(Level.INFO, "POCETAK CITANJA");
@@ -159,7 +163,6 @@ public class WebloggerCitacBean implements CitacIzvora {
                                 log.log(Level.SEVERE, "Datoteka :{0}, {1}", new Object[]{file.getName(), ex});
                                 //When something is wrong, just rollback to the state before calling<!--DVFMTSC--> latest utx.begin();
                                 utx.rollback();
-
                                 throw ex;
                             } finally {
                                 ftp.zavrsi();

@@ -44,10 +44,10 @@ public class PostajaUredjajLink implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "vrijeme_postavljanja")
+    @Column(name = "vrijeme_postavljanja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemePostavljanja;
-    @Column(name = "vrijeme_uklanjanja")
+    @Column(name = "vrijeme_uklanjanja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUklanjanja;
     @Basic(optional = false)

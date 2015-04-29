@@ -172,7 +172,8 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
         List<Date> rl = em.createQuery(cq).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
-            return program.getPocetakMjerenja();
+//            return program.getPocetakMjerenja();
+            return new Date(1388534400000L);
         }
         return rl.get(0);
     }

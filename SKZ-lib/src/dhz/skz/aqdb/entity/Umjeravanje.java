@@ -50,6 +50,7 @@ public class Umjeravanje implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date datum;
     @Basic(optional = false)
     @NotNull

@@ -43,7 +43,7 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "34", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "46", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "10", dayOfWeek = "*")
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
         try {
@@ -51,6 +51,7 @@ public class MainTimerBean {
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }
+        log.log(Level.INFO, "Zavrsio sa citacima");
     }
 
 }
