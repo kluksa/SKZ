@@ -24,12 +24,6 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 /**
  *
@@ -52,7 +46,7 @@ class WlZeroSpanParser implements WlFileParser{
     private Date trenutnoVrijeme;
     private Date terminDatoteke;
     private final ZeroSpanFacade zeroSpanFacade;
-    private Collection<ProgramMjerenja> programNaPostaji;
+    private final Collection<ProgramMjerenja> programNaPostaji;
 
     public WlZeroSpanParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone timeZone, ZeroSpanFacade zeroSpanFacade) {
         this.zeroSpanFacade = zeroSpanFacade;

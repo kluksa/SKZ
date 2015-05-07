@@ -23,8 +23,8 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.validatori.ValidatorFactoryFF;
 import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import java.util.Collection;
@@ -53,13 +53,13 @@ class WlMjerenjaParser implements WlFileParser {
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
 //    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
-    private final ValidatorFactory validatorFactory;
+    private final ValidatorFactoryFF validatorFactory;
     private Date terminDatoteke;
     private final PodatakSiroviFacadeLocal podatakSiroviFacade;
     private final Collection<ProgramMjerenja> programNaPostaji;
-    private final PodatakFacade podatakFacade;
+//    private final WlValidatorfactory valFac;
 
-    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactory validatorFactory, PodatakSiroviFacadeLocal podatakSiroviFacade, PodatakFacade podatakFacade) {
+    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactoryFF validatorFactory, PodatakSiroviFacadeLocal podatakSiroviFacade) {
         this.temperatura = -999.;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
@@ -67,8 +67,8 @@ class WlMjerenjaParser implements WlFileParser {
         sdf.setTimeZone(tz);
         this.validatorFactory = validatorFactory;
         this.podatakSiroviFacade = podatakSiroviFacade;
-        this.podatakFacade = podatakFacade;
         this.programNaPostaji = programNaPostaji;
+//        this.valFac = valFac;
     }
 
     @Override

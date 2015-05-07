@@ -60,7 +60,7 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
-    @ManyToMany(mappedBy = "uredjajCollection")
+    @OneToMany(mappedBy = "uredjajId")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "uredjajId")
     private Collection<ProgramUredjajLink> programUredjajLinkCollection;

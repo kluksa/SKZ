@@ -38,15 +38,9 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -148,14 +142,14 @@ public class MinutniUSatne {
             ZeroSpan s = new ZeroSpan();
             s.setProgramMjerenjaId(program);
             s.setVrijeme(zavrsnoVrijeme);
-            s.setVrijednost(zero.iznos / zero.broj);
+            s.setVrijednost(span.iznos / span.broj);
             s.setVrsta("AS");
             zs.add(s);
         }
         return zs;
     }
 
-    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv) throws Throwable {
+    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv){
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
@@ -193,8 +187,11 @@ public class MinutniUSatne {
             utx.commit();
         } catch (Throwable ex) {
             log.log(Level.SEVERE, null, ex);
-            utx.rollback();
-            throw ex;
+            try {
+                utx.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                Logger.getLogger(MinutniUSatne.class.getName()).log(Level.SEVERE, null, ex1);
+            }
         }
     }
 }

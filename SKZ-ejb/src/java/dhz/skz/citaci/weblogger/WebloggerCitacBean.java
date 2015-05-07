@@ -5,6 +5,7 @@
  */
 package dhz.skz.citaci.weblogger;
 
+import dhz.skz.validatori.ValidatorFactoryFF;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
@@ -14,13 +15,14 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
+import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.MinutniUSatne;
+import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
 import dhz.skz.config.Config;
-import dhz.skz.validatori.ValidatorFactory;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,14 +42,9 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -61,14 +58,17 @@ import org.apache.commons.net.ftp.FTPFile;
 public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
+    private ProgramUredjajLinkFacade programUredjajLinkFacade;
+
+    @EJB
     private MinutniUSatne siroviUSatneBean;
 
     private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
-    @Inject @Config private TimeZone timeZone;
+    @Inject
+    @Config
+    private TimeZone timeZone;
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
-    @PersistenceContext(unitName = "LIKZ-ejbPU")
-    private EntityManager em;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     @EJB
@@ -77,12 +77,13 @@ public class WebloggerCitacBean implements CitacIzvora {
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PostajaFacade posajaFacade;
-    @EJB
-    private ValidatorFactory validatorFactory;
+//    @EJB
+//    private ValidatorFactory validatorFactory;
     @EJB
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
+
     @Resource
     private EJBContext context;
 
@@ -90,33 +91,36 @@ public class WebloggerCitacBean implements CitacIzvora {
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
+    private ValidatorFactoryFF valFac;
 
 //    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 //    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
 //        podatakSiroviFacade.spremi(podaci.values());
 //    }
-    enum Vrsta {
+//    enum Vrsta {
+//
+//        MJERENJE, KALIBRACIJA
+//    }
 
-        MJERENJE, KALIBRACIJA
-    }
     @PostConstruct
-    public void init(){
+    public void init() {
         formatter.setTimeZone(timeZone);
     }
-    
 
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
-        
 
         NivoValidacije nv = nivoValidacijeFacade.find(0);
-        try {
-            log.log(Level.INFO, "POCETAK CITANJA");
-            this.izvor = izvor;
-            validatorFactory.init(izvor);
-            for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
 
-                aktivnaPostaja = it.next();
+//        try {
+        log.log(Level.INFO, "POCETAK CITANJA");
+        this.izvor = izvor;
+//            validatorFactory.init(izvor);
+        valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
+        for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
+            aktivnaPostaja = it.next();
+
+            try { // sto god da se desi, idemo na slijedecu postaju
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
                 programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
@@ -128,14 +132,17 @@ public class WebloggerCitacBean implements CitacIzvora {
                 for (ProgramMjerenja pm : programNaPostaji) {
                     siroviUSatneBean.spremiSatneIzSirovih(pm, nv);
                 }
+            } catch (Throwable ex) {
+                log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
+                log.log(Level.SEVERE, "", ex);
             }
-            log.log(Level.INFO, "KRAJ CITANJA");
-        } catch (NamingException ex) {
-            Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        log.log(Level.INFO, "KRAJ CITANJA");
+//        } catch (NamingException ex) {
+//            log.log(Level.SEVERE, null, ex);
+//        }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void pokupiMjerenja() {
         FtpKlijent ftp = new FtpKlijent();
         UserTransaction utx = context.getUserTransaction();
@@ -192,7 +199,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
 
         if (group == null || group.isEmpty()) {
-            parser = new WlMjerenjaParser(aktivniProgram, timeZone, validatorFactory, podatakSiroviFacade, podatakFacade);
+            parser = new WlMjerenjaParser(aktivniProgram, timeZone, valFac, podatakSiroviFacade);
             parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
         } else {
             parser = new WlZeroSpanParser(aktivniProgram, timeZone, zeroSpanFacade);

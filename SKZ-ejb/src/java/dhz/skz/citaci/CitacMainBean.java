@@ -24,19 +24,17 @@ import javax.naming.NamingException;
  */
 @Stateless
 @LocalBean
-@TransactionAttribute(NOT_SUPPORTED)
 public class CitacMainBean  {
+    private static final Logger log = Logger.getLogger(CitacMainBean.class.getName());
     @EJB
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
-
-    private static final Logger log = Logger.getLogger(CitacMainBean.class.getName());
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
 
-    @TransactionAttribute(NOT_SUPPORTED)
     public void pokreniCitace() {
         log.log(Level.INFO, "Pokrecem citace");
-        try {
+        try { // sto god da se desi, idemo na slijedeci izvor
+            
             InitialContext ctx = new InitialContext();
             String str = "java:module/";
             for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
@@ -45,7 +43,8 @@ public class CitacMainBean  {
                 try {
                     CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
                     citac.napraviSatne(ip);
-                } catch (NamingException ex) {
+                } catch (Throwable ex) {
+                    log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                     log.log(Level.SEVERE, null, ex);
                 }
             }

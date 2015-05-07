@@ -18,7 +18,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -41,7 +40,7 @@ import javax.ws.rs.QueryParam;
 @LocalBean
 @Stateless
 public class SatniPodatakResource {
-
+    private static final Logger log = Logger.getLogger(SatniPodatakResource.class.getName());
     @EJB
     PodatakFacade podatakFacade;
     @EJB
@@ -55,6 +54,34 @@ public class SatniPodatakResource {
      */
     public SatniPodatakResource() {
     }
+    
+    @GET
+    @Path("{program}/{pocetak}/{kraj}")
+    @Produces("application/json")
+    public List<PodatakDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetakP, @PathParam("kraj") DateTimeParam krajP,
+            @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
+            @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
+        //TODO return proper representation object
+
+        ProgramMjerenja program = programMjerenjaFacade.find(programId);
+        List<PodatakDTO> lista = new ArrayList<>();
+        List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate());
+        for (Podatak p : podaci) {
+            boolean valjan = OperStatus.isValidSatni(p.getStatus(), new NivoValidacije(nivo));
+            if (!samo_valjani || valjan) {
+                PodatakDTO po = new PodatakDTO();
+                po.setProgramMjerenjaId(programId);
+                po.setVrijeme(p.getVrijeme().getTime() / 1000);
+                po.setVrijednost(p.getVrijednost());
+                po.setObuhvat((int) p.getObuhvat());
+                po.setStatus(p.getStatus());
+                po.setValjan(valjan);
+                lista.add(po);
+            }
+        }
+        return lista;
+    }
+
 
     /**
      * Retrieves representation of an instance of
@@ -84,7 +111,6 @@ public class SatniPodatakResource {
         Date kraj = cal.getTime();
         cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
-        Logger.getLogger(getClass().getName()).log(Level.SEVERE, "program", programId);
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();

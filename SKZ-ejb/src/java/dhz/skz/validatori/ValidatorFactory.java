@@ -5,15 +5,12 @@
  */
 package dhz.skz.validatori;
 
-import dhz.skz.aqdb.entity.IspitneVelicine;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.ModelUredjaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramUredjajLink;
-import dhz.skz.aqdb.entity.UmjeravanjeHasIspitneVelicine;
 import dhz.skz.aqdb.entity.ValidatorModelIzvor;
 import dhz.skz.aqdb.entity.Validatori;
-import dhz.skz.aqdb.facades.IspitneVelicineFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.UmjeravanjeHasIspitneVelicineFacade;
 import dhz.skz.aqdb.facades.ValidatorModelIzvorFacade;
@@ -33,45 +30,26 @@ import javax.naming.NamingException;
  * @author kraljevic
  */
 @Stateful
-public class ValidatorFactory {
+public class ValidatorFactory extends AbstractValidatorFactory {
+    private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
 
     @EJB
     private UmjeravanjeHasIspitneVelicineFacade umjeravanjeHasIspitneVelicineFacade;
     @EJB
-    private IspitneVelicineFacade ispitneVelicineFacade;
-    private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
-
-    @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
-
     @EJB
     private ValidatorModelIzvorFacade validatorModelIzvorFacade;
 
-    private Map<ProgramMjerenja, NavigableMap<Date, Validator>> programVrijemeValidatorMapa;
+    
 
-    private Map<ProgramMjerenja, NavigableMap<Date, Double>> koefAMapa;
-    private Map<ProgramMjerenja, NavigableMap<Date, Double>> koefBMapa;
-    private Map<ProgramMjerenja, NavigableMap<Date, Double>> srzMapa;
-    private Map<ProgramMjerenja, NavigableMap<Date, Double>> opsegMapa;
-
-    public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
-        Validator v = programVrijemeValidatorMapa.get(pm).floorEntry(vrijeme).getValue();
-        v.setPodaciUmjeravanja(koefAMapa.get(pm).floorEntry(vrijeme).getValue(),
-                               koefBMapa.get(pm).floorEntry(vrijeme).getValue(),
-                               3.33f*srzMapa.get(pm).floorEntry(vrijeme).getValue()/koefAMapa.get(pm).floorEntry(vrijeme).getValue(),
-                               opsegMapa.get(pm).floorEntry(vrijeme).getValue()
-                );
-                
-        return programVrijemeValidatorMapa.get(pm).floorEntry(vrijeme).getValue();
-    }
-
-    public Validator lookupValidatorBean(Validatori model) throws NamingException {
+    private Validator lookupValidatorBean(Validatori model) throws NamingException {
         String str = "java:module/" + model.getNaziv().trim();
         Validator v = (Validator) new InitialContext().lookup(str);
         return v;
     }
-
+    
     public void init(IzvorPodataka ip) throws NamingException {
+        setUmjeravanjeHasIspitneVelicineFacade(umjeravanjeHasIspitneVelicineFacade);
         Map<ModelUredjaja, Validator> validatorModel = new HashMap<>();
 
         for (ValidatorModelIzvor v : validatorModelIzvorFacade.findAll(ip)) {
@@ -102,45 +80,4 @@ public class ValidatorFactory {
         }
         return dm;
     }
-
-    private NavigableMap<Date, Double> getAKoefMapa(ProgramMjerenja pm) {
-        NavigableMap<Date, Double> mapa = getIspitneVelicineMapa(pm, ispitneVelicineFacade.findByOznaka("A"));
-        if ( mapa.isEmpty()) {
-            mapa.put(new Date(0L), 1.);
-        }
-        return mapa;
-    }
-
-    private NavigableMap<Date, Double> getBKoefMapa(ProgramMjerenja pm) {
-        NavigableMap<Date, Double> mapa =  getIspitneVelicineMapa(pm, ispitneVelicineFacade.findByOznaka("B"));
-        if ( mapa.isEmpty()) {
-            mapa.put(new Date(0L), 0.);
-        }
-        return mapa;
-    }
-
-    private NavigableMap<Date, Double> getOpsegMapa(ProgramMjerenja pm) {
-        NavigableMap<Date, Double> mapa = getIspitneVelicineMapa(pm, ispitneVelicineFacade.findByOznaka("o"));
-        if ( mapa.isEmpty()) {
-            mapa.put(new Date(0L), 1000.);
-        }
-        return mapa;
-    }
-
-    private NavigableMap<Date, Double> getSrzMapa(ProgramMjerenja pm) {
-        NavigableMap<Date, Double> mapa = getIspitneVelicineMapa(pm, ispitneVelicineFacade.findByOznaka("Srz"));
-        if ( mapa.isEmpty()) {
-            mapa.put(new Date(0L), 1.);
-        }
-        return mapa;
-    }
-
-    private NavigableMap<Date, Double> getIspitneVelicineMapa(ProgramMjerenja pm, IspitneVelicine iv) {
-        NavigableMap<Date, Double> mapa = new TreeMap<>();
-        for (UmjeravanjeHasIspitneVelicine uiv : umjeravanjeHasIspitneVelicineFacade.find(pm, iv)) {
-            mapa.put(uiv.getUmjeravanje().getDatum(), uiv.getIznos());
-        }
-        return mapa;
-    }
-
 }

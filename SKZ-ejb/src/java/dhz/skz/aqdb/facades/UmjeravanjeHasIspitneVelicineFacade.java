@@ -19,7 +19,6 @@ package dhz.skz.aqdb.facades;
 import dhz.skz.aqdb.entity.IspitneVelicine;
 import dhz.skz.aqdb.entity.IspitneVelicine_;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import dhz.skz.aqdb.entity.ProgramUredjajLink;
 import dhz.skz.aqdb.entity.ProgramUredjajLink_;
 import dhz.skz.aqdb.entity.Umjeravanje;
@@ -56,7 +55,7 @@ public class UmjeravanjeHasIspitneVelicineFacade extends AbstractFacade<Umjerava
         super(UmjeravanjeHasIspitneVelicine.class);
     }
     
-    public Collection<UmjeravanjeHasIspitneVelicine> find(ProgramMjerenja pm, IspitneVelicine iv) {
+    public Collection<UmjeravanjeHasIspitneVelicine> find(ProgramMjerenja pm, String iv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UmjeravanjeHasIspitneVelicine> cq = cb.createQuery(UmjeravanjeHasIspitneVelicine.class);
         
@@ -66,6 +65,27 @@ public class UmjeravanjeHasIspitneVelicineFacade extends AbstractFacade<Umjerava
         Join<Uredjaj, ProgramUredjajLink> pulJ = uredjajJ.join(Uredjaj_.programUredjajLinkCollection);
         Join<ProgramUredjajLink, ProgramMjerenja> pmJ = pulJ.join(ProgramUredjajLink_.programMjerenjaId);
         Join<UmjeravanjeHasIspitneVelicine, IspitneVelicine> ispJ = from.join(UmjeravanjeHasIspitneVelicine_.ispitneVelicine);
+        
+        Predicate programP = cb.equal(pulJ.get(ProgramUredjajLink_.programMjerenjaId), pm);
+        
+        Predicate vrijemeOdP = cb.lessThanOrEqualTo(pulJ.get(ProgramUredjajLink_.vrijemePostavljanja), umjJ.get(Umjeravanje_.datum));
+        Predicate vrijemeDoP = cb.greaterThanOrEqualTo(pulJ.get(ProgramUredjajLink_.vrijemeUklanjanja), umjJ.get(Umjeravanje_.datum));
+        Predicate uklanjanjeNulP = cb.isNull(pulJ.get(ProgramUredjajLink_.vrijemeUklanjanja));
+        Predicate ispitneVelicineP = cb.equal(ispJ.get(IspitneVelicine_.oznaka), iv);
+        
+        cq.select(from).where(cb.and(programP, ispitneVelicineP, cb.or(uklanjanjeNulP, vrijemeDoP)));
+        return em.createQuery(cq).getResultList();
+    }
+    
+    public Collection<UmjeravanjeHasIspitneVelicine> find(ProgramMjerenja pm, IspitneVelicine iv) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<UmjeravanjeHasIspitneVelicine> cq = cb.createQuery(UmjeravanjeHasIspitneVelicine.class);
+        
+        Root<UmjeravanjeHasIspitneVelicine> from = cq.from(UmjeravanjeHasIspitneVelicine.class);
+        Join<UmjeravanjeHasIspitneVelicine, Umjeravanje> umjJ =  from.join(UmjeravanjeHasIspitneVelicine_.umjeravanje);
+        Join<Umjeravanje, Uredjaj> uredjajJ = umjJ.join(Umjeravanje_.uredjajId);
+        Join<Uredjaj, ProgramUredjajLink> pulJ = uredjajJ.join(Uredjaj_.programUredjajLinkCollection);
+        Join<ProgramUredjajLink, ProgramMjerenja> pmJ = pulJ.join(ProgramUredjajLink_.programMjerenjaId);
         
         Predicate programP = cb.equal(pulJ.get(ProgramUredjajLink_.programMjerenjaId), pm);
         

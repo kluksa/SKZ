@@ -22,8 +22,8 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
+import dhz.skz.citaci.mlu.validatori.MLUValidatorFactory;
 import dhz.skz.validatori.Validator;
-import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -45,7 +45,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
 
     private static final Logger log = Logger.getLogger(MjerenjaPrihvat.class.getName());
     private final PodatakSiroviFacadeLocal podatakSiroviFacade;
-    private final ValidatorFactory validatorFactory;
+    private MLUValidatorFactory validatorFactory;
     private final ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
 
@@ -53,9 +53,8 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
     private IzvorPodataka izvor;
     private Postaja postaja;
 
-    MjerenjaPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, PodatakSiroviFacadeLocal podatakSiroviFacade, ValidatorFactory validatorFactory) {
+    MjerenjaPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, PodatakSiroviFacadeLocal podatakSiroviFacade) {
         this.podatakSiroviFacade = podatakSiroviFacade;
-        this.validatorFactory = validatorFactory;
         this.programMjerenjaFacade = programMjerenjaFacade;
     }
 
@@ -65,6 +64,9 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
         this.postaja = postaja;
         this.izvor = izvor;
         this.mapa = new HashMap<>();
+        this.validatorFactory = new MLUValidatorFactory(izvor.getProgramMjerenjaCollection());
+
+        
 
         Collection<PodatakSirovi> podaci = new ArrayList<>();
 
@@ -72,7 +74,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
-            log.log(Level.INFO, "MLU Linija: {0}", linija[0]);
+            log.log(Level.INFO, "MLU Linija: {0}", linija);
             Date vrijeme = new Date(it.next());
             parseLinija(linija, vrijeme, podaci);
         }
@@ -106,6 +108,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
                     ps.setProgramMjerenjaId(pm);
                     ps.setVrijeme(vrijeme);
                     ps.setVrijednost(vrijednost);
+                    ps.setStatus(0);
 
                     String ss = linija[i + 1];
                     String ns = linija[i + 2];

@@ -20,7 +20,7 @@ public enum OperStatus {
     OPSEG,
     OKOLISNI_UVJETI,
     ODRZAVANJE,
-    G3,
+    G3,  // UMJERENOST
     G4,
     KONTROLA_PROVEDENA,
     KONTROLA_ODBACENO,

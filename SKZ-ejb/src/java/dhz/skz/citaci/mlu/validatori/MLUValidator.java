@@ -3,18 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dhz.skz.validatori;
+package dhz.skz.citaci.mlu.validatori;
 
+import dhz.skz.validatori.*;
 import dhz.skz.util.OperStatus;
-import javax.ejb.Stateless;
 
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
 public class MLUValidator extends ValidatorImpl {
+
+    public MLUValidator() {
+        this.setTemperatura(20.);
+    }
+    
 
     @Override
     public int provjeraStatusa(String statusStr) {
@@ -30,6 +34,8 @@ public class MLUValidator extends ValidatorImpl {
             status |= (1 << OperStatus.FAULT.ordinal());
         }
         switch ( bs & 15) {
+            case 0:
+                break;
             case 1:
                 status |= (1 << OperStatus.KALIBRACIJA.ordinal());
                 break;

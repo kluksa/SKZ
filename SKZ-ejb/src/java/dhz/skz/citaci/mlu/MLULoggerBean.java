@@ -19,7 +19,6 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
-import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,8 +28,9 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 
 /**
  *
@@ -55,42 +55,39 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
-    @EJB
-    private ValidatorFactory validatorFactory;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Postaja postaja;
     private IzvorPodataka izvor;
-    @Inject @Config private TimeZone tzone;
+    @Inject
+    @Config
+    private TimeZone tzone;
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void prihvati(CsvOmotnica omotnica) {
-        try {
-            log.log(Level.INFO, "Idem obraditi.");
-            postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
-            izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-            sdf.setTimeZone(tzone);
-            validatorFactory.init(izvor);
+        log.log(Level.INFO, "Idem obraditi.");
+        postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
+        izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
+        sdf.setTimeZone(tzone);
 
-            OmotnicaPrihvat op = parserFactory(omotnica);
-            op.prihvati(omotnica, postaja, izvor);
+        OmotnicaPrihvat op = parserFactory(omotnica);
+        op.prihvati(omotnica, postaja, izvor);
 
-        } catch (NamingException ex) {
-            log.log(Level.SEVERE, null, ex);
-        }
     }
 
     private OmotnicaPrihvat parserFactory(CsvOmotnica omotnica) {
         if (omotnica.getVrsta().equalsIgnoreCase("zero-span")) {
             log.log(Level.INFO, "ZERO/SPAN");
-            return new ZeroSpanPrihvat(programMjerenjaFacade, zeroSpanFacade );
+            return new ZeroSpanPrihvat(programMjerenjaFacade, zeroSpanFacade);
         } else {
             log.log(Level.INFO, "MJERENJE");
-            return new MjerenjaPrihvat(programMjerenjaFacade, podatakSiroviFacade, validatorFactory);
+            return new MjerenjaPrihvat(programMjerenjaFacade, podatakSiroviFacade);
         }
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         NivoValidacije nv = nivoValidacijeFacade.find(0);

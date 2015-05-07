@@ -61,7 +61,7 @@ public class Umjeravanje implements Serializable {
         @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "oprema_id", referencedColumnName = "id")})
     @ManyToMany
-    private Collection<Uredjaj> uredjajCollection;
+    private Collection<Uredjaj> etalonCollection;
     @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AnalitickeMetode analitickeMetodeId;
@@ -125,11 +125,11 @@ public class Umjeravanje implements Serializable {
 
     @XmlTransient
     public Collection<Uredjaj> getUredjajCollection() {
-        return uredjajCollection;
+        return etalonCollection;
     }
 
     public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
-        this.uredjajCollection = uredjajCollection;
+        this.etalonCollection = uredjajCollection;
     }
 
     public AnalitickeMetode getAnalitickeMetodeId() {
