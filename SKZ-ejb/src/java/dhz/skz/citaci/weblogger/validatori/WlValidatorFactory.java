@@ -16,7 +16,7 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import dhz.skz.validatori.ValidatorFactoryFF;
+import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.validatori.Validator;
@@ -28,7 +28,7 @@ import java.util.HashMap;
  *
  * @author kraljevic
  */
-public class WlValidatorFactory extends ValidatorFactoryFF {
+public class WlValidatorFactory extends ValidatorFactory {
     HashMap<String, Validator> valMapa;
     
     public WlValidatorFactory(Collection<ProgramMjerenja> programi) {

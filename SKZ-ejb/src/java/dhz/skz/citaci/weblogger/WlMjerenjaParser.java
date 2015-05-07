@@ -24,9 +24,8 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
-import dhz.skz.validatori.ValidatorFactoryFF;
-import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
+import dhz.skz.validatori.Validator;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -53,13 +52,13 @@ class WlMjerenjaParser implements WlFileParser {
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
 //    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
-    private final ValidatorFactoryFF validatorFactory;
+    private final ValidatorFactory validatorFactory;
     private Date terminDatoteke;
     private final PodatakSiroviFacadeLocal podatakSiroviFacade;
     private final Collection<ProgramMjerenja> programNaPostaji;
 //    private final WlValidatorfactory valFac;
 
-    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactoryFF validatorFactory, PodatakSiroviFacadeLocal podatakSiroviFacade) {
+    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactory validatorFactory, PodatakSiroviFacadeLocal podatakSiroviFacade) {
         this.temperatura = -999.;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
@@ -92,12 +91,12 @@ class WlMjerenjaParser implements WlFileParser {
                 }
                 try {
                     trenutnoVrijeme = sdf.parse(csv.get(0) + " " + csv.get(1) + " " + csv.get(brojStupaca - 1));
-                    if (trenutnoVrijeme.after(zadnjiPodatak) ) {
-                        if ( !procitanaVremena.contains(trenutnoVrijeme)) {
+                    if (trenutnoVrijeme.after(zadnjiPodatak)) {
+                        if (!procitanaVremena.contains(trenutnoVrijeme)) {
                             parsaj_record(csv);
                             procitanaVremena.add(trenutnoVrijeme);
                         } else {
-                            log.log(Level.SEVERE, "DUPLICIRANI TERMINI U DATOTECI!!!! {0}::{1}", new Object[]{csv.getCurrentRecord(),csv.getRawRecord()});
+                            log.log(Level.SEVERE, "DUPLICIRANI TERMINI U DATOTECI!!!! {0}::{1}", new Object[]{csv.getCurrentRecord(), csv.getRawRecord()});
                         }
                     }
                 } catch (ParseException ex) {
@@ -141,12 +140,15 @@ class WlMjerenjaParser implements WlFileParser {
                 String kanalBr = matcher.group(1).trim();
                 if (wlKanalProgram.containsKey(kanalBr)) {
                     wlStupacProgram.put(j, wlKanalProgram.get(kanalBr));
-                }
-            } else if (tmpKM.find()) {
+                } 
+            }
+            if (tmpKM.find()) {
                 temperaturaKontejneraStupac = j;
             }
         }
     }
+
+    
 
     private void parsaj_record(CsvReader csv) throws IOException {
         if (temperaturaKontejneraStupac > 0) {

@@ -5,7 +5,7 @@
  */
 package dhz.skz.citaci.weblogger;
 
-import dhz.skz.validatori.ValidatorFactoryFF;
+import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
@@ -91,7 +91,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
-    private ValidatorFactoryFF valFac;
+    private ValidatorFactory valFac;
 
 //    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 //    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {

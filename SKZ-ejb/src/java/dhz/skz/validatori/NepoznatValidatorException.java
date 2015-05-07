@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dhz.skz.citaci.weblogger.validatori;
+package dhz.skz.validatori;
 
 import dhz.skz.aqdb.entity.ModelUredjaja;
 

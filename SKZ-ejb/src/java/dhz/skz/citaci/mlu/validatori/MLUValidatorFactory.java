@@ -17,8 +17,8 @@
 package dhz.skz.citaci.mlu.validatori;
 
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.validatori.ValidatorFactoryFF;
 import dhz.skz.validatori.Validator;
+import dhz.skz.validatori.ValidatorFactory;
 import java.util.Collection;
 import java.util.Date;
 
@@ -26,7 +26,7 @@ import java.util.Date;
  *
  * @author kraljevic
  */
-public class MLUValidatorFactory extends ValidatorFactoryFF {
+public class MLUValidatorFactory extends ValidatorFactory {
     private final Validator validator;
 
     public MLUValidatorFactory(Collection<ProgramMjerenja> programi) {
