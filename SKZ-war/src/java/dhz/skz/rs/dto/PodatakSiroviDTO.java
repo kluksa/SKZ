@@ -59,7 +59,7 @@ public class PodatakSiroviDTO implements Serializable {
         this.statusString = statusString;
     }
 
-    public Boolean getValjan() {
+    public Boolean isValjan() {
         return valjan;
     }
 

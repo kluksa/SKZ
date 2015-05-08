@@ -6,13 +6,11 @@
 package dhz.skz.citaci.weblogger.validatori;
 
 import dhz.skz.validatori.*;
-import javax.ejb.Stateless;
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
 public class GrimmValidator extends ValidatorImpl {
 
     public GrimmValidator() {

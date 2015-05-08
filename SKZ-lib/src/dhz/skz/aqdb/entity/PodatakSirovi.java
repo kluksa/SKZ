@@ -6,9 +6,7 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,7 +58,7 @@ public class PodatakSirovi implements Serializable {
     private Integer status;
     private Integer greska;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa", insertable = false, updatable=false, columnDefinition="TIMESTAMP WITH TIME ZONE")
+    @Column(name = "vrijeme_upisa", insertable = false, updatable=true, columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Size(max = 120)

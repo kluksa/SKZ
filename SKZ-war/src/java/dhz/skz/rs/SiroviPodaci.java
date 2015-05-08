@@ -5,14 +5,15 @@
  */
 package dhz.skz.rs;
 
+import dhz.skz.aqdb.entity.Korisnik;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeRemote;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
+import dhz.skz.facades.KorisnikFacade;
+import dhz.skz.facades.PodatakSiroviFacade;
 import dhz.skz.rs.dto.PodatakSiroviDTO;
 import dhz.skz.rs.dto.StatusDTO;
-import dhz.skz.rs.dto.UlazniSiroviDTO;
 import dhz.skz.rs.util.DateParam;
 import dhz.skz.util.OperStatus;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -43,12 +45,14 @@ import javax.ws.rs.Produces;
 @Stateless
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
-
+    @EJB
+    private KorisnikFacade korisnikFacade;
     public static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
     @EJB
-    ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
-    PodatakSiroviFacadeRemote podatakSiroviFacade;
+    ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    
 
     @Context
     private UriInfo context;
@@ -64,6 +68,7 @@ public class SiroviPodaci {
      *
      * @param programId
      * @param datum
+     * @param sc
      * @return an instance of test.dto.PodatakSiroviDTO
      */
     @GET
@@ -84,7 +89,7 @@ public class SiroviPodaci {
         Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        for (PodatakSirovi ps : podatakSiroviFacade.getPodaciZaREST(program, pocetak, kraj)) {
+        for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak, kraj)) {
             PodatakSiroviDTO p = new PodatakSiroviDTO();
             p.setId(ps.getId());
             p.setStatusString(ps.getStatusString());
@@ -94,9 +99,7 @@ public class SiroviPodaci {
             p.setValjan(OperStatus.isValidSirovi(ps.getStatus(), new NivoValidacije(0)));
             lista.add(p);
         }
-
         return lista;
-
     }
 
     @GET
@@ -106,7 +109,6 @@ public class SiroviPodaci {
         List<StatusDTO> lista = new ArrayList<>();
         for (OperStatus t : OperStatus.values()) {
             int i = t.ordinal();
-
             String s = t.toString();
             lista.add(new StatusDTO(i, s));
         }
@@ -116,28 +118,27 @@ public class SiroviPodaci {
     /**
      * PUT method for updating or creating an instance of SiroviPodaci
      *
+     * @param programId
+     * @param datum
+     * @param sc
      * @param podaci
      */
     @PUT
     @Consumes("application/json")
-    @Path("{program}")
-    public void putPodaci(@PathParam("program") Integer programId, List<UlazniSiroviDTO> podaci) {
-        for (UlazniSiroviDTO p : podaci) {
-//            Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}; {5}", new Object[]{programId, p.getVrijeme(), p.getVrijednost(), p.getStatusInt(), p.getValjan()});
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}; {5}", new Object[]{programId, p.isValjan()});
-        }
-    }
-
-        /**
-     * PUT method for updating or creating an instance of SiroviPodaci
-     *
-     * @param podaci
-     */
-    @PUT
-    @Consumes("application/json")
-    public void putPodaci(List<PodatakSiroviDTO> podaci) {
+    @Path("{program}/{datum}")
+    public void putPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateParam datum, @Context SecurityContext sc, List<PodatakSiroviDTO> podaci) {
+        Korisnik user = korisnikFacade.findByIme(sc.getUserPrincipal().getName());
+        log.log(Level.INFO, "Stizu podaci. program= {0}, dan={1}, korisnik={2}", new Object[]{programId, datum.getDate(), user.getKorisnickoIme()});
         for (PodatakSiroviDTO p : podaci) {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "PODATAK STIGAO:{0}; {1}; {2}; {3}; {4}; {5}", new Object[]{p.getId(), p.getValjan()});
+            PodatakSirovi ps = podatakSiroviFacade.find(p.getId());
+            int st = ps.getStatus();
+            st |= 1 << OperStatus.KONTROLA_PROVEDENA.ordinal();
+            st &= ~ (1 << OperStatus.KONTROLA_ODBACENO.ordinal()); // prvo reset bita
+            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA_ODBACENO.ordinal()); // set bita ako je odbacen
+            ps.setStatus(st);
+            ps.setKorisnikId(user);
+            ps.setVrijemeUpisa(new Date());
+            podatakSiroviFacade.edit(ps);
         }
     }
 
@@ -182,4 +183,5 @@ public class SiroviPodaci {
 //
 //        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
 //    }
+
 }

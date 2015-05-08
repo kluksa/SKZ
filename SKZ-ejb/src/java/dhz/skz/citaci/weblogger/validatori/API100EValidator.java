@@ -7,13 +7,11 @@ package dhz.skz.citaci.weblogger.validatori;
 
 import dhz.skz.validatori.*;
 import dhz.skz.util.OperStatus;
-import javax.ejb.Stateless;
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
 public class API100EValidator extends ValidatorImpl {
 
     /**

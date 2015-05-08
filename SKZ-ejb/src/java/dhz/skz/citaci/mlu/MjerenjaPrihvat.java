@@ -96,10 +96,10 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
         for (Integer i : mapa.keySet()) {
             ProgramMjerenja pm = mapa.get(i);
             Validator v = validatorFactory.getValidator(pm, vrijeme);
-            if (!linija[i].equalsIgnoreCase("null") & linija[i].equals("-9999")) {
+            if (!(linija[i].equalsIgnoreCase("null") || linija[i].equals("-9999"))) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(',');
+                    symbols.setDecimalSeparator('.');
                     DecimalFormat format = new DecimalFormat("#.###");
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost = format.parse(linija[i]).floatValue();

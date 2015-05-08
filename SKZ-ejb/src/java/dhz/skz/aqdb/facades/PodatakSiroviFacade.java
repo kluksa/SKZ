@@ -14,11 +14,9 @@ import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -36,7 +34,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implements PodatakSiroviFacadeLocal, PodatakSiroviFacadeRemote {
+public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implements PodatakSiroviFacadeLocal {
 
     @EJB
     private PostajaFacade postajaFacade;
@@ -120,25 +118,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
     }
 
     @Override
-    public Collection<PodatakSirovi> getPodaciZaREST(ProgramMjerenja pm, Date pocetak, Date kraj) {
-        Calendar cal = Calendar.getInstance(); // locale-specific
-        cal.setTime(kraj);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        kraj = new Date(cal.getTimeInMillis());
-        
-        cal.setTime(pocetak);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        pocetak = new Date(cal.getTimeInMillis());
-
-        
-        return getPodaci(pm, pocetak, kraj, false, true);
-    }
-
-    @Override
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -216,12 +195,5 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
             return new Date(1388534400000L);
         }
         return rl.get(0);
-    }
-    
-    @Override
-    public void update(Collection<PodatakSirovi> pod) {
-        for(PodatakSirovi p : pod) {
-            edit(p);
-        }
     }
 }
