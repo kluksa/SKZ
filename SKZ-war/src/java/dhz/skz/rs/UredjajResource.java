@@ -8,13 +8,15 @@ package dhz.skz.rs;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.Uredjaj;
-import dhz.skz.facades.KomponentaFacade;
-import dhz.skz.facades.PostajaFacade;
-import dhz.skz.facades.UredjajFacade;
+import dhz.skz.rs.facades.KomponentaFacade;
+import dhz.skz.rs.facades.PostajaFacade;
+import dhz.skz.rs.facades.UredjajFacade;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -28,10 +30,12 @@ import javax.ws.rs.Path;
  * @author kraljevic
  */
 @Path("uredjaj")
-@LocalBean
+//@LocalBean
 @Stateless
+//@javax.enterprise.context.RequestScoped
 public class UredjajResource {
 
+    private static final Logger log = Logger.getLogger(UredjajResource.class.getName());
     @EJB
     private KomponentaFacade komponentaFacade;
     @EJB
@@ -57,7 +61,12 @@ public class UredjajResource {
     @Path("{sernum}")
     @Produces({"application/xml", "application/json"})
     public Uredjaj getUredjaj(@PathParam("sernum") String sernum) {
-        return uredjajFacade.findBySn(sernum);
+        try {
+            return uredjajFacade.findBySn(sernum);
+        } catch (NoResultException ex) {
+            log.log(Level.SEVERE, "Nema uredjaja sa sn: {0}", sernum);
+            throw ex;
+        }
     }
     
     /**

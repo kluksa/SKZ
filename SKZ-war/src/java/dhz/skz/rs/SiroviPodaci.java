@@ -10,8 +10,8 @@ import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
-import dhz.skz.facades.KorisnikFacade;
-import dhz.skz.facades.PodatakSiroviFacade;
+import dhz.skz.rs.facades.KorisnikFacade;
+import dhz.skz.rs.facades.PodatakSiroviFacade;
 import dhz.skz.rs.dto.PodatakSiroviDTO;
 import dhz.skz.rs.dto.StatusDTO;
 import dhz.skz.rs.util.DateParam;
@@ -24,7 +24,6 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -41,17 +40,18 @@ import javax.ws.rs.core.SecurityContext;
  *
  * @author kraljevic
  */
-@LocalBean
+//@LocalBean
 @Stateless
+//@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
     @EJB
     private KorisnikFacade korisnikFacade;
-    public static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
+    private static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
-    ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    private ProgramMjerenjaFacadeRemote programMjerenjaFacade;
     
 
     @Context

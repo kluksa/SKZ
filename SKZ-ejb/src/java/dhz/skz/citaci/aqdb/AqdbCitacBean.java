@@ -11,7 +11,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.SatniIterator;
 import dhz.skz.config.Config;
@@ -46,7 +46,7 @@ public class AqdbCitacBean implements CitacIzvora {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
     @EJB
-    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
     private PodatakFacade podatakFacade;
     @Inject @Config private TimeZone tzone;

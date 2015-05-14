@@ -20,7 +20,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.mlu.validatori.MLUValidatorFactory;
 import dhz.skz.validatori.Validator;
@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 public class MjerenjaPrihvat implements OmotnicaPrihvat {
 
     private static final Logger log = Logger.getLogger(MjerenjaPrihvat.class.getName());
-    private final PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private final PodatakSiroviFacade podatakSiroviFacade;
     private MLUValidatorFactory validatorFactory;
     private final ProgramMjerenjaFacadeLocal programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
@@ -53,7 +53,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
     private IzvorPodataka izvor;
     private Postaja postaja;
 
-    MjerenjaPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, PodatakSiroviFacadeLocal podatakSiroviFacade) {
+    MjerenjaPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, PodatakSiroviFacade podatakSiroviFacade) {
         this.podatakSiroviFacade = podatakSiroviFacade;
         this.programMjerenjaFacade = programMjerenjaFacade;
     }
@@ -69,12 +69,13 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
         
 
         Collection<PodatakSirovi> podaci = new ArrayList<>();
+        log.log(Level.INFO, "MLU Linija: {0}", omotnica.getHeaderi());
+
 
         parseHeaders(omotnica.getHeaderi());
 
         Iterator<Long> it = omotnica.getVremena().iterator();
         for (String[] linija : omotnica.getLinije()) {
-            log.log(Level.INFO, "MLU Linija: {0}", linija);
             Date vrijeme = new Date(it.next());
             parseLinija(linija, vrijeme, podaci);
         }
@@ -90,6 +91,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
                 mapa.put(i, pm);
             }
         }
+        
     }
 
     private void parseLinija(String[] linija, Date vrijeme, Collection<PodatakSirovi> podaci) {

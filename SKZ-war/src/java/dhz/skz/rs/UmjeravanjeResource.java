@@ -8,9 +8,9 @@ package dhz.skz.rs;
 import dhz.skz.aqdb.entity.IspitneVelicine;
 import dhz.skz.aqdb.entity.Umjeravanje;
 import dhz.skz.aqdb.entity.UmjerneTocke;
-import dhz.skz.facades.IspitneVelicineFacade;
-import dhz.skz.facades.UmjeravanjeFacade;
-import dhz.skz.facades.UmjerneTockeFacade;
+import dhz.skz.rs.facades.IspitneVelicineFacade;
+import dhz.skz.rs.facades.UmjeravanjeFacade;
+import dhz.skz.rs.facades.UmjerneTockeFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -28,8 +28,9 @@ import javax.ws.rs.PathParam;
  * @author kraljevic
  */
 @Path("umjeravanje")
-@LocalBean
+//@LocalBean
 @Stateless
+//@javax.enterprise.context.RequestScoped
 public class UmjeravanjeResource {
     @EJB
     private UmjerneTockeFacade umjerneTockeFacade;

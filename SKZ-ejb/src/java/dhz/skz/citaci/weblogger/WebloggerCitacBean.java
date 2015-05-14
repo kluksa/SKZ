@@ -12,7 +12,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
@@ -80,7 +80,7 @@ public class WebloggerCitacBean implements CitacIzvora {
 //    @EJB
 //    private ValidatorFactory validatorFactory;
     @EJB
-    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
     private NivoValidacijeFacade nivoValidacijeFacade;
 

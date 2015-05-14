@@ -4,15 +4,6 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
-    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
@@ -27,13 +18,13 @@
             <web-resource-name>rest</web-resource-name>
             <description/>
             <url-pattern>/webresources/*</url-pattern>
-            <http-method>GET</http-method>
             <http-method>PUT</http-method>
             <http-method>POST</http-method>
             <http-method>DELETE</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <description>Have to be a mjeritelj</description>
+            <description>Have to be kontrola</description>
+            <role-name>kontrola</role-name>
             <role-name>mjeritelj</role-name>
         </auth-constraint>
     </security-constraint>
@@ -46,5 +37,8 @@
     </security-role>
     <security-role>
         <role-name>mjeritelj</role-name>
+    </security-role>
+    <security-role>
+        <role-name>kontrola</role-name>
     </security-role>
 </web-app>

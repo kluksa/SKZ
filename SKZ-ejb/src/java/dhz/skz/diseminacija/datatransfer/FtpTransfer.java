@@ -44,6 +44,7 @@ public class FtpTransfer implements DataTransfer {
             username = userpass;
         }
 
+        String path = url.getPath();
         ftp = new FTPClient();
 //        //ftp.addProtocolCommandListener(new PrintCommandListener(
         try {
@@ -62,6 +63,7 @@ public class FtpTransfer implements DataTransfer {
 //                   ftp.setFileType(FTP.BINARY_FILE_TYPE);
                     spojen = true;
                 }
+                ftp.changeWorkingDirectory(path);
             } else {
                 disconnect();
                 log.log(Level.SEVERE, "FTP server refused connection.");

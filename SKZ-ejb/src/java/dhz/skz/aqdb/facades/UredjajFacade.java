@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
  * @author kraljevic
  */
 @Stateless
-public class UredjajFacade extends AbstractFacade<Uredjaj> implements UredjajFacadeLocal {
+public class UredjajFacade extends AbstractFacade<Uredjaj> {
 
     private static final Logger log = Logger.getLogger(UredjajFacade.class.getName());
 
@@ -36,7 +36,6 @@ public class UredjajFacade extends AbstractFacade<Uredjaj> implements UredjajFac
         super(Uredjaj.class);
     }
 
-    @Override
     @TransactionAttribute(REQUIRES_NEW)
     public void premjesti(final Uredjaj uredjaj, final Postaja novaPostaja, final short usporednoMjerenje, final Date vrijeme){
         // update postaja_uredjaj_link sa datumom uklanjanja

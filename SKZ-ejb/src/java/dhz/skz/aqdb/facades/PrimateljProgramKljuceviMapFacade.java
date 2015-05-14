@@ -24,7 +24,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljProgramKljuceviMap> implements PrimateljProgramKljuceviMapFacadeLocal {
+public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljProgramKljuceviMap> {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -37,7 +37,6 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         super(PrimateljProgramKljuceviMap.class);
     }
 
-    @Override
     public PrimateljProgramKljuceviMap find(final PrimateljiPodataka primatelj, final ProgramMjerenja program) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);

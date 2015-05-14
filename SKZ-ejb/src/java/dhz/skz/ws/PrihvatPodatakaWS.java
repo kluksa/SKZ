@@ -37,10 +37,6 @@ public class PrihvatPodatakaWS {
     @EJB
     private PostajaFacade postajaFacade;
 
-
-// Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Web Service Operation")
-
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
     public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
@@ -58,7 +54,6 @@ public class PrihvatPodatakaWS {
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-        
         log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
     }
 
@@ -82,7 +77,6 @@ public class PrihvatPodatakaWS {
         }
         return null;
     }
-    
 
     @WebMethod(operationName = "test")
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
@@ -94,7 +88,7 @@ public class PrihvatPodatakaWS {
 
     @WebMethod(operationName = "getZadnjiZaOmotnicu")
     public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3}" , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
         
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
@@ -113,5 +107,4 @@ public class PrihvatPodatakaWS {
         }
         return 0;
     }
-
 }

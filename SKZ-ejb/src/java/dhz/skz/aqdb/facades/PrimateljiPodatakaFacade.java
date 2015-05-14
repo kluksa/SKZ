@@ -24,7 +24,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka> implements  PrimateljiPodatakaFacadeLocal {
+public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>  {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -58,7 +58,6 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
 //        return getProgramZaPrimatelje(primatelj);
 //    }
 
-    @Override
     public Iterable<PrimateljiPodataka> getAktivniPrimatelji() {
         em.flush();
         em.clear();

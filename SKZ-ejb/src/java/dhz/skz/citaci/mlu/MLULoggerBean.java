@@ -11,7 +11,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -52,7 +52,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private PostajaFacade postajaFacade;
     @EJB
-    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
 

@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,7 +35,8 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implements PodatakSiroviFacadeLocal {
+@LocalBean
+public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi>  {
 
     @EJB
     private PostajaFacade postajaFacade;
@@ -55,7 +57,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
         super(PodatakSirovi.class);
     }
 
-    @Override
     public void spremi(Collection<PodatakSirovi> podaci) {
         for (PodatakSirovi ps : podaci) {
             if (!postoji(ps)) {
@@ -64,7 +65,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
         }
     }
 
-    @Override
     public void spremi(PodatakSirovi ps) {
         create(ps);
     }
@@ -78,7 +78,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
 //            });
 //        }
 //    }
-    @Override
     public boolean postoji(PodatakSirovi podatak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -94,7 +93,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
         return (resultList != null) && (!resultList.isEmpty());
     }
 
-    @Override
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -117,7 +115,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
         return rl.get(0);
     }
 
-    @Override
     public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -137,7 +134,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
         return em.createQuery(cq).getResultList();
     }
 
-    @Override
     public Date getZadnjiPodatak(ProgramMjerenja program) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -175,7 +171,6 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> implement
 //
 //        return ( vrijeme == null ) ? null : new Date(vrijeme.getTime());
 //    }
-    @Override
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);

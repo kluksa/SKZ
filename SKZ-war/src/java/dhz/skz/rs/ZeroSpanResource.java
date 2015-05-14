@@ -9,7 +9,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.aqdb.facades.ZeroSpanReferentneVrijednostiFacadeRemote;
-import dhz.skz.beans.ZeroSpanBean;
+import dhz.skz.rs.facades.ZeroSpanBean;
 import dhz.skz.rs.dto.ZeroSpanDTO;
 import dhz.skz.rs.util.DateParam;
 import java.util.Calendar;
@@ -38,9 +38,10 @@ import javax.ws.rs.core.MediaType;
  *
  * @author kraljevic
  */
-@LocalBean
+//@LocalBean
 @Stateless
-@Path("dhz.skz.rs.zerospan")
+//@Path("dhz.skz.rs.zerospan")
+//@javax.enterprise.context.RequestScoped
 public class ZeroSpanResource {
 
     @EJB

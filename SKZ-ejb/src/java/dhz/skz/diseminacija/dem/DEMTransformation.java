@@ -65,7 +65,7 @@ public class DEMTransformation {
                         Date vr = sat.getVrijeme();
                         Double vrijednost;
                         if (podaciNaPostaji.containsKey(postaja)
-                                && podaciNaPostaji.get(postaja).containsKey(sat)) {
+                                && podaciNaPostaji.get(postaja).containsKey(vr)) {
                             Podatak pod = podaciNaPostaji.get(postaja).get(vr);
                             status = -1;
                             vrijednost = pod.getVrijednost();
@@ -73,7 +73,7 @@ public class DEMTransformation {
                             status = 0;
                             vrijednost = -999.;
                         }
-                        ps.printf("%s, %8.1f, %d\n", sdf.format(sat), vrijednost, status);
+                        ps.printf("%s, %8.1f, %d\n", sdf.format(vr), vrijednost, status);
                     }
                 }
             }

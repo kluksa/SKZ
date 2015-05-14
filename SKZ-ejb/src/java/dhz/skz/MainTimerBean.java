@@ -5,8 +5,6 @@
  */
 package dhz.skz;
 
-import dhz.skz.citaci.CitacMainBean;
-import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -25,33 +23,46 @@ import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 @TransactionAttribute(NOT_SUPPORTED)
 public class MainTimerBean {
 
-    @EJB
-    private DiseminacijaMainBean diseminacijaMain;
-    @EJB
-    private CitacMainBean citacMainBean;
-
     private static final Logger log = Logger.getLogger(MainTimerBean.class.getName());
+    @EJB
+    private GlavnaFasadaRemote glavnaFasada;
+    
+    private boolean diseminacijaAktivna = false, citanjeAktivno = false;
 
-    @Schedule(minute = "23", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "37", second = "0", dayOfMonth = "1", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
-        try {
-            log.log(Level.INFO, "Pokrecem diseminaciju" );
-            
-//            diseminacijaMain.pokreni();
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "", ex);
+        if (!diseminacijaAktivna) {
+            try {
+                log.log(Level.INFO, "Pokrecem diseminaciju");
+                diseminacijaAktivna = true;
+//            glavnaFasada.pokreniDiseminaciju();
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "", ex);
+            } finally {
+                diseminacijaAktivna = false;
+                log.log(Level.INFO, "Zavrsio sa diseminacijom");
+            }
+        } else {
+            log.log(Level.INFO, "Diseminacija se vec provodi");
         }
     }
 
-    @Schedule(minute = "46", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "10", dayOfWeek = "*")
+    @Schedule(minute = "44", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
-        log.log(Level.INFO, "Pokrecem citace");
-        try {
-            citacMainBean.pokreniCitace();
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "", ex);
-        }
-        log.log(Level.INFO, "Zavrsio sa citacima");
-    }
+        if (!citanjeAktivno) {
+            try {
+                log.log(Level.INFO, "Pokrecem citace");
+                citanjeAktivno = true;
+                glavnaFasada.pokreniCitanje();
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "", ex);
+            } finally {
+                citanjeAktivno = false;
+                log.log(Level.INFO, "Zavrsio sa citacima");
+            }
+        } else {
+            log.log(Level.INFO, "Citanje se vec provodi");
+        } 
 
+    }
 }

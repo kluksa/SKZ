@@ -9,7 +9,7 @@ import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
-import dhz.skz.beans.PodatakFacade;
+import dhz.skz.rs.facades.PodatakFacade;
 import dhz.skz.rs.dto.PodatakDTO;
 import dhz.skz.rs.util.DateTimeParam;
 import dhz.skz.util.OperStatus;
@@ -37,8 +37,9 @@ import javax.ws.rs.QueryParam;
  * @author kraljevic
  */
 @Path("dhz.skz.rs.satnipodatak")
-@LocalBean
+//@LocalBean
 @Stateless
+//@javax.enterprise.context.RequestScoped
 public class SatniPodatakResource {
     private static final Logger log = Logger.getLogger(SatniPodatakResource.class.getName());
     @EJB

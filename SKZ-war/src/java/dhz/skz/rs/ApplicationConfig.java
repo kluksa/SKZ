@@ -35,20 +35,26 @@ public class ApplicationConfig extends Application {
         resources.add(dhz.skz.rs.UmjeravanjeResource.class);
         resources.add(dhz.skz.rs.UredjajResource.class);
         resources.add(dhz.skz.rs.ZeroSpanResource.class);
+        resources.add(dhz.skz.rs.GZIPWriterInterceptor.class);
+        resources.add(dhz.skz.rs.SatniPodatakResource.class);
+        resources.add(dhz.skz.rs.SiroviPodaci.class);
+        resources.add(dhz.skz.rs.UmjeravanjeResource.class);
+        resources.add(dhz.skz.rs.UredjajResource.class);
+        resources.add(dhz.skz.rs.ZeroSpanResource.class);
+        resources.add(dhz.skz.rs.service.AgregacijeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.AnalitickeMetodeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.IndustrijskePostajeSvojstvaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.IzvorPodatakaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.IzvorProgramKljuceviMapFacadeREST.class);
+        resources.add(dhz.skz.rs.service.KomponentaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.MjerneJediniceFacadeREST.class);
+        resources.add(dhz.skz.rs.service.OdgovornoTijeloFacadeREST.class);
+        resources.add(dhz.skz.rs.service.PodrucjeFacadeREST.class);
+        resources.add(dhz.skz.rs.service.PostajaFacadeREST.class);
         resources.add(dhz.skz.rs.service.ProgramMjerenjaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.AnalitickeMetodeFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.IndustrijskePostajeSvojstvaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.ModelUredjajaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.OdgovornoTijeloFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.PodrucjeFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.PostajaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.PostajaUredjajLinkFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.ProizvodjacFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.PrometnePostajeSvojstvaFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.ReprezentativnostFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.UredjajFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.VrstaOpremeFacadeREST.class);
-        resources.add(dhz.skz.rs.service.service.VrstaPostajeIzvorFacadeREST.class);
+        resources.add(dhz.skz.rs.service.PrometnePostajeSvojstvaFacadeREST.class);
+        resources.add(dhz.skz.rs.service.ReprezentativnostFacadeREST.class);
+        resources.add(dhz.skz.rs.service.VrstaPostajeIzvorFacadeREST.class);
     }
     
 }

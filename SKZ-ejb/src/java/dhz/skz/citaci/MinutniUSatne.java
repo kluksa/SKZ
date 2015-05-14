@@ -22,7 +22,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacadeLocal;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.config.Config;
 import dhz.skz.util.MijesaniProgramiException;
@@ -61,7 +61,7 @@ public class MinutniUSatne {
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
-    private PodatakSiroviFacadeLocal podatakSiroviFacade;
+    private PodatakSiroviFacade podatakSiroviFacade;
     @Inject
     @Config
     private TimeZone tzone;
