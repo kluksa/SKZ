@@ -19,7 +19,7 @@ import javax.persistence.criteria.Root;
  *
  * @author kraljevic
  */
-@Stateless
+@Stateless(name="war/UredjajFacade")
 @LocalBean
 public class UredjajFacade extends AbstractFacade<Uredjaj> {
     @PersistenceContext(unitName = "SKZ-warPU")

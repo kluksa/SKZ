@@ -26,7 +26,7 @@ import javax.persistence.criteria.Root;
  *
  * @author kraljevic
  */
-@Stateless
+@Stateless(name="war/KomponentaFacade")
 public class KomponentaFacade extends AbstractFacade<Komponenta> {
     @PersistenceContext(unitName = "SKZ-warPU")
     private EntityManager em;

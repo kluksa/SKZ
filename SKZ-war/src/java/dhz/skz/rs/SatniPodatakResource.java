@@ -42,7 +42,7 @@ import javax.ws.rs.QueryParam;
 //@javax.enterprise.context.RequestScoped
 public class SatniPodatakResource {
     private static final Logger log = Logger.getLogger(SatniPodatakResource.class.getName());
-    @EJB
+    @EJB(name="war/PodatakFacade")
     PodatakFacade podatakFacade;
     @EJB
     ProgramMjerenjaFacadeRemote programMjerenjaFacade;

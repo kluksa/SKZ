@@ -25,7 +25,7 @@ import javax.persistence.criteria.Root;
  *
  * @author kraljevic
  */
-@Stateless
+@Stateless(name="war/PodatakFacade")
 public class PodatakFacade extends AbstractFacade<Podatak> {
 
     @PersistenceContext(unitName = "SKZ-warPU")

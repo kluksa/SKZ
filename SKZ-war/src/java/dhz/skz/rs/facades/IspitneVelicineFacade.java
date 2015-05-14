@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
  *
  * @author kraljevic
  */
-@Stateless
+@Stateless(name="war/IspitneVelicineFacade")
 public class IspitneVelicineFacade extends AbstractFacade<IspitneVelicine> {
     @PersistenceContext(unitName = "SKZ-warPU")
     private EntityManager em;

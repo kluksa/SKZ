@@ -32,11 +32,11 @@ import javax.ws.rs.PathParam;
 @Stateless
 //@javax.enterprise.context.RequestScoped
 public class UmjeravanjeResource {
-    @EJB
+    @EJB(name="war/UmjerneTockeFacade")
     private UmjerneTockeFacade umjerneTockeFacade;
-    @EJB
+    @EJB(name="war/UmjeravanjeFacade")
     private UmjeravanjeFacade umjeravanjeFacade;
-    @EJB
+    @EJB(name="war/IspitneVelicineFacade")
     private IspitneVelicineFacade ispitneVelicineFacade;
 
     /**

@@ -35,12 +35,6 @@ public class ApplicationConfig extends Application {
         resources.add(dhz.skz.rs.UmjeravanjeResource.class);
         resources.add(dhz.skz.rs.UredjajResource.class);
         resources.add(dhz.skz.rs.ZeroSpanResource.class);
-        resources.add(dhz.skz.rs.GZIPWriterInterceptor.class);
-        resources.add(dhz.skz.rs.SatniPodatakResource.class);
-        resources.add(dhz.skz.rs.SiroviPodaci.class);
-        resources.add(dhz.skz.rs.UmjeravanjeResource.class);
-        resources.add(dhz.skz.rs.UredjajResource.class);
-        resources.add(dhz.skz.rs.ZeroSpanResource.class);
         resources.add(dhz.skz.rs.service.AgregacijeFacadeREST.class);
         resources.add(dhz.skz.rs.service.AnalitickeMetodeFacadeREST.class);
         resources.add(dhz.skz.rs.service.IndustrijskePostajeSvojstvaFacadeREST.class);

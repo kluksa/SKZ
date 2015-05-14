@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
  *
  * @author kraljevic
  */
-@Stateless
+@Stateless(name="war/UmjeravanjeFacade")
 public class UmjeravanjeFacade extends AbstractFacade<Umjeravanje> {
     @PersistenceContext(unitName = "SKZ-warPU")
     private EntityManager em;

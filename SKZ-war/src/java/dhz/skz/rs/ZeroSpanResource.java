@@ -40,7 +40,7 @@ import javax.ws.rs.core.MediaType;
  */
 //@LocalBean
 @Stateless
-//@Path("dhz.skz.rs.zerospan")
+@Path("dhz.skz.rs.zerospan")
 //@javax.enterprise.context.RequestScoped
 public class ZeroSpanResource {
 
@@ -49,7 +49,7 @@ public class ZeroSpanResource {
     @EJB
     private ZeroSpanBean zsb;
     @EJB
-    ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    private ProgramMjerenjaFacadeRemote programMjerenjaFacade;
 
     @Context
     private UriInfo context;

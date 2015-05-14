@@ -35,7 +35,7 @@ public class MainTimerBean {
             try {
                 log.log(Level.INFO, "Pokrecem diseminaciju");
                 diseminacijaAktivna = true;
-//            glavnaFasada.pokreniDiseminaciju();
+            glavnaFasada.pokreniDiseminaciju();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             } finally {
@@ -47,7 +47,7 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "44", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "27", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         if (!citanjeAktivno) {
             try {

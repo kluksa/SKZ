@@ -45,11 +45,12 @@ import javax.ws.rs.core.SecurityContext;
 //@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
-    @EJB
-    private KorisnikFacade korisnikFacade;
     private static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
-    @EJB
+    @EJB(name="war/PodatakSiroviFacade")
     private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB(name="war/KorisnikFacade")
+    private KorisnikFacade korisnikFacade;
+
     @EJB
     private ProgramMjerenjaFacadeRemote programMjerenjaFacade;
     

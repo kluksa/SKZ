@@ -36,11 +36,11 @@ import javax.ws.rs.Path;
 public class UredjajResource {
 
     private static final Logger log = Logger.getLogger(UredjajResource.class.getName());
-    @EJB
+    @EJB(name="war/KomponentaFacade")
     private KomponentaFacade komponentaFacade;
-    @EJB
+    @EJB(name="war/PostajaFacade")
     private PostajaFacade postajaFacade;
-    @EJB
+    @EJB(name="war/UredjajFacade")
     private UredjajFacade uredjajFacade;
 
     @Context
