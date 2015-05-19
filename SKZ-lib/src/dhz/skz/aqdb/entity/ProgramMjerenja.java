@@ -41,8 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ProgramMjerenja.findById", query = "SELECT p FROM ProgramMjerenja p WHERE p.id = :id"),
     @NamedQuery(name = "ProgramMjerenja.findByUsporednoMjerenje", query = "SELECT p FROM ProgramMjerenja p WHERE p.usporednoMjerenje = :usporednoMjerenje"),
     @NamedQuery(name = "ProgramMjerenja.findByPocetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.pocetakMjerenja = :pocetakMjerenja"),
-    @NamedQuery(name = "ProgramMjerenja.findByZavrsetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.zavrsetakMjerenja = :zavrsetakMjerenja"),
-    @NamedQuery(name = "ProgramMjerenja.findByPrikazWeb", query = "SELECT p FROM ProgramMjerenja p WHERE p.prikazWeb = :prikazWeb")})
+    @NamedQuery(name = "ProgramMjerenja.findByZavrsetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.zavrsetakMjerenja = :zavrsetakMjerenja")})
 public class ProgramMjerenja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,8 +58,6 @@ public class ProgramMjerenja implements Serializable {
     @Column(name = "zavrsetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date zavrsetakMjerenja;
-    @Column(name = "prikaz_web")
-    private Boolean prikazWeb;
     @ManyToMany(mappedBy = "programMjerenjaCollection")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
@@ -132,14 +129,6 @@ public class ProgramMjerenja implements Serializable {
 
     public void setZavrsetakMjerenja(Date zavrsetakMjerenja) {
         this.zavrsetakMjerenja = zavrsetakMjerenja;
-    }
-
-    public Boolean getPrikazWeb() {
-        return prikazWeb;
-    }
-
-    public void setPrikazWeb(Boolean prikazWeb) {
-        this.prikazWeb = prikazWeb;
     }
 
     @XmlTransient

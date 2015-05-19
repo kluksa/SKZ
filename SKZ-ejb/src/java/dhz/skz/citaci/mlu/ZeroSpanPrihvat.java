@@ -110,7 +110,11 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
             if (!linija[i].equalsIgnoreCase("null")) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(',');
+                    if(linija[i].contains(",")) { 
+                        symbols.setDecimalSeparator('.');
+                    } else {
+                        symbols.setDecimalSeparator(',');
+                    }
                     DecimalFormat format = new DecimalFormat("#.#");
                     format.setDecimalFormatSymbols(symbols);
                     Double vrijednost;

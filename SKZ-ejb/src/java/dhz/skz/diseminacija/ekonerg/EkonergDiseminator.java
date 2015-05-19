@@ -66,7 +66,6 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         this.primatelj = primatelj;
         String conStr = "jdbc:" + primatelj.getUrl();
         log.log(Level.INFO, conStr);
-        //        try (Connection con = DriverManager.getConnection(conStr, connectionProps)) {
         Date sada = new Date();
         try (Connection con = diseminacija.getConnection()) {
             Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);

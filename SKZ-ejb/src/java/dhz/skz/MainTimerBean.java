@@ -35,7 +35,7 @@ public class MainTimerBean {
             try {
                 log.log(Level.INFO, "Pokrecem diseminaciju");
                 diseminacijaAktivna = true;
-            glavnaFasada.pokreniDiseminaciju();
+//                glavnaFasada.pokreniDiseminaciju();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             } finally {
@@ -53,7 +53,7 @@ public class MainTimerBean {
             try {
                 log.log(Level.INFO, "Pokrecem citace");
                 citanjeAktivno = true;
-                glavnaFasada.pokreniCitanje();
+//                glavnaFasada.pokreniCitanje();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             } finally {

@@ -23,11 +23,14 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.mlu.validatori.MLUValidatorFactory;
+import dhz.skz.diseminacija.dem.LokalnaZona;
 import dhz.skz.validatori.Validator;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -66,11 +69,9 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
         this.mapa = new HashMap<>();
         this.validatorFactory = new MLUValidatorFactory(izvor.getProgramMjerenjaCollection());
 
-        
-
         Collection<PodatakSirovi> podaci = new ArrayList<>();
-        log.log(Level.INFO, "MLU Linija: {0}", omotnica.getHeaderi());
-
+        log.log(Level.INFO, "MLU omotnica od: {0} do {1}", new Object[]{
+            new Date(omotnica.getVremena().get(0)), new Date(omotnica.getVremena().get(omotnica.getVremena().size()-1))});
 
         parseHeaders(omotnica.getHeaderi());
 
@@ -91,17 +92,30 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
                 mapa.put(i, pm);
             }
         }
-        
     }
 
     private void parseLinija(String[] linija, Date vrijeme, Collection<PodatakSirovi> podaci) {
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            df.setTimeZone(LokalnaZona.getZone());
+            Date datum = df.parse(linija[0]);
+            if ( ! datum.equals(vrijeme) ) {
+                log.log(Level.SEVERE, "Problem sa vremenom: {0}, {1}, {2}", new Object[]{linija[0], vrijeme, datum});
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(MjerenjaPrihvat.class.getName()).log(Level.SEVERE, null, ex);
+        }
         for (Integer i : mapa.keySet()) {
             ProgramMjerenja pm = mapa.get(i);
             Validator v = validatorFactory.getValidator(pm, vrijeme);
             if (!(linija[i].equalsIgnoreCase("null") || linija[i].equals("-9999"))) {
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator('.');
+                    if(linija[i].contains(",")) { 
+                        symbols.setDecimalSeparator(',');
+                    } else {
+                        symbols.setDecimalSeparator('.');
+                    }
                     DecimalFormat format = new DecimalFormat("#.###");
                     format.setDecimalFormatSymbols(symbols);
                     Float vrijednost = format.parse(linija[i]).floatValue();
