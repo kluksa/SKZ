@@ -8,16 +8,13 @@ package dhz.skz;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacMainLocal;
-import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminacijaMainBean;
 import java.util.Collection;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 /**
  *

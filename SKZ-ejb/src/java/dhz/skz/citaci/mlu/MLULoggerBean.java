@@ -62,7 +62,6 @@ import javax.transaction.UserTransaction;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MLULoggerBean implements CsvParser, CitacIzvora {
 
-
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
 
     @EJB
@@ -77,7 +76,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     private PodatakSiroviFacadeLocal podatakSiroviFacade;
     @EJB
     private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
-    
+
     @Resource
     private EJBContext context;
 
@@ -153,52 +152,49 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         log.log(Level.INFO, "POCETAK CITANJA");
 
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
+            Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
+            Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
+            Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            Calendar kraj = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+
+            log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
+
+            kraj.setTime(zadnjiSirovi);
+            kraj.set(Calendar.MINUTE, 0);
+            kraj.set(Calendar.SECOND, 0);
+            kraj.set(Calendar.MILLISECOND, 0);
+
+            cal.setTime(zadnjiSatni);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            UserTransaction utx = context.getUserTransaction();
             try {
-                Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
-                Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
-                Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                Calendar kraj = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-
-                log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI:", new Object[]{zadnjiSatni, zadnjiSirovi});
-
-                kraj.setTime(zadnjiSirovi);
-                kraj.set(Calendar.MINUTE, 0);
-                kraj.set(Calendar.SECOND, 0);
-                kraj.set(Calendar.MILLISECOND, 0);
-
-                cal.setTime(zadnjiSatni);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-
-                UserTransaction utx = context.getUserTransaction();
                 utx.begin();
 
                 while (cal.getTime().before(kraj.getTime())) {
-                    Date pocetakD = cal.getTime();
-                    cal.add(Calendar.HOUR, 1);
-                    Date krajD = cal.getTime();
-                    Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
-                    if (!sirovi.isEmpty()) {
-                        Podatak p = obradiSat(program, sirovi, krajD);
-                        podatakFacade.spremi(p);
+
+                    try {
+                        Date pocetakD = cal.getTime();
+                        cal.add(Calendar.HOUR, 1);
+                        Date krajD = cal.getTime();
+                        Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetakD, krajD);
+                        if (!sirovi.isEmpty()) {
+                            Podatak p = obradiSat(program, sirovi, krajD);
+                            podatakFacade.spremi(p);
+                        }
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "OOOOOOOOOOOOOO:", ex);
                     }
                 }
                 utx.commit();
-            } catch (NotSupportedException ex) {
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
                 Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SystemException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (RollbackException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (HeuristicMixedException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (HeuristicRollbackException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalStateException ex) {
-                Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    utx.rollback();
+                } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                    Logger.getLogger(MLULoggerBean.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
@@ -223,7 +219,10 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
                     kum_sum += p.getVrijednost();
                 }
                 status.dodajStatus(s);
-            } catch (NevaljanStatusException ex) {
+            } catch ( Exception ex) {
+                log.log(Level.SEVERE, "Podatak id={1}, vrijeme={2}, program={3}, status={4}, status_str={5}, vrijednost={6}, vrijeme_upisa={7}, greska={8}", new Object[]{p.getId(), p.getVrijeme(),
+                    p.getProgramMjerenjaId().getId(), p.getStatus(), p.getStatusString(),
+                    p.getVrijednost(), p.getVrijemeUpisa(), p.getGreska()});
                 log.log(Level.SEVERE, null, ex);
             }
         }
@@ -353,7 +352,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         }
     }
 
-    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
+    public Status getStatus(Float iznos, String statusStr) {
         Status s = new Status();
         String[] st = statusStr.split(";");
         int ss = Integer.parseInt(st[0]);

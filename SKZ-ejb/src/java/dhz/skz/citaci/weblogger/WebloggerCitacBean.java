@@ -49,7 +49,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
+import javax.ejb.TransactionManagement;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -106,6 +108,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
@@ -233,7 +236,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                 log.log(Level.INFO, "Pospremam Postaja {0}, komponenta {1}", new Object[]{program.getPostajaId().getNazivPostaje(), program.getKomponentaId().getFormula()});
             } catch (NamingException ex) {
                 Logger.getLogger(WebloggerCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
         }
     }
     

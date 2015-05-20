@@ -10,8 +10,10 @@ import dhz.skz.aqdb.entity.ProgramUredjajLink;
 import dhz.skz.aqdb.entity.Validatori;
 import dhz.skz.aqdb.facades.ValidatoriFacade;
 import java.util.Date;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateful;
@@ -32,6 +34,11 @@ public class ValidatorFactory {
     private static final Logger log = Logger.getLogger(ValidatorFactory.class.getName());
 
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
+        Map.Entry<Date, Validator> floorEntry = validatori.floorEntry(vrijeme);
+        if ( floorEntry == null ) {
+            log.log(Level.SEVERE, "NEMA VALIDATORA : {0}, {1}, {2},{3}", new Object[]{pm.getId(), 
+                pm.getKomponentaId().getFormula(), pm.getPostajaId().getNazivPostaje(), vrijeme});
+        }
         return validatori.floorEntry(vrijeme).getValue();
     }
     
