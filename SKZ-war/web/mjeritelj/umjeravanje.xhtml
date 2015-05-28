@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/admin-layout.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="admin-meni">
+        <p:panel header="Postaje admin" style="margin-bottom:10px;">
+            <h:form id="postaje">
+                <p:menu model="#{postajaMB.model}"/>
+            </h:form>
+        </p:panel>
+    </ui:define>
+
+    <ui:define name="slika">
+        <h:form id="forma">
+
+            <p:outputLabel for="kal1" value="Pocetak:" />
+            <p:calendar id="kal1" value="#{pfTest.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
+                <p:ajax event="dateSelect" listener="#{pfTest.onProgramChange}"/>
+                <p:ajax event="change" listener="#{pfTest.onProgramChange}"/>
+            </p:calendar>
+
+            Uredjaj combo:
+            <h:outputLabel for="eoiOznaka" value="Oznaka:" />
+            <p:inplace id="eoiOznaka" editor="true" emptyLabel="&lt;prazno&gt;">
+                <p:inputText value="#{komponentaMB.komponenta.eolOznaka}" required="false" label="text" />
+            </p:inplace>
+
+            Lab combo:
+            <p:outputLabel for="postaja" value="Postaja: " />
+
+            <p:selectOneMenu id="postaja" value="#{pfTest.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
+                <p:ajax listener="#{pfTest.onPostajaChange}" update="program"/>
+                <f:selectItems value="#{pfTest.postaje}" var="postaja" itemLabel="#{postaja.nazivPostaje}"  itemValue="#{postaja}" />
+            </p:selectOneMenu>
+
+            Mjeritelj kombo:
+            Etalon boca kombo (ako je ozon onda generator ozona):
+            Etalon dilucijska kombo (ako je ozon onda fotometar) kombo:
+            Etalon cisti zrak kombo:
+            Nisam siguran treba li analiticka metoda ili se ona moze izvuci iz podataka o uredjaju
+
+            Edit box za komentar
+
+            Umjerne tocke tablica, ispod klik za dodavanje (komponente kombo iz komponenti za uredjaj)
+
+            Ispitne velicine tablica sa kombom za odabir velicine i mjernih jedinica i komponente (iz komponenti za ureadjaj)
+            - automatski se provjeri je li u granicama
+
+
+            Na kraju gumb POSALJI, PONISTI
+        </h:form>
+    </ui:define>
+</ui:composition>
+

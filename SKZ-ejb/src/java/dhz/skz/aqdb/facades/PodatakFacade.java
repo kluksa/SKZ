@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 kraljevic
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dhz.skz.aqdb.facades;
 
@@ -20,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,11 +49,12 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 public class PodatakFacade extends AbstractFacade<Podatak> {
 
+    private static final Logger log = Logger.getLogger(PodatakFacade.class.getName());
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
-    private static final Logger log = Logger.getLogger(PodatakFacade.class.getName());
 
     @Override
     protected EntityManager getEntityManager() {
@@ -222,8 +235,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
             return resultList.get(0);
         }
     }
-
-
 
     public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});

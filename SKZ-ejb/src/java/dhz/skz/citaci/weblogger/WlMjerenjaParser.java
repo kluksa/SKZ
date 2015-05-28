@@ -6,6 +6,7 @@
 package dhz.skz.citaci.weblogger;
 
 import com.csvreader.CsvReader;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -23,7 +24,6 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.validatori.Validator;
 import java.util.Collection;

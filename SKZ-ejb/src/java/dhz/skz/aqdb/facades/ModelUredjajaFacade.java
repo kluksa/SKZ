@@ -17,6 +17,7 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.ModelUredjaja;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,7 @@ import javax.persistence.PersistenceContext;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 public class ModelUredjajaFacade extends AbstractFacade<ModelUredjaja> {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -38,4 +40,5 @@ public class ModelUredjajaFacade extends AbstractFacade<ModelUredjaja> {
     public ModelUredjajaFacade() {
         super(ModelUredjaja.class);
     }
+    
 }

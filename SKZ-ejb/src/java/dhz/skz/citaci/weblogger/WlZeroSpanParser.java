@@ -6,11 +6,11 @@
 package dhz.skz.citaci.weblogger;
 
 import com.csvreader.CsvReader;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;

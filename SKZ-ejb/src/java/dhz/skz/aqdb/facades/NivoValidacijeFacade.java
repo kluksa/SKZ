@@ -17,6 +17,7 @@
 package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.NivoValidacije;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,7 @@ import javax.persistence.PersistenceContext;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 public class NivoValidacijeFacade extends AbstractFacade<NivoValidacije> {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;

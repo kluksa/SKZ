@@ -18,7 +18,7 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IspitneVelicine;
 import dhz.skz.aqdb.entity.IspitneVelicine_;
-import dhz.skz.aqdb.entity.UmjeravanjeHasIspitneVelicine;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,6 +31,7 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 public class IspitneVelicineFacade extends AbstractFacade<IspitneVelicine> {
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -51,4 +52,5 @@ public class IspitneVelicineFacade extends AbstractFacade<IspitneVelicine> {
         cq.select(from).where(cb.equal(from.get(IspitneVelicine_.oznaka), oznaka));
         return em.createQuery(cq).getSingleResult();
     }
+    
 }

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/layout.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="meni">
+        <p:panel header="Odaberi sve" style="margin-bottom:10px;">
+            <h:form id="forma">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:outputLabel for="postaja" value="Postaja: " />
+
+                    <p:selectOneMenu id="postaja" value="#{sirovaMB.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
+                        <p:ajax listener="#{sirovaMB.onPostajaChange}" update="program"/>
+                        <f:selectItems value="#{sirovaMB.postaje}" var="p" itemLabel="#{p.nazivPostaje}"  itemValue="#{p}" />
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel  styleClass="test" for="program" value="Komponenta: " />
+                    <p:selectManyMenu id="program" value="#{sirovaMB.selektiraniProgram}"   style="width:200px"  showCheckbox="true" converter="#{programKonverter}">
+                        <p:ajax listener="#{sirovaMB.onProgramChange}" update="program"/>
+                        <f:selectItems value="#{sirovaMB.programiSvi}" var="program" itemLabel="#{program.usporednoMjerenje}:  #{program.komponentaId.naziv}" itemValue="#{program}" />
+                    </p:selectManyMenu>
+                    <p:outputLabel for="kal1" value="Pocetak:" />
+                    <p:calendar id="kal1" value="#{sirovaMB.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
+                        <p:ajax event="dateSelect" listener="#{sirovaMB.onProgramChange}"/>
+                        <p:ajax event="change" listener="#{sirovaMB.onProgramChange}"/>
+                    </p:calendar>
+                    <p:outputLabel for="kal2" value="Kraj:" />
+
+                    <p:calendar id="kal2" value="#{sirovaMB.d2}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true">
+                        <p:ajax event="dateSelect" listener="#{sirovaMB.onProgramChange}"/>
+                        <p:ajax event="change" listener="#{sirovaMB.onProgramChange}"/>
+                    </p:calendar>
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="Submit" update=":slika" actionListener="#{sirovaMB.displayLocation}"  icon="ui-icon-check" />
+            </h:form>
+        </p:panel>
+    </ui:define>
+    <ui:define name="slika">
+        <p:panel header="Slika" style="margin-bottom:10px;">
+            <h:outputScript name="test.js" />
+            <p:chart id="slika"  type="line" model="#{sirovaMB.dateModel}"  >
+                <p:ajax event="itemSelect" listener="#{sirovaMB.itemSelect}" update="forma:growl" />
+            </p:chart>
+        </p:panel>      
+    </ui:define>
+</ui:composition>

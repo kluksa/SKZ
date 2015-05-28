@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Pregled mjerenja</title>
+    </h:head>
+    <h:body id="bodi">
+        <h:outputStylesheet name="custom.css" />
+        <p:layout fullPage="true" >
+            <p:layoutUnit position="north"  minSize="55" >
+                <h:form id="meni-forma">
+                    <p:growl id="msgs" showDetail="true" />
+                    <p:menubar id = "meni">
+                        <p:menuitem value="Početna"  url="/faces/index.xhtml" />
+                        <p:menuitem value="Pregled mjerenja"  url="/faces/app/mjerenja.xhtml" />
+                        <p:menuitem value="Pregled nule i raspona" url="/faces/app/zerospan.xhtml" />
+                        <p:menuitem value="Pregled sirovih" url="/faces/app/minutna.xhtml" />
+                        <c:if test="#{request.isUserInRole('admin')}">
+                            <p:menuitem value="Admin" url="/faces/admin/main.xhtml"/>
+                        </c:if>
+                        <c:if test="#{request.isUserInRole('mjeritelj')}">
+                            <p:menuitem value="Mjeritelji" url="/faces/admin/postaje.xhtml"/>
+                            <p:menuitem value="Mjeritelji" url="/faces/mjeritelj/umjeravanje.xhtml"/>
+                        </c:if>
+
+                        <f:facet name="options">
+                            <c:choose>
+                            <c:when test="#{request.userPrincipal == null}">
+
+                                <p:outputLabel for="user" value="Korisnicko ime: " />
+                                <p:inputText id="user" value="#{auth.username}"/>
+                                <p:outputLabel for="pasvord" value="Lozinka: " />
+                                <p:password id="pasvord" value="#{auth.password}" />
+ 
+                                <p:commandButton  value="Login" update="meni-forma" icon="ui-icon-arrowreturnthick-1-e" actionListener="#{auth.login()}" rendered="#{request.userPrincipal == null}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <p:outputLabel for="korisnik" value="Korisnik: " />
+                                <p:outputLabel id="korisnik" value="#{request.userPrincipal.name}"/>
+                                <p:commandButton value="Logout" update="meni" icon="ui-icon-extlink"  actionListener="#{auth.logout()}" rendered="#{request.userPrincipal != null}"/>
+                            </c:otherwise>
+                            </c:choose>
+                        </f:facet>
+
+                    </p:menubar>
+
+                </h:form>
+            </p:layoutUnit>
+
+            <!--            <p:layoutUnit position="east">
+                            test
+                        </p:layoutUnit>-->
+
+            <p:layoutUnit position="west" size="15%" minSize="200" resizable="true">
+                <ui:insert name="meni"/>
+            </p:layoutUnit>
+            <p:layoutUnit position="center">
+                <ui:insert name="slika"/>
+            </p:layoutUnit>
+
+            <p:layoutUnit position="south" size="80px" style="text-align: right">
+                <h:form >
+                    <p:outputLabel for="sat" value="Vrijeme na serveru: " />
+                    <p:clock id = "sat" pattern="HH:mm:ss dd.MM.yyyy" mode="server"  />
+                </h:form>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>

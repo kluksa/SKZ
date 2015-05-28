@@ -5,18 +5,17 @@
  */
 package dhz.skz.citaci.weblogger;
 
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.PostajaFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
-import dhz.skz.aqdb.facades.PostajaFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
-import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -70,7 +69,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     @EJB
-    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private ProgramMjerenjaFacade programMjerenjaFacade;
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
@@ -81,8 +80,6 @@ public class WebloggerCitacBean implements CitacIzvora {
 //    private ValidatorFactory validatorFactory;
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
-    @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
 
     @Resource
     private EJBContext context;
@@ -110,7 +107,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
 
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        NivoValidacije nv = new NivoValidacije(0);
 
 //        try {
         log.log(Level.INFO, "POCETAK CITANJA");

@@ -5,14 +5,14 @@
  */
 package dhz.skz.diseminacija.ekonerg;
 
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,10 +36,10 @@ import javax.sql.DataSource;
 @Stateless
 @LocalBean
 public class EkonergDiseminator implements DiseminatorPodataka {
-
     @Resource(name = "diseminacija")
     private DataSource diseminacija;
 
+    
     private static final Logger log = Logger.getLogger(EkonergDiseminator.class.getName());
 
     private PrimateljiPodataka primatelj;

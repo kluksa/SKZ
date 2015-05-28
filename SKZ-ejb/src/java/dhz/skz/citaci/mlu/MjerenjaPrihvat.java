@@ -16,12 +16,12 @@
  */
 package dhz.skz.citaci.mlu;
 
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.mlu.validatori.MLUValidatorFactory;
 import dhz.skz.diseminacija.dem.LokalnaZona;
 import dhz.skz.validatori.Validator;
@@ -49,14 +49,14 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
     private static final Logger log = Logger.getLogger(MjerenjaPrihvat.class.getName());
     private final PodatakSiroviFacade podatakSiroviFacade;
     private MLUValidatorFactory validatorFactory;
-    private final ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private final ProgramMjerenjaFacade programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
 
     private CsvOmotnica omotnica;
     private IzvorPodataka izvor;
     private Postaja postaja;
 
-    MjerenjaPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, PodatakSiroviFacade podatakSiroviFacade) {
+    MjerenjaPrihvat(ProgramMjerenjaFacade programMjerenjaFacade, PodatakSiroviFacade podatakSiroviFacade) {
         this.podatakSiroviFacade = podatakSiroviFacade;
         this.programMjerenjaFacade = programMjerenjaFacade;
     }

@@ -16,14 +16,14 @@
  */
 package dhz.skz.citaci;
 
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.config.Config;
 import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.util.OperStatus;

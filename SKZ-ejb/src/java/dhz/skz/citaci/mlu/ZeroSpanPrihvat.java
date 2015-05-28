@@ -16,12 +16,12 @@
  */
 package dhz.skz.citaci.mlu;
 
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -43,7 +43,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
     private static final Logger log = Logger.getLogger(ZeroSpanPrihvat.class.getName());
 
     private final ZeroSpanFacade zeroSpanFacade;
-    private final ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private final ProgramMjerenjaFacade programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
     private Map<Integer, String> modMapa;
 
@@ -51,7 +51,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
     private Postaja postaja;
     private IzvorPodataka izvor;
 
-    public ZeroSpanPrihvat(ProgramMjerenjaFacadeLocal programMjerenjaFacade, ZeroSpanFacade zeroSpanFacade) {
+    public ZeroSpanPrihvat(ProgramMjerenjaFacade programMjerenjaFacade, ZeroSpanFacade zeroSpanFacade) {
         this.programMjerenjaFacade = programMjerenjaFacade;
         this.zeroSpanFacade = zeroSpanFacade;
     }

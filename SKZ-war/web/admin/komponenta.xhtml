@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/admin-layout.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="admin-meni">
+        <p:panel header="Komponente admin" style="margin-bottom:10px;">
+            <h:form id="komponente">
+                <p:menu model="#{komponentaMB.model}" />
+            </h:form>
+        </p:panel>
+    </ui:define>
+
+    <ui:define name="slika">
+        <p:panel id="sadrzaj" header="#{komponentaMB.komponenta.naziv}">
+            <h:form id="komponenta">
+                <p:panelGrid columns="2">
+                    <h:outputLabel for="komponentaId" value="Id:" />
+                    <h:outputText id="komponentaId" value="#{komponentaMB.komponenta.id}"/>
+
+                    <h:outputLabel for="isoOznaka" value="ISO:" />
+                    <p:inplace id="isoOznaka" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.isoOznaka}"  required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputLabel for="eoiOznaka" value="EoI:" />
+                    <p:inplace id="eoiOznaka" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.eolOznaka}" required="false" label="text" />
+                    </p:inplace>
+
+
+                    <h:outputLabel for="nazivKomponente" value="Naziv:" />
+                    <p:inplace id="nazivKomponente" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.naziv}" required="true" label="text" />
+                    </p:inplace>
+                    <h:outputLabel for="nazivKomponenteEng" value="Naziv eng:" />
+                    <p:inplace id="nazivKomponenteEng" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.nazivEng}" required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputLabel for="formula" value="Formula:" />
+                    <p:inplace id="formula" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.formula}" required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputLabel for="izrazenoKao" value="Izrazeno kao:" />
+                    <p:inplace id="izrazenoKao" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.izrazenoKao}" required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputLabel for="konv" value="Konverzija V u M:" />
+                    <p:inplace id="konv" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.komponenta.konvVUM}" required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputLabel for="vrsta" value="Vrsta:" />
+                    <p:inplace id="vrsta" editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:selectOneMenu value="#{komponentaMB.komponenta.vrstaKomponente}" required="true" >
+                            <f:selectItem itemValue="K" itemLabel="K"/>
+                            <f:selectItem itemValue="M" itemLabel="M"/>
+                            <f:selectItem itemValue="S" itemLabel="S"/>
+                        </p:selectOneMenu>
+                    </p:inplace>
+
+                    <h:outputLabel for="agregacija" value="Prosjek tijekom:" />
+                    <p:inplace id="agregacija" editor="true" emptyLabel="&lt;prazno&gt; ">
+                        <p:selectOneMenu value="#{komponentaMB.komponenta.agregacijeId}" required="true" converter="#{agregacijeKonverter}" >
+                            <f:selectItems value="#{komponentaMB.vrsteAgregacije}"  var="ag" itemLabel="#{ag.oznaka}" itemValue="#{ag}"/>
+                        </p:selectOneMenu>
+                    </p:inplace>
+
+                    <h:outputLabel for="vrsta" value="Jedinice:" />
+                    <p:inplace id="jedinice" editor="true" emptyLabel="&lt;prazno&gt;"> 
+                        <p:selectOneMenu value="#{komponentaMB.komponenta.mjerneJediniceId}" label="#{komponentaMB.komponenta.mjerneJediniceId.oznaka}" converter="#{mjerneJediniceKonverter}">
+                            <f:selectItems value="#{komponentaMB.mjerneJedinice}"  var="jd" itemLabel="#{jd.oznaka}" itemValue="#{jd}"/>
+                        </p:selectOneMenu>
+                    </p:inplace>
+
+                </p:panelGrid>
+                <p:commandButton value="Spremi" action="#{komponentaMB.spremiIzmjene}" update=":sadrzaj,:komponente"/>
+                <p:commandButton value="Poništi" action="#{komponentaMB.ponistiIzmjene}" update="komponenta"/>
+            </h:form>
+            <h:form id="granice">
+                <p:dataTable id="graniceDT" value="#{komponentaMB.granice}" 
+                             selectionMode="single" selection="#{komponentaMB.granica}" var="granica" rowKey="#{granica.id}" rows="10" >
+
+                    <p:column headerText="Kategorija oznaka">
+                        <h:outputText value="#{granica.kategorijeGranicaId.oznaka}" />
+                    </p:column>
+                    <p:column headerText="Kategorija opis">
+                        <h:outputText value="#{granica.kategorijeGranicaId.opis}" />
+                    </p:column>
+                    <p:column headerText="Agregacija">
+                        <h:outputText value="#{granica.agregacijeId.oznaka}" />
+                    </p:column>
+                    <p:column headerText="Iznos">
+                        <h:outputText value="#{granica.vrijednost}" />
+                    </p:column>
+                    <p:column headerText="Dozvoljeni broj prekoračenja">
+                        <h:outputText value="#{granica.dozvoljeniBrojPrekoracenja}" />
+                    </p:column>
+                    <p:column headerText="U primjeni od">
+                        <h:outputText value="#{granica.pocetakPrimjene}" />
+                    </p:column>
+                    <p:column headerText="U primjeni do">
+                        <h:outputText value="#{granica.krajPrimjene}" />
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton  update=":granice,:granicaDetail" value="Dodaj" actionListener="#{komponentaMB.dodajGranicu()}" oncomplete="PF('granicaDialog').show()"/>
+                        <p:commandButton  update=":granice,:granicaDetail" icon="ui-icon-search" value="Promijeni" oncomplete="PF('granicaDialog').show()" />
+                        <p:commandButton  value="Izbriši" actionListener="#{komponentaMB.izbrisiGranicu}" update=":granice,:granicaDetail" icon="ui-icon-trash"/>
+
+                    </f:facet>
+
+                </p:dataTable>
+            </h:form>
+
+
+            <!--<p:dialog header="Granica" widgetVar="granicaDialog" modal="false" showEffect="fade" hideEffect="fade" resizable="false" width="400">-->
+        </p:panel>
+        <p:dialog header="Granica" widgetVar="granicaDialog" modal="true" resizable="true" width="400" appendTo="@(body)">
+            <h:form id="granicaDetail">
+                <p:panelGrid  columns="2" rendered="#{not empty komponentaMB.granica}" columnClasses="label,value">
+                    <h:outputText value="Id:" />
+                    <h:outputText value="#{komponentaMB.granica.id}" />
+
+                    <h:outputText value="Kategorija" />
+                    <p:inplace editor="true" emptyLabel="&lt;prazno&gt;"> 
+                        <p:selectOneMenu value="#{komponentaMB.granica.kategorijeGranicaId}" label="#{komponentaMB.granica.kategorijeGranicaId.opis}" converter="#{kategorijeGranicaKonverter}">
+                            <f:selectItems value="#{komponentaMB.kategorijeGranica}"  var="jd" itemLabel="#{jd.opis}" itemValue="#{jd}"/>
+                        </p:selectOneMenu>
+                    </p:inplace>
+
+                    <h:outputText value="Agregacija" />
+                    <p:inplace editor="true" emptyLabel="&lt;prazno&gt;"> 
+                        <p:selectOneMenu value="#{komponentaMB.granica.agregacijeId}" label="#{komponentaMB.granica.agregacijeId.oznaka}" converter="#{agregacijeKonverter}">
+                            <f:selectItems value="#{komponentaMB.vrsteAgregacije}"  var="jd" itemLabel="#{jd.oznaka}" itemValue="#{jd}"/>
+                        </p:selectOneMenu>
+                    </p:inplace>
+
+                    <h:outputText value="Vrijednost" />
+                    <p:inplace  editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.granica.vrijednost}" required="true" label="text" />
+                    </p:inplace>
+
+                    <h:outputText value="Dozvoljeni broj" />
+                    <p:inplace  editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:inputText value="#{komponentaMB.granica.dozvoljeniBrojPrekoracenja}" required="false" label="text" />
+                    </p:inplace>
+
+                    <h:outputText value="Pocetak" />
+                    <p:inplace  editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:calendar value="#{komponentaMB.granica.pocetakPrimjene}" required="true" showOn="button" pattern="yyyy-MM-dd" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:calendar>
+                    </p:inplace>
+
+                    <h:outputText value="Kraj" />
+                    <p:inplace  editor="true" emptyLabel="&lt;prazno&gt;">
+                        <p:calendar value="#{komponentaMB.granica.krajPrimjene}" required="false" showOn="button" pattern="yyyy-MM-dd" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:calendar>
+                    </p:inplace>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Prihvati" actionListener="#{komponentaMB.spremiGranicu()}" oncomplete="PF('granicaDialog').hide()"  update=":granice"/>
+                        <p:commandButton value="Poništi"  onclick="PF('granicaDialog').hide()" update=":granice"/>            
+                    </f:facet>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

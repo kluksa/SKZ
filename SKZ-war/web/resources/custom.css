@@ -1,0 +1,60 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Aug 7, 2014, 2:31:36 PM
+    Author     : kraljevic
+*/
+
+.ui-message-info,.ui-message-error,.ui-message-warn,.ui-message-fatal {
+	border: 0!important;
+	margin: 0!important;
+	padding: 0!important;
+}
+
+.ui-layout, .ui-layout-doc, .ui-layout-unit, .ui-layout-wrap, .ui-layout-bd, .ui-layout-hd{
+    border: none;
+    /*margin: 0!important;*/
+    /*padding: 0!important;*/
+    padding-bottom: 0;
+    padding-left: 5pt;
+    padding-right: 5pt;
+}
+ 
+.ui-messages-error,.ui-message-error {
+	color: #D8000C;
+	background-color: #fff!important;
+}
+.test{
+   color:green;
+}
+body {
+    font: 12px Arial, sans-serif;
+}
+
+#program {
+    vertical-align:top
+}
+
+.dateTimeField input {
+   vertical-align: middle;
+   margin-right: 1px;
+   width: 100px;
+}
+.inputField input {
+   width: 50px;
+}
+
+.crveno {
+    background: red  !important ;
+}
+.zuto {
+    background: yellow  !important ;
+}
+.zeleno {
+    background: green  !important ;
+}
+
+.prazno {}

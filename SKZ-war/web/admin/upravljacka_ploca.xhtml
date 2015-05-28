@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/layout.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="slika">
+        <p:panel header="Citaci" style="margin-bottom:10px;">
+            <h:panelGrid columns="3" cellpadding="5">
+                <h:form id="citanje-form">
+                    <p:outputLabel for="citanje-minuta" value="Minuta pokretanja: " />
+                    <p:selectOneMenu id="citanje-minuta" value="#{citanjeMB.minuta}" style="width:150px">
+                        <f:selectItems value="#{citanjeMB.minute}" />
+                    </p:selectOneMenu>
+                    <p:commandButton value="Submit" update="citanje-form" actionListener="#{citanjeMB.schedule}" icon="ui-icon-check" />
+                </h:form>
+            </h:panelGrid>
+            <h:form>
+                <p:commandButton value="Pokreni sada" actionListener="#{citanjeMB.pokreni}" icon="ui-icon-check" />
+            </h:form>
+        </p:panel>
+
+        <p:panel header="Diseminacija" style="margin-bottom:10px;">
+            <h:form id="diseminacija-form">
+                <h:panelGrid columns="2">
+                    <h:outputLabel id="outputLabel1" value="Select Value:" for="selectOneRadio1"/>
+                    <h:selectOneRadio id="selectOneRadio1" value="#{diseminacijaMB.aktivan}">
+                        <f:selectItem itemLabel="true" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="false" itemValue="#{false}"/>
+                    </h:selectOneRadio>
+
+                    <p:outputLabel for="diseminacija-minuta" value="Minuta pokretanja: " />
+                    <p:selectOneMenu id="diseminacija-minuta" value="#{diseminacijaMB.minuta}" style="width:150px">
+                        <f:selectItems value="#{diseminacijaMB.minute}" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <h:commandButton id="commandButton2" type="reset" value="Reset"/>
+                <p:commandButton value="Submit" update="diseminacija-form" actionListener="#{diseminacijaMB.schedule}" icon="ui-icon-check" />
+            </h:form>
+            <h:form>
+                <p:commandButton value="Pokreni sada" actionListener="#{diseminacijaMB.pokreni}" icon="ui-icon-check" />
+            </h:form>
+        </p:panel>
+    </ui:define>
+</ui:composition>
+

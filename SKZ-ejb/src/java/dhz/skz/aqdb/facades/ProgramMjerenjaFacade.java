@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 kraljevic
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dhz.skz.aqdb.facades;
 
@@ -16,6 +27,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,7 +43,8 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> implements ProgramMjerenjaFacadeLocal, ProgramMjerenjaFacadeRemote {
+@LocalBean
+public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -44,9 +57,8 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
     public ProgramMjerenjaFacade() {
         super(ProgramMjerenja.class);
     }
-    
-    @Override
-    public Date getPocetakMjerenja(IzvorPodataka i, Postaja p){
+
+    public Date getPocetakMjerenja(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
@@ -55,15 +67,14 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
         Expression<Date> vrijeme = from.get(ProgramMjerenja_.pocetakMjerenja);
         cq.select(cb.least(vrijeme)).where(cb.and(postaja, izvor));
         List<Date> rl = em.createQuery(cq).getResultList();
-        if ( rl.isEmpty()) {
-            return null; 
+        if (rl.isEmpty()) {
+            return null;
         } else {
             return rl.get(0);
         }
     }
-    
-    @Override
-    public Date getKrajMjerenja(IzvorPodataka i, Postaja p){
+
+    public Date getKrajMjerenja(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
@@ -72,19 +83,13 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
         Expression<Date> vrijeme = from.get(ProgramMjerenja_.zavrsetakMjerenja);
         cq.select(cb.greatest(vrijeme)).where(cb.and(postaja, izvor));
         List<Date> rl = em.createQuery(cq).getResultList();
-        if ( rl.isEmpty()) {
-            return null; 
+        if (rl.isEmpty()) {
+            return null;
         } else {
             return rl.get(0);
         }
     }
 
-    @Override
-    public ProgramMjerenja find(Integer id) {
-        return super.find(id);
-    }
-    
-    @Override
     public ProgramMjerenja find(Postaja p, IzvorPodataka i, String kKljuc, String nKljuc) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -111,7 +116,6 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
         return resultList.get(0);
     }
 
-    @Override
     public Collection<ProgramMjerenja> find(Postaja p, IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -127,13 +131,11 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
         cq.select(from).where(and);
         return em.createQuery(cq).getResultList();
     }
-    
-    @Override
+
     public Collection<ProgramMjerenja> find(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
         Root<ProgramMjerenja> from = cq.from(ProgramMjerenja.class);
-
 
         cq.select(from).where(cb.equal(from.join(ProgramMjerenja_.izvorPodatakaId), i));
         return em.createQuery(cq).getResultList();
@@ -160,8 +162,6 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
 //        );
 //        return em.createQuery(cq).getResultList();
 //    }
-
-    @Override
     public Collection<ProgramMjerenja> findZaTermin(Postaja p, IzvorPodataka i, Date termin) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -184,8 +184,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> imple
         );
         return em.createQuery(cq).getResultList();
     }
-    
-    @Override
+
     public Collection<ProgramMjerenja> find(PrimateljiPodataka primatelj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);

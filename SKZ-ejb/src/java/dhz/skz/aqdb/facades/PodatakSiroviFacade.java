@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 kraljevic
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dhz.skz.aqdb.facades;
 
@@ -14,11 +25,10 @@ import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ProgramMjerenja_;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -27,6 +37,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -36,14 +47,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi>  {
-
-    @EJB
-    private PostajaFacade postajaFacade;
-    @EJB
-    private IzvorPodatakaFacade izvorPodatakaFacade;
-
-    private static final Logger log = Logger.getLogger(PodatakSiroviFacade.class.getName());
+public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
@@ -55,6 +59,64 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi>  {
 
     public PodatakSiroviFacade() {
         super(PodatakSirovi.class);
+    }
+
+    public List<PodatakSirovi> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
+        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
+
+        Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
+        Expression<ProgramMjerenja> programE = from.get(PodatakSirovi_.programMjerenjaId);
+        Predicate and = cb.and(cb.equal(programE, pm), cb.greaterThanOrEqualTo(vrijemeE, pocetak), cb.lessThanOrEqualTo(vrijemeE, kraj));
+        cq.select(from).where(and);
+        return em.createQuery(cq).getResultList();
+    }
+
+    public Collection<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj) {
+        Calendar cal = Calendar.getInstance(); // locale-specific
+        cal.setTime(kraj);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        kraj = new Date(cal.getTimeInMillis());
+
+        cal.setTime(pocetak);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        pocetak = new Date(cal.getTimeInMillis());
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
+        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
+        Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
+        Expression<ProgramMjerenja> programE = from.get(PodatakSirovi_.programMjerenjaId);
+
+        cq.where(
+                cb.and(
+                        cb.equal(programE, pm),
+                        cb.greaterThan(vrijemeE, pocetak),
+                        cb.lessThanOrEqualTo(vrijemeE, kraj)
+                )
+        );
+
+        cq.select(from).orderBy(cb.asc(vrijemeE));
+        return em.createQuery(cq).getResultList();
+    }
+
+    public Collection<ProgramMjerenja> getProgram(Postaja postaja) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
+
+        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
+
+        Path<ProgramMjerenja> programP = from.get(PodatakSirovi_.programMjerenjaId);
+        Join<ProgramMjerenja, Postaja> postajaJ = from.join(PodatakSirovi_.programMjerenjaId).join(ProgramMjerenja_.postajaId);
+
+        cq.select(programP).where(cb.equal(postajaJ, postaja)).groupBy(programP);
+        cq.distinct(true);
+        return em.createQuery(cq).getResultList();
     }
 
     public void spremi(Collection<PodatakSirovi> podaci) {
@@ -191,4 +253,5 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi>  {
         }
         return rl.get(0);
     }
+
 }

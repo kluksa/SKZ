@@ -5,14 +5,13 @@
  */
 package dhz.skz.citaci.dcs;
 
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
 import dhz.skz.citaci.CitacIzvora;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,9 +37,7 @@ import javax.sql.DataSource;
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
     @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
-    @EJB
-    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private ProgramMjerenjaFacade programMjerenjaFacade;
 
     private static final Logger log = Logger.getLogger(DcsCitacBean.class.getName());
 
@@ -73,7 +70,7 @@ public class DcsCitacBean implements CitacIzvora {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        NivoValidacije nv = new NivoValidacije(0);
         
         try (PreparedStatement prepStmt = con.prepareStatement(selektSql)) {
             prepStmt.setInt(1, station);

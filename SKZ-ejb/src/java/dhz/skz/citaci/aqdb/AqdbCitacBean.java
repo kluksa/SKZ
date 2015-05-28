@@ -5,13 +5,13 @@
  */
 package dhz.skz.citaci.aqdb;
 
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.SatniIterator;
 import dhz.skz.config.Config;

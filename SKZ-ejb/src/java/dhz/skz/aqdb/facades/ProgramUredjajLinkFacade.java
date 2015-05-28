@@ -22,6 +22,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import dhz.skz.aqdb.entity.ProgramUredjajLink;
 import dhz.skz.aqdb.entity.ProgramUredjajLink_;
 import java.util.Collection;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,7 +37,9 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 public class ProgramUredjajLinkFacade extends AbstractFacade<ProgramUredjajLink> {
+
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -48,8 +51,8 @@ public class ProgramUredjajLinkFacade extends AbstractFacade<ProgramUredjajLink>
     public ProgramUredjajLinkFacade() {
         super(ProgramUredjajLink.class);
     }
-    
-    public Collection<ProgramUredjajLink> findAll(IzvorPodataka ip){
+
+    public Collection<ProgramUredjajLink> findAll(IzvorPodataka ip) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramUredjajLink> cq = cb.createQuery(ProgramUredjajLink.class);
         Root<ProgramUredjajLink> from = cq.from(ProgramUredjajLink.class);
@@ -58,5 +61,5 @@ public class ProgramUredjajLinkFacade extends AbstractFacade<ProgramUredjajLink>
         cq.select(from).where(equal);
         return em.createQuery(cq).getResultList();
     }
-    
+
 }

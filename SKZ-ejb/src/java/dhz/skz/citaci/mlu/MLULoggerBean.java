@@ -5,16 +5,15 @@
  */
 package dhz.skz.citaci.mlu;
 
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.PostajaFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
-import dhz.skz.aqdb.facades.PostajaFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
-import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.MinutniUSatne;
@@ -44,8 +43,6 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private MinutniUSatne siroviUSatneBean;
     @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
-    @EJB
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
@@ -54,7 +51,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
-    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private ProgramMjerenjaFacade programMjerenjaFacade;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Postaja postaja;
@@ -90,7 +87,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        NivoValidacije nv = new NivoValidacije(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
             siroviUSatneBean.spremiSatneIzSirovih(program, nv);
         }
