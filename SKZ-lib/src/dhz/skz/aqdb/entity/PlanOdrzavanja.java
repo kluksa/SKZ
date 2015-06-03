@@ -32,12 +32,12 @@ public class PlanOdrzavanja implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PlanOdrzavanjaPK planOdrzavanjaPK;
-    @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Uredjaj uredjaj;
     @JoinColumn(name = "odrzavanje_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Odrzavanje odrzavanjeId;
+    @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Uredjaj uredjaj;
     @JoinColumn(name = "vrsta_odrzavanja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private VrstaOdrzavanja vrstaOdrzavanja;
@@ -61,20 +61,20 @@ public class PlanOdrzavanja implements Serializable {
         this.planOdrzavanjaPK = planOdrzavanjaPK;
     }
 
-    public Uredjaj getUredjaj() {
-        return uredjaj;
-    }
-
-    public void setUredjaj(Uredjaj uredjaj) {
-        this.uredjaj = uredjaj;
-    }
-
     public Odrzavanje getOdrzavanjeId() {
         return odrzavanjeId;
     }
 
     public void setOdrzavanjeId(Odrzavanje odrzavanjeId) {
         this.odrzavanjeId = odrzavanjeId;
+    }
+
+    public Uredjaj getUredjaj() {
+        return uredjaj;
+    }
+
+    public void setUredjaj(Uredjaj uredjaj) {
+        this.uredjaj = uredjaj;
     }
 
     public VrstaOdrzavanja getVrstaOdrzavanja() {

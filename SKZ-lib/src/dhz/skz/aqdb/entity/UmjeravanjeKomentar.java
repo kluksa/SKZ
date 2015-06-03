@@ -11,7 +11,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -29,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UmjeravanjeKomentar.findAll", query = "SELECT u FROM UmjeravanjeKomentar u"),
-    @NamedQuery(name = "UmjeravanjeKomentar.findByUmjeravanjeId", query = "SELECT u FROM UmjeravanjeKomentar u WHERE u.umjeravanjeId = :umjeravanjeId")})
+    @NamedQuery(name = "UmjeravanjeKomentar.findByUmjeravanjeId", query = "SELECT u FROM UmjeravanjeKomentar u WHERE u.umjeravanjeId = :umjeravanjeId"),
+    @NamedQuery(name = "UmjeravanjeKomentar.findByKomentar", query = "SELECT u FROM UmjeravanjeKomentar u WHERE u.komentar = :komentar")})
 public class UmjeravanjeKomentar implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,8 +39,7 @@ public class UmjeravanjeKomentar implements Serializable {
     private Integer umjeravanjeId;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
+    @Size(min = 1, max = 2147483647)
     private String komentar;
     @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)

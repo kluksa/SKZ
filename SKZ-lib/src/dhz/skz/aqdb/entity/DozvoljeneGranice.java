@@ -33,8 +33,8 @@ public class DozvoljeneGranice implements Serializable {
     @EmbeddedId
     protected DozvoljeneGranicePK dozvoljeneGranicePK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float min;
-    private Float max;
+    private Double min;
+    private Double max;
     @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private AnalitickeMetode analitickeMetode;
@@ -64,19 +64,19 @@ public class DozvoljeneGranice implements Serializable {
         this.dozvoljeneGranicePK = dozvoljeneGranicePK;
     }
 
-    public Float getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public void setMin(Float min) {
+    public void setMin(Double min) {
         this.min = min;
     }
 
-    public Float getMax() {
+    public Double getMax() {
         return max;
     }
 
-    public void setMax(Float max) {
+    public void setMax(Double max) {
         this.max = max;
     }
 

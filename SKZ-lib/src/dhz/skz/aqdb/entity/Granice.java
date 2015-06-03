@@ -43,7 +43,7 @@ public class Granice implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    private float vrijednost;
+    private double vrijednost;
     @Column(name = "dozvoljeni_broj_prekoracenja")
     private Integer dozvoljeniBrojPrekoracenja;
     @Basic(optional = false)
@@ -71,7 +71,7 @@ public class Granice implements Serializable {
         this.id = id;
     }
 
-    public Granice(Integer id, float vrijednost, Date pocetakPrimjene) {
+    public Granice(Integer id, double vrijednost, Date pocetakPrimjene) {
         this.id = id;
         this.vrijednost = vrijednost;
         this.pocetakPrimjene = pocetakPrimjene;
@@ -85,11 +85,11 @@ public class Granice implements Serializable {
         this.id = id;
     }
 
-    public float getVrijednost() {
+    public double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(float vrijednost) {
+    public void setVrijednost(double vrijednost) {
         this.vrijednost = vrijednost;
     }
 

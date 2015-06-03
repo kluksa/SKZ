@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public interface CsvParser {
 
-    void obradi(CsvOmotnica omotnica);
+    void prihvati(CsvOmotnica omotnica);
 
     public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka);
 

@@ -51,13 +51,14 @@ public class Podatak implements Serializable {
     private Integer podatakId;
     @Basic(optional = false)
     @NotNull
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float vrijednost;
-    private Short obuhvat;
+    private Double vrijednost;
+    private Integer obuhvat;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa")
+    @Column(name = "vrijeme_upisa", insertable = false, updatable=false, columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Column(name = "originalni_podatak_id")
@@ -72,9 +73,11 @@ public class Podatak implements Serializable {
     private Korisnik mjeriteljId;
     @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @NotNull
     private NivoValidacije nivoValidacijeId;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @NotNull
     private ProgramMjerenja programMjerenjaId;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
     private Komentar komentar;
@@ -109,19 +112,19 @@ public class Podatak implements Serializable {
         this.vrijeme = vrijeme;
     }
 
-    public Float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(Float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
-    public Short getObuhvat() {
+    public Integer getObuhvat() {
         return obuhvat;
     }
 
-    public void setObuhvat(Short obuhvat) {
+    public void setObuhvat(Integer obuhvat) {
         this.obuhvat = obuhvat;
     }
 

@@ -50,20 +50,18 @@ public class Umjeravanje implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date datum;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "oznaka_umjernice")
     private String oznakaUmjernice;
     @JoinTable(name = "umjeravanje_etalon_link", joinColumns = {
         @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "oprema_id", referencedColumnName = "id")})
     @ManyToMany
-    private Collection<Uredjaj> uredjajCollection;
-    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Uredjaj uredjajId;
+    private Collection<Uredjaj> etalonCollection;
     @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AnalitickeMetode analitickeMetodeId;
@@ -73,6 +71,9 @@ public class Umjeravanje implements Serializable {
     @JoinColumn(name = "umjerni_laboratorij_id", referencedColumnName = "id")
     @ManyToOne
     private UmjerniLaboratorij umjerniLaboratorijId;
+    @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Uredjaj uredjajId;
     @JoinColumn(name = "vrsta_umjeravanja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private VrstaUmjeravanja vrstaUmjeravanjaId;
@@ -124,19 +125,11 @@ public class Umjeravanje implements Serializable {
 
     @XmlTransient
     public Collection<Uredjaj> getUredjajCollection() {
-        return uredjajCollection;
+        return etalonCollection;
     }
 
     public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
-        this.uredjajCollection = uredjajCollection;
-    }
-
-    public Uredjaj getUredjajId() {
-        return uredjajId;
-    }
-
-    public void setUredjajId(Uredjaj uredjajId) {
-        this.uredjajId = uredjajId;
+        this.etalonCollection = uredjajCollection;
     }
 
     public AnalitickeMetode getAnalitickeMetodeId() {
@@ -161,6 +154,14 @@ public class Umjeravanje implements Serializable {
 
     public void setUmjerniLaboratorijId(UmjerniLaboratorij umjerniLaboratorijId) {
         this.umjerniLaboratorijId = umjerniLaboratorijId;
+    }
+
+    public Uredjaj getUredjajId() {
+        return uredjajId;
+    }
+
+    public void setUredjajId(Uredjaj uredjajId) {
+        this.uredjajId = uredjajId;
     }
 
     public VrstaUmjeravanja getVrstaUmjeravanjaId() {

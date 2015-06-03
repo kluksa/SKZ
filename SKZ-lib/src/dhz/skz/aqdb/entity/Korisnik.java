@@ -45,16 +45,16 @@ public class Korisnik implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 100)
     @Column(name = "korisnicko_ime")
     private String korisnickoIme;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 1, max = 200)
     private String lozinka;
-    @Size(max = 50)
+    @Size(max = 100)
     private String ime;
-    @Size(max = 50)
+    @Size(max = 100)
     private String prezime;
     private Boolean enabled;
     private Integer version;
@@ -64,6 +64,8 @@ public class Korisnik implements Serializable {
     private Collection<Podatak> podatakCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "korisnikId")
     private Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection;
+    @OneToMany(mappedBy = "korisnikId")
+    private Collection<PodatakSirovi> podatakSiroviCollection;
 
     public Korisnik() {
     }
@@ -159,6 +161,15 @@ public class Korisnik implements Serializable {
 
     public void setUlogeHasKorisnikCollection(Collection<UlogeHasKorisnik> ulogeHasKorisnikCollection) {
         this.ulogeHasKorisnikCollection = ulogeHasKorisnikCollection;
+    }
+
+    @XmlTransient
+    public Collection<PodatakSirovi> getPodatakSiroviCollection() {
+        return podatakSiroviCollection;
+    }
+
+    public void setPodatakSiroviCollection(Collection<PodatakSirovi> podatakSiroviCollection) {
+        this.podatakSiroviCollection = podatakSiroviCollection;
     }
 
     @Override

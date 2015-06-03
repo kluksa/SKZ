@@ -5,15 +5,15 @@
  */
 package dhz.skz.diseminacija.dem;
 
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
-import dhz.skz.aqdb.facades.PrimateljiPodatakaFacadeLocal;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
+import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
 import dhz.skz.diseminacija.datatransfer.DataTransferFactory;
@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 /**
  *
@@ -39,13 +40,15 @@ import javax.ejb.Stateless;
 @Stateless
 @LocalBean
 public class DemDiseminator implements DiseminatorPodataka {
-
     @EJB
-    private ProgramMjerenjaFacadeLocal ppf;
-
+    private NivoValidacijeFacade nivoValidacijeFacade;
     @EJB
-    private PodatakFacade dao;
+    private ProgramMjerenjaFacade ppf;
+    @EJB
+    private PodatakFacade podatakFacade;
 
+    @Inject @Config private TimeZone tzone;
+    
     @Override
     public void salji(PrimateljiPodataka primatelj) {
 //        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
@@ -53,15 +56,16 @@ public class DemDiseminator implements DiseminatorPodataka {
         Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama
                 = getProgramPoKomponentama(ppf.find(primatelj));
 
-        DEMTransformation demT = new DEMTransformation(primatelj);
-        NivoValidacije nv = new NivoValidacije((short) 0);
+        DEMTransformation demT = new DEMTransformation(primatelj, tzone);
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
+
         Date zadnji = getZadnji();
         Date prvi = getPrvi();
 
         for (Komponenta k : programPoKomponentama.keySet()) {
             try {
                 DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
-                Collection<Podatak> podaci = dao.getPodaciZaKomponentu(prvi, zadnji, k, nv, (short) 0);
+                Collection<Podatak> podaci = podatakFacade.getPodaciZaKomponentu(prvi, zadnji, k, nv, (short) 0);
                 demT.setKomponenta(k);
                 demT.setProgram(programPoKomponentama.get(k));
                 demT.setPocetak(prvi);
@@ -88,7 +92,7 @@ public class DemDiseminator implements DiseminatorPodataka {
     }
 
     private Date getZadnji() {
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar trenutni_termin = new GregorianCalendar(tzone);
         trenutni_termin.setTime(new Date());
         trenutni_termin.set(Calendar.MINUTE, 0);
         trenutni_termin.set(Calendar.SECOND, 0);
@@ -98,7 +102,7 @@ public class DemDiseminator implements DiseminatorPodataka {
     }
 
     private Date getPrvi() {
-        Calendar trenutni_termin = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar trenutni_termin = new GregorianCalendar(tzone);
         trenutni_termin.setTime(new Date());
         trenutni_termin.set(Calendar.MINUTE, 0);
         trenutni_termin.set(Calendar.SECOND, 0);

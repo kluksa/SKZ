@@ -36,8 +36,8 @@ public class NivoValidacije implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    private Short id;
-    @Size(max = 45)
+    private Integer id;
+    @Size(max = 90)
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nivoValidacijeId")
     private Collection<Podatak> podatakCollection;
@@ -45,15 +45,15 @@ public class NivoValidacije implements Serializable {
     public NivoValidacije() {
     }
 
-    public NivoValidacije(Short id) {
+    public NivoValidacije(Integer id) {
         this.id = id;
     }
 
-    public Short getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Short id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

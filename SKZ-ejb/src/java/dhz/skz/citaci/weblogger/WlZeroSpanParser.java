@@ -6,11 +6,11 @@
 package dhz.skz.citaci.weblogger;
 
 import com.csvreader.CsvReader;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -39,18 +39,21 @@ class WlZeroSpanParser implements WlFileParser{
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm z");
 
     private Date zadnjiPodatak;
-    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
     private final Map<String, ProgramMjerenja> wlKanalProgram;
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
 
     private int brojStupaca;
     private Date trenutnoVrijeme;
-    private Collection<ProgramMjerenja> aktivniProgram;
+    private Date terminDatoteke;
+    private final ZeroSpanFacade zeroSpanFacade;
+    private final Collection<ProgramMjerenja> programNaPostaji;
 
-    public WlZeroSpanParser(TimeZone timeZone) {
+    public WlZeroSpanParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone timeZone, ZeroSpanFacade zeroSpanFacade) {
+        this.zeroSpanFacade = zeroSpanFacade;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
         this.chareset = Charset.forName("UTF-8");
+        this.programNaPostaji = programNaPostaji;
         sdf.setTimeZone(timeZone);
     }
 
@@ -63,10 +66,10 @@ class WlZeroSpanParser implements WlFileParser{
     public void parse(InputStream fileStream) throws WlFileException, IOException {
 //        log.log(Level.INFO, "Pocinjem parsati {0} od {1}", new Object[]{
 //            nizKanala.getPostaja().getNazivPostaje(), zadnjiPodatak});
-        if (nizKanala == null) {
-            throw new WlFileException("Niz kanala nije postavljen");
-        }
-
+//        if (nizKanala == null) {
+//            throw new WlFileException("Niz kanala nije postavljen");
+//        }
+        setNizKanala();
         CsvReader csv = new CsvReader(fileStream, separator, chareset);
         try {
             parsaj_zaglavlje(csv);
@@ -125,19 +128,17 @@ class WlZeroSpanParser implements WlFileParser{
     private void parsaj_record(CsvReader csv) throws IOException {
         for (Integer stupac : wlStupacProgram.keySet()) {
             ProgramMjerenja program = wlStupacProgram.get(stupac);
-            NizProcitanihWl nizPodataka = nizKanala.get(program);
 
             String modStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
             String certStr = csv.get(stupac + 2);
             String varStr = csv.get(stupac + 3);
             String vrijednostStr = csv.get(stupac + 4);
-//            Uredjaj uredjaj = nizPodataka.getUredjaji().floorEntry(trenutnoVrijeme).getValue();
             if (!modStr.isEmpty()) {
                 try {
-                    Float iznos = Float.parseFloat(vrijednostStr);
-                    Float varijanca = Float.parseFloat(varStr);
-                    Float refV = Float.parseFloat(certStr);
+                    Double iznos = Double.parseDouble(vrijednostStr);
+                    Double varijanca = Double.parseDouble(varStr);
+                    Double refV = Double.parseDouble(certStr);
 
                     ZeroSpan pod = new ZeroSpan();
                     pod.setVrijeme(trenutnoVrijeme);
@@ -146,8 +147,7 @@ class WlZeroSpanParser implements WlFileParser{
                     pod.setReferentnaVrijednost(refV);
                     pod.setStdev(varijanca);
                     pod.setVrijednost(iznos);
-
-                    nizPodataka.dodajZeroSpan(trenutnoVrijeme, pod);
+                    zeroSpanFacade.spremi(pod);
 
                 } catch (NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
@@ -156,12 +156,11 @@ class WlZeroSpanParser implements WlFileParser{
         }
     }
 
-    @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
-        this.nizKanala = nizKanala;
+    private void setNizKanala() {
+//        this.nizKanala = nizKanala;
         // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
         // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala
-        for (ProgramMjerenja kljuc : aktivniProgram) {
+        for (ProgramMjerenja kljuc : programNaPostaji) {
             if (kljuc.getIzvorProgramKljuceviMap() != null) {
                 IzvorProgramKljuceviMap ipm = kljuc.getIzvorProgramKljuceviMap();
                 if (ipm == null || ipm.getUKljuc() == null || ipm.getUKljuc().isEmpty()) {
@@ -175,5 +174,25 @@ class WlZeroSpanParser implements WlFileParser{
                 log.log(Level.SEVERE, "izvor_program_kljucevi_map ne sadrzi program_mjerenja_id = {0}", kljuc.getId());
             }
         }
+    }
+    
+    @Override
+    public void setTerminDatoteke(Date terminDatoteke) {
+        this.terminDatoteke = terminDatoteke;
+    }
+
+    @Override
+    public boolean isDobarTermin() {
+        boolean aktivna = false;
+        boolean dobroVrijeme;
+        for (ProgramMjerenja pm : programNaPostaji) {
+            if ((pm.getIzvorProgramKljuceviMap() != null) && (pm.getIzvorProgramKljuceviMap().getUKljuc() != null)) {
+                boolean a = terminDatoteke.compareTo(pm.getPocetakMjerenja()) >= 0;
+                boolean b = (pm.getZavrsetakMjerenja() == null) || (terminDatoteke.compareTo(pm.getZavrsetakMjerenja()) <= 0);
+                aktivna |= (a && b);
+            }
+        }
+        dobroVrijeme = (zadnjiPodatak == null) || (zadnjiPodatak.getTime() - terminDatoteke.getTime() < 24 * 3600 * 1000);
+        return aktivna && dobroVrijeme;
     }
 }

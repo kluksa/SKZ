@@ -41,14 +41,14 @@ public class Dijelovi implements Serializable {
     protected DijeloviPK dijeloviPK;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     private String naziv;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "raspolozivi_broj")
     private String raspoloziviBroj;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "oznaka_proizvodjaca")
     private String oznakaProizvodjaca;
     @JoinTable(name = "odrzavanje_has_dijelovi", joinColumns = {

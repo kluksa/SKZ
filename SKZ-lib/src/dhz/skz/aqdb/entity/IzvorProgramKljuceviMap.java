@@ -40,16 +40,16 @@ public class IzvorProgramKljuceviMap implements Serializable {
     @NotNull
     @Column(name = "program_mjerenja_id")
     private Integer programMjerenjaId;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "p_kljuc")
     private String pKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "k_kljuc")
     private String kKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "u_kljuc")
     private String uKljuc;
-    @Size(max = 45)
+    @Size(max = 90)
     @Column(name = "n_kljuc")
     private String nKljuc;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)

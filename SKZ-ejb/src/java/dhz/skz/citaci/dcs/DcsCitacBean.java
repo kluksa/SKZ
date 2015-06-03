@@ -5,27 +5,23 @@
  */
 package dhz.skz.citaci.dcs;
 
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
-import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeLocal;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
-import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.util.Status;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -42,7 +38,9 @@ import javax.sql.DataSource;
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
     @EJB
-    private ProgramMjerenjaFacadeLocal programMjerenjaFacade;
+    private NivoValidacijeFacade nivoValidacijeFacade;
+    @EJB
+    private ProgramMjerenjaFacade programMjerenjaFacade;
 
     private static final Logger log = Logger.getLogger(DcsCitacBean.class.getName());
 
@@ -71,15 +69,12 @@ public class DcsCitacBean implements CitacIzvora {
         }
     }
 
-    @Override
-    public void procitaj(IzvorPodataka izvor, Map<ProgramMjerenja, Podatak> zadnjiPodatak) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private List<Podatak> getPodaci(Connection con, ProgramMjerenja pm, Date zadnji) throws SQLException {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        
         try (PreparedStatement prepStmt = con.prepareStatement(selektSql)) {
             prepStmt.setInt(1, station);
             prepStmt.setInt(2, component);
@@ -87,15 +82,15 @@ public class DcsCitacBean implements CitacIzvora {
             try (ResultSet rs = prepStmt.executeQuery()) {
                 while (rs.next()) {
                     Timestamp timestamp = rs.getTimestamp(1);
-                    float aFloat = rs.getFloat(2);
-                    short obuhvat = rs.getShort(3);
+                    double aFloat = rs.getDouble(2);
+                    int obuhvat = rs.getInt(3);
                     String statusStr = rs.getString(4);
                     String greskaStr = rs.getString(5);
                     
                     Integer status = getStatus(statusStr, greskaStr, obuhvat);
                     Podatak p = new Podatak();
                     p.setProgramMjerenjaId(pm);
-                    p.setNivoValidacijeId(new NivoValidacije((short) 0));
+                    p.setNivoValidacijeId(nv);
                     p.setObuhvat(obuhvat);
                     p.setStatus(status);
                     p.setVrijeme(new Date(timestamp.getTime()));
@@ -107,32 +102,7 @@ public class DcsCitacBean implements CitacIzvora {
         return podaci;
     }
 
-    private Integer getStatus(String statusStr, String greskaStr, Short obuhvat) {
-        Status s = new Status();
-
-        if (greskaStr != null && greskaStr.trim().isEmpty()) {
-            s.dodajFlag(Flag.FAULT);
-        }
-        if (statusStr != null && !statusStr.trim().isEmpty()) {
-            s.dodajFlag(Flag.UPOZORENJE);
-            if (statusStr.contains("S")) {
-                s.dodajFlag(Flag.SPAN);
-            }
-            if (statusStr.contains("Z")) {
-                s.dodajFlag(Flag.ZERO);
-            }
-            if (statusStr.contains("M")) {
-                s.dodajFlag(Flag.MAINTENENCE);
-            }
-        }
-        if (obuhvat < 75) {
-            s.dodajFlag(Flag.OBUHVAT);
-        }
-        return s.toInt();
-    }
-
-    @Override
-    public Collection<PodatakSirovi> dohvatiSirove(ProgramMjerenja program, Date pocetak, Date kraj, boolean p, boolean k) {
+    private Integer getStatus(String statusStr, String greskaStr, Integer obuhvat) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

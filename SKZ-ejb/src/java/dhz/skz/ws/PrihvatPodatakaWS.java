@@ -5,15 +5,13 @@
  */
 package dhz.skz.ws;
 
-import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
+import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
-import dhz.skz.wsbackend.PrihvatSirovihPodatakaRemote;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -35,15 +33,9 @@ public class PrihvatPodatakaWS {
 
     public static final Logger log = Logger.getLogger(PrihvatPodatakaWS.class.getName());
     @EJB
-    private PrihvatSirovihPodatakaRemote ejbRef;
-    @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
     @EJB
     private PostajaFacade postajaFacade;
-
-
-// Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Web Service Operation")
 
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
@@ -57,12 +49,11 @@ public class PrihvatPodatakaWS {
             String naziv = str + izvor.getBean().trim();
             log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
-            parser.obradi(omotnica);
+            parser.prihvati(omotnica);
 
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-        
         log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
     }
 
@@ -86,7 +77,6 @@ public class PrihvatPodatakaWS {
         }
         return null;
     }
-    
 
     @WebMethod(operationName = "test")
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
@@ -98,8 +88,7 @@ public class PrihvatPodatakaWS {
 
     @WebMethod(operationName = "getZadnjiZaOmotnicu")
     public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
-        Date vrijemeZadnjeg = ejbRef.getVrijemeZadnjeg(omotnica);
+        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3}" , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
         
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
@@ -118,5 +107,4 @@ public class PrihvatPodatakaWS {
         }
         return 0;
     }
-
 }

@@ -5,37 +5,23 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import javax.ejb.Stateless;
-import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
-import dhz.skz.citaci.weblogger.util.Status;
+import dhz.skz.validatori.*;
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
-public class GrimmValidator implements Validator {
+public class GrimmValidator extends ValidatorImpl {
 
-
-    @Override
-    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
-        Status s = new Status();
-        s.setModRada(Status.ModRada.MJERENJE);
-        if (iznos == -999.f) {
-            s.dodajFlag(Flag.NEDOSTAJE);
-        }
-        return s;
+    public GrimmValidator() {
+        a = 1.;
+        b = 0.; 
+        ldl = 0.;
+        opseg = 1000.;
     }
 
     @Override
-    public Status getStatus(String status) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int provjeraStatusa(String statusStr) {
+        return 0;
     }
-
-    @Override
-    public int getBrojUSatu() {
-        return 60;
-    }
-
 }

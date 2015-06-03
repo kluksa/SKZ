@@ -5,62 +5,51 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import javax.ejb.Stateless;
-import dhz.skz.citaci.weblogger.util.Flag;
-import dhz.skz.citaci.weblogger.exceptions.NevaljanStatusException;
-import dhz.skz.citaci.weblogger.util.Status;
+import dhz.skz.validatori.*;
+import dhz.skz.util.OperStatus;
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
-public class API100EValidator implements Validator {
+public class API100EValidator extends ValidatorImpl {
 
-
+    /**
+     * Parsa ulazni status string i vraca status integer u obliku or-anog
+     * OperStatus-a
+     *
+     * @param statusStr string u kojem je enkodirana kompletna informacija o
+     * statusu i pogresci koju prijevljuje DAS
+     * @return binarno enkodirani status
+     * @see ValidatorImpl
+     */
     @Override
-    public Status getStatus(Float iznos, String statusStr) throws NevaljanStatusException {
-        Status s = new Status();
-        if (iznos == -999.f) {
-            s.dodajFlag(Flag.NEDOSTAJE);
-        } 
+    public int provjeraStatusa(String statusStr) {
+        int status = 0;
         if (!statusStr.isEmpty()) {
-            try {
-                int stInt = Integer.parseInt(statusStr, 16);
-                s.setModRada(Status.ModRada.MJERENJE);
-                if (stInt > 255) {
-                    s.dodajFlag(Flag.FAULT);
-                }
-                if ((stInt & 2) == 2) {
-                    s.dodajFlag(Flag.MAINTENENCE);
-                }
-                if ((stInt & 4) == 4) {
-                    s.dodajFlag(Flag.ZERO);
-                    s.setModRada(Status.ModRada.ZERO);
-                }
-                if ((stInt & 8) == 8) {
-                    s.dodajFlag(Flag.SPAN);
-                    s.setModRada(Status.ModRada.SPAN);
-                }
-                if ((stInt & 16) == 16) {
-                    s.dodajFlag(Flag.CALIBRATION);
-                    s.setModRada(Status.ModRada.KALIBRACIJA);
-                }
-
-            } catch (NumberFormatException ex) {
-                throw new NevaljanStatusException(ex);
+            int stInt = Integer.parseInt(statusStr,16);
+            if ((stInt & 0xff) != 0) {
+                status |= 1 << OperStatus.FAULT.ordinal();
+            }
+            if ((stInt & 0x0100) == 0x0100) {
+                status |= 1 << OperStatus.KALIBRACIJA.ordinal();
+            }
+            if ((stInt & 0x0200) == 0x0200) {
+                status |= 1 << OperStatus.ODRZAVANJE.ordinal();
+            }
+            if ((stInt & 0x0400) == 0x0400) {
+                status |= 1 << OperStatus.ZERO.ordinal();
+            }
+            if ((stInt & 0x0800) == 0x0800) {
+                status |= 1 << OperStatus.SPAN.ordinal();
+            }
+            if ((stInt & 0x1000) == 0x1000) {
+                status |= 1 << OperStatus.FAULT.ordinal();
+            }
+            if ((stInt & 0x8000) == 0x8000) {
+                status |= 1 << OperStatus.FAULT.ordinal();
             }
         }
-        return s;
-    }
-
-    @Override
-    public Status getStatus(String status) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int getBrojUSatu() {
-        return 60;
+        return status;
     }
 }

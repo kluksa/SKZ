@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -37,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Odrzavanje.findAll", query = "SELECT o FROM Odrzavanje o"),
     @NamedQuery(name = "Odrzavanje.findById", query = "SELECT o FROM Odrzavanje o WHERE o.id = :id"),
-    @NamedQuery(name = "Odrzavanje.findByDatum", query = "SELECT o FROM Odrzavanje o WHERE o.datum = :datum")})
+    @NamedQuery(name = "Odrzavanje.findByDatum", query = "SELECT o FROM Odrzavanje o WHERE o.datum = :datum"),
+    @NamedQuery(name = "Odrzavanje.findByOpis", query = "SELECT o FROM Odrzavanje o WHERE o.opis = :opis")})
 public class Odrzavanje implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,7 +50,6 @@ public class Odrzavanje implements Serializable {
     private Date datum;
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Size(min = 1, max = 2147483647)
     private String opis;
     @ManyToMany(mappedBy = "odrzavanjeCollection")

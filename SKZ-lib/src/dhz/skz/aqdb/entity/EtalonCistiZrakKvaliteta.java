@@ -34,7 +34,7 @@ public class EtalonCistiZrakKvaliteta implements Serializable {
     protected EtalonCistiZrakKvalitetaPK etalonCistiZrakKvalitetaPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "max_udio")
-    private Float maxUdio;
+    private Double maxUdio;
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Komponenta komponenta;
@@ -64,11 +64,11 @@ public class EtalonCistiZrakKvaliteta implements Serializable {
         this.etalonCistiZrakKvalitetaPK = etalonCistiZrakKvalitetaPK;
     }
 
-    public Float getMaxUdio() {
+    public Double getMaxUdio() {
         return maxUdio;
     }
 
-    public void setMaxUdio(Float maxUdio) {
+    public void setMaxUdio(Double maxUdio) {
         this.maxUdio = maxUdio;
     }
 

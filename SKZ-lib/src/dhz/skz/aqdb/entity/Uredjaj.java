@@ -21,7 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -50,7 +49,7 @@ public class Uredjaj implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 90)
     @Column(name = "serijska_oznaka")
     private String serijskaOznaka;
     @Column(name = "godina_proizvodnje")
@@ -61,12 +60,12 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
-    @ManyToMany(mappedBy = "uredjajCollection")
+    @OneToMany(mappedBy = "uredjajId")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "uredjajId")
     private Collection<ProgramUredjajLink> programUredjajLinkCollection;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "uredjaj")
-    private EtalonBoca etalonBoca;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
+    private Collection<EtalonBoca> etalonBocaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<Kvarovi> kvaroviCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
@@ -81,12 +80,12 @@ public class Uredjaj implements Serializable {
     private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
     private Collection<PlanOdrzavanja> planOdrzavanjaCollection;
-    @JoinColumn(name = "vrsta_opreme_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private VrstaOpreme vrstaOpremeId;
     @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")
     @ManyToOne
     private ModelUredjaja modelUredjajaId;
+    @JoinColumn(name = "vrsta_opreme_id", referencedColumnName = "id")
+    @ManyToOne
+    private VrstaOpreme vrstaOpremeId;
 
     public Uredjaj() {
     }
@@ -158,12 +157,13 @@ public class Uredjaj implements Serializable {
         this.programUredjajLinkCollection = programUredjajLinkCollection;
     }
 
-    public EtalonBoca getEtalonBoca() {
-        return etalonBoca;
+    @XmlTransient
+    public Collection<EtalonBoca> getEtalonBocaCollection() {
+        return etalonBocaCollection;
     }
 
-    public void setEtalonBoca(EtalonBoca etalonBoca) {
-        this.etalonBoca = etalonBoca;
+    public void setEtalonBocaCollection(Collection<EtalonBoca> etalonBocaCollection) {
+        this.etalonBocaCollection = etalonBocaCollection;
     }
 
     @XmlTransient
@@ -229,20 +229,20 @@ public class Uredjaj implements Serializable {
         this.planOdrzavanjaCollection = planOdrzavanjaCollection;
     }
 
-    public VrstaOpreme getVrstaOpremeId() {
-        return vrstaOpremeId;
-    }
-
-    public void setVrstaOpremeId(VrstaOpreme vrstaOpremeId) {
-        this.vrstaOpremeId = vrstaOpremeId;
-    }
-
     public ModelUredjaja getModelUredjajaId() {
         return modelUredjajaId;
     }
 
     public void setModelUredjajaId(ModelUredjaja modelUredjajaId) {
         this.modelUredjajaId = modelUredjajaId;
+    }
+
+    public VrstaOpreme getVrstaOpremeId() {
+        return vrstaOpremeId;
+    }
+
+    public void setVrstaOpremeId(VrstaOpreme vrstaOpremeId) {
+        this.vrstaOpremeId = vrstaOpremeId;
     }
 
     @Override

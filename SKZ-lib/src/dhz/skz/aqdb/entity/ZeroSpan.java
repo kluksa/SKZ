@@ -50,18 +50,19 @@ public class ZeroSpan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date vrijeme;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 2)
+    @Size(min = 1, max = 4)
     private String vrsta;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    private Float vrijednost;
-    private Float minimum;
-    private Float maximum;
-    private Float stdev;
+    private Double vrijednost;
+    private Double minimum;
+    private Double maximum;
+    private Double stdev;
     @Column(name = "referentna_vrijednost")
-    private Float referentnaVrijednost;
+    private Double referentnaVrijednost;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
@@ -103,43 +104,43 @@ public class ZeroSpan implements Serializable {
         this.vrsta = vrsta;
     }
 
-    public Float getVrijednost() {
+    public Double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(Float vrijednost) {
+    public void setVrijednost(Double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
-    public Float getMinimum() {
+    public Double getMinimum() {
         return minimum;
     }
 
-    public void setMinimum(Float minimum) {
+    public void setMinimum(Double minimum) {
         this.minimum = minimum;
     }
 
-    public Float getMaximum() {
+    public Double getMaximum() {
         return maximum;
     }
 
-    public void setMaximum(Float maximum) {
+    public void setMaximum(Double maximum) {
         this.maximum = maximum;
     }
 
-    public Float getStdev() {
+    public Double getStdev() {
         return stdev;
     }
 
-    public void setStdev(Float stdev) {
+    public void setStdev(Double stdev) {
         this.stdev = stdev;
     }
 
-    public Float getReferentnaVrijednost() {
+    public Double getReferentnaVrijednost() {
         return referentnaVrijednost;
     }
 
-    public void setReferentnaVrijednost(Float referentnaVrijednost) {
+    public void setReferentnaVrijednost(Double referentnaVrijednost) {
         this.referentnaVrijednost = referentnaVrijednost;
     }
 

@@ -36,7 +36,7 @@ public class UmjeravanjeHasIspitneVelicine implements Serializable {
     protected UmjeravanjeHasIspitneVelicinePK umjeravanjeHasIspitneVelicinePK;
     @Basic(optional = false)
     @NotNull
-    private float iznos;
+    private double iznos;
     @JoinColumn(name = "ispitne_velicine_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private IspitneVelicine ispitneVelicine;
@@ -54,7 +54,7 @@ public class UmjeravanjeHasIspitneVelicine implements Serializable {
         this.umjeravanjeHasIspitneVelicinePK = umjeravanjeHasIspitneVelicinePK;
     }
 
-    public UmjeravanjeHasIspitneVelicine(UmjeravanjeHasIspitneVelicinePK umjeravanjeHasIspitneVelicinePK, float iznos) {
+    public UmjeravanjeHasIspitneVelicine(UmjeravanjeHasIspitneVelicinePK umjeravanjeHasIspitneVelicinePK, double iznos) {
         this.umjeravanjeHasIspitneVelicinePK = umjeravanjeHasIspitneVelicinePK;
         this.iznos = iznos;
     }
@@ -71,11 +71,11 @@ public class UmjeravanjeHasIspitneVelicine implements Serializable {
         this.umjeravanjeHasIspitneVelicinePK = umjeravanjeHasIspitneVelicinePK;
     }
 
-    public float getIznos() {
+    public double getIznos() {
         return iznos;
     }
 
-    public void setIznos(float iznos) {
+    public void setIznos(double iznos) {
         this.iznos = iznos;
     }
 

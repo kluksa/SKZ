@@ -41,12 +41,12 @@ public class ProgramUredjajLink implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    @Column(name = "vrijeme_postavljanja")
+    @Column(name = "vrijeme_postavljanja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemePostavljanja;
     @Column(name = "ucestalost_integriranja_podataka")
     private Integer ucestalostIntegriranjaPodataka;
-    @Column(name = "vrijeme_uklanjanja")
+    @Column(name = "vrijeme_uklanjanja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUklanjanja;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")

@@ -41,8 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ProgramMjerenja.findById", query = "SELECT p FROM ProgramMjerenja p WHERE p.id = :id"),
     @NamedQuery(name = "ProgramMjerenja.findByUsporednoMjerenje", query = "SELECT p FROM ProgramMjerenja p WHERE p.usporednoMjerenje = :usporednoMjerenje"),
     @NamedQuery(name = "ProgramMjerenja.findByPocetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.pocetakMjerenja = :pocetakMjerenja"),
-    @NamedQuery(name = "ProgramMjerenja.findByZavrsetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.zavrsetakMjerenja = :zavrsetakMjerenja"),
-    @NamedQuery(name = "ProgramMjerenja.findByPrikazWeb", query = "SELECT p FROM ProgramMjerenja p WHERE p.prikazWeb = :prikazWeb")})
+    @NamedQuery(name = "ProgramMjerenja.findByZavrsetakMjerenja", query = "SELECT p FROM ProgramMjerenja p WHERE p.zavrsetakMjerenja = :zavrsetakMjerenja")})
 public class ProgramMjerenja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,15 +51,13 @@ public class ProgramMjerenja implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "usporedno_mjerenje")
-    private short usporednoMjerenje;
-    @Column(name = "pocetak_mjerenja")
+    private int usporednoMjerenje;
+    @Column(name = "pocetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date pocetakMjerenja;
-    @Column(name = "zavrsetak_mjerenja")
+    @Column(name = "zavrsetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date zavrsetakMjerenja;
-    @Column(name = "prikaz_web")
-    private Boolean prikazWeb;
     @ManyToMany(mappedBy = "programMjerenjaCollection")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
@@ -75,18 +72,18 @@ public class ProgramMjerenja implements Serializable {
     private Collection<ZeroSpanReferentneVrijednosti> zeroSpanReferentneVrijednostiCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
     private Collection<ZeroSpan> zeroSpanCollection;
+    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
+    @ManyToOne
+    private AnalitickeMetode metodaId;
+    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private IzvorPodataka izvorPodatakaId;
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
     @JoinColumn(name = "postaja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Postaja postajaId;
-    @JoinColumn(name = "metoda_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private AnalitickeMetode metodaId;
-    @JoinColumn(name = "izvor_podataka_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private IzvorPodataka izvorPodatakaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
     private Collection<PodatakSirovi> podatakSiroviCollection;
 
@@ -97,7 +94,7 @@ public class ProgramMjerenja implements Serializable {
         this.id = id;
     }
 
-    public ProgramMjerenja(Integer id, short usporednoMjerenje) {
+    public ProgramMjerenja(Integer id, int usporednoMjerenje) {
         this.id = id;
         this.usporednoMjerenje = usporednoMjerenje;
     }
@@ -110,11 +107,11 @@ public class ProgramMjerenja implements Serializable {
         this.id = id;
     }
 
-    public short getUsporednoMjerenje() {
+    public int getUsporednoMjerenje() {
         return usporednoMjerenje;
     }
 
-    public void setUsporednoMjerenje(short usporednoMjerenje) {
+    public void setUsporednoMjerenje(int usporednoMjerenje) {
         this.usporednoMjerenje = usporednoMjerenje;
     }
 
@@ -132,15 +129,6 @@ public class ProgramMjerenja implements Serializable {
 
     public void setZavrsetakMjerenja(Date zavrsetakMjerenja) {
         this.zavrsetakMjerenja = zavrsetakMjerenja;
-    }
-
-    @XmlTransient
-    public Boolean getPrikazWeb() {
-        return prikazWeb;
-    }
-
-    public void setPrikazWeb(Boolean prikazWeb) {
-        this.prikazWeb = prikazWeb;
     }
 
     @XmlTransient
@@ -206,23 +194,6 @@ public class ProgramMjerenja implements Serializable {
         this.zeroSpanCollection = zeroSpanCollection;
     }
 
-    public Komponenta getKomponentaId() {
-        return komponentaId;
-    }
-
-    public void setKomponentaId(Komponenta komponentaId) {
-        this.komponentaId = komponentaId;
-    }
-
-    public Postaja getPostajaId() {
-        return postajaId;
-    }
-
-    public void setPostajaId(Postaja postajaId) {
-        this.postajaId = postajaId;
-    }
-
-    @XmlTransient
     public AnalitickeMetode getMetodaId() {
         return metodaId;
     }
@@ -238,6 +209,22 @@ public class ProgramMjerenja implements Serializable {
 
     public void setIzvorPodatakaId(IzvorPodataka izvorPodatakaId) {
         this.izvorPodatakaId = izvorPodatakaId;
+    }
+
+    public Komponenta getKomponentaId() {
+        return komponentaId;
+    }
+
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
+    }
+
+    public Postaja getPostajaId() {
+        return postajaId;
+    }
+
+    public void setPostajaId(Postaja postajaId) {
+        this.postajaId = postajaId;
     }
 
     @XmlTransient

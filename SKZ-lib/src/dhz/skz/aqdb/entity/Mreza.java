@@ -41,9 +41,9 @@ public class Mreza implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 150)
+    @Size(min = 1, max = 300)
     private String naziv;
-    @Size(max = 45)
+    @Size(max = 90)
     private String kratica;
     @OneToMany(mappedBy = "mrezaId")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;

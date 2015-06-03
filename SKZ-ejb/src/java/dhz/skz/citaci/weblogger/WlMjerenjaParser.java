@@ -6,6 +6,7 @@
 package dhz.skz.citaci.weblogger;
 
 import com.csvreader.CsvReader;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -23,8 +24,10 @@ import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.citaci.weblogger.util.NizProcitanihWl;
+import dhz.skz.validatori.ValidatorFactory;
+import dhz.skz.validatori.Validator;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  *
@@ -40,7 +43,7 @@ class WlMjerenjaParser implements WlFileParser {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm z");
 
-    private float temperatura;
+    private Double temperatura;
     private Date zadnjiPodatak;
     private int brojStupaca;
     private Date trenutnoVrijeme;
@@ -48,14 +51,23 @@ class WlMjerenjaParser implements WlFileParser {
 
     // mapiranje stupac -> programMjerenja 
     private Map<Integer, ProgramMjerenja> wlStupacProgram;
-    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
+//    private Map<ProgramMjerenja, NizProcitanihWl> nizKanala;
+    private final ValidatorFactory validatorFactory;
+    private Date terminDatoteke;
+    private final PodatakSiroviFacade podatakSiroviFacade;
+    private final Collection<ProgramMjerenja> programNaPostaji;
+//    private final WlValidatorfactory valFac;
 
-    public WlMjerenjaParser(TimeZone tz) {
-        this.temperatura = -999.f;
+    public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactory validatorFactory, PodatakSiroviFacade podatakSiroviFacade) {
+        this.temperatura = -999.;
         this.wlKanalProgram = new HashMap<>();
         this.separator = ',';
         this.chareset = Charset.forName("UTF-8");
         sdf.setTimeZone(tz);
+        this.validatorFactory = validatorFactory;
+        this.podatakSiroviFacade = podatakSiroviFacade;
+        this.programNaPostaji = programNaPostaji;
+//        this.valFac = valFac;
     }
 
     @Override
@@ -65,16 +77,12 @@ class WlMjerenjaParser implements WlFileParser {
 
     @Override
     public void parse(InputStream fileStream) throws WlFileException, IOException {
-//        log.log(Level.INFO, "Pocinjem parsati {0} od {1}", new Object[]{
-//            nizKanala.getPostaja().getNazivPostaje(), zadnjiPodatak});
-        if (nizKanala == null) {
-            throw new WlFileException("Niz kanala nije postavljen");
-        }
+        HashSet<Date> procitanaVremena = new HashSet<>();
 
         CsvReader csv = new CsvReader(fileStream, separator, chareset);
+        setNizKanala();
         try {
             parsaj_zaglavlje(csv);
-
             while (csv.readRecord()) {
                 int nc = csv.getColumnCount();
                 if (brojStupaca != nc) {
@@ -84,7 +92,12 @@ class WlMjerenjaParser implements WlFileParser {
                 try {
                     trenutnoVrijeme = sdf.parse(csv.get(0) + " " + csv.get(1) + " " + csv.get(brojStupaca - 1));
                     if (trenutnoVrijeme.after(zadnjiPodatak)) {
-                        parsaj_record(csv);
+                        if (!procitanaVremena.contains(trenutnoVrijeme)) {
+                            parsaj_record(csv);
+                            procitanaVremena.add(trenutnoVrijeme);
+                        } else {
+                            log.log(Level.SEVERE, "DUPLICIRANI TERMINI U DATOTECI!!!! {0}::{1}", new Object[]{csv.getCurrentRecord(), csv.getRawRecord()});
+                        }
                     }
                 } catch (ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
@@ -127,20 +140,22 @@ class WlMjerenjaParser implements WlFileParser {
                 String kanalBr = matcher.group(1).trim();
                 if (wlKanalProgram.containsKey(kanalBr)) {
                     wlStupacProgram.put(j, wlKanalProgram.get(kanalBr));
-                }
-            } else if (tmpKM.find()) {
+                } 
+            }
+            if (tmpKM.find()) {
                 temperaturaKontejneraStupac = j;
             }
         }
     }
 
+    
+
     private void parsaj_record(CsvReader csv) throws IOException {
         if (temperaturaKontejneraStupac > 0) {
             try {
                 String tmpStr = csv.get(temperaturaKontejneraStupac);
-
                 if (!tmpStr.isEmpty()) {
-                    temperatura = Float.parseFloat(tmpStr);
+                    temperatura = Double.parseDouble(tmpStr);
                 }
             } catch (NumberFormatException ex) {
                 log.log(Level.SEVERE, null, ex);
@@ -148,34 +163,30 @@ class WlMjerenjaParser implements WlFileParser {
         }
         for (Integer stupac : wlStupacProgram.keySet()) {
             ProgramMjerenja pm = wlStupacProgram.get(stupac);
-            NizProcitanihWl nizPodataka = nizKanala.get(pm);
+            Validator v = validatorFactory.getValidator(pm, trenutnoVrijeme);
             String iznosStr = csv.get(stupac);
             String statusStr = csv.get(stupac + 1);
             if (!iznosStr.equals("-999.00") && !iznosStr.isEmpty()) {
                 try {
                     Float iznos = Float.parseFloat(iznosStr);
                     PodatakSirovi pod = new PodatakSirovi();
+                    pod.setStatus(0);
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
-                    pod.setVrijednost(iznos);
-                    
-// tu bi trebali zvati validator i zapisati rezultat u PodatakSirovi.status ( status == 0 = OK)
-                    nizPodataka.dodajPodatak(pod);
-
-                } catch (NumberFormatException  ex) {
+                    pod.setVrijednost(iznos * pm.getKomponentaId().getKonvVUM());
+                    v.setTemperatura(temperatura);
+                    v.validiraj(pod);
+                    podatakSiroviFacade.spremi(pod);
+                } catch (NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
 
-    @Override
-    public void setNizKanala(Map<ProgramMjerenja, NizProcitanihWl> nizKanala, Collection<ProgramMjerenja> aktivniProgram) {
-        this.nizKanala = nizKanala;
-        // mapiranje kanal -> programMjerenja (inverzno mapiranje, jer pm->kanal je 
-        // trivijalno jer pm sadrzi wlMap koji sadrzi id kanala
-        for (ProgramMjerenja pm : aktivniProgram) {
+    private void setNizKanala() {
+        for (ProgramMjerenja pm : programNaPostaji) {
             if (pm.getIzvorProgramKljuceviMap() != null) {
                 IzvorProgramKljuceviMap ipm = pm.getIzvorProgramKljuceviMap();
                 if (ipm == null || ipm.getKKljuc().isEmpty()) {
@@ -187,5 +198,25 @@ class WlMjerenjaParser implements WlFileParser {
                 log.log(Level.SEVERE, "izvor_program_kljucevi_map ne sadrzi program_mjerenja_id = {0}", pm.getId());
             }
         }
+    }
+
+    @Override
+    public boolean isDobarTermin() {
+        boolean aktivna = false;
+        boolean dobroVrijeme;
+        for (ProgramMjerenja pm : programNaPostaji) {
+            if (pm.getIzvorProgramKljuceviMap() != null) {
+                boolean a = terminDatoteke.compareTo(pm.getPocetakMjerenja()) >= 0;
+                boolean b = (pm.getZavrsetakMjerenja() == null) || (terminDatoteke.compareTo(pm.getZavrsetakMjerenja()) <= 0);
+                aktivna |= (a && b);
+            }
+        }
+        dobroVrijeme = (zadnjiPodatak == null) || (zadnjiPodatak.getTime() - terminDatoteke.getTime() < 24 * 3600 * 1000);
+        return aktivna && dobroVrijeme;
+    }
+
+    @Override
+    public void setTerminDatoteke(Date terminDatoteke) {
+        this.terminDatoteke = terminDatoteke;
     }
 }

@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/admin-layout.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="admin-meni">
+        <p:panel header="Postaje admin" style="margin-bottom:10px;">
+            <h:form id="postaje">
+                <p:menu model="#{postajaMB.model}"/>
+            </h:form>
+        </p:panel>
+    </ui:define>
+
+    <ui:define name="slika">
+        <script src="http://maps.google.com/maps/api/js?sensor=false" 
+                type="text/javascript">
+        </script>
+        <p:tabView id="sadrzaj">
+            <p:tab title="Općenito">
+                <p:panelGrid columns="2">
+                    <h:form id = "detalji">
+
+                        <p:panelGrid columns="2">
+                            <f:facet name="header">
+                                <p:row>
+                                    <p:column colspan="2">
+                                        #{postajaMB.postaja.nazivPostaje}
+                                    </p:column>
+                                </p:row>
+                            </f:facet>
+                            <h:outputLabel for="id" value="Id:" />
+                            <h:outputText id="id" value="#{postajaMB.postaja.id}" />
+
+                            <h:outputLabel for="nazivPostaje" value="Naziv postaje:" />
+                            <h:outputText id="nazivPostaje" value="#{postajaMB.postaja.nazivPostaje}" />
+
+                            <h:outputLabel for="odgovornoTijelo" value="Odgovorno tijelo:" />
+                            <p:inplace id="odgovornoTijelo" label="postajaMB.postaja.odgovornoTijeloId.naziv}" emptyLabel="&lt;prazno&gt;">
+                                <h:selectOneMenu value="#{postajaMB.postaja.odgovornoTijeloId}" converter="#{odgovornoTijeloKonverter}">
+                                    <f:selectItems value="#{postajaMB.odgovornaTijela}"  var="tijelo" itemLabel="#{tijelo.naziv}" itemValue="#{tijelo}"/>
+                                </h:selectOneMenu>
+                            </p:inplace>
+
+
+                            <h:outputLabel for="nacionalnaOznaka" value="Nacionalna oznaka:" />
+                            <p:inplace id="nacionalnaOznaka" editor="true" emptyLabel="&lt;prazno&gt;">
+                                <p:inputText value="#{postajaMB.postaja.nacionalnaOznaka}" required="true" label="text" />
+                            </p:inplace>
+
+
+                            <h:outputLabel for="kratkaOznaka" value="Kratka oznaka:" />
+                            <p:inplace id="kratkaOznaka" editor="true" emptyLabel="&lt;prazno&gt;">
+                                <p:inputText value="#{postajaMB.postaja.kratkaOznaka}" required="true" label="text" />
+                            </p:inplace>
+
+                            <h:outputLabel for="oznakaPostaje" value="Oznaka postaje" />
+                            <p:inplace id="oznakaPostaje" editor="true" emptyLabel="&lt;prazno&gt;">
+                                <p:inputText value="#{postajaMB.postaja.oznakaPostaje}" required="true" label="text" />
+                            </p:inplace>
+
+
+                            <h:outputText value="Vrsta prema izvoru:" />
+                            <h:outputText value="#{postajaMB.postaja.vrstaPostajeIzvorId}" />
+                            <h:outputText value="Ciljevi praćenja:" />
+                            <h:outputText value="#{postajaMB.postaja.ciljeviPracenjaCollection}" />
+                            <h:outputText value="Prometna svojstva:" />
+                            <h:outputText value="#{postajaMB.postaja.prometnePostajeSvojstva}" />
+                            <h:outputText value="Industrijska svojstva:" />
+                            <h:outputText value="#{postajaMB.postaja.industrijskePostajeSvojstva}" />
+
+                        </p:panelGrid>
+                        <p:commandButton value="Spremi" action="#{postajaMB.spremiIzmjene}" update="detalji"/>
+                        <p:commandButton value="Poništi" action="#{postajaMB.ponistiIzmjene}" update="detalji"/>
+                    </h:form>
+
+                    <h:form id="lokacija">
+
+                        <p:panelGrid style="width:100%">
+                            <f:facet name="header">
+                                <p:row>
+                                    <p:column colspan="3">
+                                        Lokacija
+                                    </p:column>
+                                </p:row>
+                            </f:facet>
+
+                            <p:row>
+                                <p:column colspan="3">
+                                    <p:gmap center="#{postajaMB.postaja.geogrSirina}, #{postajaMB.postaja.geogrDuzina}" zoom="15" type="HYBRID" style="width:100%;height:200px" model="#{postajaMB.gmapModel}"/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row >
+                                <p:column styleClass="ui-widget-header">Geografska dužina</p:column>
+                                <p:column styleClass="ui-widget-header">Geografska širina</p:column>
+                                <p:column styleClass="ui-widget-header">Nadmorska visina</p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>#{postajaMB.postaja.geogrDuzina}</p:column>
+                                <p:column>#{postajaMB.postaja.geogrSirina}</p:column>
+                                <p:column>#{postajaMB.postaja.nadmorskaVisina}</p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column styleClass="ui-widget-header">
+                                    <h:outputText value="Naziv lokacije:" />
+                                </p:column>
+                                <p:column  colspan="2">
+                                    <h:outputText value="#{postajaMB.postaja.nazivLokacije}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header">
+                                    <h:outputText value="Stanovništvo:" />
+                                </p:column>
+                                <p:column  colspan="2">
+                                    <h:outputText value="#{postajaMB.postaja.stanovnistvo}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header">
+                                    <h:outputLabel for="vrstaPodrucja" value="Vrsta područja:" />
+                                </p:column>
+                                <p:column  colspan="2">
+                                    <p:inplace id="vrstaPodrucja" label="#{postajaMB.getOpisPodrucja(postajaMB.postaja.podrucjeId)}" emptyLabel="&lt;prazno&gt;">
+
+                                        <h:selectOneMenu value="#{postajaMB.postaja.podrucjeId}" converter="#{podrucjeKonverter}">
+                                            <f:selectItems value="#{postajaMB.podrucja}" var="p" itemValue="#{p}" itemLabel="#{postajaMB.getOpisPodrucja(p)}"/>
+                                        </h:selectOneMenu>
+                                    </p:inplace>
+                                </p:column>
+
+
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header">
+                                    <h:outputText value="Reprezentativnost:"  />
+                                </p:column>
+                                <p:column  colspan="2">
+                                    <h:outputText value="#{postajaMB.postaja.reprezentativnostId.definicija}" />
+                                </p:column>
+
+                            </p:row>
+
+                        </p:panelGrid>
+                        <p:commandButton value="Spremi" action="#{postajaMB.spremiIzmjene}" update="lokacija"/>
+                        <p:commandButton value="Poništi" action="#{postajaMB.ponistiIzmjene}" update="lokacija"/>
+                    </h:form>
+                </p:panelGrid>                    
+            </p:tab>
+            <p:tab title="Program">
+                <h:form>
+                    <p:dataTable var="program" value="#{postajaMB.postaja.programMjerenjaCollection}" editable="true" >
+                        <p:column headerText="Komponenta" width="25%">
+                            <h:outputText value="#{program.komponentaId.naziv}" />
+                        </p:column>
+                        <p:column headerText="Početak mjerenja" width="15%">
+                            <h:outputText value="#{program.pocetakMjerenja}"> 
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm"/>
+                            </h:outputText>                        
+                        </p:column>
+                        <p:column headerText="Završetak mjerenja" width="15%">
+                            <h:outputText value="#{program.zavrsetakMjerenja}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column style="width:32px">
+                            <p:rowEditor/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton value="Novi"/>
+                            <p:commandButton value="Izbriši"/>
+                        </f:facet>
+                    </p:dataTable>
+
+                    <p:panelGrid id="program_selektirani" columns="2">
+                        <h:outputText value="Id"/>
+                        <h:outputText value="#{program.id}" />
+                        <h:outputText value="Usporedno"/>
+                        <h:outputText value="#{program.usporednoMjerenje}" />
+                        <h:outputText value="Komponenta"/>
+                        <h:outputText value="#{program.komponentaId.naziv}" />
+                        <h:outputText value="Početak"/>
+                        <h:outputText value="#{program.pocetakMjerenja}"> 
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm"/>
+                        </h:outputText> 
+                        <h:outputText value="Kraj"/>
+                        <h:outputText value="#{program.zavrsetakMjerenja}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm"/>
+                        </h:outputText>
+
+
+                    </p:panelGrid>
+                </h:form>
+
+            </p:tab>
+        </p:tabView>
+        <!--<p:panel id="sadrzaj" header="Podaci o postaji">-->
+
+        <!--</p:panel>-->
+    </ui:define>
+</ui:composition>
+

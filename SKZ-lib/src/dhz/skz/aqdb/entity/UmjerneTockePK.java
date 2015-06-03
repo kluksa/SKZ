@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class UmjerneTockePK implements Serializable {
     @Basic(optional = false)
-    @NotNull
     private int id;
     @Basic(optional = false)
     @NotNull

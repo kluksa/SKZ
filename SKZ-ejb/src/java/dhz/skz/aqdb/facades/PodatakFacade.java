@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 kraljevic
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dhz.skz.aqdb.facades;
 
@@ -20,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +40,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -36,11 +49,12 @@ import javax.persistence.criteria.Root;
  * @author kraljevic
  */
 @Stateless
-public class PodatakFacade extends AbstractFacade<Podatak>  {
+@LocalBean
+public class PodatakFacade extends AbstractFacade<Podatak> {
 
+    private static final Logger log = Logger.getLogger(PodatakFacade.class.getName());
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
-    private static final Logger log = Logger.getLogger(PodatakFacade.class.getName());
 
     @Override
     protected EntityManager getEntityManager() {
@@ -60,7 +74,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
         Expression<ProgramMjerenja> program = from.get(Podatak_.programMjerenjaId);
 
-        cq.where(cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)));
+        cq.where(cb.equal(nivoValidacijeE, new NivoValidacije(0)));
         cq.groupBy(program);
         cq.multiselect(cb.greatest(vrijeme), from);
 
@@ -81,7 +95,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Join<Podatak, ProgramMjerenja> podatakProgram = from.join(Podatak_.programMjerenjaId);
 
         Expression<Komponenta> komponentaE = podatakProgram.get(ProgramMjerenja_.komponentaId);
-        Expression<Short> usporednoE = podatakProgram.get(ProgramMjerenja_.usporednoMjerenje);
+        Path<Integer> usporednoE = podatakProgram.get(ProgramMjerenja_.usporednoMjerenje);
         Expression<NivoValidacije> nivoE = from.get(Podatak_.nivoValidacijeId);
         Expression<Date> vrijemeE = from.get(Podatak_.vrijeme);
 
@@ -107,7 +121,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, pm),
                         cb.greaterThan(vrijemeE, pocetak)
                 )
@@ -125,21 +139,21 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         Expression<Date> vrijemeE = from.get(Podatak_.vrijeme);
         Expression<ProgramMjerenja> programE = from.get(Podatak_.programMjerenjaId);
         Predicate pocetakP, krajP;
-        if ( p ) {
+        if (p) {
             pocetakP = cb.greaterThanOrEqualTo(vrijemeE, pocetak);
-        } else  {
+        } else {
             pocetakP = cb.greaterThan(vrijemeE, pocetak);
         }
-        if ( k ) {
+        if (k) {
             krajP = cb.lessThanOrEqualTo(vrijemeE, kraj);
-        } else  {
+        } else {
             krajP = cb.lessThan(vrijemeE, kraj);
         }
-       
-        Predicate uvjet = cb.and(pocetakP, krajP); 
+
+        Predicate uvjet = cb.and(pocetakP, krajP);
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, pm),
                         uvjet
                 )
@@ -147,8 +161,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
         cq.select(from);
         return em.createQuery(cq).getResultList();
     }
-    
-    
+
     public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
         return getPodatak(pm, pocetak, kraj, false, true);
     }
@@ -164,7 +177,7 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
+                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
                         cb.equal(programE, program)
                 )
         );
@@ -172,64 +185,75 @@ public class PodatakFacade extends AbstractFacade<Podatak>  {
 
         List<Date> rl = em.createQuery(cq).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
-            return program.getPocetakMjerenja();
+//            return program.getPocetakMjerenja();
+            return new Date(1388534400000L);
         }
         return rl.get(0);
     }
-    
+
     public Podatak getZadnji(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
         Join<Podatak, ProgramMjerenja> pmJ = from.join(Podatak_.programMjerenjaId);
-        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId),p);
+        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId), p);
         Predicate izvor = cb.equal(pmJ.join(ProgramMjerenja_.izvorPodatakaId), i);
-        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije((short) 0));
+        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
         Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
         cq.select(from).where(cb.and(postaja, izvor, nivo)).orderBy(cb.desc(vrijeme));
         List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if ( rl.isEmpty()) {
+        if (rl.isEmpty()) {
             return null;
         } else {
             return rl.get(0);
         }
     }
 
-//    public Date getVrijemeZadnjegNaPostajiZaIzvor(Postaja p, IzvorPodataka i) {
-//        CriteriaBuilder cb = em.getCriteriaBuilder();
-//        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
-//        Root<Podatak> from = cq.from(Podatak.class);
-//        Join<Podatak, ProgramMjerenja> podatakProgram = from.join(Podatak_.programMjerenjaId);
-//
-//        Expression<NivoValidacije> nivoValidacijeE = from.get(Podatak_.nivoValidacijeId);
-//        Expression<Postaja> postaja = podatakProgram.get(ProgramMjerenja_.postajaId);
-//        Expression<IzvorPodataka> izvor = podatakProgram.get(ProgramMjerenja_.izvorPodatakaId);
-//        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
-//
-//        cq.where(
-//                cb.and(
-//                        cb.equal(nivoValidacijeE, new NivoValidacije((short) 0)),
-//                        cb.equal(postaja, p),
-//                        cb.equal(izvor, i)
-//                )
-//        );
-//        cq.select(cb.greatest(vrijeme));
-//        return em.createQuery(cq).getSingleResult();
-//    }
+    public Date getVrijemeZadnjeg(IzvorPodataka i, Postaja p) {
+        Podatak pod = getZadnji(i, p);
+        if (pod != null) {
+            return pod.getVrijeme();
+        } else {
+            return null;
+        }
+    }
 
+    public Podatak find(Podatak pod) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
+        Root<Podatak> from = cq.from(Podatak.class);
+        cq.select(from)
+                .where(
+                        cb.and(
+                                cb.equal(from.get(Podatak_.vrijeme), pod.getVrijeme()),
+                                cb.equal(from.get(Podatak_.programMjerenjaId), pod.getProgramMjerenjaId()),
+                                cb.equal(from.get(Podatak_.nivoValidacijeId), pod.getNivoValidacijeId())));
+        List<Podatak> resultList = em.createQuery(cq).getResultList();
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return resultList.get(0);
+        }
+    }
 
     public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});
-        em.persist(ps);
-    }
-    
-    public void spremi(Collection<Podatak> ps) {
-        for ( Podatak p : ps ) {
-            em.persist(p);
+        Podatak pod = find(ps);
+        if (pod == null) {
+            em.persist(ps);
+        } else {
+            ps.setPodatakId(pod.getPodatakId());
+            em.merge(ps);
         }
     }
-    
-    public void flush(){
+
+    public void spremi(Collection<Podatak> ps) {
+        for (Podatak p : ps) {
+            spremi(ps);
+        }
+    }
+
+    public void flush() {
         em.flush();
     }
 }
