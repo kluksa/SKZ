@@ -16,7 +16,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-mport dhz.skz.aqdb.facades.NivoValidacijeFacade;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -42,7 +42,9 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-mport javax.ejb.TransactionManagement;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -89,9 +91,6 @@ public class WebloggerCitacBean implements CitacIzvora {
     @Resource
     private EJBContext context;
 
-    @EJB
-    private PodatakSiroviFacadeLocal podatakSiroviFacade;
-    
     private IzvorPodataka izvor;
     private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
