@@ -11,7 +11,7 @@ import dhz.skz.aqdb.entity.Korisnik;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.rest.dto.PodatakSiroviDTO;
 import dhz.skz.rest.dto.StatusDTO;
 import dhz.skz.rest.util.DateParam;
@@ -54,7 +54,7 @@ public class SiroviPodaci {
     private KorisnikFacade korisnikFacade;
 
     @EJB
-    private ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    private ProgramMjerenjaFacade programMjerenjaFacade;
     
 
     @Context

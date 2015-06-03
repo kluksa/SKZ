@@ -10,7 +10,6 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
 import dhz.skz.rest.dto.PodatakDTO;
 import dhz.skz.rest.util.DateTimeParam;
 import dhz.skz.util.OperStatus;

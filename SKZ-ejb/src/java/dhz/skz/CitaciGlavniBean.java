@@ -19,12 +19,15 @@ package dhz.skz;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.citaci.CitacIzvora;
+import dhz.skz.config.Config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
+import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -45,12 +48,23 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     private boolean aktivan = false;
 
     public CitaciGlavniBean() {
-        super("CitacGlavniTimer", 25);
+        super("CitacGlavniTimer");
     }
 
+    @Inject
+    @Config
+    private Integer minuta;
+    
+    
+    @PostConstruct
+    public void init(){
+        schedule(minuta);
+    }
+    
     @Timeout
     @Override
     public void pokreni() {
+
         if (!aktivan) {
             log.log(Level.INFO, "Pokrecem citace");
             aktivan = true;

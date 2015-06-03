@@ -16,6 +16,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -44,6 +45,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -55,6 +58,8 @@ import org.apache.commons.net.ftp.FTPFile;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     @EJB
     private ProgramUredjajLinkFacade programUredjajLinkFacade;
@@ -107,7 +112,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
 
-        NivoValidacije nv = new NivoValidacije(0);
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
 
 //        try {
         log.log(Level.INFO, "POCETAK CITANJA");

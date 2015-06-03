@@ -12,6 +12,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,6 +37,8 @@ import javax.sql.DataSource;
 @Stateless
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
 
@@ -70,7 +73,7 @@ public class DcsCitacBean implements CitacIzvora {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
-        NivoValidacije nv = new NivoValidacije(0);
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         
         try (PreparedStatement prepStmt = con.prepareStatement(selektSql)) {
             prepStmt.setInt(1, station);

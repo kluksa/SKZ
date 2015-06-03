@@ -18,13 +18,16 @@ package dhz.skz;
 
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
+import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
+import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -43,8 +46,17 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
 
     private boolean aktivan = false;
 
+    @Inject
+    @Config
+    private Integer minuta;
+    
     public DiseminacijaGlavniBean() {
-        super("DiseminacijaGlavniTimer", 40);
+        super("DiseminacijaGlavniTimer");
+    }
+    
+    @PostConstruct
+    public void init(){
+        schedule(minuta);
     }
 
     @Override

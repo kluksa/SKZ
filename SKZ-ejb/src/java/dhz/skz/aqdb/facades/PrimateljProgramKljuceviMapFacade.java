@@ -58,7 +58,11 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         Predicate prim = cb.equal(from.get(PrimateljProgramKljuceviMap_.primateljiPodataka), primatelj);
         Predicate prog = cb.equal(from.get(PrimateljProgramKljuceviMap_.programMjerenja), program);
         cq.select(from).where(cb.and(prim, prog));
-        return em.createQuery(cq).getResultList().get(0);
+        if ( ! (em.createQuery(cq).getResultList() == null) && !em.createQuery(cq).getResultList().isEmpty()){
+            return em.createQuery(cq).getResultList().get(0);
+        } else {
+            return null;
+        }
     }
 
     public Collection<PrimateljProgramKljuceviMap> find(final PrimateljiPodataka primatelj) {

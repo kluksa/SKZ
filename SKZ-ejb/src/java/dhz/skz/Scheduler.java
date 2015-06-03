@@ -18,7 +18,6 @@ package dhz.skz;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Timer;
@@ -37,14 +36,8 @@ public abstract class Scheduler {
     
     protected int minutaPokretanja;
 
-    public Scheduler(String timer_naziv, int minutaPokretanja) {
+    public Scheduler(String timer_naziv) {
         this.TIMER_NAZIV = timer_naziv;
-        this.minutaPokretanja = minutaPokretanja;
-    }
-
-    @PostConstruct
-    public void init() {
-        schedule(minutaPokretanja);
     }
 
     public void schedule(int minutaPokretanja) {

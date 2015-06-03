@@ -9,5 +9,12 @@
         <jndi-name>jdbc/diseminacija</jndi-name>
       </resource-ref>
     </ejb>
+    <ejb>
+      <ejb-name>AqdbCitacBean</ejb-name>
+      <resource-ref>
+        <res-ref-name>alcinaDB</res-ref-name>
+        <jndi-name>jdbc/alcina</jndi-name>
+      </resource-ref>
+    </ejb>
   </enterprise-beans>
 </glassfish-ejb-jar>

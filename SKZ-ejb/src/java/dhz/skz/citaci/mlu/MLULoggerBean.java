@@ -14,6 +14,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.MinutniUSatne;
@@ -38,6 +39,8 @@ import javax.inject.Inject;
 @Stateless
 @LocalBean
 public class MLULoggerBean implements CsvParser, CitacIzvora {
+    @EJB
+    private NivoValidacijeFacade nivoValidacijeFacade;
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
     @EJB
@@ -87,7 +90,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        NivoValidacije nv = new NivoValidacije(0);
+        NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
             siroviUSatneBean.spremiSatneIzSirovih(program, nv);
         }

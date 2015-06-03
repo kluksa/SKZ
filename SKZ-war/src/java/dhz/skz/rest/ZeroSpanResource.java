@@ -8,9 +8,9 @@ package dhz.skz.rest;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacadeRemote;
-import dhz.skz.aqdb.facades.ZeroSpanFacadeRemote;
-import dhz.skz.aqdb.facades.ZeroSpanReferentneVrijednostiFacadeRemote;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
+import dhz.skz.aqdb.facades.ZeroSpanReferentneVrijednostiFacade;
 import dhz.skz.rest.dto.ZeroSpanDTO;
 import dhz.skz.rest.util.DateParam;
 import java.util.ArrayList;
@@ -49,11 +49,11 @@ import javax.ws.rs.core.MediaType;
 public class ZeroSpanResource {
 
     @EJB
-    private ZeroSpanReferentneVrijednostiFacadeRemote zeroSpanReferentneVrijednostiFacade;
+    private ZeroSpanReferentneVrijednostiFacade zeroSpanReferentneVrijednostiFacade;
     @EJB
-    private ProgramMjerenjaFacadeRemote programMjerenjaFacade;
+    private ProgramMjerenjaFacade programMjerenjaFacade;
     @EJB
-    private ZeroSpanFacadeRemote zeroSpanFacadeB;
+    private ZeroSpanFacade zeroSpanFacade;
 
     @Context
     private UriInfo context;
@@ -119,7 +119,7 @@ public class ZeroSpanResource {
     
     private List<ZeroSpanDTO> getZeroSpan(ProgramMjerenja pm, Date vrijemeOd, Date vrijemeDo) {
             
-        List<ZeroSpan> zeroSpan = zeroSpanFacadeB.getZeroSpan(pm, vrijemeOd, vrijemeDo);
+        List<ZeroSpan> zeroSpan = zeroSpanFacade.getZeroSpan(pm, vrijemeOd, vrijemeDo);
         List<ZeroSpanReferentneVrijednosti> refZS = zeroSpanReferentneVrijednostiFacade.findZadnjiPrije(pm, vrijemeDo);
         
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refZ = new TreeMap<>();
