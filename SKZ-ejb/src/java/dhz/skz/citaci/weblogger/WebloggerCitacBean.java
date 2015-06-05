@@ -112,7 +112,6 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
 
         NivoValidacije nv = nivoValidacijeFacade.find(0);
