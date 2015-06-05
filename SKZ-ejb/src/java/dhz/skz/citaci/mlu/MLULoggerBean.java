@@ -82,7 +82,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             return new ZeroSpanPrihvat(programMjerenjaFacade, zeroSpanFacade);
         } else {
             log.log(Level.INFO, "MJERENJE");
-           return new MjerenjaPrihvat(programMjerenjaFacade, podatakSiroviFacade);
+            return new MjerenjaPrihvat(programMjerenjaFacade, podatakSiroviFacade);
         }
     }
 
@@ -92,7 +92,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         log.log(Level.INFO, "POCETAK CITANJA");
         NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
-           siroviUSatneBean.spremiSatneIzSirovih(program, nv);
+            siroviUSatneBean.spremiSatneIzSirovih(program, nv);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
