@@ -45,16 +45,15 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     private IzvorPodatakaFacade izvorPodatakaFacade;
 
     
-    private boolean aktivan = false;
+    private boolean aktivan = true;
 
     public CitaciGlavniBean() {
         super("CitacGlavniTimer");
     }
 
     @Inject
-    @Config
+    @Config(vrijednost="14")
     private Integer minuta;
-    
     
     @PostConstruct
     public void init(){
