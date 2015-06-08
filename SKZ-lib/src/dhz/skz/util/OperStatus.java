@@ -38,6 +38,7 @@ public enum OperStatus {
         boolean valid = false;
         int falseMaska;
         int trueMaska;
+        
         switch (nivo.getId()) {
             case 0:
                 falseMaska = 0b00000111110111011100;

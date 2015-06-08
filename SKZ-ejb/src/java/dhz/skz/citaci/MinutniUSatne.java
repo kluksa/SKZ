@@ -68,7 +68,7 @@ public class MinutniUSatne {
 
     private AgPodatak mjerenje, zero, span;
     private int ocekivaniBroj;
-    private NivoValidacije nivo;
+    private NivoValidacije nivo = new NivoValidacije(0);
     private Date zavrsnoVrijeme;
     private ProgramMjerenja program;
 
@@ -88,19 +88,25 @@ public class MinutniUSatne {
     private void agregiraj(Collection<PodatakSirovi> podaci) throws MijesaniProgramiException {
         for (PodatakSirovi ps : podaci) {
             if (ps.getProgramMjerenjaId().equals(program)) {
-                if (OperStatus.isValidSirovi(ps.getStatus(), nivo)) {
-                    mjerenje.broj++;
-                    mjerenje.iznos += ps.getVrijednost();
-                } else if ((ps.getStatus() & (1 << OperStatus.ZERO.ordinal())) != 0) {
-                    zero.broj++;
-                    zero.iznos += ps.getVrijednost();
-                    zero.status |= ps.getStatus();
-                } else if ((ps.getStatus() & (1 << OperStatus.SPAN.ordinal())) != 0) {
-                    span.broj++;
-                    span.iznos += ps.getVrijednost();
-                    span.status |= ps.getStatus();
+                try {
+                    Integer status = ( ps.getStatus() != null ) ? ps.getStatus() : 0;
+                    if (OperStatus.isValidSirovi(status, nivo)) {
+                        mjerenje.broj++;
+                        mjerenje.iznos += ps.getVrijednost();
+                    } else if ((status & (1 << OperStatus.ZERO.ordinal())) != 0) {
+                        zero.broj++;
+                        zero.iznos += ps.getVrijednost();
+                        zero.status |= status;
+                    } else if ((status & (1 << OperStatus.SPAN.ordinal())) != 0) {
+                        span.broj++;
+                        span.iznos += ps.getVrijednost();
+                        span.status |= status;
+                    }
+                    mjerenje.status |= status;
+                } catch (NullPointerException ex) {
+                    log.log(Level.SEVERE,"{0},{1},{2}", new Object[]{ps.getProgramMjerenjaId(),ps.getStatus(), nivo});
+                    throw ex;
                 }
-                mjerenje.status |= ps.getStatus();
             } else {
                 throw (new MijesaniProgramiException());
             }
@@ -149,7 +155,7 @@ public class MinutniUSatne {
         return zs;
     }
 
-    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv){
+    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv) {
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
@@ -157,7 +163,7 @@ public class MinutniUSatne {
         Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
         UserTransaction utx = context.getUserTransaction();
-        
+
         SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi, tzone);
         Date pocetnoVrijeme = sat.getVrijeme();
         try {
