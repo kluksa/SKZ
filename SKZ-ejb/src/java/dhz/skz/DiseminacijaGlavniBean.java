@@ -44,7 +44,7 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @EJB
     private PrimateljiPodatakaFacade primateljPodatakaFacade;
 
-    private boolean aktivan = true;
+    private boolean aktivan = false;
 
     @Inject
     @Config(vrijednost="23")

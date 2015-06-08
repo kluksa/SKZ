@@ -45,7 +45,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     private IzvorPodatakaFacade izvorPodatakaFacade;
 
     
-    private boolean aktivan = true;
+    private boolean aktivan = false;
 
     public CitaciGlavniBean() {
         super("CitacGlavniTimer");
