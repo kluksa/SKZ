@@ -29,13 +29,13 @@ public class MainTimerBean {
     
     private boolean diseminacijaAktivna = false, citanjeAktivno = false;
 
-    @Schedule(minute = "37", second = "0", dayOfMonth = "1", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "21", second = "0", dayOfMonth = "1", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniDiseminaciju() {
         if (!diseminacijaAktivna) {
             try {
                 log.log(Level.INFO, "Pokrecem diseminaciju");
                 diseminacijaAktivna = true;
-//                glavnaFasada.pokreniDiseminaciju();
+                glavnaFasada.pokreniDiseminaciju();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             } finally {
@@ -47,13 +47,13 @@ public class MainTimerBean {
         }
     }
 
-    @Schedule(minute = "27", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
+    @Schedule(minute = "14", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "*", dayOfWeek = "*")
     public void pokreniCitace() {
         if (!citanjeAktivno) {
             try {
                 log.log(Level.INFO, "Pokrecem citace");
                 citanjeAktivno = true;
-//                glavnaFasada.pokreniCitanje();
+                glavnaFasada.pokreniCitanje();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "", ex);
             } finally {
