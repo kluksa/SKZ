@@ -71,6 +71,8 @@ public class EkonergDiseminator implements DiseminatorPodataka {
             Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);
             for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
                 if (pm.getAktivan()>0) {
+                    log.log(Level.INFO, "Prebacujem: {0},{1},{2}", new Object[]{pm.getProgramMjerenja().getId(), pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), pm.getProgramMjerenja().getKomponentaId().getFormula()});
+
                     prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
                     prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
                 }
