@@ -52,9 +52,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     }
 
     @Inject
-    @Config
+    @Config(vrijednost="14")
     private Integer minuta;
-    
     
     @PostConstruct
     public void init(){

@@ -19,49 +19,66 @@ import javax.enterprise.inject.spi.InjectionPoint;
  * @author kraljevic
  */
 public class ConfigProducer {
+
     private static final Logger log = Logger.getLogger(ConfigProducer.class.getName());
     private volatile static Properties configProperties;
-   
-    
-    public @Produces @Config TimeZone injectTimeZone(InjectionPoint ip) {
+
+    @Produces
+    @Config
+    public TimeZone injectTimeZone(InjectionPoint ip) {
         return TimeZone.getTimeZone("GMT");
     }
-    
-    public @Produces @Config Logger getLogger(InjectionPoint ip) {
+
+    @Produces
+    public @Config
+    Logger getLogger(InjectionPoint ip) {
         return Logger.getLogger(ip.getMember().getDeclaringClass().getName());
-        
+
     }
-    
+
     public synchronized static Properties getProperties() {
-        InputStream resourceAsStream = ConfigProducer.class.getClassLoader().getResourceAsStream("/dhz/skz/config/skz.properties");
-        if(configProperties==null) {
-            configProperties=new Properties();
-            try {
-                configProperties.load(resourceAsStream);
-            } catch (IOException ex) {
-                log.log(Level.SEVERE, null, ex);
-                throw new RuntimeException(ex);
+        try (InputStream resourceAsStream = ConfigProducer.class.getClassLoader().getResourceAsStream("/dhz/skz/config/skz.properties")) {
+            if (configProperties == null) {
+                configProperties = new Properties();
+                try {
+                    configProperties.load(resourceAsStream);
+                } catch (IOException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex);
+                }
             }
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, null, ex);
         }
         return configProperties;
     }
 
-
-    public @Produces @Config String getConfiguration(InjectionPoint p) {
-        Properties config=getProperties();
-        String configKey=p.getMember().getDeclaringClass().getName()+"."+p.getMember().getName();
-        if(config.getProperty(configKey)==null) {
-            configKey=p.getMember().getDeclaringClass().getSimpleName()+"."+p.getMember().getName();
-            if(config.getProperty(configKey)==null)
-                configKey=p.getMember().getName();
+    @Produces
+    @Config
+    public String getConfiguration(InjectionPoint p) {
+        Config param = p.getAnnotated().getAnnotation(Config.class);
+        Properties config = getProperties();
+        if (config == null) {
+            return param.vrijednost();
         }
-        log.log(Level.INFO, "Config key= {0} value = {1}", new Object[]{configKey,config.getProperty(configKey)});
+        String configKey = p.getMember().getDeclaringClass().getName() + "." + p.getMember().getName();
+        if (config.getProperty(configKey) == null) {
+            configKey = p.getMember().getDeclaringClass().getSimpleName() + "." + p.getMember().getName();
+            if (config.getProperty(configKey) == null) {
+                configKey = p.getMember().getName();
+            }
 
-        return config.getProperty(configKey);
+        }
+        log.log(Level.INFO, "Config key= {0} value = {1}", new Object[]{configKey, config.getProperty(configKey)});
+
+        return config.getProperty(configKey, param.vrijednost());
     }
 
-     public @Produces @Config Integer getConfigurationInteger(InjectionPoint p) {
-         String val=getConfiguration(p);
-         return Integer.parseInt(val);
-     }
+    @Produces
+    @Config
+    public Integer getConfigurationInteger(InjectionPoint p) {
+        String val = getConfiguration(p);
+        return Integer.parseInt(val);
+    }
+
 }

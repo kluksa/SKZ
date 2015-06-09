@@ -47,7 +47,7 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     private boolean aktivan = false;
 
     @Inject
-    @Config
+    @Config(vrijednost="23")
     private Integer minuta;
     
     public DiseminacijaGlavniBean() {
