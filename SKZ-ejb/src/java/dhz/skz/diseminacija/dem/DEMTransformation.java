@@ -11,6 +11,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.SatniIterator;
+import dhz.skz.util.OperStatus;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
@@ -41,7 +42,7 @@ public class DEMTransformation {
     private Date kraj;
     private final TimeZone tzone;
 
-    DEMTransformation(PrimateljiPodataka primatelj, TimeZone tzone ) {
+    DEMTransformation(PrimateljiPodataka primatelj, TimeZone tzone) {
         this.primatelj = primatelj;
         this.tzone = tzone;
         sdf.setTimeZone(LokalnaZona.getZone());
@@ -58,7 +59,7 @@ public class DEMTransformation {
                     ps.printf("STATION %s\n", postaja.getOznakaPostaje());
 
                     log.info(postaja.getNazivPostaje());
-                    
+
                     SatniIterator sat = new SatniIterator(pocetak, kraj, tzone);
                     while (sat.next()) {
                         Integer status;
@@ -67,8 +68,14 @@ public class DEMTransformation {
                         if (podaciNaPostaji.containsKey(postaja)
                                 && podaciNaPostaji.get(postaja).containsKey(vr)) {
                             Podatak pod = podaciNaPostaji.get(postaja).get(vr);
-                            status = -1;
-                            vrijednost = pod.getVrijednost();
+                            if (pod.getStatus() < (1 << OperStatus.SATNI_ERR1.ordinal())) {
+                                status = -1;
+                                vrijednost = pod.getVrijednost();
+                            } else {
+                                status = 0;
+                                vrijednost = -999.;
+                            }
+
                         } else {
                             status = 0;
                             vrijednost = -999.;

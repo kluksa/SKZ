@@ -13,15 +13,15 @@ import dhz.skz.aqdb.entity.NivoValidacije;
  */
 public enum OperStatus {
 
-    G1,
-    G2,
+    W1, // spare bit za upozorenje
+    W2, // spare bit za upozorenje
     ISKLJUCENO_MJERENJE,
     FAULT,
     OPSEG,
     OKOLISNI_UVJETI,
     ODRZAVANJE,
-    G3,  // UMJERENOST
-    G4,
+    ERR1, // UMJERENOST
+    ERR2, // spare bit za nevaljani sirovi nizi od kontrole
     KONTROLA_PROVEDENA,
     KONTROLA_ODBACENO,
     LDL,
@@ -29,8 +29,8 @@ public enum OperStatus {
     SPAN,
     KALIBRACIJA,
     NEDOSTAJE,
-    G5,
-    G6,
+    ERR3, // spare bit za nevaljani sirovi
+    SATNI_ERR1, // spare bit za nevaljani satni nizeg prioritera 
     KONTROLA_SATNI,
     OBUHVAT;
 

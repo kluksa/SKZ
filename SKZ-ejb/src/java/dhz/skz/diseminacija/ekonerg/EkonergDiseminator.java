@@ -14,6 +14,7 @@ import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.diseminacija.DiseminatorPodataka;
+import dhz.skz.util.OperStatus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -97,9 +98,15 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
-                stmt.setDouble(4, p.getVrijednost());
-                stmt.setInt(5, p.getStatus());
+                if ( p.getStatus() < (1 << OperStatus.SATNI_ERR1.ordinal())){
+                    stmt.setDouble(4, p.getVrijednost());
+                    stmt.setInt(5, 0);
+                } else {
+                    stmt.setDouble(4, -999.);
+                     stmt.setInt(5, p.getStatus());
+                }
                 stmt.setInt(6, p.getObuhvat());
+                
                 stmt.addBatch();
             }
             stmt.executeBatch();
