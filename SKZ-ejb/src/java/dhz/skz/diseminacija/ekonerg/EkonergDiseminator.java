@@ -103,7 +103,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                     stmt.setInt(5, 0);
                 } else {
                     stmt.setDouble(4, -999.);
-                     stmt.setInt(5, p.getStatus());
+                    stmt.setInt(5, p.getStatus());
                 }
                 stmt.setInt(6, p.getObuhvat());
                 

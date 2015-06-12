@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dhz.skz.citaci;
+package dhz.skz.util;
 
 import java.io.IOException;
 import java.io.InputStream;

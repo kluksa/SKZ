@@ -17,7 +17,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
-import dhz.skz.citaci.MinutniUSatne;
+import dhz.skz.util.MinutniUSatne;
 import dhz.skz.config.Config;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;

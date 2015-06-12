@@ -71,8 +71,7 @@ public class SiroviPodaci {
      *
      * @param programId
      * @param datum
-     * @param broj
-     * @param sc
+     * @param brojDana
      * @return an instance of test.dto.PodatakSiroviDTO
      */
     @GET

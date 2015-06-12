@@ -10,7 +10,7 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.citaci.SatniIterator;
+import dhz.skz.util.SatniIterator;
 import dhz.skz.util.OperStatus;
 import java.io.IOException;
 import java.io.PrintStream;

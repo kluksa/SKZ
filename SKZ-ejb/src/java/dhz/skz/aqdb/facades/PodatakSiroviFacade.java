@@ -18,6 +18,7 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
+import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.PodatakSirovi_;
@@ -197,6 +198,10 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
 
     public Date getZadnjiPodatak(ProgramMjerenja program) {
+        return getZadnjiPodatak(program, new NivoValidacije(0));
+    }
+
+    public Date getZadnjiPodatak(ProgramMjerenja program, NivoValidacije nv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
@@ -253,5 +258,4 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         }
         return rl.get(0);
     }
-
 }

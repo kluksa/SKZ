@@ -16,6 +16,7 @@
  */
 package dhz.skz.citaci;
 
+import dhz.skz.util.SatniIterator;
 import java.util.Date;
 import org.junit.After;
 import org.junit.AfterClass;

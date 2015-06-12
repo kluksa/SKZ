@@ -13,7 +13,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.citaci.CitacIzvora;
-import dhz.skz.citaci.SatniIterator;
+import dhz.skz.util.SatniIterator;
 import dhz.skz.config.Config;
 import dhz.skz.validatori.Validator;
 import java.sql.Connection;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dhz.skz.citaci;
+package dhz.skz.util;
 
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
@@ -159,8 +159,8 @@ public class MinutniUSatne {
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
-        Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
-        Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
+        Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program, nv);
+        Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program, nv);
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
         UserTransaction utx = context.getUserTransaction();
 

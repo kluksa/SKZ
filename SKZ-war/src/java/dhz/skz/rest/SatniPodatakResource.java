@@ -130,4 +130,35 @@ public class SatniPodatakResource {
         }
         return lista;
     }
+    
+    @GET
+    @Path("svi/{pocetak}/{kraj}")
+    @Produces("application/json")
+    public List<PodatakDTO> getPodaciSviLongFormat(@PathParam("pocetak") DateTimeParam pocetak, @PathParam("kraj") DateTimeParam kraj,
+            @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
+            @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
+        
+        return null;
+    }
+    
+    @GET
+    @Path("postaja/{postaja}/{pocetak}/{kraj}")
+    @Produces("application/json")
+    public List<PodatakDTO> getPodaciZaPostaju(@PathParam("postaja") String postaja, @PathParam("pocetak") DateTimeParam pocetak, @PathParam("kraj") DateTimeParam kraj,
+            @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
+            @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
+        
+        return null;
+    }
+    
+    @GET
+    @Path("komponenta/{komponenta}/{pocetak}/{kraj}")
+    @Produces("application/json")
+    public List<PodatakDTO> getPodaciZaKomponentu(@PathParam("komponenta") String komponenta, @PathParam("pocetak") DateTimeParam pocetak, @PathParam("kraj") DateTimeParam kraj,
+            @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
+            @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
+        
+        return null;
+    }
+    
 }

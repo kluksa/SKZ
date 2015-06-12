@@ -167,6 +167,10 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
     }
 
     public Date getZadnjiPodatak(ProgramMjerenja program) {
+        return getZadnjiPodatak(program, new NivoValidacije(0));
+    }
+    
+    public Date getZadnjiPodatak(ProgramMjerenja program, NivoValidacije nv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<Podatak> from = cq.from(Podatak.class);
@@ -177,7 +181,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
+                        cb.equal(nivoValidacijeE, nv),
                         cb.equal(programE, program)
                 )
         );
