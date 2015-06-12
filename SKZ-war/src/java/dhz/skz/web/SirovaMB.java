@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class SirovaMB implements Serializable{
 
     @EJB
     private PostajaFacade postajaFacade;
+    
+    @EJB
+    private ProgramMjerenjaFacade programMjerenjaFacade;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -94,7 +98,7 @@ public class SirovaMB implements Serializable{
     public void init() {
         postaja = null;
         postaje = postajaFacade.findAll();
-        programiSvi = podatakFacade.getProgram(postaja);
+        programiSvi = programMjerenjaFacade.find(postaja);
         dateModel = new LineChartModel();
         LineChartSeries series1 = new LineChartSeries();
         series1.set(d1, 0);
@@ -140,7 +144,7 @@ public class SirovaMB implements Serializable{
     public void onPostajaChange() {
         novi = false;
         if (postaja != null) {
-            programiSvi = podatakFacade.getProgram(postaja);
+            programiSvi = programMjerenjaFacade.find(postaja);
         } else {
             programiSvi = new ArrayList<>();
         }
@@ -155,7 +159,7 @@ public class SirovaMB implements Serializable{
             selektiraniPodaci = new HashMap<>();
             if (selektiraniProgram != null) {
                 for (ProgramMjerenja pm : selektiraniProgram) {
-                    selektiraniPodaci.put(pm, podatakFacade.getPodatak(pm, d1, d2));
+                    selektiraniPodaci.put(pm, podatakFacade.getPodaci(pm, d1, d2, false, true));
                 }
             }
             novi = true;

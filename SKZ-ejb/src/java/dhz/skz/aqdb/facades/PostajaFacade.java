@@ -109,28 +109,4 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         cq.select(from).where(uvjet);
         return em.createQuery(cq).getSingleResult();
     }
-
-    public Date getZadnjeVrijeme(Postaja p) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-
-        CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
-        Root<Podatak> from = cq.from(Podatak.class);
-
-        Order vrijemeO = cb.desc(from.get(Podatak_.vrijeme));
-        Predicate validP = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
-        Predicate postajaP = cb.equal(from.join(Podatak_.programMjerenjaId).join(ProgramMjerenja_.postajaId), p);
-        Predicate and = cb.and(validP, postajaP);
-
-        cq.select(from).where(and).orderBy(vrijemeO);
-        List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl.isEmpty() || rl.get(0) == null) {
-            return null;
-        } else {
-            return rl.get(0).getVrijeme();
-        }
-    }
-
-
-   
-
 }

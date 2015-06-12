@@ -5,7 +5,8 @@
  */
 package dhz.skz.util;
 
-import dhz.skz.aqdb.entity.NivoValidacije;
+import dhz.skz.aqdb.entity.Podatak;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 
 /**
  *
@@ -15,15 +16,14 @@ public enum OperStatus {
 
     W1, // spare bit za upozorenje
     W2, // spare bit za upozorenje
+    OKOLISNI_UVJETI,
     ISKLJUCENO_MJERENJE,
     FAULT,
     OPSEG,
-    OKOLISNI_UVJETI,
     ODRZAVANJE,
     ERR1, // UMJERENOST
     ERR2, // spare bit za nevaljani sirovi nizi od kontrole
-    KONTROLA_PROVEDENA,
-    KONTROLA_ODBACENO,
+    KONTROLA,
     LDL,
     ZERO,
     SPAN,
@@ -34,43 +34,24 @@ public enum OperStatus {
     KONTROLA_SATNI,
     OBUHVAT;
 
-    public static boolean isValidSirovi(int i, NivoValidacije nivo) {
-        boolean valid = false;
-        int falseMaska;
-        int trueMaska;
-        
-        switch (nivo.getId()) {
-            case 0:
-                falseMaska = 0b00000111110111011100;
-                trueMaska =  0;
-                break;
+    public static boolean isValid(PodatakSirovi ps) {
+        switch ( ps.getNivoValidacijeId().getId() ) {
             case 1:
-                falseMaska = 0b00000111110000000000;
-                trueMaska  = 0b00000000001000000000;
-                break;
+                return ps.getStatus() < (1<< OperStatus.KONTROLA.ordinal());
+            case 0:
             default:
-                return false;
+                return ps.getStatus() < (1<< OperStatus.OKOLISNI_UVJETI.ordinal()+1);
         }
-        return ((i & falseMaska) == 0) && ((i & trueMaska) == trueMaska);
     }
 
-    public static boolean isValidSatni(int i, NivoValidacije nivo) {
-        boolean valid = false;
-        int falseMaska;
-        int trueMaska;
-        switch (nivo.getId()) {
-            case 0:
-                falseMaska = 0b10000000000000000000;
-                trueMaska = 0;
-                break;
+    public static boolean isValid(Podatak p) {
+        switch ( p.getNivoValidacijeId().getId() ) {
             case 1:
-                falseMaska = 0b11000000000000000000;
-                trueMaska = 0;
-                break;
+                return p.getStatus() < (1<< OperStatus.KONTROLA_SATNI.ordinal());
+            case 0:
             default:
-                return false;
+                return p.getStatus() < (1<< OperStatus.SATNI_ERR1.ordinal()+1);
         }
-        return ((i & falseMaska) == 0) && ((i & trueMaska) == trueMaska);
         
     }
 }

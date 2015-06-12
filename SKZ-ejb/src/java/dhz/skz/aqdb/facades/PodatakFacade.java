@@ -40,6 +40,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -65,28 +66,6 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         super(Podatak.class);
     }
 
-    public Map<ProgramMjerenja, Podatak> getZadnjiPodatakPoProgramu() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = cb.createTupleQuery();
-        Root<Podatak> from = cq.from(Podatak.class);
-
-        Expression<NivoValidacije> nivoValidacijeE = from.get(Podatak_.nivoValidacijeId);
-        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
-        Expression<ProgramMjerenja> program = from.get(Podatak_.programMjerenjaId);
-
-        cq.where(cb.equal(nivoValidacijeE, new NivoValidacije(0)));
-        cq.groupBy(program);
-        cq.multiselect(cb.greatest(vrijeme), from);
-
-        Map<ProgramMjerenja, Podatak> pm = new HashMap<>();
-        for (Tuple t : em.createQuery(cq).getResultList()) {
-            Date vr = t.get(0, Date.class);
-            Podatak po = t.get(1, Podatak.class);
-            pm.put(po.getProgramMjerenjaId(), po);
-        }
-        return pm;
-    }
-
     public Collection<Podatak> getPodaciZaKomponentu(Date pocetak, Date kraj, Komponenta k, NivoValidacije nv, short usporedno) {
         em.refresh(k);
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -110,7 +89,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<Podatak> getPodatakOd(ProgramMjerenja pm, Date pocetak) {
+    public List<Podatak> getPodatakOd(ProgramMjerenja pm, Date pocetak, NivoValidacije nv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
@@ -121,7 +100,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
+                        cb.equal(nivoValidacijeE, nv),
                         cb.equal(programE, pm),
                         cb.greaterThan(vrijemeE, pocetak)
                 )
@@ -130,7 +109,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
+    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj, NivoValidacije nv, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
@@ -153,7 +132,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         Predicate uvjet = cb.and(pocetakP, krajP);
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
+                        cb.equal(nivoValidacijeE, nv),
                         cb.equal(programE, pm),
                         uvjet
                 )
@@ -162,11 +141,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<Podatak> getPodatak(ProgramMjerenja pm, Date pocetak, Date kraj) {
-        return getPodatak(pm, pocetak, kraj, false, true);
-    }
-
-    public Date getZadnjiPodatak(ProgramMjerenja program) {
+    public Date getZadnjiPodatak(ProgramMjerenja program, NivoValidacije nv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
         Root<Podatak> from = cq.from(Podatak.class);
@@ -177,7 +152,7 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
         cq.where(
                 cb.and(
-                        cb.equal(nivoValidacijeE, new NivoValidacije(0)),
+                        cb.equal(nivoValidacijeE, nv),
                         cb.equal(programE, program)
                 )
         );
@@ -190,31 +165,24 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         }
         return rl.get(0);
     }
-
-    public Podatak getZadnji(IzvorPodataka i, Postaja p) {
+    
+    public Date getZadnjeVrijeme(Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
+
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
         Root<Podatak> from = cq.from(Podatak.class);
-        Join<Podatak, ProgramMjerenja> pmJ = from.join(Podatak_.programMjerenjaId);
-        Predicate postaja = cb.equal(pmJ.join(ProgramMjerenja_.postajaId), p);
-        Predicate izvor = cb.equal(pmJ.join(ProgramMjerenja_.izvorPodatakaId), i);
-        Predicate nivo = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
-        Expression<Date> vrijeme = from.get(Podatak_.vrijeme);
-        cq.select(from).where(cb.and(postaja, izvor, nivo)).orderBy(cb.desc(vrijeme));
-        List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl.isEmpty()) {
-            return null;
-        } else {
-            return rl.get(0);
-        }
-    }
 
-    public Date getVrijemeZadnjeg(IzvorPodataka i, Postaja p) {
-        Podatak pod = getZadnji(i, p);
-        if (pod != null) {
-            return pod.getVrijeme();
-        } else {
+        Order vrijemeO = cb.desc(from.get(Podatak_.vrijeme));
+        Predicate validP = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
+        Predicate postajaP = cb.equal(from.join(Podatak_.programMjerenjaId).join(ProgramMjerenja_.postajaId), p);
+        Predicate and = cb.and(validP, postajaP);
+
+        cq.select(from).where(and).orderBy(vrijemeO);
+        List<Podatak> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+        if (rl.isEmpty() || rl.get(0) == null) {
             return null;
+        } else {
+            return rl.get(0).getVrijeme();
         }
     }
 
@@ -251,9 +219,5 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         for (Podatak p : ps) {
             spremi(ps);
         }
-    }
-
-    public void flush() {
-        em.flush();
     }
 }

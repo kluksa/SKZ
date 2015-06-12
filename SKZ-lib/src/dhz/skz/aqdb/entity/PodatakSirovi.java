@@ -70,6 +70,10 @@ public class PodatakSirovi implements Serializable {
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
+    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @NotNull
+    private NivoValidacije nivoValidacijeId;
 
     public PodatakSirovi() {
     }
@@ -157,6 +161,14 @@ public class PodatakSirovi implements Serializable {
         this.programMjerenjaId = programMjerenjaId;
     }
 
+    public NivoValidacije getNivoValidacijeId() {
+        return nivoValidacijeId;
+    }
+
+    public void setNivoValidacijeId(NivoValidacije nivoValidacijeId) {
+        this.nivoValidacijeId = nivoValidacijeId;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

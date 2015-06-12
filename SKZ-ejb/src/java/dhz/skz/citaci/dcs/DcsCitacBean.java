@@ -58,7 +58,7 @@ public class DcsCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
-            Date zadnji = podatakFacade.getZadnjiPodatak(pm);
+            Date zadnji = podatakFacade.getZadnjiPodatak(pm, new NivoValidacije(0));
             try (Connection con = dcsDS.getConnection()) {
                 List<Podatak> podaci = getPodaci(con, pm, zadnji);
                 podatakFacade.spremi(podaci);
