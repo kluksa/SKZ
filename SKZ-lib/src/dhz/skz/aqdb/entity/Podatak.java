@@ -71,10 +71,9 @@ public class Podatak implements Serializable {
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
     @ManyToOne
     private Korisnik mjeriteljId;
-    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @Column(name = "nivo_validacije_id")
     @NotNull
-    private NivoValidacije nivoValidacijeId;
+    private Integer nivoValidacijeId;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @NotNull
@@ -169,11 +168,11 @@ public class Podatak implements Serializable {
         this.mjeriteljId = mjeriteljId;
     }
 
-    public NivoValidacije getNivoValidacijeId() {
+    public Integer getNivoValidacijeId() {
         return nivoValidacijeId;
     }
 
-    public void setNivoValidacijeId(NivoValidacije nivoValidacijeId) {
+    public void setNivoValidacijeId(Integer nivoValidacijeId) {
         this.nivoValidacijeId = nivoValidacijeId;
     }
 

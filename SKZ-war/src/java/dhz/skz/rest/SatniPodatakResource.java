@@ -66,7 +66,7 @@ public class SatniPodatakResource {
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
-        List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), new NivoValidacije(nivo), true, true);
+        List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), nivo, true, true);
         for (Podatak p : podaci) {
             boolean valjan = OperStatus.isValid(p);
             if (!samo_valjani || valjan) {
@@ -115,7 +115,7 @@ public class SatniPodatakResource {
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
-        for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, new NivoValidacije(nivo), true, true)) {
+        for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, nivo, true, true)) {
             boolean valjan = OperStatus.isValid(p);
             if (!samo_valjani || valjan) {
                 PodatakDTO po = new PodatakDTO();

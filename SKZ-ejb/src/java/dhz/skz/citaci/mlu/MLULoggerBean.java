@@ -11,7 +11,6 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.NivoValidacijeFacade;
@@ -39,8 +38,6 @@ import javax.inject.Inject;
 @Stateless
 @LocalBean
 public class MLULoggerBean implements CsvParser, CitacIzvora {
-    @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
     @EJB
@@ -90,9 +87,8 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
         for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
-            siroviUSatneBean.spremiSatneIzSirovih(program, nv);
+            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
@@ -106,18 +102,5 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
             vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);
         }
         return vrijeme;
-    }
-
-    @Override
-    public Date getVrijemeZadnjegPodatka(CsvOmotnica omotnica) {
-        log.log(Level.INFO, "OOOO:{0} {1} {2}", new Object[]{omotnica.getPostaja(), omotnica.getVrsta(), omotnica.getDatoteka()});
-        postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
-        izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-
-        if (omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
-            return zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
-        } else {
-            return podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
-        }
     }
 }

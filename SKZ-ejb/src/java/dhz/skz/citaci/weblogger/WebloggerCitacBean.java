@@ -13,10 +13,8 @@ import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -45,8 +43,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -58,8 +54,6 @@ import org.apache.commons.net.ftp.FTPFile;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
-    @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
 
     @EJB
     private ProgramUredjajLinkFacade programUredjajLinkFacade;
@@ -112,8 +106,6 @@ public class WebloggerCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
 
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
-
 //        try {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
@@ -126,13 +118,13 @@ public class WebloggerCitacBean implements CitacIzvora {
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
                 programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-
-                odrediVrijemeZadnjegPodatka(aktivnaPostaja);
+                vrijemeZadnjegMjerenja = podatakSiroviFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
+                vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
 
                 pokupiMjerenja();
 
                 for (ProgramMjerenja pm : programNaPostaji) {
-                    siroviUSatneBean.spremiSatneIzSirovih(pm, nv);
+                    siroviUSatneBean.spremiSatneIzSirovih(pm, 0);
                 }
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
@@ -160,7 +152,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                     try {
                         Date terminDatoteke = formatter.parse(m.group(3));
                         WlFileParser citac = napraviParser(m.group(2), terminDatoteke);
-
+                        citac.setNivoValidacije(0);
                         if (citac.isDobarTermin()) {
 
                             log.log(Level.INFO, "Datoteka :{0}", file.getName());
@@ -189,11 +181,6 @@ public class WebloggerCitacBean implements CitacIzvora {
         } finally {
             ftp.disconnect();
         }
-    }
-
-    private void odrediVrijemeZadnjegPodatka(Postaja p) {
-        vrijemeZadnjegMjerenja = podatakSiroviFacade.getVrijemeZadnjeg(izvor, p);
-        vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
     }
 
     private WlFileParser napraviParser(String group, Date terminDatoteke) {

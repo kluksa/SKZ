@@ -22,20 +22,21 @@ public enum OperStatus {
     OPSEG,
     ODRZAVANJE,
     ERR1, // UMJERENOST
-    ERR2, // spare bit za nevaljani sirovi nizi od kontrole
+    ERR2,
+    ERR3,// spare bit za nevaljani sirovi nizi od kontrole
     KONTROLA,
     LDL,
     ZERO,
     SPAN,
     KALIBRACIJA,
     NEDOSTAJE,
-    ERR3, // spare bit za nevaljani sirovi
-    SATNI_ERR1, // spare bit za nevaljani satni nizeg prioritera 
+    SATNI_ERR1, // spare bit za nevaljani sirovi
+    SATNI_ERR2, // spare bit za nevaljani satni nizeg prioritera 
     KONTROLA_SATNI,
     OBUHVAT;
 
     public static boolean isValid(PodatakSirovi ps) {
-        switch ( ps.getNivoValidacijeId().getId() ) {
+        switch ( ps.getNivoValidacijeId() ) {
             case 1:
                 return ps.getStatus() < (1<< OperStatus.KONTROLA.ordinal());
             case 0:
@@ -45,7 +46,7 @@ public enum OperStatus {
     }
 
     public static boolean isValid(Podatak p) {
-        switch ( p.getNivoValidacijeId().getId() ) {
+        switch ( p.getNivoValidacijeId() ) {
             case 1:
                 return p.getStatus() < (1<< OperStatus.KONTROLA_SATNI.ordinal());
             case 0:

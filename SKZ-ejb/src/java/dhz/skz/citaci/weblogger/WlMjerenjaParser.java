@@ -56,7 +56,9 @@ class WlMjerenjaParser implements WlFileParser {
     private Date terminDatoteke;
     private final PodatakSiroviFacade podatakSiroviFacade;
     private final Collection<ProgramMjerenja> programNaPostaji;
+//    private NivoValidacije nivo;
 //    private final WlValidatorfactory valFac;
+    private Integer nivo;
 
     public WlMjerenjaParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone tz, ValidatorFactory validatorFactory, PodatakSiroviFacade podatakSiroviFacade) {
         this.temperatura = -999.;
@@ -174,10 +176,11 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
+                    pod.setNivoValidacijeId(nivo);
                     pod.setVrijednost(iznos * pm.getKomponentaId().getKonvVUM());
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);
-                    podatakSiroviFacade.spremi(pod);
+                    podatakSiroviFacade.create(pod);
                 } catch (NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
@@ -218,5 +221,10 @@ class WlMjerenjaParser implements WlFileParser {
     @Override
     public void setTerminDatoteke(Date terminDatoteke) {
         this.terminDatoteke = terminDatoteke;
+    }
+
+    @Override
+    public void setNivoValidacije(Integer nivo) {
+        this.nivo = nivo;
     }
 }

@@ -20,6 +20,4 @@ public interface CsvParser {
 
     public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka);
 
-    public Date getVrijemeZadnjegPodatka(CsvOmotnica omotnica);
-
 }

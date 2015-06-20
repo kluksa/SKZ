@@ -47,6 +47,7 @@ class WlZeroSpanParser implements WlFileParser{
     private Date terminDatoteke;
     private final ZeroSpanFacade zeroSpanFacade;
     private final Collection<ProgramMjerenja> programNaPostaji;
+    private Integer nivo;
 
     public WlZeroSpanParser(Collection<ProgramMjerenja> programNaPostaji, TimeZone timeZone, ZeroSpanFacade zeroSpanFacade) {
         this.zeroSpanFacade = zeroSpanFacade;
@@ -194,5 +195,10 @@ class WlZeroSpanParser implements WlFileParser{
         }
         dobroVrijeme = (zadnjiPodatak == null) || (zadnjiPodatak.getTime() - terminDatoteke.getTime() < 24 * 3600 * 1000);
         return aktivna && dobroVrijeme;
+    }
+
+    @Override
+    public void setNivoValidacije(Integer nivo) {
+        this.nivo = nivo;
     }
 }

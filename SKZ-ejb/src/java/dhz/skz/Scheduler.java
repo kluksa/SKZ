@@ -29,11 +29,12 @@ import javax.ejb.TimerService;
  * @author kraljevic
  */
 public abstract class Scheduler {
+
     private static final Logger log = Logger.getLogger(Scheduler.class.getName());
     @Resource
     protected TimerService timerService;
     protected final String TIMER_NAZIV;
-    
+
     protected int minutaPokretanja;
 
     public Scheduler(String timer_naziv) {
@@ -43,10 +44,14 @@ public abstract class Scheduler {
     public void schedule(int minutaPokretanja) {
         this.minutaPokretanja = minutaPokretanja;
         zaustavi();
-        ScheduleExpression scheduleExpression = new ScheduleExpression();
-        scheduleExpression.hour("*").minute(minutaPokretanja).second("0");
-        timerService.createCalendarTimer(scheduleExpression, new TimerConfig(TIMER_NAZIV, true));
-        log.log(Level.INFO, "Stvoren {0} timer", new Object[]{TIMER_NAZIV});
+        if (minutaPokretanja > 0) {
+            ScheduleExpression scheduleExpression = new ScheduleExpression();
+            scheduleExpression.hour("*").minute(minutaPokretanja).second("0");
+            timerService.createCalendarTimer(scheduleExpression, new TimerConfig(TIMER_NAZIV, true));
+            log.log(Level.INFO, "Stvoren {0} timer", new Object[]{TIMER_NAZIV});
+        } else {
+            log.log(Level.INFO, "Tajmer {0} nije pokrenut", new Object[]{TIMER_NAZIV});
+        }
     }
 
     public void zaustavi() {
@@ -54,13 +59,13 @@ public abstract class Scheduler {
             for (Timer timer : timerService.getTimers()) {
                 if (timer.getInfo().equals(TIMER_NAZIV)) {
                     timer.cancel();
-                    log.log(Level.INFO,"Programatic Timer got stopped succesfully");
+                    log.log(Level.INFO, "Programatic Timer got stopped succesfully");
                 }
             }
         }
     }
-    
-    public boolean isAktivan(){
+
+    public boolean isAktivan() {
         if (timerService.getTimers() != null) {
             for (Timer timer : timerService.getTimers()) {
                 if (timer.getInfo().equals(TIMER_NAZIV)) {
@@ -74,7 +79,7 @@ public abstract class Scheduler {
     public int getMinutaPokretanja() {
         return minutaPokretanja;
     }
-    
+
     public abstract void pokreni();
-    
+
 }
