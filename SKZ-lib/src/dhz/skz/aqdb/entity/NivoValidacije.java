@@ -39,8 +39,6 @@ public class NivoValidacije implements Serializable {
     private Integer id;
     @Size(max = 90)
     private String oznaka;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nivoValidacijeId")
-    private Collection<Podatak> podatakCollection;
 
     public NivoValidacije() {
     }
@@ -63,15 +61,6 @@ public class NivoValidacije implements Serializable {
 
     public void setOznaka(String oznaka) {
         this.oznaka = oznaka;
-    }
-
-    @XmlTransient
-    public Collection<Podatak> getPodatakCollection() {
-        return podatakCollection;
-    }
-
-    public void setPodatakCollection(Collection<Podatak> podatakCollection) {
-        this.podatakCollection = podatakCollection;
     }
 
     @Override

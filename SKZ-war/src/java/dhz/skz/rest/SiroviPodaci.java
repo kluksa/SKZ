@@ -8,7 +8,6 @@ package dhz.skz.rest;
 import dhz.skz.aqdb.facades.KorisnikFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.entity.Korisnik;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
@@ -105,6 +104,7 @@ public class SiroviPodaci {
             p.setVrijednost(ps.getVrijednost());
             p.setStatusInt(ps.getStatus());
             p.setValjan(OperStatus.isValid(ps));
+            p.setNivoValidacije(ps.getNivoValidacijeId());
             lista.add(p);
         }
         return lista;
@@ -145,7 +145,7 @@ public class SiroviPodaci {
             ps.setStatus(st);
             ps.setKorisnikId(user);
             ps.setVrijemeUpisa(new Date());
-            ps.setNivoValidacijeId(new NivoValidacije(0));
+            ps.setNivoValidacijeId(1);
             podatakSiroviFacade.edit(ps);
         }
     }

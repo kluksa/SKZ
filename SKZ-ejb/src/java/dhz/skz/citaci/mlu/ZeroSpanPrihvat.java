@@ -111,9 +111,9 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
                 try {
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                     if(linija[i].contains(",")) { 
-                        symbols.setDecimalSeparator('.');
-                    } else {
                         symbols.setDecimalSeparator(',');
+                    } else {
+                        symbols.setDecimalSeparator('.');
                     }
                     DecimalFormat format = new DecimalFormat("#.#");
                     format.setDecimalFormatSymbols(symbols);

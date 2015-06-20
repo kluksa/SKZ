@@ -8,11 +8,9 @@ package dhz.skz.diseminacija.dem;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.Komponenta;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
@@ -41,8 +39,6 @@ import javax.inject.Inject;
 @LocalBean
 public class DemDiseminator implements DiseminatorPodataka {
     @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
-    @EJB
     private ProgramMjerenjaFacade ppf;
     @EJB
     private PodatakFacade podatakFacade;
@@ -57,7 +53,7 @@ public class DemDiseminator implements DiseminatorPodataka {
                 = getProgramPoKomponentama(ppf.find(primatelj));
 
         DEMTransformation demT = new DEMTransformation(primatelj, tzone);
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
+        Integer nv = 0;
 
         Date zadnji = getZadnji();
         Date prvi = getPrvi();

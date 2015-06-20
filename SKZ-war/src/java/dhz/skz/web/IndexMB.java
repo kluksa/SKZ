@@ -57,7 +57,7 @@ public class IndexMB implements Serializable {
         vrijemeZadnjeg = new HashMap<>();
         sada = new Date();
         for ( Postaja p : postaje) {
-            Date zadnji = podatakFacade.getZadnjeVrijeme(p);
+            Date zadnji = podatakFacade.getVrijemeZadnjeg(p);
             if ( zadnji != null ) {
                 vrijemeZadnjeg.put(p, zadnji);
             }

@@ -5,7 +5,6 @@
  */
 package dhz.skz.diseminacija.ekonerg;
 
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -92,7 +91,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 
     private void prebaciMjerenja(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(podatakInsertSql)) {
-            for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak, new NivoValidacije(0))) {
+            for (Podatak p : dao.getPodaciOd(pm.getProgramMjerenja(), pocetak, 0)) {
                 log.log(Level.FINE, "Spremam {0}:::{1}::{2}", new Object[]{p.getVrijeme(),
                     p.getProgramMjerenjaId().getId(), p.getVrijednost()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());

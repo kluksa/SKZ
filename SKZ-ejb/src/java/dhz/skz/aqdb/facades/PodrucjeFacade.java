@@ -16,7 +16,6 @@
  */
 package dhz.skz.aqdb.facades;
 
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Podrucje;
@@ -72,7 +71,7 @@ public class PodrucjeFacade extends AbstractFacade<Podrucje> {
         Root<Podatak> from = cq.from(Podatak.class);
 
         Order vrijemeO = cb.desc(from.get(Podatak_.vrijeme));
-        Predicate validP = cb.equal(from.get(Podatak_.nivoValidacijeId), new NivoValidacije(0));
+        Predicate validP = cb.equal(from.get(Podatak_.nivoValidacijeId), 0);
         Predicate postajaP = cb.equal(from.join(Podatak_.programMjerenjaId).join(ProgramMjerenja_.postajaId), p);
         Predicate and = cb.and(validP, postajaP);
 

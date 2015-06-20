@@ -7,6 +7,7 @@ package dhz.skz.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -30,8 +31,8 @@ public class ConfigProducer {
     }
 
     @Produces
-    public @Config
-    Logger getLogger(InjectionPoint ip) {
+    @Config
+    public Logger getLogger(InjectionPoint ip) {
         return Logger.getLogger(ip.getMember().getDeclaringClass().getName());
 
     }
@@ -70,7 +71,6 @@ public class ConfigProducer {
 
         }
         log.log(Level.INFO, "Config key= {0} value = {1}", new Object[]{configKey, config.getProperty(configKey)});
-
         return config.getProperty(configKey, param.vrijednost());
     }
 
@@ -79,6 +79,12 @@ public class ConfigProducer {
     public Integer getConfigurationInteger(InjectionPoint p) {
         String val = getConfiguration(p);
         return Integer.parseInt(val);
+    }
+    
+    @Produces
+    @Config
+    public Date getDefaultTime(InjectionPoint p){
+        return new Date(0L);
     }
 
 }
