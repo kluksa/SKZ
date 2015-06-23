@@ -41,7 +41,7 @@ public class KategorijeGranicaFacade extends AbstractFacade<KategorijeGranica> {
     public KategorijeGranicaFacade() {
         super(KategorijeGranica.class);
     }
-    
+    // TODO prebaciti u named query
     public KategorijeGranica findByOpis(String opis) {
         TypedQuery<KategorijeGranica> query = em.createNamedQuery("KategorijeGranica.findByOpis", KategorijeGranica.class);
         query.setParameter("opis", opis);

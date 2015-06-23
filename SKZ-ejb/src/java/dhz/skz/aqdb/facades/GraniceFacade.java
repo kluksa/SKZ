@@ -45,9 +45,7 @@ public class GraniceFacade extends AbstractFacade<Granice> {
     }
     
     public Collection<Granice> findBy(Komponenta komponenta) {
-        TypedQuery<Granice> query = em.createNamedQuery("Granice.findByKomponenta", Granice.class);
-        query.setParameter("komponenta", komponenta);
-        return query.getResultList();
+        return em.createNamedQuery("Granice.findByKomponenta", Granice.class).setParameter("komponenta", komponenta).getResultList();
     }
     
 }

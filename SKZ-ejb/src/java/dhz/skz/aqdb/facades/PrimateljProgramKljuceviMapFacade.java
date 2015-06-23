@@ -50,6 +50,7 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         super(PrimateljProgramKljuceviMap.class);
     }
 
+    // TODO prebaciti u named query
     public PrimateljProgramKljuceviMap find(final PrimateljiPodataka primatelj, final ProgramMjerenja program) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);
@@ -65,6 +66,7 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         }
     }
 
+    // TODO prebaciti u named query
     public Collection<PrimateljProgramKljuceviMap> find(final PrimateljiPodataka primatelj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);

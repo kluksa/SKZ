@@ -52,6 +52,7 @@ public class ProgramUredjajLinkFacade extends AbstractFacade<ProgramUredjajLink>
         super(ProgramUredjajLink.class);
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramUredjajLink> findAll(IzvorPodataka ip) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramUredjajLink> cq = cb.createQuery(ProgramUredjajLink.class);

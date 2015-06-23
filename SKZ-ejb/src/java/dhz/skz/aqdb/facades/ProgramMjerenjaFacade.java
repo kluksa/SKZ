@@ -22,7 +22,6 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.PodatakSirovi_;
 import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap_;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
@@ -34,13 +33,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -65,6 +61,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         super(ProgramMjerenja.class);
     }
 
+    // TODO prebaciti u named query
     public Date getPocetakMjerenja(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -81,6 +78,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         }
     }
 
+    // TODO prebaciti u named query
     public Date getKrajMjerenja(IzvorPodataka i, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -97,6 +95,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         }
     }
 
+    // TODO prebaciti u named query
     public ProgramMjerenja find(Postaja p, IzvorPodataka i, String kKljuc, String nKljuc) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -123,6 +122,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         return resultList.get(0);
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(Postaja p, IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -139,6 +139,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -169,6 +170,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
 //        );
 //        return em.createQuery(cq).getResultList();
 //    }
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> findZaTermin(Postaja p, IzvorPodataka i, Date termin) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -192,6 +194,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(PrimateljiPodataka primatelj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -206,6 +209,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         return em.createQuery(cq).getResultList();
     }
     
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(Postaja postaja) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);

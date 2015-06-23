@@ -66,6 +66,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         }
     }
 
+    // TODO prebaciti u named query
     public boolean postoji(PodatakSirovi podatak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -81,6 +82,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return (resultList != null) && (!resultList.isEmpty());
     }
 
+    // TODO prebaciti u named query
     public  List<PodatakSirovi> findAll(Date pocetak, Date kraj) {
         TypedQuery<PodatakSirovi> query = em.createNamedQuery("PodatakSirovi.findByPocetakKraj", PodatakSirovi.class);
         query.setParameter("pocetak", pocetak);
@@ -88,6 +90,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return query.getResultList();
     }
 
+    // TODO prebaciti u named query
     public List<PodatakSirovi> getPodaci(Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -104,6 +107,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public List<PodatakSirovi> getPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, boolean p, boolean k) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -123,6 +127,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return em.createQuery(cq).getResultList();
     }
     
+    // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -141,6 +146,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return rl.get(0);
     }
     
+    // TODO prebaciti u named query
     public PodatakSirovi getZadnji(ProgramMjerenja program) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
@@ -160,6 +166,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return rl.get(0);
     }
     
+    // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);

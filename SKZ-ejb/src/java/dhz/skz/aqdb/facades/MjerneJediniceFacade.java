@@ -42,6 +42,7 @@ public class MjerneJediniceFacade extends AbstractFacade<MjerneJedinice> {
         super(MjerneJedinice.class);
     }
     
+    // TODO prebaciti u named query
     public MjerneJedinice findByOznaka(String oznaka) {
         TypedQuery<MjerneJedinice> query = em.createNamedQuery("MjerneJedinice.findByOznaka", MjerneJedinice.class);
         query.setParameter("oznaka", oznaka);

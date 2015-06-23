@@ -60,6 +60,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         super(ZeroSpan.class);
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> getProgram(Postaja postaja) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -74,6 +75,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
 
     }
 
+    // TODO prebaciti u named query
     public Iterable<ZeroSpan> getPodaci(ProgramMjerenja selektiraniProgram, Date pocetak, Date kraj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);
@@ -92,6 +94,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         return em.createQuery(cq).getResultList();
     }
     
+    // TODO prebaciti u named query
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -120,6 +123,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         return rl.get(0);
     }
 
+    // TODO prebaciti u named query
     public Collection<ProgramMjerenja> getProgramNaPostajiZaIzvor(Postaja p, IzvorPodataka i, Date zadnji) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -141,6 +145,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public List<ZeroSpan> getZeroSpan(ProgramMjerenja programMjerenja, Date pocetak, Date kraj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);
@@ -160,6 +165,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public List<ProgramMjerenja> getProgramSaZeroSpanomNaPostaji(IzvorPodataka izvor, Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProgramMjerenja> cq = cb.createQuery(ProgramMjerenja.class);
@@ -201,6 +207,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         create(zs);
     }
 
+    // TODO prebaciti u named query
     public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -224,6 +231,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         }
     }
 
+    // TODO prebaciti u named query
     public List<ZeroSpan> getZeroSpanOd(ProgramMjerenja programMjerenja, Date pocetak) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZeroSpan> cq = cb.createQuery(ZeroSpan.class);

@@ -61,7 +61,7 @@ public class DemDiseminator implements DiseminatorPodataka {
         for (Komponenta k : programPoKomponentama.keySet()) {
             try {
                 DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
-                Collection<Podatak> podaci = podatakFacade.getPodaciZaKomponentu(prvi, zadnji, k, nv, (short) 0);
+                Collection<Podatak> podaci = podatakFacade.find(prvi, zadnji, k, nv, (short) 0);
                 demT.setKomponenta(k);
                 demT.setProgram(programPoKomponentama.get(k));
                 demT.setPocetak(prvi);

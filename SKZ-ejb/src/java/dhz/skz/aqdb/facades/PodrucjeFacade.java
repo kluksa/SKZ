@@ -54,6 +54,7 @@ public class PodrucjeFacade extends AbstractFacade<Podrucje> {
         super(Podrucje.class);
     }
 
+    // TODO prebaciti u named query
     public Podrucje findByOznaka(String oznaka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podrucje> cq = cb.createQuery(Podrucje.class);
@@ -64,6 +65,7 @@ public class PodrucjeFacade extends AbstractFacade<Podrucje> {
         return em.createQuery(cq).getSingleResult();
     }
 
+    // TODO prebaciti u named query
     public Date getZadnjeVrijeme(Postaja p) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
 

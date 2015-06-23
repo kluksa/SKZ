@@ -18,9 +18,6 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorPodataka_;
-import dhz.skz.aqdb.entity.NivoValidacije;
-import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PostajaUredjajLink;
 import dhz.skz.aqdb.entity.PostajaUredjajLink_;
@@ -30,8 +27,6 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -41,7 +36,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -65,6 +59,7 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         super(Postaja.class);
     }
 
+    // TODO prebaciti u named query
     public Postaja findByNacionalnaOznaka(final String oznaka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
@@ -74,6 +69,7 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
     }
 
 
+    // TODO prebaciti u named query
     public Collection<Postaja> getPostajeZaIzvor(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
@@ -86,6 +82,7 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
     public Postaja findByNaziv(String naziv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
@@ -96,6 +93,7 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         return em.createQuery(cq).getSingleResult();
     }
 
+    // TODO prebaciti u named query
     public Postaja findByUredjajSn(String uredjaj_id) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);

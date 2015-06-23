@@ -42,8 +42,6 @@ public class AgregacijeFacade extends AbstractFacade<Agregacije> {
         super(Agregacije.class);
     }
     public Agregacije findByOznaka(String oznaka) {
-        TypedQuery<Agregacije> query = em.createNamedQuery("Agregacije.findByOznaka", Agregacije.class);
-        query.setParameter("oznaka", oznaka);
-        return query.getSingleResult();
+        return em.createNamedQuery("Agregacije.findByOznaka", Agregacije.class).setParameter("oznaka", oznaka).getSingleResult();
     }
 }
