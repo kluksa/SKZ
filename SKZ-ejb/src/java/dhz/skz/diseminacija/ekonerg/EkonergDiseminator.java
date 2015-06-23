@@ -73,7 +73,6 @@ public class EkonergDiseminator implements DiseminatorPodataka {
             for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
                 if (pm.getAktivan()>0) {
                     log.log(Level.INFO, "Prebacujem: {0},{1},{2}", new Object[]{pm.getProgramMjerenja().getId(), pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), pm.getProgramMjerenja().getKomponentaId().getFormula()});
-
                     prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
                     prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
                 }
@@ -92,13 +91,13 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 
     private void prebaciMjerenja(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(podatakInsertSql)) {
-            for (Podatak p : dao.getPodatakOd(pm.getProgramMjerenja(), pocetak)) {
-                log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(),
-                    p.getProgramMjerenjaId().getId(), pm.getPKljuc(), pm.getKKljuc(), p.getVrijednost()});
+            for (Podatak p : dao.getPodaciOd(pm.getProgramMjerenja(), pocetak, 0)) {
+                log.log(Level.FINE, "Spremam {0}:::{1}::{2}", new Object[]{p.getVrijeme(),
+                    p.getProgramMjerenjaId().getId(), p.getVrijednost()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new java.sql.Timestamp(p.getVrijeme().getTime()));
-                if ( p.getStatus() < (1 << OperStatus.SATNI_ERR1.ordinal())){
+                if ( OperStatus.isValid(p)){
                     stmt.setDouble(4, p.getVrijednost());
                     stmt.setInt(5, 0);
                 } else {
@@ -106,7 +105,6 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                      stmt.setInt(5, p.getStatus());
                 }
                 stmt.setInt(6, p.getObuhvat());
-                
                 stmt.addBatch();
             }
             stmt.executeBatch();

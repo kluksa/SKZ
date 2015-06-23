@@ -99,8 +99,9 @@ public class PrihvatPodatakaWS {
             log.log(Level.FINE, "Bean: {0}", naziv);
             CsvParser parser = (CsvParser) ctx.lookup(naziv);
             log.log(Level.INFO, "Zavrsio getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+            Postaja postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
 
-            return parser.getVrijemeZadnjegPodatka(omotnica).getTime();
+            return parser.getVrijemeZadnjegPodatka(izvor, postaja, omotnica.getDatoteka()).getTime();
 
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);

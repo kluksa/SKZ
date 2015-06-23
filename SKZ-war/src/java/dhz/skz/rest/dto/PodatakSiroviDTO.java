@@ -18,6 +18,8 @@ public class PodatakSiroviDTO implements Serializable {
     private String statusString;
     private Integer statusInt;
     private Boolean valjan;
+    private Integer nivoValidacije;
+
 
     public Integer getStatusInt() {
         return statusInt;
@@ -67,4 +69,13 @@ public class PodatakSiroviDTO implements Serializable {
         this.valjan = valjan;
     }
     
+
+    public Integer getNivoValidacije() {
+        return nivoValidacije;
+    }
+
+    public void setNivoValidacije(Integer nivoValidacije) {
+        this.nivoValidacije = nivoValidacije;
+    }
+
 }

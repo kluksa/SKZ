@@ -35,13 +35,21 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Podatak.findAll", query = "SELECT p FROM Podatak p"),
+    @NamedQuery(name = "Podatak.findByVrijemeProgramNivo", query = "SELECT p FROM Podatak p WHERE p.vrijeme = :vrijeme AND p.programMjerenjaId=:program AND  p.nivoValidacijeId = :nivo"),
     @NamedQuery(name = "Podatak.findByPodatakId", query = "SELECT p FROM Podatak p WHERE p.podatakId = :podatakId"),
     @NamedQuery(name = "Podatak.findByVrijeme", query = "SELECT p FROM Podatak p WHERE p.vrijeme = :vrijeme"),
     @NamedQuery(name = "Podatak.findByVrijednost", query = "SELECT p FROM Podatak p WHERE p.vrijednost = :vrijednost"),
     @NamedQuery(name = "Podatak.findByObuhvat", query = "SELECT p FROM Podatak p WHERE p.obuhvat = :obuhvat"),
     @NamedQuery(name = "Podatak.findByVrijemeUpisa", query = "SELECT p FROM Podatak p WHERE p.vrijemeUpisa = :vrijemeUpisa"),
     @NamedQuery(name = "Podatak.findByOriginalniPodatakId", query = "SELECT p FROM Podatak p WHERE p.originalniPodatakId = :originalniPodatakId"),
-    @NamedQuery(name = "Podatak.findByStatus", query = "SELECT p FROM Podatak p WHERE p.status = :status")})
+    @NamedQuery(name = "Podatak.findByStatus", query = "SELECT p FROM Podatak p WHERE p.status = :status"),
+    @NamedQuery(name = "Podatak.findByKomponentaVrijemeNivo", query = "SELECT p FROM Podatak p JOIN p.programMjerenjaId pm "
+            + "WHERE p.vrijeme > :pocetak AND p.vrijeme <= :kraj AND p.nivoValidacijeId = :nivo AND pm.komponentaId = :komponenta "
+            + "AND pm.usporednoMjerenje = :usporedno ORDER BY p.vrijeme"),
+    @NamedQuery(name = "Podatak.getVrijemeZadnjegProgramNivo", query = "SELECT p.vrijeme FROM Podatak p WHERE p.programMjerenjaId = :program AND p.nivoValidacijeId = :nivo ORDER BY p.vrijeme DESC"),
+    @NamedQuery(name = "Podatak.getVrijemeZadnjegPostaja", query="SELECT p.vrijeme FROM Podatak p JOIN p.programMjerenjaId pm  WHERE pm.postajaId = :postaja ORDER BY p.vrijeme DESC")
+        
+})
 public class Podatak implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -71,10 +79,9 @@ public class Podatak implements Serializable {
     @JoinColumn(name = "mjeritelj_id", referencedColumnName = "id")
     @ManyToOne
     private Korisnik mjeriteljId;
-    @JoinColumn(name = "nivo_validacije_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @Column(name = "nivo_validacije_id")
     @NotNull
-    private NivoValidacije nivoValidacijeId;
+    private Integer nivoValidacijeId;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @NotNull
@@ -169,11 +176,11 @@ public class Podatak implements Serializable {
         this.mjeriteljId = mjeriteljId;
     }
 
-    public NivoValidacije getNivoValidacijeId() {
+    public Integer getNivoValidacijeId() {
         return nivoValidacijeId;
     }
 
-    public void setNivoValidacijeId(NivoValidacije nivoValidacijeId) {
+    public void setNivoValidacijeId(Integer nivoValidacijeId) {
         this.nivoValidacijeId = nivoValidacijeId;
     }
 

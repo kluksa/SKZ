@@ -47,6 +47,7 @@ public class UmjerneTockeFacade extends AbstractFacade<UmjerneTocke> {
         super(UmjerneTocke.class);
     }
     
+    // TODO prebaciti u named query
     public Collection<UmjerneTocke> findBy(Umjeravanje u) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UmjerneTocke> cq = cb.createQuery(UmjerneTocke.class);

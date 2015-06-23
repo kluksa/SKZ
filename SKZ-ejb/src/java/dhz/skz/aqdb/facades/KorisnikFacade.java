@@ -45,6 +45,7 @@ public class KorisnikFacade extends AbstractFacade<Korisnik> {
         super(Korisnik.class);
     }
     
+    // TODO prebaciti u named query
     public Korisnik findByIme(String name){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);

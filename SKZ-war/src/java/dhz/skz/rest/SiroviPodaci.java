@@ -8,7 +8,6 @@ package dhz.skz.rest;
 import dhz.skz.aqdb.facades.KorisnikFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.entity.Korisnik;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
@@ -93,21 +92,19 @@ public class SiroviPodaci {
         Date kraj = cal.getTime();
         cal.add(Calendar.DATE, -brojDana);
         Date pocetak = cal.getTime();
-      
-        
-        
         
         Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak, kraj)) {
+        for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true)) {
             PodatakSiroviDTO p = new PodatakSiroviDTO();
             p.setId(ps.getId());
             p.setStatusString(ps.getStatusString());
             p.setVrijeme(ps.getVrijeme().getTime());
             p.setVrijednost(ps.getVrijednost());
             p.setStatusInt(ps.getStatus());
-            p.setValjan(OperStatus.isValidSirovi(ps.getStatus(), new NivoValidacije(0)));
+            p.setValjan(OperStatus.isValid(ps));
+            p.setNivoValidacije(ps.getNivoValidacijeId());
             lista.add(p);
         }
         return lista;
@@ -143,56 +140,13 @@ public class SiroviPodaci {
         for (PodatakSiroviDTO p : podaci) {
             PodatakSirovi ps = podatakSiroviFacade.find(p.getId());
             int st = ps.getStatus();
-            st |= 1 << OperStatus.KONTROLA_PROVEDENA.ordinal();
-            st &= ~ (1 << OperStatus.KONTROLA_ODBACENO.ordinal()); // prvo reset bita
-            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA_ODBACENO.ordinal()); // set bita ako je odbacen
+            st &= ~ (1 << OperStatus.KONTROLA.ordinal());                       // prvo reset bita
+            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA.ordinal());    // set bita ako je odbacen
             ps.setStatus(st);
             ps.setKorisnikId(user);
             ps.setVrijemeUpisa(new Date());
+            ps.setNivoValidacijeId(1);
             podatakSiroviFacade.edit(ps);
         }
     }
-
-//    @GET
-//    @Path("zadnji_podatak/{izvor}/{postaja}/{vrsta}")
-//    @Produces("application/json")
-//    public long getZadnjiPodatak(@PathParam("izvor") String izvorS, @PathParam("izvor") String postajaS, @PathParam("izvor") String vrsta) {
-//        log.log(Level.INFO, "Poceo getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, vrsta });
-//        IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
-//        Postaja postaja = postajaFacade.findByNacionalnaOznaka(postajaS);
-//
-//        try {
-//            InitialContext ctx = new InitialContext();
-//            String str = "java:module/";
-//
-//            String naziv = str + izvor.getBean().trim();
-//            log.log(Level.FINE, "Bean: {0}", naziv);
-//            CsvParser parser = (CsvParser) ctx.lookup(naziv);
-//            log.log(Level.INFO, "Zavrsio getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, vrsta });
-//            return parser.getVrijemeZadnjegPodatka(izvor, postaja, vrsta).getTime();
-//        } catch (NamingException ex) {
-//            log.log(Level.SEVERE, null, ex);
-//        }
-//        return null;
-//    }
-//    @PUT
-//    public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
-//        log.log(Level.INFO, "Poceo  prihvatiOmotnicu : {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
-//        IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-//        try {
-//            InitialContext ctx = new InitialContext();
-//            String str = "java:module/";
-//
-//            String naziv = str + izvor.getBean().trim();
-//            log.log(Level.FINE, "Bean: {0}", naziv);
-//            CsvParser parser = (CsvParser) ctx.lookup(naziv);
-//            parser.obradi(omotnica);
-//
-//        } catch (NamingException ex) {
-//            log.log(Level.SEVERE, null, ex);
-//        }
-//
-//        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
-//    }
-
 }

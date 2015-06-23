@@ -65,6 +65,7 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
 //    public Collection<ProgramMjerenja> getProgram(PrimateljiPodataka primatelj) {
 //        return getProgramZaPrimatelje(primatelj);
 //    }
+    // TODO prebaciti u named query
     public Iterable<PrimateljiPodataka> getAktivniPrimatelji() {
         em.flush();
         em.clear();

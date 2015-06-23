@@ -50,6 +50,7 @@ public class ZeroSpanReferentneVrijednostiFacade extends AbstractFacade<ZeroSpan
         super(ZeroSpanReferentneVrijednosti.class);
     }
 
+    // TODO prebaciti u named query
     public List<ZeroSpanReferentneVrijednosti> findZadnjiPrije(final ProgramMjerenja program, final Date uPrimjeniPrije) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZeroSpanReferentneVrijednosti> cq = cb.createQuery(ZeroSpanReferentneVrijednosti.class);

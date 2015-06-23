@@ -52,6 +52,7 @@ public class KomponentaFacade extends AbstractFacade<Komponenta> {
         super(Komponenta.class);
     }
     
+    // TODO prebaciti u named query
     public Collection<Komponenta> findByUredjajSn(String sernum) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Komponenta> cq = cb.createQuery(Komponenta.class);

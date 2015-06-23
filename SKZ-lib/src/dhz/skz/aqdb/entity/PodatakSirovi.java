@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PodatakSirovi.findByStatus", query = "SELECT p FROM PodatakSirovi p WHERE p.status = :status"),
     @NamedQuery(name = "PodatakSirovi.findByGreska", query = "SELECT p FROM PodatakSirovi p WHERE p.greska = :greska"),
     @NamedQuery(name = "PodatakSirovi.findByVrijemeUpisa", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijemeUpisa = :vrijemeUpisa"),
-    @NamedQuery(name = "PodatakSirovi.findByStatusString", query = "SELECT p FROM PodatakSirovi p WHERE p.statusString = :statusString")})
+    @NamedQuery(name = "PodatakSirovi.findByStatusString", query = "SELECT p FROM PodatakSirovi p WHERE p.statusString = :statusString"),   
+    @NamedQuery(name = "PodatakSirovi.findByPocetakKraj", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme BETWEEN :pocetak AND :kraj")})
 public class PodatakSirovi implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -70,6 +71,8 @@ public class PodatakSirovi implements Serializable {
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
+    @Column(name = "nivo_validacije_id")
+    private Integer nivoValidacijeId;
 
     public PodatakSirovi() {
     }
@@ -157,6 +160,14 @@ public class PodatakSirovi implements Serializable {
         this.programMjerenjaId = programMjerenjaId;
     }
 
+    public Integer getNivoValidacijeId() {
+        return nivoValidacijeId;
+    }
+
+    public void setNivoValidacijeId(Integer nivoValidacijeId) {
+        this.nivoValidacijeId = nivoValidacijeId;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

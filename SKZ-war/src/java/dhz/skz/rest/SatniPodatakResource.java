@@ -7,7 +7,6 @@ package dhz.skz.rest;
 
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.rest.dto.PodatakDTO;
@@ -66,9 +65,9 @@ public class SatniPodatakResource {
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
-        List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), true, true);
+        List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), nivo, true, true);
         for (Podatak p : podaci) {
-            boolean valjan = OperStatus.isValidSatni(p.getStatus(), new NivoValidacije(nivo));
+            boolean valjan = OperStatus.isValid(p);
             if (!samo_valjani || valjan) {
                 PodatakDTO po = new PodatakDTO();
                 po.setProgramMjerenjaId(programId);
@@ -115,8 +114,8 @@ public class SatniPodatakResource {
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
-        for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, true, true)) {
-            boolean valjan = OperStatus.isValidSatni(p.getStatus(), new NivoValidacije(nivo));
+        for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, nivo, true, true)) {
+            boolean valjan = OperStatus.isValid(p);
             if (!samo_valjani || valjan) {
                 PodatakDTO po = new PodatakDTO();
                 po.setProgramMjerenjaId(programId);

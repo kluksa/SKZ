@@ -44,7 +44,7 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
     public IzvorPodatakaFacade() {
         super(IzvorPodataka.class);
     }
-    
+    // TODO prebaciti u named query
     public IzvorPodataka findByName(final String naziv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<IzvorPodataka> cq = cb.createQuery(IzvorPodataka.class);
@@ -55,6 +55,7 @@ public class IzvorPodatakaFacade extends AbstractFacade<IzvorPodataka> {
         return em.createQuery(cq).getSingleResult();
     }
 
+    // TODO prebaciti u named query
     public Iterable<IzvorPodataka> getAktivniIzvori() {
         em.flush();
         CriteriaBuilder cb = em.getCriteriaBuilder();

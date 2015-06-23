@@ -44,7 +44,7 @@ public class IspitneVelicineFacade extends AbstractFacade<IspitneVelicine> {
     public IspitneVelicineFacade() {
         super(IspitneVelicine.class);
     }
-    
+    // TODO prebaciti u named query
     public IspitneVelicine findByOznaka(String oznaka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<IspitneVelicine> cq = cb.createQuery(IspitneVelicine.class);

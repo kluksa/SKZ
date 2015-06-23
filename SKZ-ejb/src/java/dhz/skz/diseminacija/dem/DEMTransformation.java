@@ -68,7 +68,7 @@ public class DEMTransformation {
                         if (podaciNaPostaji.containsKey(postaja)
                                 && podaciNaPostaji.get(postaja).containsKey(vr)) {
                             Podatak pod = podaciNaPostaji.get(postaja).get(vr);
-                            if (pod.getStatus() < (1 << OperStatus.SATNI_ERR1.ordinal())) {
+                            if (OperStatus.isValid(pod)) {
                                 status = -1;
                                 vrijednost = pod.getVrijednost();
                             } else {

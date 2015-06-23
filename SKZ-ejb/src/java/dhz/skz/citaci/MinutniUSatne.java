@@ -68,7 +68,7 @@ public class MinutniUSatne {
 
     private AgPodatak mjerenje, zero, span;
     private int ocekivaniBroj;
-    private NivoValidacije nivo = new NivoValidacije(0);
+    private Integer nivo = 0;
     private Date zavrsnoVrijeme;
     private ProgramMjerenja program;
 
@@ -89,8 +89,8 @@ public class MinutniUSatne {
         for (PodatakSirovi ps : podaci) {
             if (ps.getProgramMjerenjaId().equals(program)) {
                 try {
-                    Integer status = ( ps.getStatus() != null ) ? ps.getStatus() : 0;
-                    if (OperStatus.isValidSirovi(status, nivo)) {
+                    Integer status = ps.getStatus();
+                    if (OperStatus.isValid(ps)) {
                         mjerenje.broj++;
                         mjerenje.iznos += ps.getVrijednost();
                     } else if ((status & (1 << OperStatus.ZERO.ordinal())) != 0) {
@@ -155,12 +155,12 @@ public class MinutniUSatne {
         return zs;
     }
 
-    public void spremiSatneIzSirovih(ProgramMjerenja program, NivoValidacije nv) {
+    public void spremiSatneIzSirovih(ProgramMjerenja program, Integer nv) {
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
-        Date zadnjiSatni = podatakFacade.getZadnjiPodatak(program);
-        Date zadnjiSirovi = podatakSiroviFacade.getZadnjiPodatak(program);
+        Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, nv);
+        Date zadnjiSirovi = podatakSiroviFacade.getVrijemeZadnjeg(program);
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
         UserTransaction utx = context.getUserTransaction();
 

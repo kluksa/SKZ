@@ -45,6 +45,7 @@ public class OdgovornoTijeloFacade extends AbstractFacade<OdgovornoTijelo> {
         super(OdgovornoTijelo.class);
     }
     
+    // TODO prebaciti u named query
     public OdgovornoTijelo findByNaziv(String naziv) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<OdgovornoTijelo> cq = cb.createQuery(OdgovornoTijelo.class);

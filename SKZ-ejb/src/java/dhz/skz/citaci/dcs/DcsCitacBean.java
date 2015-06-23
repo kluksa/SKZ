@@ -9,10 +9,8 @@ import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.NivoValidacijeFacade;
 import dhz.skz.citaci.CitacIzvora;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,8 +36,6 @@ import javax.sql.DataSource;
 @LocalBean
 public class DcsCitacBean implements CitacIzvora {
     @EJB
-    private NivoValidacijeFacade nivoValidacijeFacade;
-    @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
 
     private static final Logger log = Logger.getLogger(DcsCitacBean.class.getName());
@@ -58,7 +54,7 @@ public class DcsCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
-            Date zadnji = podatakFacade.getZadnjiPodatak(pm);
+            Date zadnji = podatakFacade.getVrijemeZadnjeg(pm, 0);
             try (Connection con = dcsDS.getConnection()) {
                 List<Podatak> podaci = getPodaci(con, pm, zadnji);
                 podatakFacade.spremi(podaci);
@@ -73,7 +69,7 @@ public class DcsCitacBean implements CitacIzvora {
         List<Podatak> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
-        NivoValidacije nv = nivoValidacijeFacade.find(0);
+//        NivoValidacije nv = nivoValidacijeFacade.find(0);
         
         try (PreparedStatement prepStmt = con.prepareStatement(selektSql)) {
             prepStmt.setInt(1, station);
@@ -90,7 +86,7 @@ public class DcsCitacBean implements CitacIzvora {
                     Integer status = getStatus(statusStr, greskaStr, obuhvat);
                     Podatak p = new Podatak();
                     p.setProgramMjerenjaId(pm);
-                    p.setNivoValidacijeId(nv);
+                    p.setNivoValidacijeId(0);
                     p.setObuhvat(obuhvat);
                     p.setStatus(status);
                     p.setVrijeme(new Date(timestamp.getTime()));

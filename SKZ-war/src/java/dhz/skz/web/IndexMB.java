@@ -9,6 +9,7 @@ package dhz.skz.web;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.facades.PodatakFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,8 @@ public class IndexMB implements Serializable {
     private  transient Logger log;
     @EJB
     private PostajaFacade postajaFacade;
+    @EJB
+    private PodatakFacade podatakFacade;
     private List<Postaja> postaje;
     private List<Podatak> podaci;
     private Map<Postaja, Date> vrijemeZadnjeg;
@@ -54,7 +57,7 @@ public class IndexMB implements Serializable {
         vrijemeZadnjeg = new HashMap<>();
         sada = new Date();
         for ( Postaja p : postaje) {
-            Date zadnji = postajaFacade.getZadnjeVrijeme(p);
+            Date zadnji = podatakFacade.getVrijemeZadnjeg(p);
             if ( zadnji != null ) {
                 vrijemeZadnjeg.put(p, zadnji);
             }

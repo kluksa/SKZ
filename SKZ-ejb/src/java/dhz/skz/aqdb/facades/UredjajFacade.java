@@ -50,6 +50,7 @@ public class UredjajFacade extends AbstractFacade<Uredjaj> {
         super(Uredjaj.class);
     }
 
+    // TODO prebaciti u named query
     public Uredjaj findBySn(String sernum) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Uredjaj> cq = cb.createQuery(Uredjaj.class);
