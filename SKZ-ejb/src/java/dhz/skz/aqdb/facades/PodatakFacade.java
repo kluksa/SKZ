@@ -181,9 +181,9 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
     public Podatak find(Podatak pod) {
         
-        return em.createNamedQuery("Podatak.findByVrijemeProgramNivo", Podatak.class).setParameter("vrijeme", pod.getVrijeme())
-                .setParameter("program", pod.getProgramMjerenjaId()).setParameter("nivo", pod.getNivoValidacijeId()).getSingleResult();
-        
+        List<Podatak> rl = em.createNamedQuery("Podatak.findByVrijemeProgramNivo", Podatak.class).setParameter("vrijeme", pod.getVrijeme())
+                .setParameter("program", pod.getProgramMjerenjaId()).setParameter("nivo", pod.getNivoValidacijeId()).getResultList();
+        return (rl == null || rl.isEmpty()) ? null : rl.get(0);
 //        CriteriaBuilder cb = em.getCriteriaBuilder();
 //        CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);
 //        Root<Podatak> from = cq.from(Podatak.class);
@@ -199,7 +199,8 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
 
     public void spremi(Podatak ps) {
         log.log(Level.FINEST, "SPREMAM: {0}:{1}:{2}:{3}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId(), ps.getStatus(), ps.getVrijednost()});
-        Podatak pod = PodatakFacade.this.find(ps);
+        Podatak pod = this.find(ps);
+        
         if (pod == null) {
             em.persist(ps);
         } else {

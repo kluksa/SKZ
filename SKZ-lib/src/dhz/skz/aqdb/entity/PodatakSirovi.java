@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -44,8 +45,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PodatakSirovi implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
+    @SequenceGenerator(name="podatak_sirovi_id_seq",
+                       sequenceName="podatak_sirovi_id_seq",
+                       allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                    generator="podatak_sirovi_id_seq")
+    @Column(name = "id", updatable=false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
@@ -72,6 +77,7 @@ public class PodatakSirovi implements Serializable {
     @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenjaId;
     @Column(name = "nivo_validacije_id")
+    @NotNull
     private Integer nivoValidacijeId;
 
     public PodatakSirovi() {

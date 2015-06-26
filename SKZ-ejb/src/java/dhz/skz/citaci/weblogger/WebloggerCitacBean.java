@@ -13,6 +13,7 @@ import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacIzvora;
@@ -97,7 +98,6 @@ public class WebloggerCitacBean implements CitacIzvora {
 //
 //        MJERENJE, KALIBRACIJA
 //    }
-
     @PostConstruct
     public void init() {
         formatter.setTimeZone(timeZone);
@@ -118,7 +118,18 @@ public class WebloggerCitacBean implements CitacIzvora {
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
                 programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-                vrijemeZadnjegMjerenja = podatakSiroviFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
+                
+                PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
+                if ( zadnji == null ) {
+                    Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+                    if ( pocetakMjerenja == null ) continue;
+                    vrijemeZadnjegMjerenja = pocetakMjerenja;
+                } else {
+                    vrijemeZadnjegMjerenja = zadnji.getVrijeme();
+                }
+                
+                
+//                vrijemeZadnjegMjerenja = podatakSiroviFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
                 vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
 
                 pokupiMjerenja();
@@ -154,8 +165,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                         WlFileParser citac = napraviParser(m.group(2), terminDatoteke);
                         citac.setNivoValidacije(0);
                         if (citac.isDobarTermin()) {
-
-                            log.log(Level.INFO, "Datoteka :{0}", file.getName());
+                            log.log(Level.INFO, "Datoteka : {0}", file.getName());
                             try (InputStream ifs = ftp.getFileStream(file)) {
                                 utx.begin();
                                 citac.parse(ifs);

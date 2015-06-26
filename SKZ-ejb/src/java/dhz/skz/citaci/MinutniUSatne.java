@@ -159,12 +159,26 @@ public class MinutniUSatne {
         this.nivo = nv;
         this.ocekivaniBroj = 60;
         this.program = program;
+        
+        PodatakSirovi zadnjiSirovi = podatakSiroviFacade.getZadnji(program);
+        
+        if ( zadnjiSirovi == null ) { 
+            log.log(Level.INFO, "NEMA PODATAKA ZA AGREGACIJU ZA PROGRAM {0}", program.getId());
+            return;
+        }
+        
         Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, nv);
-        Date zadnjiSirovi = podatakSiroviFacade.getVrijemeZadnjeg(program);
+        if ( zadnjiSatni == null) {
+            PodatakSirovi ps = podatakSiroviFacade.getPrvi(program);
+            zadnjiSatni = ps.getVrijeme();
+            log.log(Level.INFO, "NIJE BILO UPISANIH SATNIH PODATAKA ZA PROGRAM {0}", program.getId());
+        }
+        
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
+
         UserTransaction utx = context.getUserTransaction();
 
-        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi, tzone);
+        SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi.getVrijeme(), tzone);
         Date pocetnoVrijeme = sat.getVrijeme();
         try {
             utx.begin();
@@ -183,7 +197,7 @@ public class MinutniUSatne {
                     }
                 }
                 if ((n % 24) == 0) {
-                    log.log(Level.INFO, "SAT: {0}", zavrsnoVrijeme);
+                    log.log(Level.FINE, "SAT: {0}", zavrsnoVrijeme);
                     utx.commit();
                     utx.begin();
                 }
@@ -196,7 +210,7 @@ public class MinutniUSatne {
             try {
                 utx.rollback();
             } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                Logger.getLogger(MinutniUSatne.class.getName()).log(Level.SEVERE, null, ex1);
+                log.log(Level.SEVERE, null, ex1);
             }
         }
     }

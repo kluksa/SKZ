@@ -80,7 +80,6 @@ class WlMjerenjaParser implements WlFileParser {
     @Override
     public void parse(InputStream fileStream) throws WlFileException, IOException {
         HashSet<Date> procitanaVremena = new HashSet<>();
-
         CsvReader csv = new CsvReader(fileStream, separator, chareset);
         setNizKanala();
         try {
@@ -176,7 +175,7 @@ class WlMjerenjaParser implements WlFileParser {
                     pod.setProgramMjerenjaId(pm);
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
-                    pod.setNivoValidacijeId(nivo);
+                    pod.setNivoValidacijeId(0);
                     pod.setVrijednost(iznos * pm.getKomponentaId().getKonvVUM());
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);

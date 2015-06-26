@@ -140,7 +140,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
         cq.select(from).where(cb.and(izvorP, postajaP)).orderBy(cb.desc(vrijemeE));
         List<PodatakSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
+        if (rl == null || rl.isEmpty()) {
             return null;
         }
         return rl.get(0);
@@ -160,12 +160,32 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         );
         cq.select(from).orderBy(cb.desc(vrijemeE));
         List<PodatakSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
+        if (rl == null || rl.isEmpty()) {
             return null;
         }
         return rl.get(0);
     }
-    
+
+        // TODO prebaciti u named query
+    public PodatakSirovi getPrvi(ProgramMjerenja program) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
+        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
+
+        Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
+        Expression<ProgramMjerenja> programE = from.get(PodatakSirovi_.programMjerenjaId);
+
+        cq.where(
+                cb.equal(programE, program)
+        );
+        cq.select(from).orderBy(cb.asc(vrijemeE));
+        List<PodatakSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+        if (rl == null || rl.isEmpty()) {
+            return null;
+        }
+        return rl.get(0);
+    }
+
     // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja, String datoteka) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -182,37 +202,28 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         CriteriaQuery<PodatakSirovi> select = cq.select(from)
                 .where(cb.and(izvorP, postajaP, datotekaP)).orderBy(cb.desc(vrijemeE));
         List<PodatakSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl == null || rl.isEmpty() || rl.get(0) == null) {
+        if (rl == null || rl.isEmpty()) {
             return null;
         }
         return rl.get(0);
     }
     
-    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja){
-        Date zadnji = new Date(0L);
-        PodatakSirovi ps = getZadnji(izvor, postaja);
-        if ( ps != null) {
-            zadnji = ps.getVrijeme();
-        }
-        return zadnji;
-    }
-
-    public Date getVrijemeZadnjeg(ProgramMjerenja program){
-        Date zadnji = new Date(0L);
-        PodatakSirovi ps = getZadnji(program);
-        if ( ps != null) {
-            zadnji = ps.getVrijeme();
-        }
-        return zadnji;
-    }
-
-    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka){
-        Date zadnji = new Date(0L);
-        PodatakSirovi ps = getZadnji(izvor, postaja, datoteka);
-        if ( ps != null) {
-            zadnji = ps.getVrijeme();
-        }
-        return zadnji;
-    }
+//    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja){
+//        Date zadnji = new Date(0L);
+//        PodatakSirovi ps = getZadnji(izvor, postaja);
+//        if ( ps != null) {
+//            zadnji = ps.getVrijeme();
+//        }
+//        return zadnji;
+//    }
+//
+//    public Date getVrijemeZadnjeg(IzvorPodataka izvor, Postaja postaja, String datoteka){
+//        Date zadnji = new Date(0L);
+//        PodatakSirovi ps = getZadnji(izvor, postaja, datoteka);
+//        if ( ps != null) {
+//            zadnji = ps.getVrijeme();
+//        }
+//        return zadnji;
+//    }
 
 }

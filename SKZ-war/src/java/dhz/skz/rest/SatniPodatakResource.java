@@ -61,8 +61,6 @@ public class SatniPodatakResource {
     public List<PodatakDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetakP, @PathParam("kraj") DateTimeParam krajP,
             @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
             @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
-        //TODO return proper representation object
-
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<PodatakDTO> lista = new ArrayList<>();
         List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), nivo, true, true);
@@ -101,7 +99,6 @@ public class SatniPodatakResource {
             @DefaultValue("1") @QueryParam("broj_dana") Integer broj_dana, 
             @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
             @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
-        //TODO return proper representation object
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC+1"));
         cal.setTime(datum.getDate());
 //        cal.set(Calendar.HOUR_OF_DAY, 0);

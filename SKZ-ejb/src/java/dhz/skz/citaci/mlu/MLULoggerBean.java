@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacIzvora;
@@ -98,7 +99,13 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
         if (datoteka.compareToIgnoreCase("zero-span") == 0) {
             vrijeme = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
         } else {
-            vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);
+            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, postaja, datoteka);
+            if ( zadnji == null) {
+                vrijeme = new Date(0L);
+            } else {
+                vrijeme = zadnji.getVrijeme();
+            }
+//            vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);
         }
         return vrijeme;
     }

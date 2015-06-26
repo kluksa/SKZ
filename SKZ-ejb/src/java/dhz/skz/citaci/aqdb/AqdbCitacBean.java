@@ -51,7 +51,7 @@ public class AqdbCitacBean implements CitacIzvora {
         log.log(Level.INFO, "POCETAK CITANJA");
         for (ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {
             Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, 0);
-            Date zadnjiSirovi = podatakSiroviFacade.getVrijemeZadnjeg(program);
+            Date zadnjiSirovi = podatakSiroviFacade.getZadnji(program).getVrijeme();
             procitaj();
 //            SatniIterator sat = new SatniIterator(zadnjiSatni, zadnjiSirovi, tzone);
 //            while (sat.next()) {
