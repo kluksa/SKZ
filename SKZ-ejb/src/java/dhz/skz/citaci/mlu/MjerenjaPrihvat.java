@@ -125,6 +125,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
                     ps.setVrijeme(vrijeme);
                     ps.setVrijednost(vrijednost);
                     ps.setStatus(0);
+                    ps.setNivoValidacijeId(0);
 
                     String ss = linija[i + 1];
                     String ns = linija[i + 2];

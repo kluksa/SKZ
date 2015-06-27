@@ -24,6 +24,7 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.config.Config;
 import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.util.OperStatus;
@@ -62,6 +63,9 @@ public class MinutniUSatne {
     private PodatakFacade podatakFacade;
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB
+    private ProgramMjerenjaFacade programMjerenjaFacade;
+
     @Inject
     @Config
     private TimeZone tzone;
@@ -153,6 +157,12 @@ public class MinutniUSatne {
             zs.add(s);
         }
         return zs;
+    }
+    
+    public void napraviSatne(Integer nv) {
+        for (ProgramMjerenja pm : programMjerenjaFacade.findAll()){
+            spremiSatneIzSirovih(pm,nv);
+        }
     }
 
     public void spremiSatneIzSirovih(ProgramMjerenja program, Integer nv) {

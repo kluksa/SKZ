@@ -134,9 +134,9 @@ public class WebloggerCitacBean implements CitacIzvora {
 
                 pokupiMjerenja();
 
-                for (ProgramMjerenja pm : programNaPostaji) {
-                    siroviUSatneBean.spremiSatneIzSirovih(pm, 0);
-                }
+//                for (ProgramMjerenja pm : programNaPostaji) {
+//                    siroviUSatneBean.spremiSatneIzSirovih(pm, 0);
+//                }
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
                 log.log(Level.SEVERE, "", ex);

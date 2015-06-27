@@ -18,7 +18,9 @@ package dhz.skz;
 
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacIzvora;
+import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,13 +40,14 @@ import javax.naming.NamingException;
 @Singleton
 @Startup
 public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemote {
-
+ 
     private static final Logger log = Logger.getLogger(CitaciGlavniBean.class.getName());
 
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
+    @EJB
+    private MinutniUSatne minutniUSatne;
 
-    
     private boolean aktivan = false;
 
     public CitaciGlavniBean() {
@@ -52,14 +55,14 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     }
 
     @Inject
-    @Config(vrijednost="14")
+    @Config(vrijednost = "14")
     private Integer minuta;
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         schedule(minuta);
     }
-    
+
     @Timeout
     @Override
     public void pokreni() {
@@ -87,6 +90,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
+            // TODO ovo odkomentirati kada izbacim agregaciju iz citaca, Ideja je da citaci samo citaju, a da se onda naknadno svi podaci agregiraju
+            minutniUSatne.napraviSatne(0);
             aktivan = false;
             log.log(Level.INFO, "Kraj pokretanja citaca");
         } else {

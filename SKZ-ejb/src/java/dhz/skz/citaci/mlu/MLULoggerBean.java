@@ -87,9 +87,9 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
-            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
-        }
+//        for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
+//            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
+//        }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
 
