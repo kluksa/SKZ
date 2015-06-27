@@ -18,7 +18,6 @@ package dhz.skz;
 
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
@@ -90,7 +89,6 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
-            // TODO ovo odkomentirati kada izbacim agregaciju iz citaca, Ideja je da citaci samo citaju, a da se onda naknadno svi podaci agregiraju
             minutniUSatne.napraviSatne(0);
             aktivan = false;
             log.log(Level.INFO, "Kraj pokretanja citaca");
