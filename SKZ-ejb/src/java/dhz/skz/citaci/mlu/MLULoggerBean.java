@@ -63,7 +63,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void prihvati(CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Idem obraditi.");
+        log.log(Level.INFO, "Idem obraditi. {0}", omotnica.getVrsta() );
         postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
         izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         sdf.setTimeZone(tzone);
@@ -91,22 +91,5 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
 //        }
         log.log(Level.INFO, "KRAJ CITANJA");
-    }
-
-    @Override
-    public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka) {
-        Date vrijeme;
-        if (datoteka.compareToIgnoreCase("zero-span") == 0) {
-            vrijeme = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
-        } else {
-            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, postaja, datoteka);
-            if ( zadnji == null) {
-                vrijeme = new Date(0L);
-            } else {
-                vrijeme = zadnji.getVrijeme();
-            }
-//            vrijeme = podatakSiroviFacade.getVrijemeZadnjeg(izvor, postaja, datoteka);
-        }
-        return vrijeme;
     }
 }

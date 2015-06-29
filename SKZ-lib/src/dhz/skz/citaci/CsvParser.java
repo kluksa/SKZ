@@ -5,10 +5,7 @@
  */
 package dhz.skz.citaci;
 
-import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
-import java.util.Date;
 
 /**
  *
@@ -17,7 +14,5 @@ import java.util.Date;
 public interface CsvParser {
 
     void prihvati(CsvOmotnica omotnica);
-
-    public Date getVrijemeZadnjegPodatka(IzvorPodataka izvor, Postaja postaja, String datoteka);
 
 }

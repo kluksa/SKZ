@@ -8,10 +8,14 @@ package dhz.skz.ws;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -31,6 +35,11 @@ import javax.naming.NamingException;
 @Stateless()
 public class PrihvatPodatakaWS {
 
+    @EJB
+    private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB
+    private ZeroSpanFacade zeroSpanFacade;
+
     public static final Logger log = Logger.getLogger(PrihvatPodatakaWS.class.getName());
     @EJB
     private IzvorPodatakaFacade izvorPodatakaFacade;
@@ -40,7 +49,7 @@ public class PrihvatPodatakaWS {
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
     public void prihvatiOmotnicu(@WebParam(name = "omotnica") CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Poceo  prihvatiOmotnicu : {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Poceo  prihvatiOmotnicu : {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         try {
             InitialContext ctx = new InitialContext();
@@ -54,33 +63,17 @@ public class PrihvatPodatakaWS {
         } catch (NamingException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
+        log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
     }
 
     @WebMethod(operationName = "getUnixTimeZadnjeg")
     public Long getUnixTimeZadnjeg(@WebParam(name = "izvorS") String izvorS, @WebParam(name = "postajaS") String postajaS, @WebParam(name = "datotekaS") String datotekaS) {
-        log.log(Level.INFO, "Poceo getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, datotekaS });
-        IzvorPodataka izvor = izvorPodatakaFacade.findByName(izvorS);
-        Postaja postaja = postajaFacade.findByNacionalnaOznaka(postajaS);
-
-        try {
-            InitialContext ctx = new InitialContext();
-            String str = "java:module/";
-
-            String naziv = str + izvor.getBean().trim();
-            log.log(Level.FINE, "Bean: {0}", naziv);
-            CsvParser parser = (CsvParser) ctx.lookup(naziv);
-            log.log(Level.INFO, "Zavrsio getUnixTimeZadnjeg: {0}, {1}, {2}, {3} " , new Object[]{postajaS, datotekaS });
-            return parser.getVrijemeZadnjegPodatka(izvor, postaja, datotekaS).getTime();
-        } catch (NamingException ex) {
-            log.log(Level.SEVERE, null, ex);
-        }
         return null;
     }
 
     @WebMethod(operationName = "test")
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
-       if (!inStr.equals("Orao javi se, orao javi se, prijem.")) {
+        if (!inStr.equals("Orao javi se, orao javi se, prijem.")) {
             throw new CsvPrihvatException();
         }
         return "Orao pao, orao pao.";
@@ -88,24 +81,20 @@ public class PrihvatPodatakaWS {
 
     @WebMethod(operationName = "getZadnjiZaOmotnicu")
     public long getZadnjiZaOmotnicu(@WebParam(name = "omotnica") final CsvOmotnica omotnica) {
-        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3}" , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
-        
+        log.log(Level.INFO, "Poceo getZadnjiZaOmotnicu: {0}, {1}, {2}, {3}", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
+
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
-        try {
-            InitialContext ctx = new InitialContext();
-            String str = "java:module/";
+        Postaja postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
 
-            String naziv = str + izvor.getBean().trim();
-            log.log(Level.FINE, "Bean: {0}", naziv);
-            CsvParser parser = (CsvParser) ctx.lookup(naziv);
-            log.log(Level.INFO, "Zavrsio getZadnjiZaOmotnicu: {0}, {1}, {2}, {3} " , new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta() });
-            Postaja postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
-
-            return parser.getVrijemeZadnjegPodatka(izvor, postaja, omotnica.getDatoteka()).getTime();
-
-        } catch (NamingException ex) {
-            log.log(Level.SEVERE, null, ex);
+        Date vrijemeZadnjegPodatka = new Date(0L);
+        if (omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
+            vrijemeZadnjegPodatka = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
+        } else {
+            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, postaja, omotnica.getDatoteka());
+            if (podatakSiroviFacade != null) vrijemeZadnjegPodatka=zadnji.getVrijeme();
         }
-        return 0;
+        log.log(Level.INFO, "Zadnji podatak: {0},{1},{0}", new Object[]{izvor.getNaziv(), postaja.getNazivPostaje(),vrijemeZadnjegPodatka});
+
+        return vrijemeZadnjegPodatka.getTime();
     }
 }

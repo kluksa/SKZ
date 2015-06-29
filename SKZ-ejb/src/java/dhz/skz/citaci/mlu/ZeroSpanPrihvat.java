@@ -81,6 +81,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
         String datoteka = omotnica.getDatoteka();
         for (Integer i = 1; i < headeri.length; i++) {
             String str = headeri[i];
+            
             if (str.length() > 5) {
                 String kraj = str.substring(str.length() - 5);
                 String pocetak = str.substring(0, str.length() - 5);
