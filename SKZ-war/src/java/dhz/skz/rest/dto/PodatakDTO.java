@@ -5,17 +5,20 @@
  */
 package dhz.skz.rest.dto;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author kraljevic
  */
+@XmlRootElement
 public class PodatakDTO {
     private Integer programMjerenjaId;
     private long vrijeme;
     private Double vrijednost;
     private Integer status;
     private Integer obuhvat;
-    private boolean valjan;
+    private Boolean valjan;
 
     public Integer getProgramMjerenjaId() {
         return programMjerenjaId;
@@ -57,13 +60,11 @@ public class PodatakDTO {
         this.obuhvat = obuhvat;
     }
 
-    public boolean isValjan() {
+    public Boolean isValjan() {
         return valjan;
     }
 
     public void setValjan(boolean valjan) {
         this.valjan = valjan;
     }
-    
-    
 }

@@ -18,6 +18,7 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap_;
+import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.PodatakSirovi_;
 import dhz.skz.aqdb.entity.Postaja;
@@ -26,6 +27,8 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -45,7 +48,7 @@ import javax.persistence.criteria.Root;
 @Stateless
 @LocalBean
 public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
-
+    private static final Logger log = Logger.getLogger(PodatakSiroviFacade.class.getName());
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -58,28 +61,10 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         super(PodatakSirovi.class);
     }
 
-    public void spremi(Collection<PodatakSirovi> podaci) {
-        for (PodatakSirovi ps : podaci) {
-            if (!postoji(ps)) {
-                em.persist(ps);
-            }
-        }
-    }
-
-    // TODO prebaciti u named query
     public boolean postoji(PodatakSirovi podatak) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<PodatakSirovi> cq = cb.createQuery(PodatakSirovi.class);
-        Root<PodatakSirovi> from = cq.from(PodatakSirovi.class);
-
-        Expression<Date> vrijemeE = from.get(PodatakSirovi_.vrijeme);
-        Expression<ProgramMjerenja> programE = from.get(PodatakSirovi_.programMjerenjaId);
-
-        cq.where(cb.and(cb.equal(vrijemeE, podatak.getVrijeme()),
-                cb.equal(programE, podatak.getProgramMjerenjaId())));
-        cq.select(from);
-        List<PodatakSirovi> resultList = em.createQuery(cq).getResultList();
-        return (resultList != null) && (!resultList.isEmpty());
+         return !em.createNamedQuery("PodatakSirovi.findByVrijemeProgram", PodatakSirovi.class)
+                 .setParameter("vrijeme", podatak.getVrijeme()).setParameter("programMjerenja", podatak.getProgramMjerenjaId())
+                .setMaxResults(1).getResultList().isEmpty();
     }
 
     // TODO prebaciti u named query
@@ -225,5 +210,19 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 //        }
 //        return zadnji;
 //    }
+    
+    public void edit(PodatakSirovi entity) {
+        try {
+            getEntityManager().merge(entity);
+        } catch (Throwable ex) {
+            log.log(Level.SEVERE,"", ex);
+            Throwable cause = ex.getCause();
+            while ( cause != null) {
+                log.log(Level.SEVERE,"", cause);
+                cause = ex.getCause();
+            }
+            throw(ex);
+        }
+    }
 
 }

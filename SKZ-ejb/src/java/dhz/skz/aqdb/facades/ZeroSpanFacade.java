@@ -248,4 +248,13 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         cq.select(zsT).orderBy(cb.asc(vrijemeT));
         return em.createQuery(cq).getResultList();
     }
+
+    public boolean postoji(ZeroSpan ps) {
+         return !em.createNamedQuery("ZeroSpan.findByVrijemeProgramVrsta", ZeroSpan.class)
+                 .setParameter("vrijeme", ps.getVrijeme())
+                 .setParameter("programMjerenja", ps.getProgramMjerenjaId())
+                 .setParameter("vrsta", ps.getVrsta())
+                .setMaxResults(1).getResultList().isEmpty();
+    }
+
 }

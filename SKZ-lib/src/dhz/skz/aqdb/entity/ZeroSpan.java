@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ZeroSpan.findByMinimum", query = "SELECT z FROM ZeroSpan z WHERE z.minimum = :minimum"),
     @NamedQuery(name = "ZeroSpan.findByMaximum", query = "SELECT z FROM ZeroSpan z WHERE z.maximum = :maximum"),
     @NamedQuery(name = "ZeroSpan.findByStdev", query = "SELECT z FROM ZeroSpan z WHERE z.stdev = :stdev"),
+    @NamedQuery(name = "ZeroSpan.findByVrijemeProgramVrsta", query = "SELECT z FROM ZeroSpan z WHERE z.vrijeme = :vrijeme AND z.programMjerenjaId = :programMjerenja AND z.vrsta = :vrsta"),   
     @NamedQuery(name = "ZeroSpan.findByReferentnaVrijednost", query = "SELECT z FROM ZeroSpan z WHERE z.referentnaVrijednost = :referentnaVrijednost")})
 public class ZeroSpan implements Serializable {
     private static final long serialVersionUID = 1L;

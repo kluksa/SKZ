@@ -66,10 +66,6 @@ public class PrihvatPodatakaWS {
         log.log(Level.INFO, "Zavrsio prihvatiOmotnicu: {0}, {1}, {2}, {3} ", new Object[]{omotnica.getIzvor(), omotnica.getPostaja(), omotnica.getDatoteka(), omotnica.getVrsta()});
     }
 
-    @WebMethod(operationName = "getUnixTimeZadnjeg")
-    public Long getUnixTimeZadnjeg(@WebParam(name = "izvorS") String izvorS, @WebParam(name = "postajaS") String postajaS, @WebParam(name = "datotekaS") String datotekaS) {
-        return null;
-    }
 
     @WebMethod(operationName = "test")
     public String test(@WebParam(name = "inStr") String inStr) throws CsvPrihvatException {
@@ -91,9 +87,9 @@ public class PrihvatPodatakaWS {
             vrijemeZadnjegPodatka = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
         } else {
             PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, postaja, omotnica.getDatoteka());
-            if (podatakSiroviFacade != null) vrijemeZadnjegPodatka=zadnji.getVrijeme();
+            if (zadnji != null) vrijemeZadnjegPodatka=zadnji.getVrijeme();
         }
-        log.log(Level.INFO, "Zadnji podatak: {0},{1},{0}", new Object[]{izvor.getNaziv(), postaja.getNazivPostaje(),vrijemeZadnjegPodatka});
+        log.log(Level.INFO, "Zadnji podatak: {0},{1},{2}", new Object[]{izvor.getNaziv(), postaja.getNazivPostaje(),vrijemeZadnjegPodatka});
 
         return vrijemeZadnjegPodatka.getTime();
     }

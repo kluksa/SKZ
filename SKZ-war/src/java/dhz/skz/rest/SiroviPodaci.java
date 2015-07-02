@@ -138,10 +138,11 @@ public class SiroviPodaci {
         Korisnik user = korisnikFacade.findByIme(sc.getUserPrincipal().getName());
         log.log(Level.INFO, "Stizu podaci. program= {0}, dan={1}, korisnik={2}", new Object[]{programId, datum.getDate(), user.getKorisnickoIme()});
         for (PodatakSiroviDTO p : podaci) {
+            Boolean valjan = p.isValjan();
             PodatakSirovi ps = podatakSiroviFacade.find(p.getId());
             int st = ps.getStatus();
             st &= ~ (1 << OperStatus.KONTROLA.ordinal());                       // prvo reset bita
-            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA.ordinal());    // set bita ako je odbacen
+            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA.ordinal());   
             ps.setStatus(st);
             ps.setKorisnikId(user);
             ps.setVrijemeUpisa(new Date());

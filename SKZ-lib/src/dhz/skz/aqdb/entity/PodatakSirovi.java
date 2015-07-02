@@ -21,6 +21,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author kraljevic
  */
 @Entity
-@Table(name = "podatak_sirovi")
+@Table(name = "podatak_sirovi", uniqueConstraints = {@UniqueConstraint(columnNames = {"vrijeme", "program_mjerenja_id"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PodatakSirovi.findAll", query = "SELECT p FROM PodatakSirovi p"),
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PodatakSirovi.findByGreska", query = "SELECT p FROM PodatakSirovi p WHERE p.greska = :greska"),
     @NamedQuery(name = "PodatakSirovi.findByVrijemeUpisa", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijemeUpisa = :vrijemeUpisa"),
     @NamedQuery(name = "PodatakSirovi.findByStatusString", query = "SELECT p FROM PodatakSirovi p WHERE p.statusString = :statusString"),   
+    @NamedQuery(name = "PodatakSirovi.findByVrijemeProgram", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme = :vrijeme AND p.programMjerenjaId = :programMjerenja"),   
     @NamedQuery(name = "PodatakSirovi.findByPocetakKraj", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme BETWEEN :pocetak AND :kraj")})
 public class PodatakSirovi implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -55,9 +57,8 @@ public class PodatakSirovi implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
+    @Column(name = "vrijeme", columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date vrijeme;
-
     @Basic(optional = false)
     @NotNull
     private double vrijednost;

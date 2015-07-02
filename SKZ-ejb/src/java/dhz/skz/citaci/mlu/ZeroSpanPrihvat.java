@@ -22,15 +22,19 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
+import dhz.skz.diseminacija.dem.LokalnaZona;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +43,8 @@ import java.util.logging.Logger;
  *
  * @author kraljevic
  */
-public class ZeroSpanPrihvat implements OmotnicaPrihvat{
+public class ZeroSpanPrihvat implements OmotnicaPrihvat {
+
     private static final Logger log = Logger.getLogger(ZeroSpanPrihvat.class.getName());
 
     private final ZeroSpanFacade zeroSpanFacade;
@@ -50,38 +55,35 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
     private CsvOmotnica omotnica;
     private Postaja postaja;
     private IzvorPodataka izvor;
+    private final SimpleDateFormat sdf;
 
     public ZeroSpanPrihvat(ProgramMjerenjaFacade programMjerenjaFacade, ZeroSpanFacade zeroSpanFacade) {
         this.programMjerenjaFacade = programMjerenjaFacade;
         this.zeroSpanFacade = zeroSpanFacade;
+        this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(LokalnaZona.getZone());
     }
-    
+
     @Override
-    public void prihvati(CsvOmotnica omotnica, Postaja postaja, IzvorPodataka izvor){
+    public void prihvati(CsvOmotnica omotnica, Postaja postaja, IzvorPodataka izvor) {
         this.omotnica = omotnica;
         this.postaja = postaja;
         this.izvor = izvor;
         this.mapa = new HashMap<>();
         this.modMapa = new HashMap<>();
 
-        Collection<ZeroSpan> podaci = new ArrayList<>();
+        parseHeaders();
+        parseLinije();
+        log.log(Level.INFO, "BROJ ZS: {0} {1}", new Object[]{omotnica.getLinije().size()});
 
-        parseHeaders(omotnica.getHeaderi());
-
-        Iterator<Long> it = omotnica.getVremena().iterator();
-        for (String[] linija : omotnica.getLinije()) {
-            parseLinija(linija, it.next(), podaci);
-        }
-        log.log(Level.INFO, "BROJ ZS: {0} {1} {2}", new Object[]{omotnica.getVremena().size(), omotnica.getLinije().size(), podaci.size()});
-
-        zeroSpanFacade.spremi(podaci);
     }
 
-    private void parseHeaders(String[] headeri) {
+    private void parseHeaders() {
+        String[] headeri = omotnica.getHeaderi();
         String datoteka = omotnica.getDatoteka();
         for (Integer i = 1; i < headeri.length; i++) {
             String str = headeri[i];
-            
+
             if (str.length() > 5) {
                 String kraj = str.substring(str.length() - 5);
                 String pocetak = str.substring(0, str.length() - 5);
@@ -104,37 +106,43 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat{
         }
     }
 
-    private void parseLinija(String[] linija, Long next, Collection<ZeroSpan> podaci) {
-        Date vrijeme = new Date(next);
-        for (Integer i : mapa.keySet()) {
-            ProgramMjerenja pm = mapa.get(i);
-            
-            if (!linija[i].equalsIgnoreCase("null")) {
-                String ll = linija[i];
-                try {
-                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    if(linija[i].contains(",")) { 
-                        symbols.setDecimalSeparator(',');
-                    } else {
-                        symbols.setDecimalSeparator('.');
+    private void parseLinije() {
+        for (String[] linija : omotnica.getLinije()) {
+            try {
+                Date vrijeme = sdf.parse(linija[0]);
+                for (Integer i : mapa.keySet()) {
+                    ProgramMjerenja pm = mapa.get(i);
+                    if (!linija[i].equalsIgnoreCase("null")) {
+                        try {
+                            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                            if (linija[i].contains(",")) {
+                                symbols.setDecimalSeparator(',');
+                            } else {
+                                symbols.setDecimalSeparator('.');
+                            }
+                            DecimalFormat format = new DecimalFormat("#.#");
+                            format.setDecimalFormatSymbols(symbols);
+                            Double vrijednost;
+                            if ("-9999".equals(linija[i])) {
+                                vrijednost = -999.;
+                            } else {
+                                vrijednost = format.parse(linija[i]).doubleValue();
+                            }
+                            ZeroSpan ps = new ZeroSpan();
+                            ps.setProgramMjerenjaId(pm);
+                            ps.setVrijeme(vrijeme);
+                            ps.setVrijednost(vrijednost);
+                            ps.setVrsta(modMapa.get(i));
+                            if ( ! zeroSpanFacade.postoji(ps)){
+                                zeroSpanFacade.create(ps);
+                            }
+                        } catch (NumberFormatException | ParseException ex) {
+                            log.log(Level.SEVERE, null, ex);
+                        }
                     }
-                    DecimalFormat format = new DecimalFormat("#.#");
-                    format.setDecimalFormatSymbols(symbols);
-                    Double vrijednost;
-                    if ("-9999".equals(linija[i])) {
-                        vrijednost = -999.;
-                    } else {
-                        vrijednost = format.parse(linija[i]).doubleValue();
-                    }
-                    ZeroSpan ps = new ZeroSpan();
-                    ps.setProgramMjerenjaId(pm);
-                    ps.setVrijeme(vrijeme);
-                    ps.setVrijednost(vrijednost);
-                    ps.setVrsta(modMapa.get(i));
-                    podaci.add(ps);
-                } catch (NumberFormatException | ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
                 }
+            } catch (ParseException ex) {
+                log.log(Level.SEVERE, null, ex);
             }
         }
     }

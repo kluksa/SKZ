@@ -11,16 +11,13 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,8 +37,6 @@ import javax.inject.Inject;
 public class MLULoggerBean implements CsvParser, CitacIzvora {
 
     private static final Logger log = Logger.getLogger(MLULoggerBean.class.getName());
-    @EJB
-    private MinutniUSatne siroviUSatneBean;
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
@@ -70,6 +65,7 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 
         OmotnicaPrihvat op = parserFactory(omotnica);
         op.prihvati(omotnica, postaja, izvor);
+        log.log(Level.INFO, "Obradio", omotnica.getVrsta() );
 
     }
 
