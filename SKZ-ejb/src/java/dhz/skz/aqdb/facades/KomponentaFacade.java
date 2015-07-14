@@ -20,6 +20,7 @@ import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Komponenta_;
 import dhz.skz.aqdb.entity.ModelUredjaja;
 import dhz.skz.aqdb.entity.ModelUredjaja_;
+import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -64,6 +66,12 @@ public class KomponentaFacade extends AbstractFacade<Komponenta> {
         
         cq.select(from).where(uvjet);
         return em.createQuery(cq).getResultList();
+    }
+    
+    public Collection<Komponenta> findByPostaja(Integer pId) {
+        TypedQuery<Komponenta> query = em.createNamedQuery("Komponenta.findByPostajaDistinct", Komponenta.class);
+        query.setParameter("postaja_id", pId);
+        return query.getResultList();
     }
     
 }

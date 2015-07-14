@@ -43,6 +43,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Komponenta.findByVrstaKomponente", query = "SELECT k FROM Komponenta k WHERE k.vrstaKomponente = :vrstaKomponente"),
     @NamedQuery(name = "Komponenta.findByKonvVUM", query = "SELECT k FROM Komponenta k WHERE k.konvVUM = :konvVUM"),
     @NamedQuery(name = "Komponenta.findByNazivEng", query = "SELECT k FROM Komponenta k WHERE k.nazivEng = :nazivEng"),
+    @NamedQuery(name = "Komponenta.findByPostajaDistinct", 
+            query = "SELECT DISTINCT k FROM Komponenta k JOIN k.programMjerenjaCollection pm JOIN pm.postajaId po "
+                    + " WHERE po.id = :postaja_id"),
     @NamedQuery(name = "Komponenta.findByProsijekTijekom", query = "SELECT k FROM Komponenta k WHERE k.prosijekTijekom = :prosijekTijekom")})
 public class Komponenta implements Serializable {
     private static final long serialVersionUID = 1L;

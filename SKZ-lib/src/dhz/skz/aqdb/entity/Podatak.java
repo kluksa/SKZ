@@ -47,30 +47,35 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Podatak.findByKomponentaVrijemeNivo", query = "SELECT p FROM Podatak p JOIN p.programMjerenjaId pm "
             + "WHERE p.vrijeme > :pocetak AND p.vrijeme <= :kraj AND p.nivoValidacijeId = :nivo AND pm.komponentaId = :komponenta "
             + "AND pm.usporednoMjerenje = :usporedno ORDER BY p.vrijeme"),
+    @NamedQuery(name = "Podatak.findByPostajaKomponentaVrijemeNivoUsporedno", query = "SELECT p FROM Podatak p JOIN p.programMjerenjaId pm "
+            + "WHERE p.vrijeme > :pocetak AND p.vrijeme <= :kraj "
+            + "AND p.nivoValidacijeId = :nivo AND pm.komponentaId = :komponenta AND pm.postajaId = :postaja "
+            + "AND pm.usporednoMjerenje = :usporedno ORDER BY p.vrijeme"),
     @NamedQuery(name = "Podatak.getVrijemeZadnjegProgramNivo", query = "SELECT p.vrijeme FROM Podatak p WHERE p.programMjerenjaId = :program AND p.nivoValidacijeId = :nivo ORDER BY p.vrijeme DESC"),
-    @NamedQuery(name = "Podatak.getVrijemeZadnjegPostaja", query="SELECT p.vrijeme FROM Podatak p JOIN p.programMjerenjaId pm  WHERE pm.postajaId = :postaja ORDER BY p.vrijeme DESC")
-        
+    @NamedQuery(name = "Podatak.getVrijemeZadnjegPostaja", query = "SELECT p.vrijeme FROM Podatak p JOIN p.programMjerenjaId pm  WHERE pm.postajaId = :postaja ORDER BY p.vrijeme DESC")
+
 })
 public class Podatak implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(name="podatak_id_seq",
-                       sequenceName="podatak_id_seq",
-                       allocationSize=1)
+    @SequenceGenerator(name = "podatak_id_seq",
+            sequenceName = "podatak_id_seq",
+            allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-                    generator="podatak_id_seq")
+            generator = "podatak_id_seq")
     @Column(name = "podatak_id")
     private Integer podatakId;
     @Basic(optional = false)
     @NotNull
-    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijeme;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     private Double vrijednost;
     private Integer obuhvat;
     @Basic(optional = false)
-    @Column(name = "vrijeme_upisa", insertable = false, updatable=false, columnDefinition="TIMESTAMP WITH TIME ZONE")
+    @Column(name = "vrijeme_upisa", insertable = false, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vrijemeUpisa;
     @Column(name = "originalni_podatak_id")
@@ -228,5 +233,5 @@ public class Podatak implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.Podatak[ podatakId=" + podatakId + " ]";
     }
-    
+
 }

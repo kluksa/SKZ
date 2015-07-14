@@ -27,6 +27,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
@@ -224,5 +225,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
             throw(ex);
         }
     }
+    
+    
 
 }

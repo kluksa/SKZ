@@ -9,7 +9,7 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.rest.dto.PodatakDTO;
+import dhz.skz.rest.dto.SatniDTO;
 import dhz.skz.rest.util.DateTimeParam;
 import dhz.skz.util.OperStatus;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -55,26 +56,28 @@ public class SatniPodatakResource {
     public SatniPodatakResource() {
     }
     
+    
+    
     @GET
     @Path("{program}/{pocetak}/{kraj}")
     @Produces("application/json")
-    public List<PodatakDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetakP, @PathParam("kraj") DateTimeParam krajP,
+    public List<SatniDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetakP, @PathParam("kraj") DateTimeParam krajP,
             @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
             @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        List<PodatakDTO> lista = new ArrayList<>();
+        List<SatniDTO> lista = new ArrayList<>();
         List<Podatak> podaci = podatakFacade.getPodatak(program, pocetakP.getDate(), krajP.getDate(), nivo, true, true);
         for (Podatak p : podaci) {
             boolean valjan = OperStatus.isValid(p);
             if (!samo_valjani || valjan) {
-                PodatakDTO po = new PodatakDTO();
-                po.setProgramMjerenjaId(programId);
-                po.setVrijeme(p.getVrijeme().getTime() / 1000);
-                po.setVrijednost(p.getVrijednost());
-                po.setObuhvat((int) p.getObuhvat());
-                po.setStatus(p.getStatus());
-                po.setValjan(valjan);
-                lista.add(po);
+                SatniDTO t=new SatniDTO();
+                t.setProgramMjerenjaId(programId);
+                t.setVrijeme(p.getVrijeme().getTime() / 1000);
+                t.setVrijednost(p.getVrijednost());
+                t.setObuhvat((int) p.getObuhvat());
+                t.setStatus(p.getStatus());
+                t.setValjan(valjan);
+                lista.add(t);
             }
         }
         return lista;
@@ -95,7 +98,7 @@ public class SatniPodatakResource {
     @GET
     @Path("{program}/{datum}")
     @Produces("application/json")
-    public List<PodatakDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateTimeParam datum,
+    public List<SatniDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateTimeParam datum,
             @DefaultValue("1") @QueryParam("broj_dana") Integer broj_dana, 
             @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
             @DefaultValue("0") @QueryParam("nivo_validacije") Integer nivo) {
@@ -108,13 +111,17 @@ public class SatniPodatakResource {
         Date kraj = cal.getTime();
         cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
+        log.log(Level.INFO, "Od {0} do {1}", new Object[]{pocetak, kraj});
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
-        List<PodatakDTO> lista = new ArrayList<>();
+        List<SatniDTO> lista = new ArrayList<>();
         for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, nivo, true, true)) {
+
             boolean valjan = OperStatus.isValid(p);
+            log.log(Level.INFO, "P: {0},{1}", new Object[]{p.getVrijeme(), valjan});
+            
             if (!samo_valjani || valjan) {
-                PodatakDTO po = new PodatakDTO();
+                SatniDTO po = new SatniDTO();
                 po.setProgramMjerenjaId(programId);
                 po.setVrijeme(p.getVrijeme().getTime() / 1000);
                 po.setVrijednost(p.getVrijednost());
@@ -122,8 +129,11 @@ public class SatniPodatakResource {
                 po.setStatus(p.getStatus());
                 po.setValjan(valjan);
                 lista.add(po);
+                log.log(Level.INFO, "PP: {0},{1}", new Object[]{p.getVrijeme(), valjan});
             }
         }
+        log.log(Level.INFO, "SVE OK");
         return lista;
     }
+    
 }

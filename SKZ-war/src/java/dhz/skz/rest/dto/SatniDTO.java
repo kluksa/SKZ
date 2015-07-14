@@ -5,28 +5,19 @@
  */
 package dhz.skz.rest.dto;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  *
  * @author kraljevic
  */
-@XmlRootElement
-public class PodatakDTO {
-    private Integer programMjerenjaId;
+public class SatniDTO implements Serializable {
+    private int programMjerenjaId;
     private long vrijeme;
-    private Double vrijednost;
-    private Integer status;
-    private Integer obuhvat;
-    private Boolean valjan;
-
-    public Integer getProgramMjerenjaId() {
-        return programMjerenjaId;
-    }
-
-    public void setProgramMjerenjaId(Integer programMjerenjaId) {
-        this.programMjerenjaId = programMjerenjaId;
-    }
+    private double vrijednost;
+    private int status;
+    private int obuhvat;
+    private boolean valjan;
 
     public long getVrijeme() {
         return vrijeme;
@@ -36,35 +27,44 @@ public class PodatakDTO {
         this.vrijeme = vrijeme;
     }
 
-    public Double getVrijednost() {
+    public int getProgramMjerenjaId() {
+        return programMjerenjaId;
+    }
+
+    public void setProgramMjerenjaId(int programMjerenjaId) {
+        this.programMjerenjaId = programMjerenjaId;
+    }
+
+    public double getVrijednost() {
         return vrijednost;
     }
 
-    public void setVrijednost(Double vrijednost) {
+    public void setVrijednost(double vrijednost) {
         this.vrijednost = vrijednost;
     }
 
-    public Integer getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public Integer getObuhvat() {
+    public int getObuhvat() {
         return obuhvat;
     }
 
-    public void setObuhvat(Integer obuhvat) {
+    public void setObuhvat(int obuhvat) {
         this.obuhvat = obuhvat;
     }
 
-    public Boolean isValjan() {
+    public boolean isValjan() {
         return valjan;
     }
 
     public void setValjan(boolean valjan) {
         this.valjan = valjan;
     }
+    
 }

@@ -59,6 +59,13 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         super(Podatak.class);
     }
 
+    public Collection<Podatak> findByPostajaKomponentaUsporednoNivo(Postaja po, Komponenta k, short usporedno, Integer nv,  Date pocetak, Date kraj ) {
+            return em.createNamedQuery("Podatak.findByPostajaKomponentaVrijemeNivoUsporedno", Podatak.class).setParameter("pocetak", pocetak)
+                .setParameter("kraj", kraj).setParameter("nivo", nv).setParameter("komponenta", k).setParameter("usporedno", usporedno).setParameter("postaja", po)
+                .getResultList();
+    }
+    
+    
     public Collection<Podatak> find(Date pocetak, Date kraj, Komponenta k, Integer nv, short usporedno) {
         return em.createNamedQuery("Podatak.findByKomponentaVrijemeNivo", Podatak.class).setParameter("pocetak", pocetak)
                 .setParameter("kraj", kraj).setParameter("nivo", nv).setParameter("komponenta", k).setParameter("usporedno", usporedno)

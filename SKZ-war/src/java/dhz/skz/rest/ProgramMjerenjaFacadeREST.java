@@ -5,18 +5,20 @@
  */
 package dhz.skz.rest;
 
+import dhz.skz.rest.dto.ZadnjiDTO;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 /**
@@ -24,66 +26,42 @@ import javax.ws.rs.Produces;
  * @author kraljevic
  */
 @Stateless
+@LocalBean
 @Path("dhz.skz.rs.programmjerenja")
-public class ProgramMjerenjaFacadeREST extends AbstractFacade<ProgramMjerenja> {
-    @PersistenceContext(unitName = "SKZ-warPU")
-    private EntityManager em;
+public class ProgramMjerenjaFacadeREST  {
+    @EJB
+    private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB
+    private PodatakFacade podatakFacade;
+    @EJB
+    private ProgramMjerenjaFacade programMjerenjaFacade;
+    
 
     public ProgramMjerenjaFacadeREST() {
-        super(ProgramMjerenja.class);
-    }
-
-    @POST
-    @Override
-    @Consumes({"application/xml", "application/json"})
-    public void create(ProgramMjerenja entity) {
-        super.create(entity);
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({"application/xml", "application/json"})
-    public void edit(@PathParam("id") Integer id, ProgramMjerenja entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
     }
 
     @GET
-    @Path("{id}")
-    @Produces({"application/xml", "application/json"})
-    public ProgramMjerenja find(@PathParam("id") Integer id) {
-        return super.find(id);
-    }
-
-    @GET
-    @Override
     @Produces({"application/xml", "application/json"})
     public List<ProgramMjerenja> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
-    public List<ProgramMjerenja> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces("text/plain")
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+        return programMjerenjaFacade.findAll();
     }
     
+    @GET
+    @Path("zadnji")
+    @Produces({"application/xml", "application/json"})
+    public List<ZadnjiDTO> getVrijemeZadnjegPodatkaPoProgramu(){
+        List<ZadnjiDTO> lista = new ArrayList<>();
+        for ( ProgramMjerenja pm : programMjerenjaFacade.findAll()) {
+            Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(pm, 0);
+            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(pm);
+            Date zadnjiSirovi; 
+            if ( zadnji != null ) 
+                zadnjiSirovi = zadnji.getVrijeme();
+            else
+                zadnjiSirovi = null;
+            lista.add(new ZadnjiDTO(pm.getId(), zadnjiSatni, zadnjiSirovi));
+        }
+        return lista;
+    }
+
 }

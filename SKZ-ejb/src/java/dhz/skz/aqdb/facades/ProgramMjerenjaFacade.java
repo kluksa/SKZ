@@ -33,6 +33,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -208,7 +209,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         cq.select(pmT);
         return em.createQuery(cq).getResultList();
     }
-    
+
     // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(Postaja postaja) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -223,4 +224,12 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         cq.distinct(true);
         return em.createQuery(cq).getResultList();
     }
+    
+    public Collection<ProgramMjerenja> findByPostaja(Postaja postaja) {
+        TypedQuery<ProgramMjerenja> query = em.createNamedQuery("ProgramMjerenja.findByPostaja", ProgramMjerenja.class);
+        query.setParameter("postaja", postaja);
+        return query.getResultList();
+    }
+    
+    
 }

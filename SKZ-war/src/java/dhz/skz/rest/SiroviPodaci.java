@@ -70,8 +70,7 @@ public class SiroviPodaci {
      *
      * @param programId
      * @param datum
-     * @param broj
-     * @param sc
+     * @param brojDana
      * @return an instance of test.dto.PodatakSiroviDTO
      */
     @GET
@@ -122,7 +121,7 @@ public class SiroviPodaci {
         }
         return lista;
     }
-
+    
     /**
      * PUT method for updating or creating an instance of SiroviPodaci
      *
