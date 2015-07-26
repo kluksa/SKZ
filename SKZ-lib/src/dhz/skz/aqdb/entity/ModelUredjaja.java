@@ -127,7 +127,6 @@ public class ModelUredjaja implements Serializable {
         this.imaZeroSpanCal = imaZeroSpanCal;
     }
 
-    @XmlTransient
     public Collection<Komponenta> getKomponentaCollection() {
         return komponentaCollection;
     }

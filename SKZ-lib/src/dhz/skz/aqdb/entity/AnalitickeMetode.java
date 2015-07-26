@@ -145,7 +145,6 @@ public class AnalitickeMetode implements Serializable {
         this.komponentaCollection = komponentaCollection;
     }
 
-    @XmlTransient
     public Collection<DozvoljeneGranice> getDozvoljeneGraniceCollection() {
         return dozvoljeneGraniceCollection;
     }

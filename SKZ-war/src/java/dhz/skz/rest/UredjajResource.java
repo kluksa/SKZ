@@ -5,6 +5,7 @@
  */
 package dhz.skz.rest;
 
+import dhz.skz.aqdb.entity.AnalitickeMetode;
 import dhz.skz.aqdb.facades.KomponentaFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.UredjajFacade;
@@ -29,7 +30,7 @@ import javax.ws.rs.Path;
  *
  * @author kraljevic
  */
-@Path("uredjaj")
+@Path("uredjaj/")
 //@LocalBean
 @Stateless
 //@javax.enterprise.context.RequestScoped
@@ -52,13 +53,19 @@ public class UredjajResource {
     public UredjajResource() {
     }
 
+    @GET
+    @Produces({"application/xml", "application/json"})
+    public Collection<Uredjaj> getUredjaji(@PathParam("sernum") String sernum) {
+        return uredjajFacade.findAll();
+    }
+    
     /**
      *
      * @param sernum
      * @return
      */
     @GET
-    @Path("{sernum}")
+    @Path("{sernum}/")
     @Produces({"application/xml", "application/json"})
     public Uredjaj getUredjaj(@PathParam("sernum") String sernum) {
         try {

@@ -61,7 +61,7 @@ public class DrzavnaMrezaResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces({"application/json","application/xml"})
+    @Produces({"application/xml", "application/json"})
     @Path("postaje")
     public List<PostajaDTO> getPostaje() {
         List<PostajaDTO> postaje = new ArrayList<>();
@@ -72,7 +72,7 @@ public class DrzavnaMrezaResource {
     }
     
     @GET
-    @Produces({"application/json","application/xml"})
+    @Produces({"application/xml", "application/json"})
     @Path("postaje/{id}/komponente")
     public List<KomponentaDTO> getKomponenteNaPostaji(@PathParam("id") Integer postajaId) {
         List<KomponentaDTO> komponente = new ArrayList<>();
@@ -82,6 +82,13 @@ public class DrzavnaMrezaResource {
         return komponente;
     }
 
+    @GET
+    @Produces({"application/xml", "application/json"})
+    @Path("postaje/{id}")
+    public PostajaDTO getPostaja(@PathParam("id") Integer postajaId) {
+        return new PostajaDTO(postajaFacade.find(postajaId));
+    }
+    
     @GET
     @Produces({"application/xml", "application/json"})
     @Path("podaci/{postaja_id}/{komponenta_id}")
@@ -100,7 +107,7 @@ public class DrzavnaMrezaResource {
     
     @GET
     @Path("podaci/{postaja_id}/{komponenta_id}/{pocetak}/{kraj}")
-    @Produces("application/json")
+    @Produces({"application/xml", "application/json"})
     public List<SatniDTO> getPodaci(@PathParam("postaja_id") Integer postajaId, @PathParam("komponenta_id") Integer komponentaId, 
             @PathParam("pocetak") DateTimeParam pocetakP, @PathParam("kraj") DateTimeParam krajP,
             @DefaultValue("true") @QueryParam("samo_valjani") Boolean samo_valjani,
@@ -138,7 +145,7 @@ public class DrzavnaMrezaResource {
      */
     @GET
     @Path("podaci/{postaja_id}/{komponenta_id}/{datum}")
-    @Produces("application/json")
+    @Produces({"application/xml", "application/json"})
     public List<SatniDTO> getPodaci(@PathParam("postaja_id") Integer postajaId, @PathParam("komponenta_id") Integer komponentaId, 
             @PathParam("datum") DateTimeParam datum,
             @DefaultValue("1") @QueryParam("broj_dana") Integer broj_dana, 
@@ -172,6 +179,4 @@ public class DrzavnaMrezaResource {
         }
         return lista;
     }
-
-
 }

@@ -5,6 +5,7 @@
  */
 package dhz.skz.rest.dto;
 
+import dhz.skz.aqdb.entity.Postaja;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -23,6 +24,16 @@ public class PostajaDTO implements Serializable {
     private int nadmorska_visina;
 
     public PostajaDTO(){}
+    
+    public PostajaDTO(Postaja p) {
+        this.id = p.getId();
+        this.naziv = p.getNazivPostaje();
+        this.oznaka = p.getOznakaPostaje();
+        this.g_duzina = p.getGeogrDuzina();
+        this.g_sirina = p.getGeogrSirina();
+        this.nadmorska_visina = p.getNadmorskaVisina();
+        
+    }
     
     public PostajaDTO(Integer id, String naziv, String oznakaPostaje, Double geogrDuzina, Double geogrSirina, Integer nadmorskaVisina) {
         this.id = id;
