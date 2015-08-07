@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
@@ -18,6 +19,7 @@ import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,5 +89,10 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
 //            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
 //        }
         log.log(Level.INFO, "KRAJ CITANJA");
+    }
+
+    @Override
+    public Map<String, String> opisiStatus(PodatakSirovi ps) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

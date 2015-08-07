@@ -5,7 +5,10 @@
  */
 package dhz.skz;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
+import java.util.Map;
 import javax.ejb.Remote;
+import javax.naming.NamingException;
 
 /**
  *
@@ -13,4 +16,5 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CitaciGlavniBeanRemote extends GlavniBeanInterace {
+    public Map<String, String> opisiStatus(PodatakSirovi podatakSirovi) throws NamingException;
 }

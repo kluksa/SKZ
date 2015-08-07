@@ -18,9 +18,11 @@ package dhz.skz;
 
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -39,7 +41,7 @@ import javax.naming.NamingException;
 @Singleton
 @Startup
 public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemote {
- 
+
     private static final Logger log = Logger.getLogger(CitaciGlavniBean.class.getName());
 
     @EJB
@@ -96,4 +98,15 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
             log.log(Level.INFO, "Prethodni citac jos nije zavrsio");
         }
     }
+
+    @Override
+    public Map<String, String> opisiStatus(PodatakSirovi ps) throws NamingException {
+        InitialContext ctx = new InitialContext();
+        String str = "java:module/";
+        IzvorPodataka izvorPodatakaId = ps.getProgramMjerenjaId().getIzvorPodatakaId();
+        String naziv = str + izvorPodatakaId.getBean().trim();
+        CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
+        return citac.opisiStatus(ps);
+    }
+
 }

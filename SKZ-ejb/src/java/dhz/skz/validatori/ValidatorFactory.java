@@ -42,10 +42,17 @@ public abstract class ValidatorFactory {
     private final RezultatiUmjeravanja defaultRU;
 
     public ValidatorFactory(Collection<ProgramMjerenja> programi) {
-        programUredjaji = new HashMap<>(4 * programi.size() / 3 + 2);
         uredjajUmjeravanja = new HashMap<>();
         umjeravanjaKomponente = new HashMap<>();
         defaultRU = new RezultatiUmjeravanja();
+
+        if ( programi == null ) {
+            programUredjaji = new HashMap<>();
+            return;
+        } else { 
+            programUredjaji = new HashMap<>(4 * programi.size() / 3 + 2);
+        }
+        
         for (ProgramMjerenja p : programi) {
             NavigableMap<Date, Uredjaj> vrijemeUredjaj = new TreeMap<>();
             for (ProgramUredjajLink pul : p.getProgramUredjajLinkCollection()) {

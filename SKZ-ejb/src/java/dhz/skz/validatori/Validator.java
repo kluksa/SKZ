@@ -6,6 +6,7 @@
 package dhz.skz.validatori;
 
 import dhz.skz.aqdb.entity.PodatakSirovi;
+import java.util.Collection;
 
 /**
  *
@@ -18,5 +19,7 @@ public interface Validator {
     public void setPodaciUmjeravanja(Double a, Double b, Double ldl, Double opseg);
     
     public void setTemperatura(Double temperatura);
+    
+    public abstract Collection<String> opisStatusa(String statusStr);
 
 }

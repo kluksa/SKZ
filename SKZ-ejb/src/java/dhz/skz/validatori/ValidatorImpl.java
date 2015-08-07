@@ -18,6 +18,8 @@ package dhz.skz.validatori;
 
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.util.OperStatus;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  *
@@ -28,6 +30,8 @@ public abstract class ValidatorImpl implements Validator {
     protected Double a, b, ldl, opseg;
     private Double temperatura;
     private final int mask = 0b1111100111111000;
+    
+    
     
     @Override
     public void setTemperatura(Double temperatura){
@@ -73,5 +77,7 @@ public abstract class ValidatorImpl implements Validator {
     }
     
     public abstract int provjeraStatusa(String statusStr);
+
+    public abstract Collection<String> opisStatusa(String statusStr);
     
 }

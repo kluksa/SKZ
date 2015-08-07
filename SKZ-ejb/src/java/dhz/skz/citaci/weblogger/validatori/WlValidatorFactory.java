@@ -16,6 +16,7 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
+import static dhz.skz.aqdb.entity.EtalonBoca_.uredjaj;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
@@ -46,5 +47,26 @@ public class WlValidatorFactory extends ValidatorFactory {
         Validator v = valMapa.get(uredjaj.getModelUredjajaId().getProizvodjacId().getNaziv());
         v.setPodaciUmjeravanja(getA(pm, vrijeme), getB(pm, vrijeme), getDL(pm, vrijeme), getOpseg(pm, vrijeme));
         return v;
+    }
+    
+    public Validator getValidator(Uredjaj u){
+        String naziv = u.getModelUredjajaId().getProizvodjacId().getNaziv();
+        switch (naziv){
+            case "EAS Envimet":
+                switch ( u.getModelUredjajaId().getOznakaModela() ) {
+                    case "E100":
+                        return new API100EValidator();
+                    case "E200":
+                        return new API200EValidator();
+                    case "E300":
+                        return new API300EValidator();
+                    case "E400":
+                    default:
+                        return new API400EValidator();
+                }
+            default:
+                return new GrimmValidator();
+        }
+               
     }
 }

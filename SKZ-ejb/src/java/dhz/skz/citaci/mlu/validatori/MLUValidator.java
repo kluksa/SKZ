@@ -7,6 +7,7 @@ package dhz.skz.citaci.mlu.validatori;
 
 import dhz.skz.validatori.*;
 import dhz.skz.util.OperStatus;
+import java.util.Collection;
 
 
 /**
@@ -18,7 +19,6 @@ public class MLUValidator extends ValidatorImpl {
     public MLUValidator() {
         this.setTemperatura(20.);
     }
-    
 
     @Override
     public int provjeraStatusa(String statusStr) {
@@ -52,5 +52,10 @@ public class MLUValidator extends ValidatorImpl {
                 status |= (1 << OperStatus.FAULT.ordinal());
         }
         return status;
+    }
+
+    @Override
+    public Collection<String> opisStatusa(String statusStr) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

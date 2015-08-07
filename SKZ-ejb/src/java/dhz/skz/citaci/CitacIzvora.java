@@ -6,13 +6,14 @@
 package dhz.skz.citaci;
 
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.PodatakSirovi;
+import java.util.Map;
 
 /**
  *
  * @author kraljevic
  */
 public interface CitacIzvora {
-
     public void napraviSatne(IzvorPodataka izvor);
-
+    public Map<String,String> opisiStatus(PodatakSirovi ps);
 }

@@ -16,12 +16,15 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.Uredjaj;
+import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
 import dhz.skz.config.Config;
+import dhz.skz.validatori.Validator;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +32,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,18 +60,21 @@ import org.apache.commons.net.ftp.FTPFile;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class WebloggerCitacBean implements CitacIzvora {
+    private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
+
+    @Inject
+    @Config
+    private TimeZone timeZone;
+    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+
+    @EJB
+    private UredjajFacade uredjajFacade;
 
     @EJB
     private ProgramUredjajLinkFacade programUredjajLinkFacade;
 
     @EJB
     private MinutniUSatne siroviUSatneBean;
-
-    private static final Logger log = Logger.getLogger(WebloggerCitacBean.class.getName());
-    @Inject
-    @Config
-    private TimeZone timeZone;
-    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
@@ -76,6 +84,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PostajaFacade posajaFacade;
+    
 //    @EJB
 //    private ValidatorFactory validatorFactory;
     @EJB
@@ -198,5 +207,21 @@ public class WebloggerCitacBean implements CitacIzvora {
         }
         parser.setTerminDatoteke(terminDatoteke);
         return parser;
+    }
+
+    @Override
+    public Map<String, String> opisiStatus(PodatakSirovi ps) {
+        Map<String,String> mapa = new HashMap<>();
+        Uredjaj uredjaj = uredjajFacade.findByPodatakSirovi(ps);
+        
+        WlValidatorFactory wlValidatorFactory = new WlValidatorFactory(null);
+        Validator validator = wlValidatorFactory.getValidator(uredjaj);
+        Collection<String> opisStatusa = validator.opisStatusa(ps.getStatusString());
+        Integer i=0;
+        for(String s: opisStatusa) {
+            mapa.put(i.toString(), s);
+            i++;
+        }
+        return mapa;
     }
 }

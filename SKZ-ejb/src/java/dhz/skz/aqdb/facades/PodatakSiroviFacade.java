@@ -226,6 +226,11 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         }
     }
     
+    public PodatakSirovi find(Integer id) {
+        PodatakSirovi find = getEntityManager().find(PodatakSirovi.class, id);
+        return find;
+    }
+    
     
 
 }

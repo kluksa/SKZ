@@ -16,10 +16,14 @@
  */
 package dhz.skz.aqdb.facades;
 
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PostajaUredjajLink;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
 import java.util.Date;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -37,7 +41,10 @@ import javax.persistence.criteria.Root;
 @Stateless
 @LocalBean
 public class UredjajFacade extends AbstractFacade<Uredjaj> {
+    @EJB
+    private PostajaUredjajLinkFacade postajaUredjajLinkFacade;
 
+    
     @PersistenceContext(unitName = "LIKZ-ejbPU")
     private EntityManager em;
 
@@ -57,6 +64,17 @@ public class UredjajFacade extends AbstractFacade<Uredjaj> {
         Root<Uredjaj> from = cq.from(Uredjaj.class);
         cq.select(from).where(cb.equal(from.get(Uredjaj_.serijskaOznaka), sernum.replaceAll("^0+", "")));
         return em.createQuery(cq).getSingleResult();
+    }
+    
+    public Uredjaj findByPodatakSirovi(PodatakSirovi ps) {
+        ProgramMjerenja pm = ps.getProgramMjerenjaId();
+        Postaja postajaId = pm.getPostajaId();
+        int usporednoMjerenje = pm.getUsporednoMjerenje();
+        PostajaUredjajLink pul = postajaUredjajLinkFacade.findByPostajaUsporednoVrijeme(postajaId, usporednoMjerenje, ps.getVrijeme());
+        if ( pul == null) {
+            return null;
+        }
+        return pul.getUredjajId();
     }
 
     @TransactionAttribute(REQUIRES_NEW)

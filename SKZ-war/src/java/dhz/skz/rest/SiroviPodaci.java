@@ -5,12 +5,18 @@
  */
 package dhz.skz.rest;
 
+import dhz.skz.CitaciGlavniBeanRemote;
+import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.facades.KorisnikFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.entity.Korisnik;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.Uredjaj;
+import dhz.skz.aqdb.facades.PostajaUredjajLinkFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.UredjajFacade;
+import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.rest.dto.PodatakSiroviDTO;
 import dhz.skz.rest.dto.StatusDTO;
 import dhz.skz.rest.util.DateParam;
@@ -18,12 +24,16 @@ import dhz.skz.util.OperStatus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -46,6 +56,10 @@ import javax.ws.rs.core.SecurityContext;
 //@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
+    @EJB
+    private CitaciGlavniBeanRemote citaciGlavniBean;
+    @EJB
+    private UredjajFacade uredjajFacade;
     private static final Logger log = Logger.getLogger(SiroviPodaci.class.getName());
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
@@ -54,6 +68,7 @@ public class SiroviPodaci {
 
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
+    
     
 
     @Context
@@ -122,6 +137,27 @@ public class SiroviPodaci {
         return lista;
     }
     
+    @GET
+    @Path("opis_statusa/{podatak_id}/{n_status_string}")
+    @Produces("application/json")
+    public Map<String,String> getStatusiMapiranje(@PathParam("podatak_id") Integer podatakId, @PathParam("n_status_string") String nStatus) throws NamingException {
+        OperStatus valueOf = OperStatus.valueOf(nStatus.toUpperCase().trim());
+        PodatakSirovi ps = podatakSiroviFacade.find(podatakId);
+        Map<String,String> mapa = new HashMap<>();
+        switch ( valueOf){
+            case FAULT:
+                mapa.putAll(citaciGlavniBean.opisiStatus(ps));
+                break;
+            case KONTROLA:
+                if ( ps.getKorisnikId() != null ) {
+                    mapa.put("mjeritelj:", ps.getKorisnikId().getKorisnickoIme());
+                }
+                break;
+            default:
+        }
+        return mapa;
+    }
+    
     /**
      * PUT method for updating or creating an instance of SiroviPodaci
      *
@@ -149,4 +185,6 @@ public class SiroviPodaci {
             podatakSiroviFacade.edit(ps);
         }
     }
+    
+    
 }

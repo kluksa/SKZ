@@ -16,6 +16,7 @@ import dhz.skz.config.Config;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,5 +69,10 @@ public class AqdbCitacBean implements CitacIzvora {
             log.log(Level.SEVERE, null, ex);
         }
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Map<String, String> opisiStatus(PodatakSirovi ps) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

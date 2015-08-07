@@ -16,7 +16,10 @@
  */
 package dhz.skz.aqdb.facades;
 
+import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PostajaUredjajLink;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -39,6 +42,13 @@ public class PostajaUredjajLinkFacade extends AbstractFacade<PostajaUredjajLink>
 
     public PostajaUredjajLinkFacade() {
         super(PostajaUredjajLink.class);
+    }
+    
+    public PostajaUredjajLink findByPostajaUsporednoVrijeme(Postaja po, int usporedno, Date vrijeme) {
+        List<PostajaUredjajLink> resultList = em.createNamedQuery("PostajaUredjajLink.findByPostajaUsporednoVrijeme", PostajaUredjajLink.class)
+                .setParameter("postaja", po).setParameter("usporedno", usporedno).setParameter("vrijeme", vrijeme).getResultList();
+        if ( resultList.isEmpty() ) return null;
+        return resultList.get(0);
     }
     
 }

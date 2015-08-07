@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostajaUredjajLink.findById", query = "SELECT p FROM PostajaUredjajLink p WHERE p.id = :id"),
     @NamedQuery(name = "PostajaUredjajLink.findByVrijemePostavljanja", query = "SELECT p FROM PostajaUredjajLink p WHERE p.vrijemePostavljanja = :vrijemePostavljanja"),
     @NamedQuery(name = "PostajaUredjajLink.findByVrijemeUklanjanja", query = "SELECT p FROM PostajaUredjajLink p WHERE p.vrijemeUklanjanja = :vrijemeUklanjanja"),
+    @NamedQuery(name = "PostajaUredjajLink.findByPostajaUsporednoVrijeme", query ="SELECT p FROM PostajaUredjajLink p WHERE p.postajaId = :postaja AND p.usporedno = :usporedno AND p.vrijemePostavljanja <= :vrijeme AND (p.vrijemeUklanjanja IS NULL OR p.vrijemeUklanjanja > :vrijeme)"),
     @NamedQuery(name = "PostajaUredjajLink.findByUsporedno", query = "SELECT p FROM PostajaUredjajLink p WHERE p.usporedno = :usporedno")})
 public class PostajaUredjajLink implements Serializable {
     private static final long serialVersionUID = 1L;
