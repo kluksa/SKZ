@@ -6,6 +6,7 @@
 package dhz.skz.web;
 
 import dhz.skz.aqdb.facades.UmjeravanjeFacade;
+import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -18,7 +19,7 @@ import javax.inject.Inject;
  */
 @Named(value = "umjeravanjeMB")
 @Dependent
-public class UmjeravanjeMB {
+public class UmjeravanjeMB implements Serializable{
     @Inject
     private  transient Logger log;
     @EJB

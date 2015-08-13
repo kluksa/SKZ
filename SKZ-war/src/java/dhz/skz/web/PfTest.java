@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -67,6 +68,9 @@ public class PfTest implements Serializable {
 
     @EJB
     private PostajaFacade postajaFacade;
+    
+    @EJB
+    private ProgramMjerenjaFacade programMjerenjafacade;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -152,7 +156,7 @@ public class PfTest implements Serializable {
     public void onPostajaChange() {
         novi = false;
         if (postaja != null) {
-            programiSvi = postaja.getProgramMjerenjaCollection();
+            programiSvi = programMjerenjafacade.findByPostaja(postaja);
         } else {
             programiSvi = new ArrayList<>();
 

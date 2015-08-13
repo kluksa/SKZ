@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-app>
+    <security-domain>app</security-domain>
+</jboss-app>

@@ -98,7 +98,7 @@ public class SirovaMB implements Serializable{
     public void init() {
         postaja = null;
         postaje = postajaFacade.findAll();
-        programiSvi = programMjerenjaFacade.find(postaja);
+        programiSvi = programMjerenjaFacade.findByPostaja(postaja);
         dateModel = new LineChartModel();
         LineChartSeries series1 = new LineChartSeries();
         series1.set(d1, 0);
@@ -144,7 +144,7 @@ public class SirovaMB implements Serializable{
     public void onPostajaChange() {
         novi = false;
         if (postaja != null) {
-            programiSvi = programMjerenjaFacade.find(postaja);
+            programiSvi = programMjerenjaFacade.findByPostaja(postaja);
         } else {
             programiSvi = new ArrayList<>();
         }
