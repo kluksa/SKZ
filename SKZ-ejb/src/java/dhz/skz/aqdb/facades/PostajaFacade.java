@@ -27,6 +27,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja_;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -65,7 +66,12 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         CriteriaQuery<Postaja> cq = cb.createQuery(Postaja.class);
         Root<Postaja> from = cq.from(Postaja.class);
         cq.select(from).where(cb.equal(from.get(Postaja_.nacionalnaOznaka), oznaka));
-        return em.createQuery(cq).getSingleResult();
+        List<Postaja> rl = em.createQuery(cq).getResultList();
+        if ( rl == null || rl.isEmpty()) {
+            return null;
+        } else {
+            return rl.get(0);
+        }
     }
 
 
@@ -90,7 +96,12 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
         Root<Postaja> from = cq.from(Postaja.class);
 
         cq.select(from).where(cb.equal(from.get(Postaja_.nazivPostaje), naziv));
-        return em.createQuery(cq).getSingleResult();
+        List<Postaja> rl = em.createQuery(cq).getResultList();
+        if ( rl == null || rl.isEmpty()) {
+            return null;
+        } else {
+            return rl.get(0);
+        }
     }
 
     // TODO prebaciti u named query
@@ -105,6 +116,12 @@ public class PostajaFacade extends AbstractFacade<Postaja> {
                 cb.isNull(pulJ.get(PostajaUredjajLink_.vrijemeUklanjanja)));
 
         cq.select(from).where(uvjet);
-        return em.createQuery(cq).getSingleResult();
+        
+        List<Postaja> rl = em.createQuery(cq).getResultList();
+        if ( rl == null || rl.isEmpty()) {
+            return null;
+        } else {
+            return rl.get(0);
+        }
     }
 }

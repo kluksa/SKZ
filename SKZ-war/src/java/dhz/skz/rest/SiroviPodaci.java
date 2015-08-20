@@ -6,17 +6,13 @@
 package dhz.skz.rest;
 
 import dhz.skz.CitaciGlavniBeanRemote;
-import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.facades.KorisnikFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.entity.Korisnik;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.Uredjaj;
-import dhz.skz.aqdb.facades.PostajaUredjajLinkFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.UredjajFacade;
-import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.rest.dto.PodatakSiroviDTO;
 import dhz.skz.rest.dto.StatusDTO;
 import dhz.skz.rest.util.DateParam;
@@ -32,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -141,16 +136,19 @@ public class SiroviPodaci {
     @Path("opis_statusa/{podatak_id}/{n_status_string}")
     @Produces("application/json")
     public Map<String,String> getStatusiMapiranje(@PathParam("podatak_id") Integer podatakId, @PathParam("n_status_string") String nStatus) throws NamingException {
+        Map<String,String> mapa = new HashMap<>();
         OperStatus valueOf = OperStatus.valueOf(nStatus.toUpperCase().trim());
         PodatakSirovi ps = podatakSiroviFacade.find(podatakId);
-        Map<String,String> mapa = new HashMap<>();
         switch ( valueOf){
             case FAULT:
                 mapa.putAll(citaciGlavniBean.opisiStatus(ps));
                 break;
             case KONTROLA:
-                if ( ps.getKorisnikId() != null ) {
-                    mapa.put("mjeritelj:", ps.getKorisnikId().getKorisnickoIme());
+                if ( ps != null && ps.getKorisnikId() != null ) {
+                    Korisnik korisnik = ps.getKorisnikId();
+                    mapa.put("mjeritelj:", korisnik.getKorisnickoIme());
+                    mapa.put("ime:", korisnik.getIme());
+                    mapa.put("prezime:", korisnik.getPrezime());
                 }
                 break;
             default:

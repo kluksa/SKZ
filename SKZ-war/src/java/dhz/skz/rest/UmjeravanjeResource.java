@@ -5,6 +5,9 @@
  */
 package dhz.skz.rest;
 
+import dhz.skz.aqdb.entity.EtalonBoca;
+import dhz.skz.aqdb.entity.EtalonCistiZrakKvaliteta;
+import dhz.skz.aqdb.entity.EtalonDilucijska;
 import dhz.skz.aqdb.facades.IspitneVelicineFacade;
 import dhz.skz.aqdb.facades.UmjeravanjeFacade;
 import dhz.skz.aqdb.facades.UmjerneTockeFacade;
@@ -83,4 +86,61 @@ public class UmjeravanjeResource {
     public Collection<UmjerneTocke> getUmjerneTocke(@PathParam("id") Integer id){
         return umjerneTockeFacade.findBy(umjeravanjeFacade.find(id));
     }
+    
+    @GET
+    @Path("etaloni/boca/")
+    @Produces({"application/xml", "application/json"})
+    public Collection<EtalonBoca> getEtalonBoca(){
+        return null;
+    }
+    
+    @GET
+    @Path("etaloni/boca/komponenta_id/{komponenta}")
+    @Produces({"application/xml", "application/json"})
+    public Collection<EtalonBoca> getEtalonBocaByKomponenta(@PathParam("komponenta") Integer id){
+        return null;
+    }
+
+    @GET
+    @Path("etaloni/boca/{id}")
+    @Produces({"application/xml", "application/json"})
+    public EtalonBoca getEtalonBocaById(@PathParam("komponenta") Integer id){
+        return null;
+    }
+    
+    @GET
+    @Path("etaloni/cisti_zrak/")
+    @Produces({"application/xml", "application/json"})
+    public Collection<EtalonCistiZrakKvaliteta> getEtalonCistiZrak(){
+        return null;
+    }
+    
+    @GET
+    @Path("etaloni/cisti_zrak/komponenta_id/{komponenta}")
+    @Produces({"application/xml", "application/json"})
+    public Collection<EtalonCistiZrakKvaliteta> getEtalonCistiZrakByKomponenta(@PathParam("komponenta") Integer id){
+        return null;
+    }
+
+    @GET
+    @Path("etaloni/cisti_zrak/{id}")
+    @Produces({"application/xml", "application/json"})
+    public EtalonCistiZrakKvaliteta getEtalonCistiZrakById(@PathParam("komponenta") Integer id){
+        return null;
+    }
+    
+    @GET
+    @Path("etaloni/dilucijska/")
+    @Produces({"application/xml", "application/json"})
+    public Collection<EtalonDilucijska> getEtalonDilucijska(@PathParam("komponenta") Integer id){
+        return null;
+    }
+
+    @GET
+    @Path("etaloni/dilucijska/{id}")
+    @Produces({"application/xml", "application/json"})
+    public EtalonDilucijska getEtalonDilucijskaById(@PathParam("komponenta") Integer id){
+        return null;
+    }
+
 }
