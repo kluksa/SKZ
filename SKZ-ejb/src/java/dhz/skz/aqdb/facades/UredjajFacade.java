@@ -23,6 +23,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -68,13 +69,13 @@ public class UredjajFacade extends AbstractFacade<Uredjaj> {
     
     public Uredjaj findByPodatakSirovi(PodatakSirovi ps) {
         ProgramMjerenja pm = ps.getProgramMjerenjaId();
-        Postaja postajaId = pm.getPostajaId();
-        int usporednoMjerenje = pm.getUsporednoMjerenje();
-        PostajaUredjajLink pul = postajaUredjajLinkFacade.findByPostajaUsporednoVrijeme(postajaId, usporednoMjerenje, ps.getVrijeme());
-        if ( pul == null) {
+        
+        List<Uredjaj> rl = em.createNamedQuery("Uredjaj.findByProgramMjerenja", Uredjaj.class).setParameter("programMjerenja", pm).setParameter("vrijeme", ps.getVrijeme()).getResultList();
+        
+        if ( rl == null || rl.isEmpty()) {
             return null;
         }
-        return pul.getUredjajId();
+        return rl.get(0);
     }
 
     @TransactionAttribute(REQUIRES_NEW)

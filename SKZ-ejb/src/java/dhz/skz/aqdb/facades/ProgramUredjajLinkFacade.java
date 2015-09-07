@@ -62,5 +62,7 @@ public class ProgramUredjajLinkFacade extends AbstractFacade<ProgramUredjajLink>
         cq.select(from).where(equal);
         return em.createQuery(cq).getResultList();
     }
+    
+    
 
 }

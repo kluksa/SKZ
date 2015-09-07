@@ -18,22 +18,22 @@ public class API100EValidator extends APIValidator {
     @Override
     protected Map<Integer, String> createMap() {
         HashMap<Integer, String> mapa = new HashMap<>();
-        mapa.put(0,"SAMPLE FLOW WARNING");
-        mapa.put(1,"PMT DET WARNING");
-        mapa.put(2,"HVPS WARNING");
-        mapa.put(3,"DARK CAL WARNING");
-        mapa.put(4,"RCELL TEMP WARNING");
-        mapa.put(5,"IZS TEMP WARNING");
-        mapa.put(6,"PMT TEMP WARNING");
-        mapa.put(7,"INVALID CONC");
-        mapa.put(8,"SPARE");
-        mapa.put(9,"In Manual Calibration Mode");
-        mapa.put(10,"In Zero Calibration Mode");
-        mapa.put(11,"In Span Calibration Mode");
-        mapa.put(12,"SPARE");
-        mapa.put(13,"PPB");
-        mapa.put(14,"PPM");
-        mapa.put(15,"SPARE");
+        mapa.put(0,"SAMPLE FLOW WARNING"); // 0x1
+        mapa.put(1,"PMT DET WARNING"); // 0x2
+        mapa.put(2,"HVPS WARNING"); // 0x4
+        mapa.put(3,"DARK CAL WARNING"); // 0x8
+        mapa.put(4,"RCELL TEMP WARNING"); // 0x10
+        mapa.put(5,"IZS TEMP WARNING"); // 0x20
+        mapa.put(6,"PMT TEMP WARNING"); // 0x40
+        mapa.put(7,"INVALID CONC"); // 0x80
+        mapa.put(8,"SPARE"); // 0x100
+        mapa.put(9,"In Manual Calibration Mode"); // 0x200
+        mapa.put(10,"In Zero Calibration Mode"); // 0x400
+        mapa.put(11,"In Span Calibration Mode"); // 0x800
+        mapa.put(12,"SPARE"); // 0x1000
+        mapa.put(13,"PPB"); // 0x2000
+        mapa.put(14,"PPM"); // 0x4000
+        mapa.put(15,"SPARE"); // 0x8000
         return Collections.unmodifiableMap(mapa);
     }
 }

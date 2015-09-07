@@ -16,7 +16,6 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
-import static dhz.skz.aqdb.entity.EtalonBoca_.uredjaj;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
@@ -24,6 +23,8 @@ import dhz.skz.validatori.Validator;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,6 +32,7 @@ import java.util.HashMap;
  */
 public class WlValidatorFactory extends ValidatorFactory {
     HashMap<String, Validator> valMapa;
+    private static final Logger log = Logger.getLogger(WlValidatorFactory.class.getName());
     
     public WlValidatorFactory(Collection<ProgramMjerenja> programi) {
         super(programi);
@@ -55,13 +57,17 @@ public class WlValidatorFactory extends ValidatorFactory {
             case "EAS Envimet":
                 switch ( u.getModelUredjajaId().getOznakaModela() ) {
                     case "E100":
+                        log.log(Level.INFO, "Validator: API100Validator");
                         return new API100EValidator();
                     case "E200":
+                        log.log(Level.INFO, "Validator: API200Validator");
                         return new API200EValidator();
                     case "E300":
+                        log.log(Level.INFO, "Validator: API300Validator");
                         return new API300EValidator();
                     case "E400":
                     default:
+                        log.log(Level.INFO, "Validator: API400Validator");
                         return new API400EValidator();
                 }
             default:

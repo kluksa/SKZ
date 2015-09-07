@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Uredjaj.findBySerijskaOznaka", query = "SELECT u FROM Uredjaj u WHERE u.serijskaOznaka = :serijskaOznaka"),
     @NamedQuery(name = "Uredjaj.findByGodinaProizvodnje", query = "SELECT u FROM Uredjaj u WHERE u.godinaProizvodnje = :godinaProizvodnje"),
     @NamedQuery(name = "Uredjaj.findByDatumIsporuke", query = "SELECT u FROM Uredjaj u WHERE u.datumIsporuke = :datumIsporuke"),
+    @NamedQuery(name = "Uredjaj.findByProgramMjerenja", query = "SELECT u FROM Uredjaj u "
+            + "JOIN u.programUredjajLinkCollection pul WHERE pul.programMjerenjaId = :programMjerenja AND pul.vrijemePostavljanja < :vrijeme AND ( pul.vrijemeUklanjanja IS NULL OR pul.vrijemeUklanjanja > :vrijeme)"),
     @NamedQuery(name = "Uredjaj.findByDatumOtpisa", query = "SELECT u FROM Uredjaj u WHERE u.datumOtpisa = :datumOtpisa")})
 public class Uredjaj implements Serializable {
     private static final long serialVersionUID = 1L;

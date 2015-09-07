@@ -213,7 +213,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     public Map<String, String> opisiStatus(PodatakSirovi ps) {
         Map<String,String> mapa = new HashMap<>();
         Uredjaj uredjaj = uredjajFacade.findByPodatakSirovi(ps);
-        
+        log.log(Level.INFO, "UREDJAJ: {0}", new Object[]{uredjaj.getModelUredjajaId().getOznakaModela()});
         WlValidatorFactory wlValidatorFactory = new WlValidatorFactory(null);
         Validator validator = wlValidatorFactory.getValidator(uredjaj);
         Collection<String> opisStatusa = validator.opisStatusa(ps.getStatusString());
