@@ -25,21 +25,19 @@ public class PlanUmjeravanjaPK implements Serializable {
     @Column(name = "oprema_id")
     private int opremaId;
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "vrsta_id")
-    private int vrstaId;
-    @Basic(optional = false)
-    @NotNull
     @Temporal(TemporalType.DATE)
     private Date datum;
+    @Basic(optional = false)
+    @Column(name = "ispitna_velicina_id")
+    private int ispitnaVelicinaId;
 
     public PlanUmjeravanjaPK() {
     }
 
-    public PlanUmjeravanjaPK(int opremaId, int vrstaId, Date datum) {
+    public PlanUmjeravanjaPK(int opremaId, Date datum, int ispitnaVelicinaId) {
         this.opremaId = opremaId;
-        this.vrstaId = vrstaId;
         this.datum = datum;
+        this.ispitnaVelicinaId = ispitnaVelicinaId;
     }
 
     public int getOpremaId() {
@@ -50,14 +48,6 @@ public class PlanUmjeravanjaPK implements Serializable {
         this.opremaId = opremaId;
     }
 
-    public int getVrstaId() {
-        return vrstaId;
-    }
-
-    public void setVrstaId(int vrstaId) {
-        this.vrstaId = vrstaId;
-    }
-
     public Date getDatum() {
         return datum;
     }
@@ -66,12 +56,20 @@ public class PlanUmjeravanjaPK implements Serializable {
         this.datum = datum;
     }
 
+    public int getIspitnaVelicinaId() {
+        return ispitnaVelicinaId;
+    }
+
+    public void setIspitnaVelicinaId(int ispitnaVelicinaId) {
+        this.ispitnaVelicinaId = ispitnaVelicinaId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (int) opremaId;
-        hash += (int) vrstaId;
         hash += (datum != null ? datum.hashCode() : 0);
+        hash += (int) ispitnaVelicinaId;
         return hash;
     }
 
@@ -85,10 +83,10 @@ public class PlanUmjeravanjaPK implements Serializable {
         if (this.opremaId != other.opremaId) {
             return false;
         }
-        if (this.vrstaId != other.vrstaId) {
+        if ((this.datum == null && other.datum != null) || (this.datum != null && !this.datum.equals(other.datum))) {
             return false;
         }
-        if ((this.datum == null && other.datum != null) || (this.datum != null && !this.datum.equals(other.datum))) {
+        if (this.ispitnaVelicinaId != other.ispitnaVelicinaId) {
             return false;
         }
         return true;
@@ -96,7 +94,7 @@ public class PlanUmjeravanjaPK implements Serializable {
 
     @Override
     public String toString() {
-        return "dhz.skz.aqdb.entity.PlanUmjeravanjaPK[ opremaId=" + opremaId + ", vrstaId=" + vrstaId + ", datum=" + datum + " ]";
+        return "dhz.skz.aqdb.entity.PlanUmjeravanjaPK[ opremaId=" + opremaId + ", datum=" + datum + ", ispitnaVelicinaId=" + ispitnaVelicinaId + " ]";
     }
     
 }

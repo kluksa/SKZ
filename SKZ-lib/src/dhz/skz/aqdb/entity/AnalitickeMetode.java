@@ -54,8 +54,6 @@ public class AnalitickeMetode implements Serializable {
     @Size(max = 90)
     private String norma;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "ponovljivost_u_nuli")
-    private Double ponovljivostUNuli;
     @Column(name = "zero_drift_absolut")
     private Double zeroDriftAbsolut;
     @Column(name = "span_drift_relativ")
@@ -67,6 +65,8 @@ public class AnalitickeMetode implements Serializable {
     private Collection<Komponenta> komponentaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analitickeMetode")
     private Collection<DozvoljeneGranice> dozvoljeneGraniceCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "analitickeMetode")
+    private Collection<MetodaUmjerneTocke> metodaUmjerneTockeCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analitickeMetodeId")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "analitickeMetodeId")
@@ -112,14 +112,6 @@ public class AnalitickeMetode implements Serializable {
         this.norma = norma;
     }
 
-    public Double getPonovljivostUNuli() {
-        return ponovljivostUNuli;
-    }
-
-    public void setPonovljivostUNuli(Double ponovljivostUNuli) {
-        this.ponovljivostUNuli = ponovljivostUNuli;
-    }
-
     public Double getZeroDriftAbsolut() {
         return zeroDriftAbsolut;
     }
@@ -151,6 +143,15 @@ public class AnalitickeMetode implements Serializable {
 
     public void setDozvoljeneGraniceCollection(Collection<DozvoljeneGranice> dozvoljeneGraniceCollection) {
         this.dozvoljeneGraniceCollection = dozvoljeneGraniceCollection;
+    }
+
+    @XmlTransient
+    public Collection<MetodaUmjerneTocke> getMetodaUmjerneTockeCollection() {
+        return metodaUmjerneTockeCollection;
+    }
+
+    public void setMetodaUmjerneTockeCollection(Collection<MetodaUmjerneTocke> metodaUmjerneTockeCollection) {
+        this.metodaUmjerneTockeCollection = metodaUmjerneTockeCollection;
     }
 
     @XmlTransient

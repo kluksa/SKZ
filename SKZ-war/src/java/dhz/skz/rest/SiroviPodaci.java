@@ -75,6 +75,29 @@ public class SiroviPodaci {
     public SiroviPodaci() {
     }
 
+//    
+//    @GET
+//    @Path("{program}/{pocetak}/{kraj}")
+//    @Produces("application/json")
+//    public List<PodatakSiroviDTO> getPodaci(@PathParam("program") Integer programId, @PathParam("pocetak") DateParam pocetak, @PathParam("kraj") DateParam kraj, 
+//            @DefaultValue("1") @QueryParam("nivo_validacije") Integer nivoValidacije) {
+//        
+//        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
+//        List<PodatakSiroviDTO> lista = new ArrayList<>();
+//        ProgramMjerenja program = programMjerenjaFacade.find(programId);
+//        for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak.getDate(), kraj.getDate(), 1, true, true)) {
+//            PodatakSiroviDTO p = new PodatakSiroviDTO();
+//            p.setId(ps.getId());
+//            p.setStatusString(ps.getStatusString());
+//            p.setVrijeme(ps.getVrijeme().getTime());
+//            p.setVrijednost(ps.getVrijednost());
+//            p.setStatusInt(ps.getStatus());
+//            p.setValjan(OperStatus.isValid(ps));
+//            p.setNivoValidacije(ps.getNivoValidacijeId());
+//            lista.add(p);
+//        }
+//        return lista;
+//    }
     /**
      * Retrieves representation of an instance of dhz.skz.rs.SiroviPodaci
      *
@@ -175,7 +198,7 @@ public class SiroviPodaci {
             PodatakSirovi ps = podatakSiroviFacade.find(p.getId());
             int st = ps.getStatus();
             st &= ~ (1 << OperStatus.KONTROLA.ordinal());                       // prvo reset bita
-            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA.ordinal());   
+            st |= ((p.isValjan() ? 0 : 1) << OperStatus.KONTROLA.ordinal());    // 
             ps.setStatus(st);
             ps.setKorisnikId(user);
             ps.setVrijemeUpisa(new Date());

@@ -50,6 +50,8 @@ public class IspitneVelicine implements Serializable {
     private Collection<DozvoljeneGranice> dozvoljeneGraniceCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ispitneVelicine")
     private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ispitneVelicine")
+    private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
 
     public IspitneVelicine() {
     }
@@ -103,6 +105,15 @@ public class IspitneVelicine implements Serializable {
 
     public void setUmjeravanjeHasIspitneVelicineCollection(Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection) {
         this.umjeravanjeHasIspitneVelicineCollection = umjeravanjeHasIspitneVelicineCollection;
+    }
+
+    @XmlTransient
+    public Collection<PlanUmjeravanja> getPlanUmjeravanjaCollection() {
+        return planUmjeravanjaCollection;
+    }
+
+    public void setPlanUmjeravanjaCollection(Collection<PlanUmjeravanja> planUmjeravanjaCollection) {
+        this.planUmjeravanjaCollection = planUmjeravanjaCollection;
     }
 
     @Override

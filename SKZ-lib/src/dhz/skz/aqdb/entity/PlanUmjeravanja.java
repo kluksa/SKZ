@@ -26,21 +26,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "PlanUmjeravanja.findAll", query = "SELECT p FROM PlanUmjeravanja p"),
     @NamedQuery(name = "PlanUmjeravanja.findByOpremaId", query = "SELECT p FROM PlanUmjeravanja p WHERE p.planUmjeravanjaPK.opremaId = :opremaId"),
-    @NamedQuery(name = "PlanUmjeravanja.findByVrstaId", query = "SELECT p FROM PlanUmjeravanja p WHERE p.planUmjeravanjaPK.vrstaId = :vrstaId"),
-    @NamedQuery(name = "PlanUmjeravanja.findByDatum", query = "SELECT p FROM PlanUmjeravanja p WHERE p.planUmjeravanjaPK.datum = :datum")})
+    @NamedQuery(name = "PlanUmjeravanja.findByDatum", query = "SELECT p FROM PlanUmjeravanja p WHERE p.planUmjeravanjaPK.datum = :datum"),
+    @NamedQuery(name = "PlanUmjeravanja.findByIspitnaVelicinaId", query = "SELECT p FROM PlanUmjeravanja p WHERE p.planUmjeravanjaPK.ispitnaVelicinaId = :ispitnaVelicinaId")})
 public class PlanUmjeravanja implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PlanUmjeravanjaPK planUmjeravanjaPK;
+    @JoinColumn(name = "ispitna_velicina_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private IspitneVelicine ispitneVelicine;
     @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Umjeravanje umjeravanjeId;
     @JoinColumn(name = "oprema_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Uredjaj uredjaj;
-    @JoinColumn(name = "vrsta_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private VrstaUmjeravanja vrstaUmjeravanja;
 
     public PlanUmjeravanja() {
     }
@@ -49,8 +49,8 @@ public class PlanUmjeravanja implements Serializable {
         this.planUmjeravanjaPK = planUmjeravanjaPK;
     }
 
-    public PlanUmjeravanja(int opremaId, int vrstaId, Date datum) {
-        this.planUmjeravanjaPK = new PlanUmjeravanjaPK(opremaId, vrstaId, datum);
+    public PlanUmjeravanja(int opremaId, Date datum, int ispitnaVelicinaId) {
+        this.planUmjeravanjaPK = new PlanUmjeravanjaPK(opremaId, datum, ispitnaVelicinaId);
     }
 
     public PlanUmjeravanjaPK getPlanUmjeravanjaPK() {
@@ -59,6 +59,14 @@ public class PlanUmjeravanja implements Serializable {
 
     public void setPlanUmjeravanjaPK(PlanUmjeravanjaPK planUmjeravanjaPK) {
         this.planUmjeravanjaPK = planUmjeravanjaPK;
+    }
+
+    public IspitneVelicine getIspitneVelicine() {
+        return ispitneVelicine;
+    }
+
+    public void setIspitneVelicine(IspitneVelicine ispitneVelicine) {
+        this.ispitneVelicine = ispitneVelicine;
     }
 
     public Umjeravanje getUmjeravanjeId() {
@@ -75,14 +83,6 @@ public class PlanUmjeravanja implements Serializable {
 
     public void setUredjaj(Uredjaj uredjaj) {
         this.uredjaj = uredjaj;
-    }
-
-    public VrstaUmjeravanja getVrstaUmjeravanja() {
-        return vrstaUmjeravanja;
-    }
-
-    public void setVrstaUmjeravanja(VrstaUmjeravanja vrstaUmjeravanja) {
-        this.vrstaUmjeravanja = vrstaUmjeravanja;
     }
 
     @Override

@@ -74,9 +74,6 @@ public class Umjeravanje implements Serializable {
     @JoinColumn(name = "uredjaj_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Uredjaj uredjajId;
-    @JoinColumn(name = "vrsta_umjeravanja_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private VrstaUmjeravanja vrstaUmjeravanjaId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
     private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
@@ -162,14 +159,6 @@ public class Umjeravanje implements Serializable {
 
     public void setUredjajId(Uredjaj uredjajId) {
         this.uredjajId = uredjajId;
-    }
-
-    public VrstaUmjeravanja getVrstaUmjeravanjaId() {
-        return vrstaUmjeravanjaId;
-    }
-
-    public void setVrstaUmjeravanjaId(VrstaUmjeravanja vrstaUmjeravanjaId) {
-        this.vrstaUmjeravanjaId = vrstaUmjeravanjaId;
     }
 
     @XmlTransient

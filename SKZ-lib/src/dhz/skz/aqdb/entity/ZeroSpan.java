@@ -46,12 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ZeroSpan implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(name="zero_span_id_seq",
-                       sequenceName="zero_span_id_seq",
-                       allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-                    generator="zero_span_id_seq")
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull

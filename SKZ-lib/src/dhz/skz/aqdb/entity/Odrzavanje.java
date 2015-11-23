@@ -52,10 +52,11 @@ public class Odrzavanje implements Serializable {
     @NotNull
     @Size(min = 1, max = 2147483647)
     private String opis;
-    @ManyToMany(mappedBy = "odrzavanjeCollection")
-    private Collection<Dijelovi> dijeloviCollection;
-    @OneToMany(mappedBy = "odrzavanjeId")
-    private Collection<Kvarovi> kvaroviCollection;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "odrzavanje")
+//    private Collection<OdrzavanjeHasDijelovi> odrzavanjeHasDijeloviCollection;
+    @JoinColumn(name = "oprema_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Uredjaj opremaId;
     @JoinColumn(name = "vrsta_odrzavanja_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private VrstaOdrzavanja vrstaOdrzavanjaId;
@@ -99,22 +100,21 @@ public class Odrzavanje implements Serializable {
         this.opis = opis;
     }
 
-    @XmlTransient
-    public Collection<Dijelovi> getDijeloviCollection() {
-        return dijeloviCollection;
+//    @XmlTransient
+//    public Collection<OdrzavanjeHasDijelovi> getOdrzavanjeHasDijeloviCollection() {
+//        return odrzavanjeHasDijeloviCollection;
+//    }
+//
+//    public void setOdrzavanjeHasDijeloviCollection(Collection<OdrzavanjeHasDijelovi> odrzavanjeHasDijeloviCollection) {
+//        this.odrzavanjeHasDijeloviCollection = odrzavanjeHasDijeloviCollection;
+//    }
+
+    public Uredjaj getOpremaId() {
+        return opremaId;
     }
 
-    public void setDijeloviCollection(Collection<Dijelovi> dijeloviCollection) {
-        this.dijeloviCollection = dijeloviCollection;
-    }
-
-    @XmlTransient
-    public Collection<Kvarovi> getKvaroviCollection() {
-        return kvaroviCollection;
-    }
-
-    public void setKvaroviCollection(Collection<Kvarovi> kvaroviCollection) {
-        this.kvaroviCollection = kvaroviCollection;
+    public void setOpremaId(Uredjaj opremaId) {
+        this.opremaId = opremaId;
     }
 
     public VrstaOdrzavanja getVrstaOdrzavanjaId() {

@@ -49,8 +49,6 @@ public class Podrucje implements Serializable {
     private String opis;
     @OneToMany(mappedBy = "podrucjeId")
     private Collection<Postaja> postajaCollection;
-    @OneToMany(mappedBy = "podrucjeId")
-    private Collection<Reprezentativnost> reprezentativnostCollection;
     @OneToMany(mappedBy = "nadredjenoPodrucjeId")
     private Collection<Podrucje> podrucjeCollection;
     @JoinColumn(name = "nadredjeno_podrucje_id", referencedColumnName = "id")
@@ -101,15 +99,6 @@ public class Podrucje implements Serializable {
 
     public void setPostajaCollection(Collection<Postaja> postajaCollection) {
         this.postajaCollection = postajaCollection;
-    }
-
-    @XmlTransient
-    public Collection<Reprezentativnost> getReprezentativnostCollection() {
-        return reprezentativnostCollection;
-    }
-
-    public void setReprezentativnostCollection(Collection<Reprezentativnost> reprezentativnostCollection) {
-        this.reprezentativnostCollection = reprezentativnostCollection;
     }
 
     @XmlTransient

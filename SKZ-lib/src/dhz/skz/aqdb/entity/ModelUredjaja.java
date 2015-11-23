@@ -71,8 +71,8 @@ public class ModelUredjaja implements Serializable {
     private Proizvodjac proizvodjacId;
     @OneToMany(mappedBy = "modelUredjajaId")
     private Collection<Uredjaj> uredjajCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelUredjaja")
-    private Collection<Dijelovi> dijeloviCollection;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelUredjaja")
+//    private Collection<Dijelovi> dijeloviCollection;
 
     public ModelUredjaja() {
     }
@@ -169,14 +169,14 @@ public class ModelUredjaja implements Serializable {
         this.uredjajCollection = uredjajCollection;
     }
 
-    @XmlTransient
-    public Collection<Dijelovi> getDijeloviCollection() {
-        return dijeloviCollection;
-    }
-
-    public void setDijeloviCollection(Collection<Dijelovi> dijeloviCollection) {
-        this.dijeloviCollection = dijeloviCollection;
-    }
+//    @XmlTransient
+//    public Collection<Dijelovi> getDijeloviCollection() {
+//        return dijeloviCollection;
+//    }
+//
+//    public void setDijeloviCollection(Collection<Dijelovi> dijeloviCollection) {
+//        this.dijeloviCollection = dijeloviCollection;
+//    }
 
     @Override
     public int hashCode() {

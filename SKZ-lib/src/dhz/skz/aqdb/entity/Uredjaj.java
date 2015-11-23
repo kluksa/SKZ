@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -61,20 +62,20 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
-    @OneToMany(mappedBy = "uredjajId")
+    @OneToMany (cascade = CascadeType.ALL, mappedBy = "uredjajId")//(mappedBy = "uredjajCollection")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "uredjajId")
     private Collection<ProgramUredjajLink> programUredjajLinkCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
     private Collection<EtalonBoca> etalonBocaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
-    private Collection<Kvarovi> kvaroviCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<Umjeravanje> umjeravanjeCollection1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
     private Collection<EtalonDilucijska> etalonDilucijskaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjajId")
     private Collection<PostajaUredjajLink> postajaUredjajLinkCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opremaId")
+    private Collection<Odrzavanje> odrzavanjeCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
     private Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
@@ -168,15 +169,6 @@ public class Uredjaj implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Kvarovi> getKvaroviCollection() {
-        return kvaroviCollection;
-    }
-
-    public void setKvaroviCollection(Collection<Kvarovi> kvaroviCollection) {
-        this.kvaroviCollection = kvaroviCollection;
-    }
-
-    @XmlTransient
     public Collection<Umjeravanje> getUmjeravanjeCollection1() {
         return umjeravanjeCollection1;
     }
@@ -201,6 +193,15 @@ public class Uredjaj implements Serializable {
 
     public void setPostajaUredjajLinkCollection(Collection<PostajaUredjajLink> postajaUredjajLinkCollection) {
         this.postajaUredjajLinkCollection = postajaUredjajLinkCollection;
+    }
+
+    @XmlTransient
+    public Collection<Odrzavanje> getOdrzavanjeCollection() {
+        return odrzavanjeCollection;
+    }
+
+    public void setOdrzavanjeCollection(Collection<Odrzavanje> odrzavanjeCollection) {
+        this.odrzavanjeCollection = odrzavanjeCollection;
     }
 
     @XmlTransient

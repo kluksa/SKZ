@@ -46,7 +46,7 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "pocetak_primjene")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date pocetakPrimjene;
     @Basic(optional = false)
     @NotNull

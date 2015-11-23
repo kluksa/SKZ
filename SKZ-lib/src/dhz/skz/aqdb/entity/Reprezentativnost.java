@@ -13,8 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -51,9 +49,6 @@ public class Reprezentativnost implements Serializable {
     private String definicija;
     @OneToMany(mappedBy = "reprezentativnostId")
     private Collection<Postaja> postajaCollection;
-    @JoinColumn(name = "podrucje_id", referencedColumnName = "id")
-    @ManyToOne
-    private Podrucje podrucjeId;
 
     public Reprezentativnost() {
     }
@@ -99,14 +94,6 @@ public class Reprezentativnost implements Serializable {
 
     public void setPostajaCollection(Collection<Postaja> postajaCollection) {
         this.postajaCollection = postajaCollection;
-    }
-
-    public Podrucje getPodrucjeId() {
-        return podrucjeId;
-    }
-
-    public void setPodrucjeId(Podrucje podrucjeId) {
-        this.podrucjeId = podrucjeId;
     }
 
     @Override
