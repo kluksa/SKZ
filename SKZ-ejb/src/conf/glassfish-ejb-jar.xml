@@ -16,5 +16,12 @@
         <jndi-name>jdbc/alcina</jndi-name>
       </resource-ref>
     </ejb>
+    <ejb>
+      <ejb-name>DcsCitacBean</ejb-name>
+      <resource-ref>
+        <res-ref-name>dcs</res-ref-name>
+        <jndi-name>jdbc/dcs</jndi-name>
+      </resource-ref>
+    </ejb>
   </enterprise-beans>
 </glassfish-ejb-jar>

@@ -21,7 +21,6 @@ import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
-import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
 import dhz.skz.config.Config;
 import dhz.skz.validatori.Validator;
@@ -72,9 +71,6 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @EJB
     private ProgramUredjajLinkFacade programUredjajLinkFacade;
-
-    @EJB
-    private MinutniUSatne siroviUSatneBean;
 
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;

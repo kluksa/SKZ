@@ -40,6 +40,7 @@ public class ApplicationConfig extends Application {
         resources.add(dhz.skz.rest.DrzavnaMrezaResource.class);
         resources.add(dhz.skz.rest.GZIPWriterInterceptor.class);
         resources.add(dhz.skz.rest.ProgramMjerenjaFacadeREST.class);
+        resources.add(dhz.skz.rest.ProgramMjerenjaPodaciResource.class);
         resources.add(dhz.skz.rest.SatniPodatakResource.class);
         resources.add(dhz.skz.rest.SiroviPodaci.class);
         resources.add(dhz.skz.rest.UmjeravanjeResource.class);

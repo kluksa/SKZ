@@ -23,6 +23,11 @@
             <http-method>TRACE</http-method>
             <http-method>DELETE</http-method>
         </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>zakljucani_rest</web-resource-name>
+            <description/>
+            <url-pattern>/webresources/dhz.skz.rs.programmjerenja/zakljucani</url-pattern>
+        </web-resource-collection>
         <auth-constraint>
             <description>Have to be kontrola</description>
             <role-name>kontrola</role-name>

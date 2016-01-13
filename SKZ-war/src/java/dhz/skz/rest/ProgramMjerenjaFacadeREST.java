@@ -47,6 +47,13 @@ public class ProgramMjerenjaFacadeREST  {
     }
     
     @GET
+    @Path("zakljucani")
+    @Produces({"application/xml", "application/json"})
+    public List<ProgramMjerenja> findAllTajni() {
+        return programMjerenjaFacade.findAll();
+    }
+    
+    @GET
     @Path("zadnji")
     @Produces({"application/xml", "application/json"})
     public List<ZadnjiDTO> getVrijemeZadnjegPodatkaPoProgramu(){

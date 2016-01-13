@@ -63,6 +63,14 @@ public class ZeroSpanResource {
      */
     public ZeroSpanResource() {
     }
+    
+    @GET
+    @Path("referentne_vrijednosti/{program}")
+    @Produces({"application/xml", "application/json"})
+    public List<Object> getZeroSpanRefLista(@PathParam("program") Integer programId){
+        return null;
+    }
+            
 
     /**
      * Retrieves representation of an instance of dhz.skz.rs.GenericResource

@@ -25,7 +25,7 @@ public class API400EValidator extends APIValidator {
         mapa.put(4,"O3 GEN REF WARNING");
         mapa.put(5,"O3 GEN LAMP WARNING");
         mapa.put(6,"O3 GEN TEMP WARN/PHOTO TEMP WARNING");
-        mapa.put(7,"SPARE");
+        mapa.put(7,"INVALID CONCENTRATION");
         mapa.put(8,"SPARE");
         mapa.put(9,"In MANUAL Calibration Mode");
         mapa.put(10,"In Zero Calibration Mode");

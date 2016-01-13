@@ -167,7 +167,13 @@ public class MinutniUSatne {
 
     public void spremiSatneIzSirovih(ProgramMjerenja program, Integer nv) {
         this.nivo = nv;
-        this.ocekivaniBroj = 60;
+
+        if ( program.getIzvorProgramKljuceviMap() == null || program.getIzvorProgramKljuceviMap().getBrojUSatu() != null) {
+            this.ocekivaniBroj = 60;
+        } else {
+            this.ocekivaniBroj = program.getIzvorProgramKljuceviMap().getBrojUSatu();
+        }
+
         this.program = program;
         
         PodatakSirovi zadnjiSirovi = podatakSiroviFacade.getZadnji(program);

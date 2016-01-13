@@ -256,5 +256,12 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
                  .setParameter("vrsta", ps.getVrsta())
                 .setMaxResults(1).getResultList().isEmpty();
     }
+    public Date getVrijemeZadnjeg(ProgramMjerenja program) {
+        List<Date> rl = em.createNamedQuery("ZeroSpan.getVrijemeZadnjegProgram", Date.class).setParameter("program", program).setMaxResults(1).getResultList();
+        if (!rl.isEmpty() )
+            return rl.get(0);
+        else 
+            return null;
+    }
 
 }

@@ -42,7 +42,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ZeroSpan.findByMaximum", query = "SELECT z FROM ZeroSpan z WHERE z.maximum = :maximum"),
     @NamedQuery(name = "ZeroSpan.findByStdev", query = "SELECT z FROM ZeroSpan z WHERE z.stdev = :stdev"),
     @NamedQuery(name = "ZeroSpan.findByVrijemeProgramVrsta", query = "SELECT z FROM ZeroSpan z WHERE z.vrijeme = :vrijeme AND z.programMjerenjaId = :programMjerenja AND z.vrsta = :vrsta"),   
-    @NamedQuery(name = "ZeroSpan.findByReferentnaVrijednost", query = "SELECT z FROM ZeroSpan z WHERE z.referentnaVrijednost = :referentnaVrijednost")})
+    @NamedQuery(name = "ZeroSpan.findByReferentnaVrijednost", query = "SELECT z FROM ZeroSpan z WHERE z.referentnaVrijednost = :referentnaVrijednost"),
+    @NamedQuery(name = "ZeroSpan.getVrijemeZadnjegProgram", query = "SELECT z.vrijeme FROM ZeroSpan z WHERE z.programMjerenjaId = :program ORDER BY z.vrijeme DESC")})
+
 public class ZeroSpan implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

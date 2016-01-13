@@ -231,6 +231,18 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         return find;
     }
     
+    public void spremi(Collection<PodatakSirovi> podaci) {
+        for (PodatakSirovi ps : podaci) {
+            try {
+                create(ps);
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "", ex);
+            }
+        }
+        em.flush();
+    }
+
+    
     
 
 }

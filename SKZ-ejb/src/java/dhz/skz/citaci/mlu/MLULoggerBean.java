@@ -15,7 +15,6 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.CsvParser;
-import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
 import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;

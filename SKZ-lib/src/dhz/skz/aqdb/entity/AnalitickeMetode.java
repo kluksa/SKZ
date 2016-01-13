@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AnalitickeMetode.findById", query = "SELECT a FROM AnalitickeMetode a WHERE a.id = :id"),
     @NamedQuery(name = "AnalitickeMetode.findByNaziv", query = "SELECT a FROM AnalitickeMetode a WHERE a.naziv = :naziv"),
     @NamedQuery(name = "AnalitickeMetode.findByNorma", query = "SELECT a FROM AnalitickeMetode a WHERE a.norma = :norma"),
-    @NamedQuery(name = "AnalitickeMetode.findByPonovljivostUNuli", query = "SELECT a FROM AnalitickeMetode a WHERE a.ponovljivostUNuli = :ponovljivostUNuli"),
     @NamedQuery(name = "AnalitickeMetode.findByZeroDriftAbsolut", query = "SELECT a FROM AnalitickeMetode a WHERE a.zeroDriftAbsolut = :zeroDriftAbsolut"),
     @NamedQuery(name = "AnalitickeMetode.findBySpanDriftRelativ", query = "SELECT a FROM AnalitickeMetode a WHERE a.spanDriftRelativ = :spanDriftRelativ")})
 public class AnalitickeMetode implements Serializable {

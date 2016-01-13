@@ -206,6 +206,4 @@ public class SiroviPodaci {
             podatakSiroviFacade.edit(ps);
         }
     }
-    
-    
 }

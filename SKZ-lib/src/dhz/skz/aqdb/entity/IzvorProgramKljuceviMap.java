@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -52,6 +53,8 @@ public class IzvorProgramKljuceviMap implements Serializable {
     @Size(max = 90)
     @Column(name = "n_kljuc")
     private String nKljuc;
+    @Column(name = "broj_u_satu")
+    private Integer brojUSatu;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private ProgramMjerenja programMjerenja;
@@ -103,12 +106,21 @@ public class IzvorProgramKljuceviMap implements Serializable {
         this.nKljuc = nKljuc;
     }
 
+    @XmlTransient
     public ProgramMjerenja getProgramMjerenja() {
         return programMjerenja;
     }
 
     public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
         this.programMjerenja = programMjerenja;
+    }
+
+    public Integer getBrojUSatu() {
+        return brojUSatu;
+    }
+
+    public void setBrojUSatu(Integer brojUSatu) {
+        this.brojUSatu = brojUSatu;
     }
 
     @Override
