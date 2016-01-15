@@ -49,6 +49,12 @@ public class ZeroSpanReferentneVrijednostiFacade extends AbstractFacade<ZeroSpan
     public ZeroSpanReferentneVrijednostiFacade() {
         super(ZeroSpanReferentneVrijednosti.class);
     }
+    
+    public List<ZeroSpanReferentneVrijednosti> findByProgramVrsta(final ProgramMjerenja program, final String vrsta) {
+        return em.createNamedQuery("ZeroSpanReferentneVrijednosti.findByProgramVrsta", ZeroSpanReferentneVrijednosti.class)
+                .setParameter("program", program).setParameter("vrsta", vrsta)
+                .getResultList();
+    }
 
     // TODO prebaciti u named query
     public List<ZeroSpanReferentneVrijednosti> findZadnjiPrije(final ProgramMjerenja program, final Date uPrimjeniPrije) {

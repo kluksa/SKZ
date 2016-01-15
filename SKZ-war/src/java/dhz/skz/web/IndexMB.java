@@ -8,8 +8,10 @@ package dhz.skz.web;
 
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.Podatak;
+import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,11 +99,9 @@ public class IndexMB implements Serializable {
     public String stil(Date d) {
         if ( d == null ) return "";
         long razlika = ( sada.getTime()-d.getTime() ) / 1000;
-        if ( razlika < 3600 ) return "background:#86e395"; //zelena
+        if ( razlika < 4800 ) return "background:#86e395"; //zelena
         if ( razlika < 7200 ) return "background:#fbfe5b"; //zuta
-
         return "background:#fe8888"; //crvena
-        
     }
     
     public String razlika(Date vrijeme) {

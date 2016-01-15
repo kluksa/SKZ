@@ -125,7 +125,9 @@ public class DcsCitacBean implements CitacIzvora {
             prepStmt.setTimestamp(3, new Timestamp(zadnji.getTime()));
             try (ResultSet rs = prepStmt.executeQuery()) {
                 while (rs.next()) {
+                    String strTime = rs.getString(1);
                     Timestamp timestamp = rs.getTimestamp(1);
+                    log.log(Level.INFO, "VRIJEME: str={0}, ts={1}, long={2}",new Object[]{strTime, timestamp, timestamp.getTime()});
                     double aFloat = rs.getDouble(2);
                     Integer obuhvat = rs.getInt(3);
                     Integer statusB = rs.getInt(4);

@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findById", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.id = :id"),
     @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByPocetakPrimjene", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.pocetakPrimjene = :pocetakPrimjene"),
     @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByVrsta", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.vrsta = :vrsta"),
+    @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByProgramVrsta", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.vrsta LIKE :vrsta and z.programMjerenjaId = :program"),
     @NamedQuery(name = "ZeroSpanReferentneVrijednosti.findByVrijednost", query = "SELECT z FROM ZeroSpanReferentneVrijednosti z WHERE z.vrijednost = :vrijednost")})
 public class ZeroSpanReferentneVrijednosti implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -105,6 +107,7 @@ public class ZeroSpanReferentneVrijednosti implements Serializable {
         this.vrijednost = vrijednost;
     }
 
+    @XmlTransient
     public ProgramMjerenja getProgramMjerenjaId() {
         return programMjerenjaId;
     }

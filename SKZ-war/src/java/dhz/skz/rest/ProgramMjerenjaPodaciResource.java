@@ -48,7 +48,7 @@ public class ProgramMjerenjaPodaciResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Path("podaci/{program}")
+    @Path("zakljucani/podaci/{program}")
     @Produces({"application/xml", "application/json"})
     public IzvorProgramKljuceviMap getProgramPodaci(@PathParam("program") Integer programId) {
         return izvorProgramKljuceviMapFacade.find(programId);
