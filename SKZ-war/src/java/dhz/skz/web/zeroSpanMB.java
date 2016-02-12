@@ -289,5 +289,7 @@ public class zeroSpanMB implements Serializable {
 
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
+    
+
 
 }

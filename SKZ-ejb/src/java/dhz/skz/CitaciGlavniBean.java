@@ -18,10 +18,17 @@ package dhz.skz;
 
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.NivoValidacije;
+import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +55,12 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     private IzvorPodatakaFacade izvorPodatakaFacade;
     @EJB
     private MinutniUSatne minutniUSatne;
+    @EJB
+    private ProgramMjerenjaFacade pmf;
+    @EJB
+    private PodatakFacade pf;
+    @EJB
+    private PodatakSiroviFacade psf;
 
     private boolean aktivan = false;
 
@@ -76,6 +89,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                 InitialContext ctx = new InitialContext();
                 String str = "java:module/";
                 for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
+                    if ( ! ip.getBean().equals("VzKaCitacBean")) continue;
                     String naziv = str + ip.getBean().trim();
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {
@@ -91,7 +105,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
-            minutniUSatne.napraviSatne(0);
+//            minutniUSatne.napraviSatne(0);
             aktivan = false;
             log.log(Level.INFO, "Kraj pokretanja citaca");
         } else {
@@ -109,4 +123,14 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
         return citac.opisiStatus(ps);
     }
 
+    @Override
+    public void agregirajProgramOdDo(final ProgramMjerenja program, final Integer nivo, final Date pocetak, final Date kraj) {
+        log.log(Level.INFO, "Spremam pm={0}; od={1}; do={2}", new Object[]{program.getId(), pocetak, kraj});
+        minutniUSatne.spremiSatneIzSirovih(program, nivo, pocetak, kraj);
+    }
+
+    @Override
+    public void dodajOdPocetka() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

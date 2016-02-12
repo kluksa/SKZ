@@ -5,7 +5,10 @@
  */
 package dhz.skz;
 
+import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.PodatakSirovi;
+import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.util.Date;
 import java.util.Map;
 import javax.ejb.Remote;
 import javax.naming.NamingException;
@@ -17,4 +20,8 @@ import javax.naming.NamingException;
 @Remote
 public interface CitaciGlavniBeanRemote extends GlavniBeanInterace {
     public Map<String, String> opisiStatus(PodatakSirovi podatakSirovi) throws NamingException;
+
+    void agregirajProgramOdDo(final ProgramMjerenja program, final Integer nivo, final Date pocetak, final Date kraj);
+
+    void dodajOdPocetka();
 }

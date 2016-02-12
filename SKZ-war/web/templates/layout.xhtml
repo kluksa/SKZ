@@ -20,12 +20,15 @@
                         <p:menuitem value="Pregled mjerenja"  url="/faces/app/mjerenja.xhtml" />
                         <p:menuitem value="Pregled nule i raspona" url="/faces/app/zerospan.xhtml" />
                         <p:menuitem value="Pregled sirovih" url="/faces/app/minutna.xhtml" />
+                        <p:menuitem value="Podaci" url="/faces/app/dohvat_podataka.xhtml"/>
+
                         <c:if test="#{request.isUserInRole('admin')}">
                             <p:menuitem value="Admin" url="/faces/admin/main.xhtml"/>
                         </c:if>
                         <c:if test="#{request.isUserInRole('mjeritelj')}">
                             <p:menuitem value="Mjeritelji" url="/faces/admin/postaje.xhtml"/>
-                            <p:menuitem value="Mjeritelji" url="/faces/mjeritelj/umjeravanje.xhtml"/>
+                            <p:menuitem value="Umjeravanje" url="/faces/mjeritelj/umjeravanje.xhtml"/>
+
                         </c:if>
 
                         <f:facet name="options">

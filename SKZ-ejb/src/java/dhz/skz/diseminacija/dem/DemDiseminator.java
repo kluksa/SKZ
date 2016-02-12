@@ -38,6 +38,8 @@ import javax.inject.Inject;
 @Stateless
 @LocalBean
 public class DemDiseminator implements DiseminatorPodataka {
+    private static final Logger log = Logger.getLogger(DemDiseminator.class.getName());
+
     @EJB
     private ProgramMjerenjaFacade ppf;
     @EJB
@@ -59,6 +61,7 @@ public class DemDiseminator implements DiseminatorPodataka {
         Date prvi = getPrvi();
 
         for (Komponenta k : programPoKomponentama.keySet()) {
+            log.log(Level.INFO, "KOMPONENTA= {0}", k.getFormula());
             try {
                 DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
                 Collection<Podatak> podaci = podatakFacade.find(prvi, zadnji, k, nv, (short) 0);
@@ -77,12 +80,14 @@ public class DemDiseminator implements DiseminatorPodataka {
 
     public Map<Komponenta, Collection<ProgramMjerenja>> getProgramPoKomponentama(Collection<ProgramMjerenja> program) {
         Map<Komponenta, Collection<ProgramMjerenja>> kpm = new HashMap<>();
+        log.log(Level.INFO, "PROGRAM:::::");
         for (ProgramMjerenja pm : program) {
             Komponenta k = pm.getKomponentaId();
             if (!kpm.containsKey(k)) {
                 kpm.put(k, new HashSet<ProgramMjerenja>());
             }
             kpm.get(k).add(pm);
+            log.log(Level.INFO, "PROGRAM:::::{0}::{1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
         }
         return kpm;
     }

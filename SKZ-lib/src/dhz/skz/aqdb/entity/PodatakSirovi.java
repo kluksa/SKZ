@@ -43,7 +43,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PodatakSirovi.findByVrijemeUpisa", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijemeUpisa = :vrijemeUpisa"),
     @NamedQuery(name = "PodatakSirovi.findByStatusString", query = "SELECT p FROM PodatakSirovi p WHERE p.statusString = :statusString"),   
     @NamedQuery(name = "PodatakSirovi.findByVrijemeProgram", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme = :vrijeme AND p.programMjerenjaId = :programMjerenja"),   
-    @NamedQuery(name = "PodatakSirovi.findByPocetakKraj", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme BETWEEN :pocetak AND :kraj")})
+    @NamedQuery(name = "PodatakSirovi.findByPocetakKraj", query = "SELECT p FROM PodatakSirovi p WHERE p.vrijeme BETWEEN :pocetak AND :kraj"),
+    @NamedQuery(name = "PodatakSirovi.findByProgramAsc", query = "SELECT p FROM PodatakSirovi p WHERE p.programMjerenjaId = :program ORDER BY p.vrijeme ASC"),
+    @NamedQuery(name = "PodatakSirovi.findByProgramDesc", query = "SELECT p FROM PodatakSirovi p WHERE p.programMjerenjaId = :program ORDER BY p.vrijeme DESC")
+
+})
 public class PodatakSirovi implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

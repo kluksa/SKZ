@@ -242,7 +242,11 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         em.flush();
     }
 
-    
-    
-
+    public PodatakSirovi findPrvi(ProgramMjerenja pm) {
+         List<PodatakSirovi> rl = em.createNamedQuery("PodatakSirovi.findByProgramAsc", PodatakSirovi.class).setParameter("program", pm).setFirstResult(0).setMaxResults(1).getResultList();
+        if (!rl.isEmpty() )
+            return rl.get(0);
+        else 
+            return null;
+    }
 }

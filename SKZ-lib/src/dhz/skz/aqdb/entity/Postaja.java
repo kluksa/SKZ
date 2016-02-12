@@ -65,6 +65,9 @@ public class Postaja implements Serializable {
     @Size(max = 16)
     @Column(name = "oznaka_postaje")
     private String oznakaPostaje;
+    @Size(max = 255)
+    @Column(name = "net_adresa")
+    private String netAdresa;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "geogr_duzina")
     private Double geogrDuzina;
@@ -145,6 +148,14 @@ public class Postaja implements Serializable {
 
     public String getNacionalnaOznaka() {
         return nacionalnaOznaka;
+    }
+
+    public void setNetAdresa(String netAdresa) {
+        this.netAdresa = netAdresa;
+    }
+
+    public String getNetAdresa() {
+        return netAdresa;
     }
 
     public void setNacionalnaOznaka(String nacionalnaOznaka) {

@@ -7,7 +7,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     <ui:define name="slika">
-        <h:panelGrid columns="2">
+        <h:panelGrid columns="3">
 
             <p:panel header="Citaci" style="margin-bottom:10px;">
                 <h:form id="citanje-form">
@@ -52,6 +52,12 @@
                 </h:form>
                 <h:form>
                     <p:commandButton value="Pokreni sada" actionListener="#{diseminacijaMB.pokreni}" icon="ui-icon-check" />
+                </h:form>
+            </p:panel>
+            <p:panel header="Nadoknada satnih" style="margin-bottom:10px;">
+                <h:form id="nadoknada">
+                    <p:growl id="growl" showDetail="true" />
+                    <p:commandButton value="Submit" actionListener="#{citanjeMB.agregirajPonovno()}"  icon="ui-icon-check" />
                 </h:form>
             </p:panel>
         </h:panelGrid>

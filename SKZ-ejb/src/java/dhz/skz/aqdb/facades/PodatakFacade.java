@@ -137,6 +137,14 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return cq;
     }
 
+    public Podatak findPrvi(ProgramMjerenja program){
+        List<Podatak> rl = em.createNamedQuery("Podatak.findByProgramAsc", Podatak.class).setParameter("program", program).setFirstResult(0).setMaxResults(1).getResultList();
+        if (!rl.isEmpty() )
+            return rl.get(0);
+        else 
+            return null;
+    }
+    
     public Date getVrijemeZadnjeg(ProgramMjerenja program, Integer nv) {
         List<Date> rl = em.createNamedQuery("Podatak.getVrijemeZadnjegProgramNivo", Date.class).setParameter("program", program).setParameter("nivo", nv).setMaxResults(1).getResultList();
         if (!rl.isEmpty() )

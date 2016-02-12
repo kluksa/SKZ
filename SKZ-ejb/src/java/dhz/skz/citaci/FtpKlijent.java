@@ -41,15 +41,6 @@ public class FtpKlijent {
         passwd = userpass.substring(i + 1);
     }
 
-    public FTPFile[] getFileList(FTPFileFilter filter) throws FtpKlijentException {
-        try {
-            return ftp.listFiles(null, filter);
-        } catch (IOException ex) {
-            log.log(Level.SEVERE, "Could not get File list", ex);
-            throw new FtpKlijentException("Could not get File list.", ex);
-        }
-    }
-
     public InputStream getFileStream(FTPFile file) throws FtpKlijentException {
         String filename = file.getName();
         try {
@@ -117,6 +108,24 @@ public class FtpKlijent {
     public FTPFile[] getFileList() throws FtpKlijentException {
         try {
             return ftp.listFiles();
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "Could not get File list", ex);
+            throw new FtpKlijentException("Could not get File list.", ex);
+        }
+    }
+
+    public FTPFile[] getFileList(String path) throws FtpKlijentException {
+        try {
+            return ftp.listFiles(path);
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "Could not get File list", ex);
+            throw new FtpKlijentException("Could not get File list.", ex);
+        }
+    }
+    
+    public FTPFile[] getFileList(String path, FTPFileFilter filter) throws FtpKlijentException {
+        try {
+            return ftp.listFiles(path, filter);
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Could not get File list", ex);
             throw new FtpKlijentException("Could not get File list.", ex);

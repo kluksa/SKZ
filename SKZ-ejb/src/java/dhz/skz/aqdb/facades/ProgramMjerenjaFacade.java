@@ -95,6 +95,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
             return rl.get(0);
         }
     }
+    
 
     // TODO prebaciti u named query
     public ProgramMjerenja find(Postaja p, IzvorPodataka i, String kKljuc, String nKljuc) {

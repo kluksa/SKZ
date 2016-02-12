@@ -6,6 +6,7 @@
 
 package dhz.skz.web;
 
+import dhz.skz.CitaciGlavniBeanRemote;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.PodatakSirovi;
@@ -47,6 +48,8 @@ public class SirovaMB implements Serializable{
      */
     public SirovaMB() {
     }
+    @EJB
+    private CitaciGlavniBeanRemote citaciGlavniBean;
     
     @EJB
     private PodatakSiroviFacade podatakFacade;
@@ -166,6 +169,7 @@ public class SirovaMB implements Serializable{
         }
     }
 
+    
     public void displayLocation() {
         pokupiPodatke();
         dateModel = new LineChartModel();
