@@ -19,6 +19,7 @@ package dhz.skz.citaci.weblogger.validatori;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
+import dhz.skz.validatori.NulValidator;
 import dhz.skz.validatori.Validator;
 import java.util.Collection;
 import java.util.Date;
@@ -31,9 +32,10 @@ import java.util.logging.Logger;
  * @author kraljevic
  */
 public class WlValidatorFactory extends ValidatorFactory {
+
     HashMap<String, Validator> valMapa;
     private static final Logger log = Logger.getLogger(WlValidatorFactory.class.getName());
-    
+
     public WlValidatorFactory(Collection<ProgramMjerenja> programi) {
         super(programi);
         valMapa = new HashMap<>();
@@ -42,20 +44,24 @@ public class WlValidatorFactory extends ValidatorFactory {
         valMapa.put("Grimm", new GrimmValidator());
         valMapa.put("Synspec", new SynspecValidator());
     }
-    
+
     @Override
     public Validator getValidator(ProgramMjerenja pm, Date vrijeme) {
-        Uredjaj uredjaj = getUredjaj(pm, vrijeme);
-        Validator v = valMapa.get(uredjaj.getModelUredjajaId().getProizvodjacId().getNaziv());
-        v.setPodaciUmjeravanja(getA(pm, vrijeme), getB(pm, vrijeme), getDL(pm, vrijeme), getOpseg(pm, vrijeme));
-        return v;
+        if (pm.getKomponentaId().getVrstaKomponente() == 'K') {
+            Uredjaj uredjaj = getUredjaj(pm, vrijeme);
+            Validator v = valMapa.get(uredjaj.getModelUredjajaId().getProizvodjacId().getNaziv());
+            v.setPodaciUmjeravanja(getA(pm, vrijeme), getB(pm, vrijeme), getDL(pm, vrijeme), getOpseg(pm, vrijeme));
+            return v;
+        } else {
+            return new NulValidator();
+        }
     }
-    
-    public Validator getValidator(Uredjaj u){
+
+    public Validator getValidator(Uredjaj u) {
         String naziv = u.getModelUredjajaId().getProizvodjacId().getNaziv();
-        switch (naziv){
+        switch (naziv) {
             case "EAS Envimet":
-                switch ( u.getModelUredjajaId().getOznakaModela() ) {
+                switch (u.getModelUredjajaId().getOznakaModela()) {
                     case "E100":
                         log.log(Level.INFO, "Validator: API100Validator");
                         return new API100EValidator();
@@ -73,6 +79,6 @@ public class WlValidatorFactory extends ValidatorFactory {
             default:
                 return new GrimmValidator();
         }
-               
+
     }
 }
