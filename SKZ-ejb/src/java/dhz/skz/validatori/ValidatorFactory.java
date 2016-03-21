@@ -122,7 +122,22 @@ public abstract class ValidatorFactory {
     }
 
     public Uredjaj getUredjaj(ProgramMjerenja pm, Date vrijeme) {
-        return programUredjaji.get(pm).floorEntry(vrijeme).getValue();
+        if ( pm == null) {
+            throw new IllegalArgumentException("pm == null: ");
+        }
+        if ( vrijeme == null) {
+            throw new IllegalArgumentException("vrijeme == null: ");
+        }
+        NavigableMap<Date, Uredjaj> uredjaji = programUredjaji.get(pm);
+        if ( uredjaji == null) {
+            throw new IllegalArgumentException("uredjaji == null: " + pm.getId());
+        }
+        Map.Entry<Date, Uredjaj> zadnjeVrijeme = uredjaji.floorEntry(vrijeme);
+                
+        if ( zadnjeVrijeme == null ) {
+            throw new IllegalArgumentException("zadnjeVrijeme == null: " +  pm.getId() + ":" + vrijeme);
+        }
+        return zadnjeVrijeme.getValue();
     }
 
     public abstract Validator getValidator(ProgramMjerenja pm, Date vrijeme);
