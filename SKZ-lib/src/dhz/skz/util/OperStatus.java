@@ -14,26 +14,26 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
  */
 public enum OperStatus {
 
-    W1, // spare bit za upozorenje
-    W2, // spare bit za upozorenje
-    OKOLISNI_UVJETI,
-    ISKLJUCENO_MJERENJE,
-    FAULT,
-    OPSEG,
-    ODRZAVANJE,
-    ERR1, // UMJERENOST
-    ERR2,
-    ERR3,// spare bit za nevaljani sirovi nizi od kontrole
-    KONTROLA,
-    LDL,
-    ZERO,
-    SPAN,
-    KALIBRACIJA,
-    NEDOSTAJE,
-    SATNI_ERR1, // spare bit za nevaljani sirovi
-    SATNI_ERR2, // spare bit za nevaljani satni nizeg prioritera 
-    KONTROLA_SATNI,
-    OBUHVAT;
+    W1, // spare bit za upozorenje //1
+    W2, // spare bit za upozorenje //2
+    OKOLISNI_UVJETI, //4
+    ISKLJUCENO_MJERENJE, //8
+    FAULT, //16
+    OPSEG, //32
+    ODRZAVANJE, //64
+    ERR1, // UMJERENOST //128
+    ERR2, //256
+    ERR3,// spare bit za nevaljani sirovi nizi od kontrole //512
+    KONTROLA, //1024
+    LDL, //2048
+    ZERO, // 4096
+    SPAN, // 8192
+    KALIBRACIJA, // 16384
+    NEDOSTAJE, // 32768
+    SATNI_ERR1, // spare bit za nevaljani sirovi // 65536
+    SATNI_ERR2, // spare bit za nevaljani satni nizeg prioritera  // 131072
+    KONTROLA_SATNI, // 262144
+    OBUHVAT; // 524288
 
     public static boolean isValid(PodatakSirovi ps) {
         switch ( ps.getNivoValidacijeId() ) {

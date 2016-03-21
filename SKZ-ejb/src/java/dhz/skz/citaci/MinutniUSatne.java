@@ -19,9 +19,9 @@ package dhz.skz.citaci;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
+import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
@@ -30,7 +30,9 @@ import dhz.skz.util.MijesaniProgramiException;
 import dhz.skz.util.OperStatus;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +78,10 @@ public class MinutniUSatne {
     private Date zavrsnoVrijeme;
     private ProgramMjerenja program;
 
+    private void spremiVjetarIzSirovih(Vjetar get, Integer nv) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private class AgPodatak {
 
         Double iznos = 0.;
@@ -89,6 +95,7 @@ public class MinutniUSatne {
         span = new AgPodatak();
     }
 
+    
     private void agregiraj(Collection<PodatakSirovi> podaci) throws MijesaniProgramiException {
         for (PodatakSirovi ps : podaci) {
             if (ps.getProgramMjerenjaId().equals(program)) {
@@ -158,9 +165,38 @@ public class MinutniUSatne {
         return zs;
     }
     
+    class Vjetar{
+        ProgramMjerenja programWS;
+        ProgramMjerenja programWD;
+    }
+    
+    class VjetarKljuc{
+        Postaja po;
+        int usporedno;
+    }
+    
     public void napraviSatne(Integer nv) {
+        Map<VjetarKljuc, Vjetar> vj = new HashMap<>();
         for (ProgramMjerenja pm : programMjerenjaFacade.findAll()){
-            spremiSatneIzSirovih(pm,nv);
+//            if ( !(pm.getKomponentaId().getFormula().equals("WS") || pm.getKomponentaId().getFormula().equals("WD"))) {
+                spremiSatneIzSirovih(pm,nv);
+//            } else {
+//                VjetarKljuc kljuc = new VjetarKljuc();
+//                kljuc.po = pm.getPostajaId();
+//                kljuc.usporedno = pm.getUsporednoMjerenje();
+//                if ( !vj.containsKey(kljuc)) {
+//                    vj.put(kljuc, new Vjetar());
+//                }
+//                Vjetar get = vj.get(kljuc);
+//                if ( pm.getKomponentaId().getFormula().equals("WS")) {
+//                    get.programWS = pm;
+//                } else if ( pm.getKomponentaId().getFormula().equals("WD")) {
+//                    get.programWD = pm;
+//                } else {
+//                    log.log(Level.SEVERE, "POGRESKA");
+//                }
+//                spremiVjetarIzSirovih(get,nv);
+//            }
         }
     }
     
@@ -190,7 +226,9 @@ public class MinutniUSatne {
                     try {
                         agregiraj(sirovi);
                         podatakFacade.spremi(izracunajPodatak());
-                        //zeroSpanFacade.spremi(izracunajZeroSpan());
+                        if (!program.getIzvorProgramKljuceviMap().getZasebniZS()){
+                            zeroSpanFacade.spremi(izracunajZeroSpan());
+                        }
                     } catch (MijesaniProgramiException ex) {
                         log.log(Level.SEVERE, null, ex);
                     }

@@ -83,13 +83,20 @@ public class DcsCitacBean implements CitacIzvora {
         UserTransaction utx = context.getUserTransaction();
 
         for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
-            Date vrijemeZadnjeg = zeroSpanFacade.getVrijemeZadnjeg(pm);
+            PodatakSirovi ps = podatakSiroviFacade.getZadnji(pm);
+            Date vrijemeZadnjeg;
+            if ( ps != null ) {
+                vrijemeZadnjeg = podatakSiroviFacade.getZadnji(pm).getVrijeme();
+            } else {
+                vrijemeZadnjeg = pm.getPocetakMjerenja();
+            }
+            Date vrijemeZadnjegZS = zeroSpanFacade.getVrijemeZadnjeg(pm);
             Collection<ZeroSpan> zs=null;
             Collection<PodatakSirovi> podaci=null;
 
             try (Connection con = dcsDS.getConnection()) {
-                podaci = getPodaci(con, pm, podatakFacade.getVrijemeZadnjeg(pm, 0));
-                zs=getZeroSpan(con, pm, vrijemeZadnjeg);
+                podaci = getPodaci(con, pm, vrijemeZadnjeg);
+                zs=getZeroSpan(con, pm, vrijemeZadnjegZS);
             } catch (SQLException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
@@ -98,7 +105,9 @@ public class DcsCitacBean implements CitacIzvora {
                 zeroSpanFacade.spremi(zs);
                 podatakSiroviFacade.spremi(podaci);
                 utx.commit();
-            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+//            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "GRESKA PROGRAM={0}, ZADNJI={1}, ZADNJIZS={2}",new Object[]{pm.getId(), vrijemeZadnjeg, vrijemeZadnjegZS});
                 log.log(Level.SEVERE, null, ex);
             }
         }

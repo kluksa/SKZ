@@ -55,7 +55,7 @@ public abstract class ValidatorImpl implements Validator {
             status |= (1 << OperStatus.OPSEG.ordinal());
         }
         if ( iznos < -Math.abs(ldl)) {
-            status |= (1 << OperStatus.LDL.ordinal());
+            status |= (1 << OperStatus.OPSEG.ordinal());
         } 
         return status;
     }

@@ -194,6 +194,7 @@ class WlMjerenjaParser implements WlFileParser {
                 if (ipm == null || ipm.getKKljuc().isEmpty()) {
                     log.log(Level.SEVERE, "izvor_program_kljucevi_map(program_mjerenja_id = {0}) ne sadrzi K Kljuc", pm.getId());
                 } else {
+                    log.log(Level.INFO, "PROGRAM: {0} :: kljuc {1}", new Object[] {pm.getId(), pm.getIzvorProgramKljuceviMap().getKKljuc()});
                     wlKanalProgram.put(pm.getIzvorProgramKljuceviMap().getKKljuc(), pm);
                 }
             } else {

@@ -37,6 +37,10 @@
                 </h:panelGrid>
                 <p:separator />
                 <p:commandButton value="Submit" update=":slika" actionListener="#{sirovaMB.displayLocation}"  icon="ui-icon-check" />
+                <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{sirovaMB.download()}" />
+                </p:commandButton>
+
             </h:form>
         </p:panel>
     </ui:define>

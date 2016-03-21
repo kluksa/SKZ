@@ -118,7 +118,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
         for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
             aktivnaPostaja = it.next();
-
+//            if ( !aktivnaPostaja.getNacionalnaOznaka().equals("PLJ01")) continue;
             try { // sto god da se desi, idemo na slijedecu postaju
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
@@ -185,6 +185,7 @@ public class WebloggerCitacBean implements CitacIzvora {
             log.log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "XXXXXXXX", ex);
+            log.log(Level.SEVERE, "", ex.getStackTrace());
         } finally {
             ftp.disconnect();
         }

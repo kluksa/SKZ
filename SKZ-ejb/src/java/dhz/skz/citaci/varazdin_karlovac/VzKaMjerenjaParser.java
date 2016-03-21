@@ -6,7 +6,6 @@
 package dhz.skz.citaci.varazdin_karlovac;
 
 import com.csvreader.CsvReader;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -26,7 +25,6 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.AbstractFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.validatori.ValidatorFactory;
 import dhz.skz.validatori.Validator;
 import java.util.Collection;
@@ -96,15 +94,17 @@ class VzKaMjerenjaParser implements WlFileParser {
                 int nc = csv.getColumnCount();
                 if (brojStupaca != nc) {
                     log.log(Level.SEVERE, "Promijenio se broj stupaca kod zapisa {0}", csv.getRawRecord());
-                    return;
+                    continue;
                 }
                 try {
                     trenutnoVrijeme = sdf.parse(csv.get(0));
+//                    log.log(Level.INFO, "VRIJEME: {0} :: {1} ", new Object[]{csv.get(0), trenutnoVrijeme.getTime()});
 
                     if (zadnjiPodatak == null || trenutnoVrijeme.after(zadnjiPodatak)) {
 
                         if (!procitanaVremena.contains(trenutnoVrijeme)) {
-                            parsaj_record(csv);
+//                           log.log(Level.INFO, "OK VRIJEME: {0} :: {1} :: ", new Object[]{csv.get(0), trenutnoVrijeme.getTime(), zadnjiPodatak.getTime()});
+                           parsaj_record(csv);
                             procitanaVremena.add(trenutnoVrijeme);
 
                         } else {
@@ -185,7 +185,7 @@ class VzKaMjerenjaParser implements WlFileParser {
                     pod.setVrijeme(trenutnoVrijeme);
                     pod.setStatusString(statusStr);
                     pod.setNivoValidacijeId(0);
-                    pod.setVrijednost(iznos);//* pm.getKomponentaId().getKonvVUM());
+                    pod.setVrijednost(iznos * pm.getKomponentaId().getKonvVUM());
                     v.setTemperatura(temperatura);
                     v.validiraj(pod);
                     podatakSiroviFacade.create(pod);

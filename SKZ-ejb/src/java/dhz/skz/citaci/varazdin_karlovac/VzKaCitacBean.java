@@ -5,7 +5,6 @@
  */
 package dhz.skz.citaci.varazdin_karlovac;
 
-import dhz.skz.citaci.weblogger.*;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
@@ -23,8 +22,6 @@ import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.varazdin_karlovac.validatori.VzKaValidatorFactory;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
-import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
-import dhz.skz.config.Config;
 import dhz.skz.validatori.Validator;
 import java.io.InputStream;
 import java.net.URI;
@@ -49,7 +46,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
 import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -64,9 +60,7 @@ public class VzKaCitacBean implements CitacIzvora {
 
     private static final Logger log = Logger.getLogger(VzKaCitacBean.class.getName());
 
-    @Inject
-    @Config
-    private TimeZone timeZone;
+    private final TimeZone timeZone = TimeZone.getTimeZone("GMT+1");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     @EJB
@@ -137,9 +131,12 @@ public class VzKaCitacBean implements CitacIzvora {
                     vrijemeZadnjegMjerenja = zadnji.getVrijeme();
                 }
                 vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
-
-                pokupiPodatke("/zapisi/mjerenja", new VzKaMjerenjaParser(aktivnaPostaja, programNaPostaji, timeZone, valFac, podatakSiroviFacade ));
-                pokupiPodatke("/zapisi/zerospan", new VzKaZeroSpanParser(programNaPostaji, timeZone, zeroSpanFacade));
+                WlFileParser p = new VzKaMjerenjaParser(aktivnaPostaja, programNaPostaji, timeZone, valFac, podatakSiroviFacade );
+                p.setZadnjiPodatak(vrijemeZadnjegMjerenja);
+                pokupiPodatke("/zapisi/mjerenja", p);
+                p = new VzKaZeroSpanParser(programNaPostaji, timeZone, zeroSpanFacade);
+                p.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
+                pokupiPodatke("/zapisi/zerospan", p);
 
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});

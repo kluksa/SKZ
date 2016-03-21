@@ -55,6 +55,8 @@ public class IzvorProgramKljuceviMap implements Serializable {
     private String nKljuc;
     @Column(name = "broj_u_satu")
     private Integer brojUSatu;
+    @Column(name = "zasebni_zs")
+    private Boolean zasebniZS;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private ProgramMjerenja programMjerenja;
@@ -123,6 +125,14 @@ public class IzvorProgramKljuceviMap implements Serializable {
         this.brojUSatu = brojUSatu;
     }
 
+    public Boolean getZasebniZS() {
+        return zasebniZS;
+    }
+
+    public void setZasebniZS(Boolean zasebniZS) {
+        this.zasebniZS = zasebniZS;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -142,6 +152,7 @@ public class IzvorProgramKljuceviMap implements Serializable {
         }
         return true;
     }
+    
 
     @Override
     public String toString() {
