@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByPKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.pKljuc = :pKljuc"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByKKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.kKljuc = :kKljuc"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByUKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.uKljuc = :uKljuc"),
+    @NamedQuery(name = "IzvorProgramKljuceviMap.findByIzvor", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.izvorPodataka = :izvor"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByNKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.nKljuc = :nKljuc")})
 public class IzvorProgramKljuceviMap implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -58,7 +60,7 @@ public class IzvorProgramKljuceviMap implements Serializable {
     @Column(name = "zasebni_zs")
     private Boolean zasebniZS;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenja;
 
     public IzvorProgramKljuceviMap() {

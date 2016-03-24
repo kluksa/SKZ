@@ -88,8 +88,9 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
 
                 InitialContext ctx = new InitialContext();
                 String str = "java:module/";
-                for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
-                    if ( ! ip.getBean().equals("IoxCitac")) continue;
+//                for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
+                    IzvorPodataka ip = izvorPodatakaFacade.find(10);
+
                     String naziv = str + ip.getBean().trim();
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {
@@ -99,8 +100,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                         log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                         log.log(Level.SEVERE, null, ex);
                     }
-                }
-                minutniUSatne.napraviSatne(0);
+//                }
+//                minutniUSatne.napraviSatne(0);
             } catch (NamingException ex) {
                 log.log(Level.SEVERE, null, ex);
             } catch (Exception ex) {

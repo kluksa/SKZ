@@ -130,5 +130,5 @@ public class DozvoljeneGranice implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.DozvoljeneGranice[ dozvoljeneGranicePK=" + dozvoljeneGranicePK + " ]";
     }
-    
+
 }

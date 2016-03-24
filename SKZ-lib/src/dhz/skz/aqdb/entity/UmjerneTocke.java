@@ -16,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -33,6 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UmjerneTocke.findByMjerenaVrijednost", query = "SELECT u FROM UmjerneTocke u WHERE u.mjerenaVrijednost = :mjerenaVrijednost"),
     @NamedQuery(name = "UmjerneTocke.findByMjernaNesigurnost", query = "SELECT u FROM UmjerneTocke u WHERE u.mjernaNesigurnost = :mjernaNesigurnost")})
 public class UmjerneTocke implements Serializable {
+    @Size(max = 1)
+    private String vrsta;
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected UmjerneTockePK umjerneTockePK;
@@ -155,6 +158,14 @@ public class UmjerneTocke implements Serializable {
     @Override
     public String toString() {
         return "dhz.skz.aqdb.entity.UmjerneTocke[ umjerneTockePK=" + umjerneTockePK + " ]";
+    }
+
+    public String getVrsta() {
+        return vrsta;
+    }
+
+    public void setVrsta(String vrsta) {
+        this.vrsta = vrsta;
     }
     
 }

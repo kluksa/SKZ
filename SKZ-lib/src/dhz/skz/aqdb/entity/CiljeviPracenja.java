@@ -127,5 +127,5 @@ public class CiljeviPracenja implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.CiljeviPracenja[ id=" + id + " ]";
     }
-    
+
 }
