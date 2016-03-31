@@ -116,12 +116,14 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
     
     public PodatakSirovi getZadnji(ProgramMjerenja program) {
+        em.getEntityManagerFactory().getCache().evictAll();
         ZadnjiSirovi zadnji = getEntityManager().find(ZadnjiSirovi.class, program);
         return zadnji.getPodatakSiroviId();
     }
  
      // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja){
+        em.getEntityManagerFactory().getCache().evictAll();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
         Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);
@@ -132,6 +134,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
 
         Expression<Date> vrijemeE = from.get(ZadnjiSirovi_.vrijeme);
         cq.select(from).where(cb.and(izvorP, postajaP)).orderBy(cb.desc(vrijemeE));
+        
         TypedQuery<ZadnjiSirovi> createQuery = em.createQuery(cq);
         TypedQuery<ZadnjiSirovi> setMaxResults = createQuery.setMaxResults(1);
         List<ZadnjiSirovi> resultList = setMaxResults.getResultList();
@@ -144,6 +147,7 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     
         // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+        em.getEntityManagerFactory().getCache().evictAll();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
         Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);

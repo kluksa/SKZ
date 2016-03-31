@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByPKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.pKljuc = :pKljuc"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByKKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.kKljuc = :kKljuc"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByUKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.uKljuc = :uKljuc"),
-    @NamedQuery(name = "IzvorProgramKljuceviMap.findByIzvor", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.izvorPodataka = :izvor"),
     @NamedQuery(name = "IzvorProgramKljuceviMap.findByNKljuc", query = "SELECT i FROM IzvorProgramKljuceviMap i WHERE i.nKljuc = :nKljuc")})
 public class IzvorProgramKljuceviMap implements Serializable {
     private static final long serialVersionUID = 1L;
