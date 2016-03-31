@@ -113,9 +113,7 @@ public class SiroviPodaci {
             @DefaultValue("4") @QueryParam("broj_dana") Integer brojDana) {
         
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, datum.getDate().toString());
         cal.setTime(datum.getDate());
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "XXXX::::::{0}::{1}", new Object[]{cal.getTime().toString(), cal.toString()});
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -125,7 +123,7 @@ public class SiroviPodaci {
         cal.add(Calendar.DATE, -brojDana);
         Date pocetak = cal.getTime();
         
-        Logger.getLogger(SiroviPodaci.class.getName()).log(Level.INFO, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
+        log.log(Level.FINE, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         List<PodatakSiroviDTO> lista = new ArrayList<>();
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         for (PodatakSirovi ps : podatakSiroviFacade.getPodaci(program, pocetak, kraj, false, true)) {
@@ -192,7 +190,7 @@ public class SiroviPodaci {
     @Path("{program}/{datum}")
     public void putPodaci(@PathParam("program") Integer programId, @PathParam("datum") DateParam datum, @Context SecurityContext sc, List<PodatakSiroviDTO> podaci) {
         Korisnik user = korisnikFacade.findByIme(sc.getUserPrincipal().getName());
-        log.log(Level.INFO, "Stizu podaci. program= {0}, dan={1}, korisnik={2}", new Object[]{programId, datum.getDate(), user.getKorisnickoIme()});
+        log.log(Level.FINE, "Stizu podaci. program= {0}, dan={1}, korisnik={2}", new Object[]{programId, datum.getDate(), user.getKorisnickoIme()});
         for (PodatakSiroviDTO p : podaci) {
             Boolean valjan = p.isValjan();
             PodatakSirovi ps = podatakSiroviFacade.find(p.getId());

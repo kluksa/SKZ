@@ -104,7 +104,7 @@ public class ZeroSpanResource {
         cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
 
-        Logger.getLogger(ZeroSpanResource.class.getName()).log(Level.SEVERE, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
+        Logger.getLogger(ZeroSpanResource.class.getName()).log(Level.FINE, "{0} -- {1}", new Object[]{pocetak.toString(), kraj.toString()});
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<ZeroSpanDTO> zeroSpan = getZeroSpan(program, pocetak, kraj);
         return zeroSpan;

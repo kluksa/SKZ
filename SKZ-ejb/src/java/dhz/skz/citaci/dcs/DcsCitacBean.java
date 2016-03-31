@@ -136,7 +136,7 @@ public class DcsCitacBean implements CitacIzvora {
                 while (rs.next()) {
                     String strTime = rs.getString(1);
                     Timestamp timestamp = rs.getTimestamp(1);
-                    log.log(Level.INFO, "VRIJEME: str={0}, ts={1}, long={2}",new Object[]{strTime, timestamp, timestamp.getTime()});
+                    log.log(Level.FINER, "VRIJEME: str={0}, ts={1}, long={2}",new Object[]{strTime, timestamp, timestamp.getTime()});
                     double aFloat = rs.getDouble(2);
                     Integer obuhvat = rs.getInt(3);
                     Integer statusB = rs.getInt(4);
@@ -203,7 +203,7 @@ public class DcsCitacBean implements CitacIzvora {
     }
 
     private Collection<ZeroSpan> getZeroSpan(Connection con, ProgramMjerenja pm, Date zadnji)  throws SQLException {
-        log.log(Level.INFO, "ZS: pm={0}, zadnji={1}", new Object[]{pm.getId(), zadnji});
+        log.log(Level.FINER, "ZS: pm={0}, zadnji={1}", new Object[]{pm.getId(), zadnji});
         List<ZeroSpan> podaci = new ArrayList<>();
         Integer station = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getPKljuc());
         Integer component = Integer.parseInt(pm.getIzvorProgramKljuceviMap().getKKljuc());
@@ -224,7 +224,7 @@ public class DcsCitacBean implements CitacIzvora {
                     int status = rs.getInt(4);
                     int error = rs.getInt(5);
                     int intstatus = rs.getInt(6);
-                    log.log(Level.INFO,"RS: t={0}, zero={1}, span={2}, st={3}, er={4}, in={5} ", new Object[]{timestamp, pm.getId(), zero, span, status, error, intstatus});
+                    log.log(Level.FINER,"RS: t={0}, zero={1}, span={2}, st={3}, er={4}, in={5} ", new Object[]{timestamp, pm.getId(), zero, span, status, error, intstatus});
 
                     if ( status > 0 && error == 0){
                         if ( (status & 8) != 0 && span != -999){

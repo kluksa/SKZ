@@ -111,14 +111,14 @@ public class SatniPodatakResource {
         Date kraj = cal.getTime();
         cal.add(Calendar.DATE, -broj_dana);
         Date pocetak = cal.getTime();
-        log.log(Level.INFO, "Od {0} do {1}", new Object[]{pocetak, kraj});
+        log.log(Level.FINE, "Od {0} do {1}", new Object[]{pocetak, kraj});
 
         ProgramMjerenja program = programMjerenjaFacade.find(programId);
         List<SatniDTO> lista = new ArrayList<>();
         for (Podatak p : podatakFacade.getPodatak(program, pocetak, kraj, nivo, true, true)) {
 
             boolean valjan = OperStatus.isValid(p);
-            log.log(Level.INFO, "P: {0},{1}", new Object[]{p.getVrijeme(), valjan});
+            log.log(Level.FINER, "P: {0},{1}", new Object[]{p.getVrijeme(), valjan});
             
             if (!samo_valjani || valjan) {
                 SatniDTO po = new SatniDTO();
@@ -129,10 +129,9 @@ public class SatniPodatakResource {
                 po.setStatus(p.getStatus());
                 po.setValjan(valjan);
                 lista.add(po);
-                log.log(Level.INFO, "PP: {0},{1}", new Object[]{p.getVrijeme(), valjan});
+                log.log(Level.FINER, "PP: {0},{1}", new Object[]{p.getVrijeme(), valjan});
             }
         }
-        log.log(Level.INFO, "SVE OK");
         return lista;
     }
     
