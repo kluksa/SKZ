@@ -98,8 +98,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                         log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                         log.log(Level.SEVERE, null, ex);
                     }
-//                }
-//                minutniUSatne.napraviSatne(0);
+                }
+                minutniUSatne.napraviSatne(0);
             } catch (NamingException ex) {
                 log.log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
