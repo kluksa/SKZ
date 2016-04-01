@@ -88,9 +88,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
 
                 InitialContext ctx = new InitialContext();
                 String str = "java:module/";
-//                for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
-                    IzvorPodataka ip = izvorPodatakaFacade.find(10);
-
+                for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
                     String naziv = str + ip.getBean().trim();
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {

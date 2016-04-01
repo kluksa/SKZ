@@ -5,7 +5,6 @@
  */
 package dhz.skz.citaci.weblogger;
 
-import dhz.skz.aqdb.entity.NivoValidacije;
 import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import java.io.IOException;
 import java.io.InputStream;
