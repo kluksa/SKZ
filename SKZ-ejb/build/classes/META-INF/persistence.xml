@@ -31,6 +31,7 @@
     <class>dhz.skz.aqdb.entity.NivoValidacije</class>
     <class>dhz.skz.aqdb.entity.OdgovornoTijelo</class>
     <class>dhz.skz.aqdb.entity.Odrzavanje</class>
+    <class>dhz.skz.aqdb.entity.OdrzavanjeHasDijelovi</class>
     <class>dhz.skz.aqdb.entity.PlanOdrzavanja</class>
     <class>dhz.skz.aqdb.entity.PlanUmjeravanja</class>
     <class>dhz.skz.aqdb.entity.Podatak</class>
@@ -65,7 +66,15 @@
     <class>dhz.skz.aqdb.entity.ZemljopisneKarakteristike</class>
     <class>dhz.skz.aqdb.entity.ZeroSpan</class>
     <class>dhz.skz.aqdb.entity.ZeroSpanReferentneVrijednosti</class>
+    <class>dhz.skz.aqdb.entity.FlagZaProgramMjerenja</class>
+    <class>dhz.skz.aqdb.entity.MetodaUmjerneTocke</class>
+    <class>dhz.skz.aqdb.entity.OdrzavanjeHasDijelovi</class>
+    <class>dhz.skz.aqdb.entity.StanjeMjerenja</class>
+    <class>dhz.skz.aqdb.entity.ZadnjiSirovi</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    <properties/>
+    <properties>
+      <!--            <property name="eclipselink.jdbc.batch-writing" value="JDBC" />
+            <property name="eclipselink.jdbc.batch-writing.size" value="1000" />-->
+    </properties>
   </persistence-unit>
 </persistence>
