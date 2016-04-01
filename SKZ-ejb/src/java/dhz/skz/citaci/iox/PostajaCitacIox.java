@@ -49,7 +49,7 @@ public class PostajaCitacIox {
     private final Postaja postaja;
     private final HashMap<ProgramMjerenja, Integer> program = new HashMap<>();
     private final HashMap<String, ProgramMjerenja> mapa = new HashMap<>();
-    private final NavigableMap<Date, PodatakSirovi[]> podaci = new TreeMap<>();
+    private NavigableMap<Date, PodatakSirovi[]> podaci;
     private final List<Validator> validatori = new ArrayList<>();
     private int i = 0;
     private final IoxValidatorFactory ivf;
@@ -103,7 +103,8 @@ public class PostajaCitacIox {
     }
 
     public Map<Date, PodatakSirovi[]> parseMjerenja(InputStream is) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        podaci = new TreeMap<>();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
             String line = null;
             line = in.readLine();
