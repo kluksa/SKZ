@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -58,7 +59,7 @@ public class IzvorProgramKljuceviMap implements Serializable {
     @Column(name = "zasebni_zs")
     private Boolean zasebniZS;
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     private ProgramMjerenja programMjerenja;
 
     public IzvorProgramKljuceviMap() {

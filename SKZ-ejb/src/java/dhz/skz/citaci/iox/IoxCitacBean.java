@@ -16,11 +16,12 @@
  */
 package dhz.skz.citaci.iox;
 
-import com.csvreader.CsvReader;
 import dhz.skz.aqdb.entity.IzvorPodataka;
+import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.IzvorProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
@@ -29,20 +30,22 @@ import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
 import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
+import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
 import dhz.skz.validatori.ValidatorFactory;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +55,16 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 /**
  *
@@ -59,13 +72,13 @@ import javax.ejb.LocalBean;
  */
 @Stateless
 @LocalBean
+@TransactionManagement(TransactionManagementType.BEAN)
 public class IoxCitacBean implements CitacIzvora {
 
     private static final Logger log = Logger.getLogger(IoxCitacBean.class.getName());
 
     private final TimeZone timeZone = TimeZone.getTimeZone("GMT+1");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-
     @EJB
     private UredjajFacade uredjajFacade;
 
@@ -74,6 +87,8 @@ public class IoxCitacBean implements CitacIzvora {
 
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
+    @EJB
+    private IzvorProgramKljuceviMapFacade izvorProgramKljuceviMapFacade;
     @EJB
     private PodatakFacade podatakFacade;
     @EJB
@@ -97,6 +112,9 @@ public class IoxCitacBean implements CitacIzvora {
     private ValidatorFactory valFac;
 
     private HttpURLConnection con;
+    private Set<Postaja> postaje;
+    private HashMap<String, ProgramMjerenja> programKljucevi;
+    private final IoxValidatorFactory ivf = new IoxValidatorFactory();
 
 //    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 //    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
@@ -114,82 +132,82 @@ public class IoxCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
         this.izvor = izvor;
+//        postaje = new HashSet<Postaja>();
+        programKljucevi = new HashMap<>();
 //        valFac = new VzKaValidatorFactory(izvor.getProgramMjerenjaCollection());
-        for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
-            aktivnaPostaja = it.next();
+        HashMap<Postaja, PostajaCitacIox> postajeSve = new HashMap<>();
 
-            try { // sto god da se desi, idemo na slijedecu postaju
-                log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
+        for (ProgramMjerenja programMjerenja : izvor.getProgramMjerenjaCollection()) {
+            IzvorProgramKljuceviMap ipm = programMjerenja.getIzvorProgramKljuceviMap();
+            Postaja postajaId = programMjerenja.getPostajaId();
+            if (!postajeSve.containsKey(postajaId)) {
+                postajeSve.put(postajaId, new PostajaCitacIox(postajaId, ivf));
+            }
+            PostajaCitacIox piox = postajeSve.get(postajaId);
+            piox.dodajProgram(programMjerenja, ipm.getUKljuc(), ipm.getKKljuc());
+        }
 
-                programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-                PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
-                if (zadnji == null) {
-                    Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-                    if (pocetakMjerenja == null) {
-                        continue;
-                    }
-                    vrijemeZadnjegMjerenja = pocetakMjerenja;
-                } else {
-                    vrijemeZadnjegMjerenja = zadnji.getVrijeme();
+        for (PostajaCitacIox pio : postajeSve.values()) {
+            log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
+            aktivnaPostaja = pio.getPostaja();
+            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
+
+            if (zadnji == null) {
+                Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+                if (pocetakMjerenja == null) {
+                    continue;
                 }
+                vrijemeZadnjegMjerenja = pocetakMjerenja;
+            } else {
+                vrijemeZadnjegMjerenja = zadnji.getVrijeme();
+            }
+            log.log(Level.INFO, "ZADNJI: {0}", vrijemeZadnjegMjerenja);
 
-//                vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
-//                WlFileParser p = new VzKaMjerenjaParser(aktivnaPostaja, programNaPostaji, timeZone, valFac, podatakSiroviFacade);
-//                p.setZadnjiPodatak(vrijemeZadnjegMjerenja);
-//                pokupiPodatke("/zapisi/mjerenja", p);
-//                p = new VzKaZeroSpanParser(programNaPostaji, timeZone, zeroSpanFacade);
-//                p.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
-//                pokupiPodatke("/zapisi/zerospan", p);
-            } catch (Throwable ex) {
-                log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
-                log.log(Level.SEVERE, "", ex);
+            String uriStrT = izvor.getUri();
+            uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
+            uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
+            uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
+            uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "1");
+
+            Date sada = new Date();
+            Date vrijeme = vrijemeZadnjegMjerenja;
+            while (!vrijeme.after(sada)) {
+                String uriStr = uriStrT.replaceFirst("\\$\\{POCETAK\\}", sdf.format(vrijeme));
+                vrijeme = new Date(vrijeme.getTime() + 3600000);
+                log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
+                try (InputStream is = getInputStream(new URI(uriStr))) {
+                    Map<Date, PodatakSirovi[]> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
+                    spremi(mjerenja);
+                } catch (URISyntaxException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                } catch (MalformedURLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-    }
-
-    public void pokupiPodatke() {
-
-    }
-
-    public void parseMjerenja(InputStream is) {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            CsvReader csv = new CsvReader(is, '\t', Charset.forName("UTF-8"));
-            csv.readHeaders();
-            while (csv.readRecord()) {
-            
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(IoxCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
 
     public void parseZeroSpan(InputStream is) {
 
     }
 
-    private InputStream sendGet() throws Exception {
+    private InputStream getInputStream(URI uri) throws Exception {
 
-        String url = "http://varazdin/cgi-bin/cgi-iox?proc=60&path=iox/database/av1.txt&unit=2&crosstable=y&time=2016/02/14%2012:00&period=6";
-        URL obj = new URL(url);
+//        String url = "http://varazdin/cgi-bin/cgi-iox?proc=60&path=iox/database/av1.txt&unit=2&crosstable=y&time=2016/02/14%2012:00&period=6";
+        URL obj = uri.toURL();
 
-        String name = "horiba";
-        String password = "password";
-
-        String authString = name + ":" + password;
-        byte[] authEncBytes = Base64.getEncoder().encode(authString.getBytes());
+        String userInfo = uri.getUserInfo();
+//        String name = "horiba";
+//        String password = "password";
+//        String authString = name + ":" + password;
+//        
+//        byte[] authEncBytes = Base64.getEncoder().encode(authString.getBytes());
+        byte[] authEncBytes = Base64.getEncoder().encode(userInfo.getBytes());
         String authStringEnc = new String(authEncBytes);
 
         con = (HttpURLConnection) obj.openConnection();
@@ -198,9 +216,29 @@ public class IoxCitacBean implements CitacIzvora {
         con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
+        log.log(Level.INFO, "Sending 'GET' request to URL : {0}", uri.toString());
+        log.log(Level.INFO, "Response Code : {0}", responseCode);
         return con.getInputStream();
+    }
+
+    private void spremi(Map<Date, PodatakSirovi[]> mjerenja) {
+        UserTransaction utx = context.getUserTransaction();
+        for (Date d : mjerenja.keySet()) {
+            for (PodatakSirovi ps : mjerenja.get(d)) {
+
+                try {
+                    utx.begin();
+                    log.log(Level.SEVERE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
+//                log.log(Level.INFO, "PS={0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",new Object[]{ps.getVrijeme(), ps.getVrijemeUpisa(), ps.getGreska(), ps.getNivoValidacijeId(), ps.getProgramMjerenjaId().getId(),ps.getStatus(), ps.getStatusString(), ps.getVrijednost(), ps.getVrijeme(), ps.getVrijemeUpisa()});
+                    podatakSiroviFacade.create(ps);
+                    utx.commit();
+                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                    log.log(Level.SEVERE, "IZNIMKA VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
     }
 
     @Override

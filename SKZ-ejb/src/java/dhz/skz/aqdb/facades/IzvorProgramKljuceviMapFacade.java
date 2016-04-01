@@ -41,4 +41,13 @@ public class IzvorProgramKljuceviMapFacade extends AbstractFacade<IzvorProgramKl
         super(IzvorProgramKljuceviMap.class);
     }
     
+//    public Collection<IzvorProgramKljuceviMap> find(IzvorPodataka izvor) {
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<IzvorProgramKljuceviMap> cq = cb.createQuery(IzvorProgramKljuceviMap.class);
+//        Root<IzvorProgramKljuceviMap> from = cq.from(IzvorProgramKljuceviMap.class);
+//        cq.where(cb.equal(from.get(IzvorProgramKljuceviMap_.izvorPodataka), izvor));
+//        cq.select(from);
+//        return em.createQuery(cq).getResultList();
+//    }
+    
 }

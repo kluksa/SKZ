@@ -68,6 +68,31 @@
     <class>dhz.skz.aqdb.entity.IspitneVelicine</class>
     <class>dhz.skz.aqdb.entity.VrstaOpreme</class>
     <class>dhz.skz.aqdb.entity.EtalonCistiZrakKvaliteta</class>
+    <class>dhz.skz.aqdb.entity.ZadnjiSirovi</class>
+    <class>dhz.skz.newpackage.Proizvodjac</class>
+    <class>dhz.skz.newpackage.Program</class>
+    <class>dhz.skz.newpackage.Flag</class>
+    <class>dhz.skz.newpackage.Validatori</class>
+    <class>dhz.skz.newpackage.Korisnik</class>
+    <class>dhz.skz.newpackage.Mreza</class>
+    <class>dhz.skz.newpackage.NabavaDijelova</class>
+    <class>dhz.skz.newpackage.OdrzavanjeHasDijelovi</class>
+    <class>dhz.skz.newpackage.Uloge</class>
+    <class>dhz.skz.newpackage.Agregacije</class>
+    <class>dhz.skz.newpackage.PostajaPlanObilazaka</class>
+    <class>dhz.skz.newpackage.Podrucje</class>
+    <class>dhz.skz.newpackage.Granice</class>
+    <class>dhz.skz.newpackage.KorisnikV</class>
+    <class>dhz.skz.newpackage.Postaja</class>
+    <class>dhz.skz.newpackage.Komponenta</class>
+    <class>dhz.skz.newpackage.Umjeravanje</class>
+    <class>dhz.skz.newpackage.Odrzavanje</class>
+    <class>dhz.skz.newpackage.Reprezentativnost</class>
+    <class>dhz.skz.newpackage.PostajaObilazak</class>
+    <class>dhz.skz.newpackage.Podatak</class>
+    <class>dhz.skz.newpackage.Dijelovi</class>
+    <class>dhz.skz.newpackage.Komentar</class>
+    <class>dhz.skz.newpackage.Uredjaj</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aqdb_likz?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.password" value="C6bm7@MySqL"/>

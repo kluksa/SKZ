@@ -76,7 +76,7 @@ public abstract class ValidatorImpl implements Validator {
         ps.setStatus(status);
     }
     
-    public abstract int provjeraStatusa(String statusStr);
+    protected abstract int provjeraStatusa(String statusStr);
 
     public abstract Collection<String> opisStatusa(String statusStr);
     

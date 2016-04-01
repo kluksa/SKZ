@@ -78,6 +78,8 @@ public class Postaja implements Serializable {
     @Size(max = 90)
     @Column(name = "nuts_oznaka")
     private String nutsOznaka;
+    
+    
     private Integer stanovnistvo;
     @Basic(optional = false)
     @NotNull

@@ -62,8 +62,8 @@ public class PrimateljiPodataka implements Serializable {
     private Integer aktivan;
     @Column(name = "cestina_sati")
     private Integer cestinaSati;
-    @JoinTable(name = "primatelji_podataka_has_program_mjerenja", joinColumns = {
-        @JoinColumn(name = "primatelji_podataka_id", referencedColumnName = "id")}, inverseJoinColumns = {
+    @JoinTable(name = "primatelj_program_kljucevi_map", joinColumns = {
+        @JoinColumn(name = "primatelji_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<ProgramMjerenja> programMjerenjaCollection;

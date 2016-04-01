@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,6 +54,9 @@ public class IzvorPodataka implements Serializable {
     @Basic(optional = false)
     @NotNull
     private boolean aktivan;
+    @Size(max = 16)
+    @Column(name = "cron_str")
+    private String cronString;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "izvorPodataka")
     private Collection<ValidatorModelIzvor> validatorModelIzvorCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "izvorPodatakaId")
@@ -110,6 +114,15 @@ public class IzvorPodataka implements Serializable {
     public void setAktivan(boolean aktivan) {
         this.aktivan = aktivan;
     }
+
+    public String getCronString() {
+        return cronString;
+    }
+
+    public void setCronString(String cronString) {
+        this.cronString = cronString;
+    }
+    
 
     @XmlTransient
     public Collection<ValidatorModelIzvor> getValidatorModelIzvorCollection() {
