@@ -39,7 +39,6 @@ import javax.sql.DataSource;
 public class EkonergDiseminator implements DiseminatorPodataka {
     @Resource(name = "diseminacija")
     private DataSource diseminacija;
-
     
     private static final Logger log = Logger.getLogger(EkonergDiseminator.class.getName());
 
@@ -77,7 +76,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                     prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
                 }
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }
     }

@@ -116,7 +116,8 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
     }
     
     public PodatakSirovi getZadnji(ProgramMjerenja program) {
-        ZadnjiSirovi zadnji = getEntityManager().find(ZadnjiSirovi.class, program);
+        ZadnjiSirovi zadnji = getEntityManager().find(ZadnjiSirovi.class, program.getId());
+        if ( zadnji == null ) return null;
         em.refresh(zadnji);
         return zadnji.getPodatakSiroviId();
     }

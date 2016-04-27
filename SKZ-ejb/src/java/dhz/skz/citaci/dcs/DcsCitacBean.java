@@ -93,7 +93,7 @@ public class DcsCitacBean implements CitacIzvora {
             Date vrijemeZadnjegZS = zeroSpanFacade.getVrijemeZadnjeg(pm);
             Collection<ZeroSpan> zs=null;
             Collection<PodatakSirovi> podaci=null;
-
+            
             try (Connection con = dcsDS.getConnection()) {
                 podaci = getPodaci(con, pm, vrijemeZadnjeg);
                 zs=getZeroSpan(con, pm, vrijemeZadnjegZS);

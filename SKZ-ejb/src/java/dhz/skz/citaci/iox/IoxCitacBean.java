@@ -21,6 +21,7 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.IzvorProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
@@ -170,6 +171,7 @@ public class IoxCitacBean implements CitacIzvora {
             uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
             uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
             uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "1");
+            uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", "av1.txt");
 
             Date sada = new Date();
             Date vrijeme = vrijemeZadnjegMjerenja;
@@ -188,6 +190,7 @@ public class IoxCitacBean implements CitacIzvora {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
+//            citajZeroSpan(pio);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
@@ -228,7 +231,7 @@ public class IoxCitacBean implements CitacIzvora {
 
                 try {
                     utx.begin();
-                    log.log(Level.SEVERE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
+                    log.log(Level.FINE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
 //                log.log(Level.INFO, "PS={0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",new Object[]{ps.getVrijeme(), ps.getVrijemeUpisa(), ps.getGreska(), ps.getNivoValidacijeId(), ps.getProgramMjerenjaId().getId(),ps.getStatus(), ps.getStatusString(), ps.getVrijednost(), ps.getVrijeme(), ps.getVrijemeUpisa()});
                     podatakSiroviFacade.create(ps);
                     utx.commit();
@@ -241,9 +244,68 @@ public class IoxCitacBean implements CitacIzvora {
         }
     }
 
+    private void spremiZS(Collection<ZeroSpan> mjerenja) {
+        UserTransaction utx = context.getUserTransaction();
+
+        try {
+            utx.begin();
+            for (ZeroSpan zs : mjerenja) {
+
+                log.log(Level.FINE, "SPREMAM ZS: t={0}::pm={1}::val={2}::std={3}::ref={4}::vrsta={5}", new Object[]{zs.getVrijeme(), zs.getProgramMjerenjaId().getId(), zs.getVrijednost(), zs.getStdev(), zs.getReferentnaVrijednost(), zs.getVrsta()});
+//                zeroSpanFacade.create(zs);
+            }
+            utx.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            log.log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     @Override
     public Map<String, String> opisiStatus(PodatakSirovi ps) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void citajZeroSpan(PostajaCitacIox pio) {
+        log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
+        //         "http://karlovac/cgi-bin/cgi-iox?proc=60&path=iox/database/cal.txt&unit=1&time=2016/04/01%2000:00&period=720"
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
+        Postaja postaja = pio.getPostaja();
+        Date zadnji = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
+
+        if (zadnji == null) {
+            Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+            if (pocetakMjerenja == null) {
+                return;
+            }
+            zadnji = pocetakMjerenja;
+        }
+        log.log(Level.INFO, "ZADNJI ZS: {0}", zadnji);
+
+        String uriStrT = izvor.getUri();
+        uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
+        uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
+        uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
+        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "1");
+        uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", "cal.txt");
+
+        Date sada = new Date();
+        Date vrijeme = zadnji;
+        while (!vrijeme.after(sada)) {
+            String uriStr = uriStrT.replaceFirst("\\$\\{POCETAK\\}", sdf.format(vrijeme));
+            vrijeme = new Date(vrijeme.getTime() + 3600000);
+            log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
+            try (InputStream is = getInputStream(new URI(uriStr))) {
+                Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));
+                spremiZS(mjerenja);
+            } catch (URISyntaxException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (MalformedURLException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }

@@ -78,6 +78,8 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
                             diseminator.salji(pr);
                         } catch (NamingException ex) {
                             log.log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            log.log(Level.SEVERE, null, ex);
                         }
                     }
                 }
