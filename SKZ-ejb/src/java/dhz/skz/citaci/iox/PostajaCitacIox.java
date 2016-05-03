@@ -169,7 +169,9 @@ public class PostajaCitacIox {
             CsvReader csv = new CsvReader(in, '\t');
             csv.readHeaders();
             int n = csv.getHeaderCount();
+            log.log(Level.INFO, "HEAD::::{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}", csv.getHeaders());
             while (csv.readRecord()) {
+                log.log(Level.INFO, "RAW::::{0}", csv.getRawRecord());
                 if (csv.get("ErrStatus").equals("________")) {
                     try {
                         Date vrijeme = sdf.parse(csv.get("Time"));
@@ -197,26 +199,26 @@ public class PostajaCitacIox {
 
                         if (intstatus.charAt(11) == 'Z') {
                             Double val = conv * Double.parseDouble(csv.get("Zero"));
-                            Double std = Double.parseDouble(csv.get("Zero StDev"));
+                            Double std = Double.parseDouble(csv.get("Zero StdDev"));
                             Double ref = Double.parseDouble(csv.get("Zero Setp"));
                             dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("Z"));
                         }
 
                         if (intstatus.charAt(10) == '1') {
                             Double val = conv * Double.parseDouble(csv.get("Span-1"));
-                            Double std = Double.parseDouble(csv.get("Span-1 StDev"));
+                            Double std = Double.parseDouble(csv.get("Span-1 StdDev"));
                             Double ref = Double.parseDouble(csv.get("Span-1 Setp"));
                             dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("S"));
                         }
 
                         if (intstatus.charAt(9) == '2') {
                             Double val = conv * Double.parseDouble(csv.get("Span-2"));
-                            Double std = Double.parseDouble(csv.get("Span-2 StDev"));
+                            Double std = Double.parseDouble(csv.get("Span-2 StdDev"));
                             Double ref = Double.parseDouble(csv.get("Span-2 Setp"));
                             dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("X"));
                         }
 
-                        Integer validity = Integer.parseInt(csv.get("Validity"));
+//                        Integer validity = Integer.parseInt(csv.get("Validity"));
                         String status = csv.get("OpeStatus");
                         status += csv.get("ErrStatus");
                         status += csv.get("IntStatus");

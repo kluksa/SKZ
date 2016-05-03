@@ -190,7 +190,7 @@ public class IoxCitacBean implements CitacIzvora {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
-//            citajZeroSpan(pio);
+            citajZeroSpan(pio);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
@@ -252,7 +252,7 @@ public class IoxCitacBean implements CitacIzvora {
             for (ZeroSpan zs : mjerenja) {
 
                 log.log(Level.FINE, "SPREMAM ZS: t={0}::pm={1}::val={2}::std={3}::ref={4}::vrsta={5}", new Object[]{zs.getVrijeme(), zs.getProgramMjerenjaId().getId(), zs.getVrijednost(), zs.getStdev(), zs.getReferentnaVrijednost(), zs.getVrsta()});
-//                zeroSpanFacade.create(zs);
+                zeroSpanFacade.create(zs);
             }
             utx.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
@@ -268,7 +268,6 @@ public class IoxCitacBean implements CitacIzvora {
 
     private void citajZeroSpan(PostajaCitacIox pio) {
         log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
-        //         "http://karlovac/cgi-bin/cgi-iox?proc=60&path=iox/database/cal.txt&unit=1&time=2016/04/01%2000:00&period=720"
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
         Postaja postaja = pio.getPostaja();
         Date zadnji = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
@@ -286,14 +285,14 @@ public class IoxCitacBean implements CitacIzvora {
         uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
         uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
         uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
-        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "1");
+        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "24");
         uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", "cal.txt");
 
         Date sada = new Date();
         Date vrijeme = zadnji;
         while (!vrijeme.after(sada)) {
             String uriStr = uriStrT.replaceFirst("\\$\\{POCETAK\\}", sdf.format(vrijeme));
-            vrijeme = new Date(vrijeme.getTime() + 3600000);
+            vrijeme = new Date(vrijeme.getTime() + 24*3600000);
             log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
             try (InputStream is = getInputStream(new URI(uriStr))) {
                 Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));

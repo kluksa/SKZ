@@ -96,8 +96,6 @@ public class Podatak implements Serializable {
     @ManyToOne(optional = false)
     @NotNull
     private ProgramMjerenja programMjerenjaId;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "podatak")
-    private Komentar komentar;
 
     public Podatak() {
     }
@@ -200,14 +198,6 @@ public class Podatak implements Serializable {
 
     public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
         this.programMjerenjaId = programMjerenjaId;
-    }
-
-    public Komentar getKomentar() {
-        return komentar;
-    }
-
-    public void setKomentar(Komentar komentar) {
-        this.komentar = komentar;
     }
 
     @Override

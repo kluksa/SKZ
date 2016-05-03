@@ -118,7 +118,7 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
         cq.select(cb.greatest(vrijemeE));
         List<Date> rl = em.createQuery(cq).setMaxResults(1).getResultList();
         if (rl == null || rl.isEmpty() || rl.get(0) == null) {
-            return new Date(0L);
+            return null;
         }
         return rl.get(0);
     }

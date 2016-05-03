@@ -39,6 +39,7 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(dhz.skz.rest.DrzavnaMrezaResource.class);
         resources.add(dhz.skz.rest.GZIPWriterInterceptor.class);
+        resources.add(dhz.skz.rest.KomentarResource.class);
         resources.add(dhz.skz.rest.ProgramMjerenjaFacadeREST.class);
         resources.add(dhz.skz.rest.ProgramMjerenjaPodaciResource.class);
         resources.add(dhz.skz.rest.SatniPodatakResource.class);

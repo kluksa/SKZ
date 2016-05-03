@@ -6,14 +6,22 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,34 +34,72 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Komentar.findAll", query = "SELECT k FROM Komentar k"),
-    @NamedQuery(name = "Komentar.findByPodatakId", query = "SELECT k FROM Komentar k WHERE k.podatakId = :podatakId"),
+    @NamedQuery(name = "Komentar.findByProgramPocetakKraj", query = "SELECT k FROM Komentar k WHERE k.programMjerenjaId = :programMjerenjaId AND k.pocetak < :kraj AND k.kraj > :pocetak "),
     @NamedQuery(name = "Komentar.findByTekst", query = "SELECT k FROM Komentar k WHERE k.tekst = :tekst")})
 public class Komentar implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
+    @SequenceGenerator(name = "komentar_id_seq",
+            sequenceName = "komentar_id_seq",
+            allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "komentar_id_seq")
+    @Column(name = "id")
+    private Integer id;
+
     @Basic(optional = false)
     @NotNull
-    @Column(name = "podatak_id")
-    private Integer podatakId;
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date pocetak;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date kraj;
+
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @NotNull
+    private ProgramMjerenja programMjerenjaId;
+    
+
     @Size(max = 510)
+    @NotNull
     private String tekst;
-    @JoinColumn(name = "podatak_id", referencedColumnName = "podatak_id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
-    private Podatak podatak;
 
     public Komentar() {
     }
 
-    public Komentar(Integer podatakId) {
-        this.podatakId = podatakId;
+    public Integer getId() {
+        return id;
     }
 
-    public Integer getPodatakId() {
-        return podatakId;
+    public Date getPocetak() {
+        return pocetak;
     }
 
-    public void setPodatakId(Integer podatakId) {
-        this.podatakId = podatakId;
+    public void setPocetak(Date pocetak) {
+        this.pocetak = pocetak;
+    }
+
+    public Date getKraj() {
+        return kraj;
+    }
+
+    public void setKraj(Date kraj) {
+        this.kraj = kraj;
+    }
+
+    public ProgramMjerenja getProgramMjerenjaId() {
+        return programMjerenjaId;
+    }
+
+    public void setProgramMjerenjaId(ProgramMjerenja programMjerenjaId) {
+        this.programMjerenjaId = programMjerenjaId;
     }
 
     public String getTekst() {
@@ -64,37 +110,33 @@ public class Komentar implements Serializable {
         this.tekst = tekst;
     }
 
-    public Podatak getPodatak() {
-        return podatak;
-    }
-
-    public void setPodatak(Podatak podatak) {
-        this.podatak = podatak;
-    }
-
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (podatakId != null ? podatakId.hashCode() : 0);
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.pocetak);
+        hash = 29 * hash + Objects.hashCode(this.kraj);
+        hash = 29 * hash + Objects.hashCode(this.programMjerenjaId);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Komentar)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        Komentar other = (Komentar) object;
-        if ((this.podatakId == null && other.podatakId != null) || (this.podatakId != null && !this.podatakId.equals(other.podatakId))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Komentar other = (Komentar) obj;
+        if (!Objects.equals(this.pocetak, other.pocetak)) {
+            return false;
+        }
+        if (!Objects.equals(this.kraj, other.kraj)) {
+            return false;
+        }
+        if (!Objects.equals(this.programMjerenjaId, other.programMjerenjaId)) {
             return false;
         }
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "dhz.skz.aqdb.entity.Komentar[ podatakId=" + podatakId + " ]";
-    }
-    
 }
