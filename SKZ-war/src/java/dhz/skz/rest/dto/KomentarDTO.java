@@ -16,6 +16,15 @@ public class KomentarDTO {
     private int programMjerenjaId;
     private long pocetak;
     private long kraj;
+    private String tekst;
+
+    public String getTekst() {
+        return tekst;
+    }
+
+    public void setTekst(String tekst) {
+        this.tekst = tekst;
+    }
 
     public KomentarDTO() {
     }
@@ -25,6 +34,7 @@ public class KomentarDTO {
         this.programMjerenjaId = k.getProgramMjerenjaId().getId();
         this.pocetak = k.getPocetak().getTime();
         this.kraj = k.getKraj().getTime();
+        this.tekst = k.getTekst();
     }
     public Integer getId() {
         return id;

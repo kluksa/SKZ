@@ -22,6 +22,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 
 /**
  * REST Web Service
@@ -51,7 +52,22 @@ public class KomentarResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Path("{program}/{datum}")
+    @Produces({"application/xml", "application/json"})
+    public Collection<KomentarDTO> getXml() {
+        ArrayList<KomentarDTO> lista = new ArrayList<>();
+        for ( Komentar k : komentarFacade.findAll()) {
+            lista.add(new KomentarDTO(k));
+        }
+        return lista;
+        
+    }
+    /**
+     * Retrieves representation of an instance of dhz.skz.rest.KomentarResource
+     * @param id
+     * @return an instance of java.lang.String
+     */
+    @GET
+    @Path("{id}")
     @Produces({"application/xml", "application/json"})
     public KomentarDTO getXml(@PathParam("id") Integer id) {
         return new KomentarDTO(komentarFacade.find(id));
@@ -79,9 +95,10 @@ public class KomentarResource {
      */
     @PUT
     @Path("{program}/{pocetak}/{kraj}")
-    @Consumes({"application/xml", "application/json"})
+    @Consumes(MediaType.TEXT_PLAIN)
     public void putXml(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetak,
             @PathParam("kraj") DateTimeParam kraj, String content) {
+        System.out.println(content);
         Komentar k = new Komentar();
         k.setPocetak(pocetak.getDate());
         k.setKraj(kraj.getDate());
