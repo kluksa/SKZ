@@ -56,8 +56,6 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.HeuristicMixedException;
@@ -116,6 +114,7 @@ public class IoxCitacBean implements CitacIzvora {
     private Set<Postaja> postaje;
     private HashMap<String, ProgramMjerenja> programKljucevi;
     private final IoxValidatorFactory ivf = new IoxValidatorFactory();
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
 
 //    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 //    private void spremi(NavigableMap<Date, PodatakSirovi> podaci) {
@@ -133,7 +132,7 @@ public class IoxCitacBean implements CitacIzvora {
     @Override
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
+
         this.izvor = izvor;
 //        postaje = new HashSet<Postaja>();
         programKljucevi = new HashMap<>();
@@ -153,63 +152,61 @@ public class IoxCitacBean implements CitacIzvora {
         for (PostajaCitacIox pio : postajeSve.values()) {
             log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
             aktivnaPostaja = pio.getPostaja();
-            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
 
-            if (zadnji == null) {
-                Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-                if (pocetakMjerenja == null) {
-                    continue;
-                }
-                vrijemeZadnjegMjerenja = pocetakMjerenja;
-            } else {
-                vrijemeZadnjegMjerenja = zadnji.getVrijeme();
-            }
-            log.log(Level.INFO, "ZADNJI: {0}", vrijemeZadnjegMjerenja);
-
-            String uriStrT = izvor.getUri();
-            uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
-            uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
-            uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
-            uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "1");
-            uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", "av1.txt");
-
-            Date sada = new Date();
-            Date vrijeme = vrijemeZadnjegMjerenja;
-            while (!vrijeme.after(sada)) {
-                String uriStr = uriStrT.replaceFirst("\\$\\{POCETAK\\}", sdf.format(vrijeme));
-                vrijeme = new Date(vrijeme.getTime() + 3600000);
-                log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
-                try (InputStream is = getInputStream(new URI(uriStr))) {
-                    Map<Date, PodatakSirovi[]> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
-                    spremi(mjerenja);
-                } catch (URISyntaxException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                } catch (MalformedURLException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-            }
+            citajMjerenja(pio);
             citajZeroSpan(pio);
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
 
-    public void parseZeroSpan(InputStream is) {
+    private String napraviURL(String period, String dbstr, String vrijemeStr) {
+        String uriStrT = izvor.getUri();
+        uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
+        uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
+        uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
+        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", period);
+        uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", dbstr);
+        uriStrT = uriStrT.replaceFirst("\\$\\{POCETAK\\}", vrijemeStr);
+        return uriStrT;
+    }
 
+    private void citajMjerenja(PostajaCitacIox pio) {
+
+        PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
+        if (zadnji == null) {
+            Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+            if (pocetakMjerenja == null) {
+                return;
+            }
+            vrijemeZadnjegMjerenja = pocetakMjerenja;
+        } else {
+            vrijemeZadnjegMjerenja = zadnji.getVrijeme();
+        }
+        log.log(Level.INFO, "ZADNJI: {0}", vrijemeZadnjegMjerenja);
+
+        Date sada = new Date();
+        Date vrijeme = vrijemeZadnjegMjerenja;
+        while (!vrijeme.after(sada)) {
+            String uriStr = napraviURL("1", "av1.xtx", sdf.format(vrijeme));
+            vrijeme = new Date(vrijeme.getTime() + 3600000);
+            log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
+            try (InputStream is = getInputStream(new URI(uriStr))) {
+                Collection<PodatakSirovi> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
+                spremi(mjerenja);
+            } catch (URISyntaxException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (MalformedURLException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     private InputStream getInputStream(URI uri) throws Exception {
-
-//        String url = "http://varazdin/cgi-bin/cgi-iox?proc=60&path=iox/database/av1.txt&unit=2&crosstable=y&time=2016/02/14%2012:00&period=6";
         URL obj = uri.toURL();
 
         String userInfo = uri.getUserInfo();
-//        String name = "horiba";
-//        String password = "password";
-//        String authString = name + ":" + password;
-//        
-//        byte[] authEncBytes = Base64.getEncoder().encode(authString.getBytes());
         byte[] authEncBytes = Base64.getEncoder().encode(userInfo.getBytes());
         String authStringEnc = new String(authEncBytes);
 
@@ -224,23 +221,20 @@ public class IoxCitacBean implements CitacIzvora {
         return con.getInputStream();
     }
 
-    private void spremi(Map<Date, PodatakSirovi[]> mjerenja) {
+    private void spremi(Collection<PodatakSirovi> mjerenja) {
         UserTransaction utx = context.getUserTransaction();
-        for (Date d : mjerenja.keySet()) {
-            for (PodatakSirovi ps : mjerenja.get(d)) {
+        for (PodatakSirovi ps : mjerenja) {
 
-                try {
-                    utx.begin();
-                    log.log(Level.FINE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
+            try {
+                utx.begin();
+                log.log(Level.FINE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
 //                log.log(Level.INFO, "PS={0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",new Object[]{ps.getVrijeme(), ps.getVrijemeUpisa(), ps.getGreska(), ps.getNivoValidacijeId(), ps.getProgramMjerenjaId().getId(),ps.getStatus(), ps.getStatusString(), ps.getVrijednost(), ps.getVrijeme(), ps.getVrijemeUpisa()});
-                    podatakSiroviFacade.create(ps);
-                    utx.commit();
-                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                    log.log(Level.SEVERE, "IZNIMKA VRIJEME: {0}, PROGRAM: {1}", new Object[]{d, ps.getProgramMjerenjaId().getId()});
-                    log.log(Level.SEVERE, null, ex);
-                }
+                podatakSiroviFacade.create(ps);
+                utx.commit();
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                log.log(Level.SEVERE, "IZNIMKA VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
+                log.log(Level.SEVERE, null, ex);
             }
-
         }
     }
 
@@ -258,7 +252,6 @@ public class IoxCitacBean implements CitacIzvora {
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-
     }
 
     @Override
@@ -268,7 +261,6 @@ public class IoxCitacBean implements CitacIzvora {
 
     private void citajZeroSpan(PostajaCitacIox pio) {
         log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
         Postaja postaja = pio.getPostaja();
         Date zadnji = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
 
@@ -281,18 +273,11 @@ public class IoxCitacBean implements CitacIzvora {
         }
         log.log(Level.INFO, "ZADNJI ZS: {0}", zadnji);
 
-        String uriStrT = izvor.getUri();
-        uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
-        uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
-        uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
-        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", "24");
-        uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", "cal.txt");
-
         Date sada = new Date();
         Date vrijeme = zadnji;
         while (!vrijeme.after(sada)) {
-            String uriStr = uriStrT.replaceFirst("\\$\\{POCETAK\\}", sdf.format(vrijeme));
-            vrijeme = new Date(vrijeme.getTime() + 24*3600000);
+            String uriStr = napraviURL("24", "cal.xtx", sdf.format(vrijeme));
+            vrijeme = new Date(vrijeme.getTime() + 24 * 3600000);
             log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
             try (InputStream is = getInputStream(new URI(uriStr))) {
                 Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));

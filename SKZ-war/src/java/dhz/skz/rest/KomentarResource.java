@@ -69,7 +69,7 @@ public class KomentarResource {
     @GET
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
-    public KomentarDTO getXml(@PathParam("id") Integer id) {
+    public KomentarDTO getById(@PathParam("id") Integer id) {
         return new KomentarDTO(komentarFacade.find(id));
         
     }
@@ -86,6 +86,18 @@ public class KomentarResource {
         return lista;
     }
 
+    @GET
+    @Path("{program}/")
+    @Produces({"application/xml", "application/json"})
+    public Collection<KomentarDTO> getByProgram(@PathParam("program") Integer programId) {
+        ArrayList<KomentarDTO> lista = new ArrayList<>();
+        for ( Komentar k : komentarFacade.find(programFacade.find(programId))) {
+            lista.add(new KomentarDTO(k));
+        }
+        return lista;
+    }
+
+    
     /**
      * PUT method for updating or creating an instance of KomentarResource
      * @param programId

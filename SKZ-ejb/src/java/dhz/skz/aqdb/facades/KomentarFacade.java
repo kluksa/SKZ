@@ -51,6 +51,12 @@ public class KomentarFacade extends AbstractFacade<Komentar> {
         query.setParameter("kraj", kraj);
         return query.getResultList();
     }
+    
+    public List<Komentar> find(ProgramMjerenja program) {
+        TypedQuery<Komentar> query = em.createNamedQuery("Komentar.findByProgram", Komentar.class);
+        query.setParameter("programMjerenjaId", program);
+        return query.getResultList();
+    }
 
     
 }

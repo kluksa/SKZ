@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Komentar.findAll", query = "SELECT k FROM Komentar k"),
     @NamedQuery(name = "Komentar.findByProgramPocetakKraj", query = "SELECT k FROM Komentar k WHERE k.programMjerenjaId = :programMjerenjaId AND k.pocetak < :kraj AND k.kraj > :pocetak "),
+    @NamedQuery(name = "Komentar.findByProgram", query = "SELECT k FROM Komentar k WHERE k.programMjerenjaId = :programMjerenjaId"),
     @NamedQuery(name = "Komentar.findByTekst", query = "SELECT k FROM Komentar k WHERE k.tekst = :tekst")})
 public class Komentar implements Serializable {
 

@@ -50,40 +50,43 @@ public class PostajaCitacIox {
     private static final Logger log = Logger.getLogger(IoxCitacBean.class.getName());
 
     private final Postaja postaja;
-    private final HashMap<ProgramMjerenja, Integer> program = new HashMap<>();
-    private final HashMap<String, ProgramMjerenja> mapa = new HashMap<>();
-    private NavigableMap<Date, PodatakSirovi[]> podaci;
-    private final List<Validator> validatori = new ArrayList<>();
-    private int i = 0;
+    private final HashMap<String, ProgramMjerenja> mapa;
+    private Collection<PodatakSirovi> podaci;
+    private final NavigableMap<Date, Double> temperature;
+    private final Map<ProgramMjerenja, Validator> validatori;
+//    private int i = 0;
     private final IoxValidatorFactory ivf;
-    private int tempIdx;
+    private ProgramMjerenja tempIdx;
 
     public Postaja getPostaja() {
         return postaja;
     }
 
     public PostajaCitacIox(Postaja postajaId, IoxValidatorFactory ivf) {
+        this.mapa = new HashMap<>();
+        this.validatori = new HashMap<>();
+        this.temperature = new TreeMap<>();
         this.postaja = postajaId;
         this.ivf = ivf;
     }
 
     public void dodajProgram(ProgramMjerenja pm, String uKljuc, String kKljuc) {
-        program.put(pm, i);
+//        program.put(pm, i);
         String kljuc = uKljuc + "::" + kKljuc;
         mapa.put(kljuc, pm);
-        validatori.add(i, ivf.getValidator(uKljuc));
+        validatori.put(pm, ivf.getValidator(uKljuc));
         if (uKljuc.equals("Container::Cont")) {
-            tempIdx = i;
+            tempIdx = pm;
         }
-        i++;
+//        i++;
     }
 
-    private void dodajPodatak(String device, String component, Date vrijeme, Float vrijednost, String jedinica, String status) {
+    private void dodajPodatak(String device, String component, Date vrijeme, Double vrijednost, String jedinica, String status) {
         ProgramMjerenja pm = mapa.get(device + "::" + component);
-        int ii = program.get(pm);
-        if (!podaci.containsKey(vrijeme)) {
-            podaci.put(vrijeme, new PodatakSirovi[mapa.size()]);
-        }
+//        int ii = program.get(pm);
+//        if (!podaci.containsKey(vrijeme)) {
+//            podaci.put(vrijeme, new PodatakSirovi[mapa.size()]);
+//        }
         double conv;
         switch (jedinica) {
             case "ppb":
@@ -102,12 +105,15 @@ public class PostajaCitacIox {
         ps.setStatus(0);
         ps.setNivoValidacijeId(0);
         ps.setStatusString(status);
-        podaci.get(vrijeme)[ii] = ps;
+        podaci.add(ps);
+        if (ps.getProgramMjerenjaId().equals(tempIdx)) {
+            temperature.put(vrijeme, vrijednost);
+        }
     }
 
-    public Map<Date, PodatakSirovi[]> parseMjerenja(InputStream is) {
+    public Collection<PodatakSirovi> parseMjerenja(InputStream is) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        podaci = new TreeMap<>();
+        podaci = new ArrayList<>();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
             String line = null;
             line = in.readLine();
@@ -124,7 +130,7 @@ public class PostajaCitacIox {
                     Date vrijeme = sdf.parse(csv.get("Time"));
                     String device = csv.get("Device");
                     String component = csv.get("Component");
-                    Float val = Float.parseFloat(csv.get("Mean"));
+                    Double val = Double.parseDouble(csv.get("Mean"));
                     String unit = csv.get("Unit");
                     Integer validity = Integer.parseInt(csv.get("Validity"));
                     String status = csv.get("OpeStatus");
@@ -144,18 +150,19 @@ public class PostajaCitacIox {
     }
 
     private void validiraj() {
-        for (Date d : podaci.navigableKeySet()) {
-            PodatakSirovi[] get = podaci.get(d);
-            for (int i = 0; i < get.length; i++) {
-                PodatakSirovi ps = get[i];
-                Validator v = validatori.get(i);
-                v.setTemperatura(get[tempIdx].getVrijednost());
-                v.validiraj(ps);
-            }
+        for (PodatakSirovi ps : podaci) {
+//        for (Date d : podaci.navigableKeySet()) {
+//           PodatakSirovi[] get = podaci.get(d);
+//           for (int i = 0; i < get.length; i++) {
+//                PodatakSirovi ps = get[i];
+            Validator v = validatori.get(ps.getProgramMjerenjaId());
+            v.setTemperatura(temperature.get(ps.getVrijeme()));
+            v.validiraj(ps);
+//            }
         }
     }
 
-    Collection<ZeroSpan> parseZeroSpan(BufferedInputStream is) {
+    public Collection<ZeroSpan> parseZeroSpan(BufferedInputStream is) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         List<ZeroSpan> zeroSpan = new ArrayList<>();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
