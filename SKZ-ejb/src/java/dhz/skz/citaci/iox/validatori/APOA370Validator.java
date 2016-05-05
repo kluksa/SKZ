@@ -16,6 +16,8 @@
  */
 package dhz.skz.citaci.iox.validatori;
 
+import dhz.skz.util.OperStatus;
+
 /**
  *
  * @author kraljevic
@@ -23,14 +25,14 @@ package dhz.skz.citaci.iox.validatori;
 public class APOA370Validator extends Horiba370Validator {
     public APOA370Validator(){
         super();
-        statusMapa[8] = new StatusKlasa('x', "Nema");
-        statusMapa[9] = new StatusKlasa('x', "Lamp");
-        statusMapa[10] = new StatusKlasa('x', "Temp ISGG");
-        statusMapa[11] = new StatusKlasa('x', "Deozonator");
-        statusMapa[12] = new StatusKlasa('x', "Press");
-        statusMapa[13] = new StatusKlasa('x', "Flow");
-        statusMapa[14] = new StatusKlasa('x', "Battery");
-        statusMapa[15] = new StatusKlasa('C', "Calibration");
+        statusMapa[8] = new StatusKlasa('x', "Nema", OperStatus.W2);
+        statusMapa[9] = new StatusKlasa('x', "Lamp", OperStatus.FAULT);
+        statusMapa[10] = new StatusKlasa('x', "Temp ISGG", OperStatus.FAULT);
+        statusMapa[11] = new StatusKlasa('x', "Deozonator", OperStatus.FAULT);
+        statusMapa[12] = new StatusKlasa('x', "Press", OperStatus.FAULT);
+        statusMapa[13] = new StatusKlasa('x', "Flow", OperStatus.FAULT);
+        statusMapa[14] = new StatusKlasa('x', "Battery", OperStatus.W2);
+        statusMapa[15] = new StatusKlasa('C', "Calibration", OperStatus.W2);
     }
     
 }

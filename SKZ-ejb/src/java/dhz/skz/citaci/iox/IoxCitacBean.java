@@ -187,7 +187,7 @@ public class IoxCitacBean implements CitacIzvora {
         Date sada = new Date();
         Date vrijeme = vrijemeZadnjegMjerenja;
         while (!vrijeme.after(sada)) {
-            String uriStr = napraviURL("1", "av1.xtx", sdf.format(vrijeme));
+            String uriStr = napraviURL("1", "av1.txt", sdf.format(vrijeme));
             vrijeme = new Date(vrijeme.getTime() + 3600000);
             log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
             try (InputStream is = getInputStream(new URI(uriStr))) {
@@ -276,7 +276,7 @@ public class IoxCitacBean implements CitacIzvora {
         Date sada = new Date();
         Date vrijeme = zadnji;
         while (!vrijeme.after(sada)) {
-            String uriStr = napraviURL("24", "cal.xtx", sdf.format(vrijeme));
+            String uriStr = napraviURL("24", "cal.txt", sdf.format(vrijeme));
             vrijeme = new Date(vrijeme.getTime() + 24 * 3600000);
             log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
             try (InputStream is = getInputStream(new URI(uriStr))) {

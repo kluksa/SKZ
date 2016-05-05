@@ -23,35 +23,52 @@ import dhz.skz.util.OperStatus;
  * @author kraljevic
  */
 public abstract class Horiba370Validator extends IoxValidator {
-    
-    public Horiba370Validator(){
+
+    public Horiba370Validator() {
         super();
-        statusMapa[0] = new StatusKlasa('x', "Nepoznato");
-        statusMapa[1] = new StatusKlasa('x', "Nepoznato");
-        statusMapa[2] = new StatusKlasa('x', "Nepoznato");
-        statusMapa[3] = new StatusKlasa('x', "Nepoznato");
-        statusMapa[4] = new StatusKlasa('S', "Span");
-        statusMapa[5] = new StatusKlasa('Z', "Zero");
-        statusMapa[6] = new StatusKlasa('M', "Maintenence");
-        statusMapa[7] = new StatusKlasa('x', "Nepoznato");
+        statusMapa[0] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[1] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[2] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[3] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[4] = new StatusKlasa('S', "Span", OperStatus.SPAN);
+        statusMapa[5] = new StatusKlasa('Z', "Zero", OperStatus.ZERO);
+        statusMapa[6] = new StatusKlasa('M', "Maintenence", OperStatus.ODRZAVANJE);
+        statusMapa[7] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
     }
+
     @Override
-    protected int provjeraStatusa(String ps){
+    protected int provjeraStatusa(String ps) {
         int st = 0;
+
+        for (int i = 8; i <= 15; i++) {
+            char chr = ps.charAt(i);
+            if (chr != '_') {
+                if (chr == statusMapa[i].chr) {
+                    st |= (1 << statusMapa[i].st.ordinal());
+                } else {
+                    st |= (1 << OperStatus.FAULT.ordinal());
+                }
+            }
+        }
+
         st |= super.provjeraStatusa(ps);
-        
-        if ( ps.substring(0,7).equals("________")) {
+
+        if (ps.substring(0, 7).equals("________")) {
             return st;
-        }
-        if ( ps.charAt(1) == statusMapa[1].chr ) {
-            st |= OperStatus.ODRZAVANJE.ordinal();
-        } else if ( ps.charAt(2) == statusMapa[1].chr ) {
-            st |= OperStatus.ZERO.ordinal();
-        } else if ( ps.charAt(3) == statusMapa[1].chr ) {
-            st |= OperStatus.SPAN.ordinal();
         } else {
-            st |= OperStatus.FAULT.ordinal();
+
+            for (int i = 0; i <= 7; i++) {
+                char chr = ps.charAt(i);
+                if (chr != '_') {
+                    if (chr == statusMapa[i].chr) {
+                        st |= (1 << statusMapa[i].st.ordinal());
+                    } else {
+                        st |= (1 << OperStatus.W2.ordinal());
+                    }
+                }
+            }
         }
+
         return st;
     }
 }

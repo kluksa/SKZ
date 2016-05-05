@@ -12,6 +12,7 @@ import dhz.skz.rest.dto.KomentarDTO;
 import dhz.skz.rest.util.DateTimeParam;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
@@ -22,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -67,7 +69,7 @@ public class KomentarResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Path("{id}")
+    @Path("id/{id}")
     @Produces({"application/xml", "application/json"})
     public KomentarDTO getById(@PathParam("id") Integer id) {
         return new KomentarDTO(komentarFacade.find(id));
@@ -87,7 +89,7 @@ public class KomentarResource {
     }
 
     @GET
-    @Path("{program}/")
+    @Path("{program}")
     @Produces({"application/xml", "application/json"})
     public Collection<KomentarDTO> getByProgram(@PathParam("program") Integer programId) {
         ArrayList<KomentarDTO> lista = new ArrayList<>();
@@ -100,22 +102,16 @@ public class KomentarResource {
     
     /**
      * PUT method for updating or creating an instance of KomentarResource
-     * @param programId
-     * @param pocetak
-     * @param kraj
-     * @param content representation for the resource
+     * @param kdto
      */
     @PUT
-    @Path("{program}/{pocetak}/{kraj}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public void putXml(@PathParam("program") Integer programId, @PathParam("pocetak") DateTimeParam pocetak,
-            @PathParam("kraj") DateTimeParam kraj, String content) {
-        System.out.println(content);
+    @Consumes({"application/xml", "application/json"})
+    public void putXml(KomentarDTO kdto) {
         Komentar k = new Komentar();
-        k.setPocetak(pocetak.getDate());
-        k.setKraj(kraj.getDate());
-        k.setProgramMjerenjaId(programFacade.find(programId));
-        k.setTekst(content);
+        k.setPocetak(new Date(kdto.getPocetak()));
+        k.setKraj(new Date(kdto.getKraj()));
+        k.setProgramMjerenjaId(programFacade.find(kdto.getProgramMjerenjaId()));
+        k.setTekst(kdto.getTekst());
         komentarFacade.create(k);
     }
 }

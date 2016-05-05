@@ -75,7 +75,7 @@ public class PostajaCitacIox {
         String kljuc = uKljuc + "::" + kKljuc;
         mapa.put(kljuc, pm);
         validatori.put(pm, ivf.getValidator(uKljuc));
-        if (uKljuc.equals("Container::Cont")) {
+        if (pm.getKomponentaId().getFormula().equals("Tkont")) {
             tempIdx = pm;
         }
 //        i++;
@@ -83,6 +83,10 @@ public class PostajaCitacIox {
 
     private void dodajPodatak(String device, String component, Date vrijeme, Double vrijednost, String jedinica, String status) {
         ProgramMjerenja pm = mapa.get(device + "::" + component);
+        if ( pm == null ) {
+            log.log(Level.FINE, "Nema programa za {0} :: {1}", new Object[]{device, component});
+            return;
+        }
 //        int ii = program.get(pm);
 //        if (!podaci.containsKey(vrijeme)) {
 //            podaci.put(vrijeme, new PodatakSirovi[mapa.size()]);
@@ -130,15 +134,20 @@ public class PostajaCitacIox {
                     Date vrijeme = sdf.parse(csv.get("Time"));
                     String device = csv.get("Device");
                     String component = csv.get("Component");
+                    if ( csv.get("Mean").isEmpty() ) continue;
                     Double val = Double.parseDouble(csv.get("Mean"));
                     String unit = csv.get("Unit");
                     Integer validity = Integer.parseInt(csv.get("Validity"));
                     String status = csv.get("OpeStatus");
                     status += csv.get("ErrStatus");
                     status += csv.get("IntStatus");
+                    if (device.equals("Container") && component.equals("Cont")) {
+                        this.temperature.put(vrijeme, val);
+                    }
+
 //                    log.log(Level.INFO, "POD={0}::{1}::{2}::{3}::{4}", new Object[]{vrijeme, device, component, val, status});
                     dodajPodatak(device, component, vrijeme, val, unit, status);
-                } catch (ParseException ex) {
+                } catch (ParseException | NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
