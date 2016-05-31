@@ -30,29 +30,50 @@ public class IoxValidator extends ValidatorImpl{
     protected class StatusKlasa {
         Character  chr;
         String opis;
-        StatusKlasa(Character chr, String opis) {
+        OperStatus st;
+        StatusKlasa(Character chr, String opis, OperStatus st) {
             this.chr=chr;
             this.opis=opis;
+            this.st=st;
         }
     }
     
     final protected StatusKlasa[] statusMapa = new StatusKlasa[30];
 
     public IoxValidator() {
-        statusMapa[16] = new StatusKlasa('I', "Initial calibration was active");
-        statusMapa[17] = new StatusKlasa('e', "Error during script processing");
-        statusMapa[18] = new StatusKlasa('2', "Span 2 invalid");
-        statusMapa[19] = new StatusKlasa('1', "Span 1 invalid");
-        statusMapa[20] = new StatusKlasa('z', "Zero invalid");
-        statusMapa[21] = new StatusKlasa('c', "Calibration invalid");
-        statusMapa[22] = new StatusKlasa('o', "Over range");
-        statusMapa[23] = new StatusKlasa('u', "Below range");
-        statusMapa[24] = new StatusKlasa('S', "Settling to sample");
-        statusMapa[25] = new StatusKlasa('2', "Span 2");
-        statusMapa[26] = new StatusKlasa('1', "Span 1");
-        statusMapa[27] = new StatusKlasa('Z', "Zero");
-        statusMapa[28] = new StatusKlasa('A', "Automatic calibration cycle");
-        statusMapa[29] = new StatusKlasa('C', "Status calibration");
+        // ErrStatus
+        statusMapa[0] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[1] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[2] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[3] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[4] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[5] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[6] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[7] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        // OperStatus
+        statusMapa[8] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[9] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[10] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[11] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[12] = new StatusKlasa('S', "Span", OperStatus.SPAN);
+        statusMapa[13] = new StatusKlasa('Z', "Zero", OperStatus.ZERO);
+        statusMapa[14] = new StatusKlasa('M', "Maintenence", OperStatus.ODRZAVANJE);
+        statusMapa[15] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        // IntStatus
+        statusMapa[16] = new StatusKlasa('I', "Initial calibration was active", OperStatus.W2);
+        statusMapa[17] = new StatusKlasa('e', "Error during script processing", OperStatus.W2);
+        statusMapa[18] = new StatusKlasa('2', "Span 2 invalid", OperStatus.W2);
+        statusMapa[19] = new StatusKlasa('1', "Span 1 invalid", OperStatus.W2);
+        statusMapa[20] = new StatusKlasa('z', "Zero invalid", OperStatus.W2);
+        statusMapa[21] = new StatusKlasa('c', "Calibration invalid", OperStatus.W2);
+        statusMapa[22] = new StatusKlasa('o', "Over range", OperStatus.OPSEG);
+        statusMapa[23] = new StatusKlasa('u', "Below range", OperStatus.OPSEG);
+        statusMapa[24] = new StatusKlasa('S', "Settling to sample",OperStatus.W2);
+        statusMapa[25] = new StatusKlasa('2', "Span 2",OperStatus.SPAN);
+        statusMapa[26] = new StatusKlasa('1', "Span 1",OperStatus.SPAN);
+        statusMapa[27] = new StatusKlasa('Z', "Zero",OperStatus.ZERO);
+        statusMapa[28] = new StatusKlasa('A', "Automatic calibration cycle",OperStatus.KALIBRACIJA);
+        statusMapa[29] = new StatusKlasa('C', "Status calibration",OperStatus.KALIBRACIJA);
         a = 1.;
         b = 0.;
         ldl = -10.;
@@ -62,49 +83,29 @@ public class IoxValidator extends ValidatorImpl{
     @Override
     protected int provjeraStatusa(String statusStr) {
         int st = 0;
-        if (statusStr.equals("______________")) return st;
         
-        if ( statusStr.charAt(16) == statusMapa[16].chr ) {
-            st |= OperStatus.KALIBRACIJA.ordinal();
+        
+        if (statusStr.equals("______________________________")) return st;
+
+        for ( int i = 0; i<8; i++) {
+            char chr = statusStr.charAt(i);
+            if (chr != '_') {
+                if (chr == statusMapa[i].chr) {
+                    st |= (1 << statusMapa[i].st.ordinal());
+                } else {
+                    st |= (1 << OperStatus.FAULT.ordinal());
+                }
+            }
         }
-        if ( statusStr.charAt(17) == statusMapa[17].chr ) {
-            st |= OperStatus.KALIBRACIJA.ordinal();
-        }
-        if ( statusStr.charAt(18) == statusMapa[18].chr ) {
-            st |= OperStatus.ZERO.ordinal();
-        }
-        if ( statusStr.charAt(19) == statusMapa[19].chr ) {
-            st |= OperStatus.SPAN.ordinal();
-        }
-        if ( statusStr.charAt(20) == statusMapa[20].chr ) {
-            st |= OperStatus.SPAN.ordinal();
-        }
-        if ( statusStr.charAt(21) == statusMapa[21].chr ) {
-            st |= OperStatus.KALIBRACIJA.ordinal();
-        }
-        if ( statusStr.charAt(22) == statusMapa[22].chr ) {
-            st |= OperStatus.OPSEG.ordinal();
-        }
-        if ( statusStr.charAt(23) == statusMapa[23].chr ) {
-            st |= OperStatus.OPSEG.ordinal();
-        }
-        if ( statusStr.charAt(24) == statusMapa[24].chr ) {
-            st |= OperStatus.FAULT.ordinal();
-        }
-        if ( statusStr.charAt(25) == statusMapa[25].chr ) {
-            st |= OperStatus.FAULT.ordinal();
-        }
-        if ( statusStr.charAt(26) == statusMapa[26].chr ) {
-            st |= OperStatus.FAULT.ordinal();
-        }
-        if ( statusStr.charAt(27) == statusMapa[27].chr ) {
-            st |= OperStatus.FAULT.ordinal();
-        }
-        if ( statusStr.charAt(28) == statusMapa[28].chr ) {
-            st |= OperStatus.FAULT.ordinal();
-        }
-        if ( statusStr.charAt(29) == statusMapa[29].chr ) {
-            st |= OperStatus.KALIBRACIJA.ordinal();
+        for ( int i = 8; i<30; i++) {
+            char chr = statusStr.charAt(i);
+            if (chr != '_') {
+                if (chr == statusMapa[i].chr) {
+                    st |= (1 << statusMapa[i].st.ordinal());
+                } else {
+                    st |= (1 << OperStatus.W2.ordinal());
+                }
+            }
         }
         return st;
     }
@@ -112,6 +113,7 @@ public class IoxValidator extends ValidatorImpl{
     @Override
     public Collection<String> opisStatusa(String statusStr) {
         List<String> statusi = new ArrayList<>();
+        statusi.add(statusStr);
         for (int i=0; i<30; i++ ){
             char c = statusStr.charAt(i);
             if (  c != '_') {

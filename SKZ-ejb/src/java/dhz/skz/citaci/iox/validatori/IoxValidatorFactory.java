@@ -34,6 +34,11 @@ public class IoxValidatorFactory {
         mapa.put("APMA-370", new APMA370Validator());
         mapa.put("APNA-370", new APNA370Validator());
         mapa.put("APOA-370", new APOA370Validator());
+        mapa.put("APSA-360", new APSA370Validator());
+        mapa.put("APMA-360", new APMA370Validator());
+        mapa.put("APNA-360", new APNA370Validator());
+        mapa.put("APOA-360", new APOA370Validator());
+
         defaultValidator = new IoxValidator();
     }
     
@@ -43,5 +48,4 @@ public class IoxValidatorFactory {
         else 
             return defaultValidator;
     }
-    
 }
