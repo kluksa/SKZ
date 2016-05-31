@@ -41,6 +41,25 @@ public class IoxValidator extends ValidatorImpl{
     final protected StatusKlasa[] statusMapa = new StatusKlasa[30];
 
     public IoxValidator() {
+        // ErrStatus
+        statusMapa[0] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[1] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[2] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[3] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[4] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[5] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[6] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        statusMapa[7] = new StatusKlasa('x', "Nepoznato", OperStatus.FAULT);
+        // OperStatus
+        statusMapa[8] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[9] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[10] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[11] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        statusMapa[12] = new StatusKlasa('S', "Span", OperStatus.SPAN);
+        statusMapa[13] = new StatusKlasa('Z', "Zero", OperStatus.ZERO);
+        statusMapa[14] = new StatusKlasa('M', "Maintenence", OperStatus.ODRZAVANJE);
+        statusMapa[15] = new StatusKlasa('x', "Nepoznato", OperStatus.W2);
+        // IntStatus
         statusMapa[16] = new StatusKlasa('I', "Initial calibration was active", OperStatus.W2);
         statusMapa[17] = new StatusKlasa('e', "Error during script processing", OperStatus.W2);
         statusMapa[18] = new StatusKlasa('2', "Span 2 invalid", OperStatus.W2);
@@ -66,9 +85,19 @@ public class IoxValidator extends ValidatorImpl{
         int st = 0;
         
         
-        if (statusStr.equals("______________")) return st;
-        
-        for ( int i = 16; i<=29; i++) {
+        if (statusStr.equals("______________________________")) return st;
+
+        for ( int i = 0; i<8; i++) {
+            char chr = statusStr.charAt(i);
+            if (chr != '_') {
+                if (chr == statusMapa[i].chr) {
+                    st |= (1 << statusMapa[i].st.ordinal());
+                } else {
+                    st |= (1 << OperStatus.FAULT.ordinal());
+                }
+            }
+        }
+        for ( int i = 8; i<30; i++) {
             char chr = statusStr.charAt(i);
             if (chr != '_') {
                 if (chr == statusMapa[i].chr) {
@@ -84,6 +113,7 @@ public class IoxValidator extends ValidatorImpl{
     @Override
     public Collection<String> opisStatusa(String statusStr) {
         List<String> statusi = new ArrayList<>();
+        statusi.add(statusStr);
         for (int i=0; i<30; i++ ){
             char c = statusStr.charAt(i);
             if (  c != '_') {

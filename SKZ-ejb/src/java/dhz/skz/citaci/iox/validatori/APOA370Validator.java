@@ -22,17 +22,17 @@ import dhz.skz.util.OperStatus;
  *
  * @author kraljevic
  */
-public class APOA370Validator extends Horiba370Validator {
+public class APOA370Validator extends IoxValidator {
     public APOA370Validator(){
         super();
-        statusMapa[8] = new StatusKlasa('x', "Nema", OperStatus.W2);
-        statusMapa[9] = new StatusKlasa('x', "Lamp", OperStatus.FAULT);
-        statusMapa[10] = new StatusKlasa('x', "Temp ISGG", OperStatus.FAULT);
-        statusMapa[11] = new StatusKlasa('x', "Deozonator", OperStatus.FAULT);
-        statusMapa[12] = new StatusKlasa('x', "Press", OperStatus.FAULT);
-        statusMapa[13] = new StatusKlasa('x', "Flow", OperStatus.FAULT);
-        statusMapa[14] = new StatusKlasa('x', "Battery", OperStatus.W2);
-        statusMapa[15] = new StatusKlasa('C', "Calibration", OperStatus.W2);
+        statusMapa[0] = new StatusKlasa('x', "Nema", OperStatus.W2);
+        statusMapa[1] = new StatusKlasa('L', "Lamp", OperStatus.FAULT);
+        statusMapa[2] = new StatusKlasa('x', "Temp ISGG", OperStatus.FAULT);
+        statusMapa[3] = new StatusKlasa('x', "Deozonator", OperStatus.FAULT);
+        statusMapa[4] = new StatusKlasa('x', "Press", OperStatus.FAULT);
+        statusMapa[5] = new StatusKlasa('x', "Flow", OperStatus.FAULT);
+        statusMapa[6] = new StatusKlasa('x', "Battery", OperStatus.W2);
+        statusMapa[7] = new StatusKlasa('C', "Calibration", OperStatus.W2);
     }
     
 }

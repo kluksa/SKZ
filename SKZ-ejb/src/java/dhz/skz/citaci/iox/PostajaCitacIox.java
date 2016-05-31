@@ -83,7 +83,7 @@ public class PostajaCitacIox {
 
     private void dodajPodatak(String device, String component, Date vrijeme, Double vrijednost, String jedinica, String status) {
         ProgramMjerenja pm = mapa.get(device + "::" + component);
-        if ( pm == null ) {
+        if (pm == null) {
             log.log(Level.FINE, "Nema programa za {0} :: {1}", new Object[]{device, component});
             return;
         }
@@ -134,18 +134,20 @@ public class PostajaCitacIox {
                     Date vrijeme = sdf.parse(csv.get("Time"));
                     String device = csv.get("Device");
                     String component = csv.get("Component");
-                    if ( csv.get("Mean").isEmpty() ) continue;
+                    if (csv.get("Mean").isEmpty()) {
+                        continue;
+                    }
                     Double val = Double.parseDouble(csv.get("Mean"));
                     String unit = csv.get("Unit");
                     Integer validity = Integer.parseInt(csv.get("Validity"));
-                    String status = csv.get("OpeStatus");
-                    status += csv.get("ErrStatus");
+                    String status = csv.get("ErrStatus");
+                    status += csv.get("OpeStatus");
                     status += csv.get("IntStatus");
                     if (device.equals("Container") && component.equals("Cont")) {
                         this.temperature.put(vrijeme, val);
                     }
 
-//                    log.log(Level.INFO, "POD={0}::{1}::{2}::{3}::{4}", new Object[]{vrijeme, device, component, val, status});
+                    log.log(Level.FINEST, "POD={0}::{1}::{2}::{3}::{4}", new Object[]{vrijeme, device, component, val, status});
                     dodajPodatak(device, component, vrijeme, val, unit, status);
                 } catch (ParseException | NumberFormatException ex) {
                     log.log(Level.SEVERE, null, ex);
@@ -185,60 +187,66 @@ public class PostajaCitacIox {
             CsvReader csv = new CsvReader(in, '\t');
             csv.readHeaders();
             int n = csv.getHeaderCount();
-            log.log(Level.INFO, "HEAD::::{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}", csv.getHeaders());
+            log.log(Level.FINE, "HEAD::::{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}", csv.getHeaders());
             while (csv.readRecord()) {
-                log.log(Level.INFO, "RAW::::{0}", csv.getRawRecord());
+                log.log(Level.FINEST, "RAW::::{0}", csv.getRawRecord());
                 if (csv.get("ErrStatus").equals("________")) {
                     try {
                         Date vrijeme = sdf.parse(csv.get("Time"));
                         String device = csv.get("Device");
                         String component = csv.get("Component");
                         ProgramMjerenja pm = mapa.get(device + "::" + component);
+                        if (pm != null) {
+                            double conv;
+                            switch (csv.get("Unit")) {
+                                case "ug/m3":
+                                case "mg/m3":
+                                    conv = 1. / pm.getKomponentaId().getKonvVUM();
+                                    break;
+                                default:
+                                    conv = 1.;
+                            }
 
-                        double conv;
-                        switch (csv.get("Unit")) {
-                            case "ug/m3":
-                            case "mg/m3":
-                                conv = 1. / pm.getKomponentaId().getKonvVUM();
-                                break;
-                            default:
-                                conv = 1.;
-                        }
+                            String intstatus = csv.get("IntStatus");
+                            String vrsta = "";
+                            if (intstatus.charAt(12) == 'A') {
+                                vrsta = "A";
+                            } else {
+                                vrsta = "M";
+                            }
 
-                        String intstatus = csv.get("IntStatus");
-                        String vrsta = "";
-                        if (intstatus.charAt(12) == 'A') {
-                            vrsta = "A";
-                        } else {
-                            vrsta = "M";
-                        }
+                            if (intstatus.charAt(11) == 'Z') {
+                                if (!csv.get("Zero").isEmpty()) {
+                                    Double val = conv * Double.parseDouble(csv.get("Zero"));
+                                    Double std = Double.parseDouble(csv.get("Zero StdDev"));
+                                    Double ref = Double.parseDouble(csv.get("Zero Setp"));
+                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("Z"));
+                                }
+                            }
 
-                        if (intstatus.charAt(11) == 'Z') {
-                            Double val = conv * Double.parseDouble(csv.get("Zero"));
-                            Double std = Double.parseDouble(csv.get("Zero StdDev"));
-                            Double ref = Double.parseDouble(csv.get("Zero Setp"));
-                            dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("Z"));
-                        }
+                            if (intstatus.charAt(10) == '1') {
+                                if (!csv.get("Span-1").isEmpty()) {
+                                    Double val = conv * Double.parseDouble(csv.get("Span-1"));
+                                    Double std = Double.parseDouble(csv.get("Span-1 StdDev"));
+                                    Double ref = Double.parseDouble(csv.get("Span-1 Setp"));
+                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("S"));
+                                }
+                            }
 
-                        if (intstatus.charAt(10) == '1') {
-                            Double val = conv * Double.parseDouble(csv.get("Span-1"));
-                            Double std = Double.parseDouble(csv.get("Span-1 StdDev"));
-                            Double ref = Double.parseDouble(csv.get("Span-1 Setp"));
-                            dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("S"));
-                        }
-
-                        if (intstatus.charAt(9) == '2') {
-                            Double val = conv * Double.parseDouble(csv.get("Span-2"));
-                            Double std = Double.parseDouble(csv.get("Span-2 StdDev"));
-                            Double ref = Double.parseDouble(csv.get("Span-2 Setp"));
-                            dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("X"));
-                        }
+                            if (intstatus.charAt(9) == '2') {
+                                if (!csv.get("Span-2").isEmpty()) {
+                                    Double val = conv * Double.parseDouble(csv.get("Span-2"));
+                                    Double std = Double.parseDouble(csv.get("Span-2 StdDev"));
+                                    Double ref = Double.parseDouble(csv.get("Span-2 Setp"));
+                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("X"));
+                                }
+                            }
 
 //                        Integer validity = Integer.parseInt(csv.get("Validity"));
-                        String status = csv.get("OpeStatus");
-                        status += csv.get("ErrStatus");
-                        status += csv.get("IntStatus");
-//                    log.log(Level.INFO, "POD={0}::{1}::{2}::{3}::{4}", new Object[]{vrijeme, device, component, val, status});
+                            String status = csv.get("OpeStatus");
+                            status += csv.get("ErrStatus");
+                            status += csv.get("IntStatus");
+                        }
                     } catch (ParseException ex) {
                         log.log(Level.SEVERE, null, ex);
                     }

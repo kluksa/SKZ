@@ -21,6 +21,7 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.IzvorProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
@@ -32,6 +33,8 @@ import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
+import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
+import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -47,7 +50,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -141,20 +146,27 @@ public class IoxCitacBean implements CitacIzvora {
 
         for (ProgramMjerenja programMjerenja : izvor.getProgramMjerenjaCollection()) {
             IzvorProgramKljuceviMap ipm = programMjerenja.getIzvorProgramKljuceviMap();
-            Postaja postajaId = programMjerenja.getPostajaId();
-            if (!postajeSve.containsKey(postajaId)) {
-                postajeSve.put(postajaId, new PostajaCitacIox(postajaId, ivf));
+            if (ipm != null) {
+                Postaja postajaId = programMjerenja.getPostajaId();
+                if (!postajeSve.containsKey(postajaId)) {
+                    postajeSve.put(postajaId, new PostajaCitacIox(postajaId, ivf));
+                }
+                PostajaCitacIox piox = postajeSve.get(postajaId);
+
+                piox.dodajProgram(programMjerenja, ipm.getUKljuc(), ipm.getKKljuc());
             }
-            PostajaCitacIox piox = postajeSve.get(postajaId);
-            piox.dodajProgram(programMjerenja, ipm.getUKljuc(), ipm.getKKljuc());
         }
 
         for (PostajaCitacIox pio : postajeSve.values()) {
             log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
             aktivnaPostaja = pio.getPostaja();
 
-            citajMjerenja(pio);
-            citajZeroSpan(pio);
+            if (aktivnaPostaja.getNetAdresa()!=null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
+                citajMjerenja(pio);
+                citajZeroSpan(pio);
+            } else {
+                log.log(Level.SEVERE, "Postaja {0} nema definiranu adresu", aktivnaPostaja.getNazivPostaje());
+            }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
     }
@@ -214,10 +226,11 @@ public class IoxCitacBean implements CitacIzvora {
         con.setRequestMethod("GET");
 
         con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+        con.setConnectTimeout(20000);
 
         int responseCode = con.getResponseCode();
-        log.log(Level.INFO, "Sending 'GET' request to URL : {0}", uri.toString());
-        log.log(Level.INFO, "Response Code : {0}", responseCode);
+        log.log(Level.FINE, "Sending 'GET' request to URL : {0}", uri.toString());
+        log.log(Level.FINE, "Response Code : {0}", responseCode);
         return con.getInputStream();
     }
 
@@ -227,7 +240,7 @@ public class IoxCitacBean implements CitacIzvora {
 
             try {
                 utx.begin();
-                log.log(Level.FINE, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
+                log.log(Level.FINEST, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
 //                log.log(Level.INFO, "PS={0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",new Object[]{ps.getVrijeme(), ps.getVrijemeUpisa(), ps.getGreska(), ps.getNivoValidacijeId(), ps.getProgramMjerenjaId().getId(),ps.getStatus(), ps.getStatusString(), ps.getVrijednost(), ps.getVrijeme(), ps.getVrijemeUpisa()});
                 podatakSiroviFacade.create(ps);
                 utx.commit();
@@ -255,8 +268,18 @@ public class IoxCitacBean implements CitacIzvora {
     }
 
     @Override
-    public Map<String, String> opisiStatus(PodatakSirovi ps) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SortedMap<String, String> opisiStatus(PodatakSirovi ps) {
+        
+        SortedMap<String,String> mapa = new TreeMap<>();
+        IoxValidatorFactory ioxValidatorFactory = new IoxValidatorFactory();
+        Validator validator = ioxValidatorFactory.getValidator(ps.getProgramMjerenjaId().getIzvorProgramKljuceviMap().getUKljuc());
+        Collection<String> opisStatusa = validator.opisStatusa(ps.getStatusString());
+        Integer i=0;
+        for(String s: opisStatusa) {
+            mapa.put(i.toString(), s);
+            i++;
+        }
+        return mapa;
     }
 
     private void citajZeroSpan(PostajaCitacIox pio) {
@@ -278,7 +301,7 @@ public class IoxCitacBean implements CitacIzvora {
         while (!vrijeme.after(sada)) {
             String uriStr = napraviURL("24", "cal.txt", sdf.format(vrijeme));
             vrijeme = new Date(vrijeme.getTime() + 24 * 3600000);
-            log.log(Level.INFO, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
+            log.log(Level.FINE, "vrijeme={1} URL: {0}", new Object[]{uriStr, vrijeme});
             try (InputStream is = getInputStream(new URI(uriStr))) {
                 Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));
                 spremiZS(mjerenja);

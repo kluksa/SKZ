@@ -61,7 +61,7 @@ public abstract class ValidatorImpl implements Validator {
     }
     
     private int provjeraOkolisnihUvjeta() {
-        if (temperatura < 15 || temperatura > 30) {
+        if (temperatura == null || temperatura < 15 || temperatura > 30) {
             return 1 << OperStatus.OKOLISNI_UVJETI.ordinal();
         }
         return 0;
@@ -78,6 +78,7 @@ public abstract class ValidatorImpl implements Validator {
     
     protected abstract int provjeraStatusa(String statusStr);
 
+    @Override
     public abstract Collection<String> opisStatusa(String statusStr);
     
 }

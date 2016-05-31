@@ -162,6 +162,8 @@ public class SiroviPodaci {
         PodatakSirovi ps = podatakSiroviFacade.find(podatakId);
         switch ( valueOf){
             case FAULT:
+            case W1:
+            case W2:    
                 mapa.putAll(citaciGlavniBean.opisiStatus(ps));
                 break;
             case KONTROLA:
