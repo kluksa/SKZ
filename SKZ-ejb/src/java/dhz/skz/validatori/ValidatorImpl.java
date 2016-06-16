@@ -19,7 +19,6 @@ package dhz.skz.validatori;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.util.OperStatus;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  *
@@ -76,8 +75,7 @@ public abstract class ValidatorImpl implements Validator {
         ps.setStatus(status);
     }
     
-    protected abstract int provjeraStatusa(String statusStr);
-
+    
     @Override
     public abstract Collection<String> opisStatusa(String statusStr);
     

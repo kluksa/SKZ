@@ -22,6 +22,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
+import dhz.skz.util.OperStatus;
 import dhz.skz.validatori.Validator;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -190,31 +191,36 @@ public class PostajaCitacIox {
             log.log(Level.FINE, "HEAD::::{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}", csv.getHeaders());
             while (csv.readRecord()) {
                 log.log(Level.FINEST, "RAW::::{0}", csv.getRawRecord());
-                if (csv.get("ErrStatus").equals("________")) {
-                    try {
-                        Date vrijeme = sdf.parse(csv.get("Time"));
-                        String device = csv.get("Device");
-                        String component = csv.get("Component");
-                        ProgramMjerenja pm = mapa.get(device + "::" + component);
-                        if (pm != null) {
-                            double conv;
-                            switch (csv.get("Unit")) {
-                                case "ug/m3":
-                                case "mg/m3":
-                                    conv = 1. / pm.getKomponentaId().getKonvVUM();
-                                    break;
-                                default:
-                                    conv = 1.;
-                            }
+                try {
+                    Date vrijeme = sdf.parse(csv.get("Time"));
+                    String device = csv.get("Device");
+                    String component = csv.get("Component");
+                    ProgramMjerenja pm = mapa.get(device + "::" + component);
+                    if (pm != null) {
+                        double conv;
+                        switch (csv.get("Unit")) {
+                            case "ug/m3":
+                            case "mg/m3":
+                                conv = 1. / pm.getKomponentaId().getKonvVUM();
+                                break;
+                            default:
+                                conv = 1.;
+                        }
 
-                            String intstatus = csv.get("IntStatus");
-                            String vrsta = "";
-                            if (intstatus.charAt(12) == 'A') {
-                                vrsta = "A";
-                            } else {
-                                vrsta = "M";
-                            }
-
+                        String intstatus = csv.get("IntStatus");
+                        String vrsta = "";
+                        if (intstatus.charAt(12) == 'A') {
+                            vrsta = "A";
+                        } else {
+                            vrsta = "M";
+                        }
+//                        Integer validity = Integer.parseInt(csv.get("Validity"));
+                        String status = csv.get("ErrStatus");
+                        status += csv.get("OpeStatus");
+                        status += csv.get("IntStatus");
+                        Validator v = validatori.get(pm);
+                        if ( v.provjeraStatusa(status) < (1 << OperStatus.FAULT.ordinal())){
+//                        if (csv.get("ErrStatus").equals("________")) {
                             if (intstatus.charAt(11) == 'Z') {
                                 if (!csv.get("Zero").isEmpty()) {
                                     Double val = conv * Double.parseDouble(csv.get("Zero"));
@@ -241,15 +247,11 @@ public class PostajaCitacIox {
                                     dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("X"));
                                 }
                             }
-
-//                        Integer validity = Integer.parseInt(csv.get("Validity"));
-                            String status = csv.get("OpeStatus");
-                            status += csv.get("ErrStatus");
-                            status += csv.get("IntStatus");
                         }
-                    } catch (ParseException ex) {
-                        log.log(Level.SEVERE, null, ex);
+
                     }
+                } catch (ParseException ex) {
+                    log.log(Level.SEVERE, null, ex);
                 }
             }
         } catch (IOException ex) {

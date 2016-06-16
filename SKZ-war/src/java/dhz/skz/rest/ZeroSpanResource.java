@@ -161,6 +161,7 @@ public class ZeroSpanResource {
         List<ZeroSpanDTO> zsl = new ArrayList<>();
         
         for (ZeroSpan zs : zeroSpan) {
+            if ( zs.getVrijednost() == -999.) continue;
             ZeroSpanDTO  zz = new ZeroSpanDTO();
             zz.setVrijeme(zs.getVrijeme().getTime());
             zz.setVrijednost(zs.getVrijednost());

@@ -81,7 +81,7 @@ public class IoxValidator extends ValidatorImpl{
     }
     
     @Override
-    protected int provjeraStatusa(String statusStr) {
+    public int provjeraStatusa(String statusStr) {
         int st = 0;
         
         

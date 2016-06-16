@@ -15,6 +15,8 @@ import java.util.Collection;
 public interface Validator {
 
     public void validiraj(PodatakSirovi ps);
+    
+    public int provjeraStatusa(String statusStr);
 
     public void setPodaciUmjeravanja(Double a, Double b, Double ldl, Double opseg);
     

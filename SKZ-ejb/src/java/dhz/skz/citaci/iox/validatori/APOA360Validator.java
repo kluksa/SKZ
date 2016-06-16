@@ -22,11 +22,11 @@ import dhz.skz.util.OperStatus;
  *
  * @author kraljevic
  */
-public class APOA370Validator extends IoxValidator {
-    public APOA370Validator(){
+public class APOA360Validator extends IoxValidator {
+    public APOA360Validator(){
         super();
         statusMapa[0] = new StatusKlasa('x', "Nema", OperStatus.W2);
-        statusMapa[1] = new StatusKlasa('L', "Lamp", OperStatus.FAULT);
+        statusMapa[1] = new StatusKlasa('L', "Lamp", OperStatus.W2);
         statusMapa[2] = new StatusKlasa('x', "Temp ISGG", OperStatus.FAULT);
         statusMapa[3] = new StatusKlasa('x', "Deozonator", OperStatus.FAULT);
         statusMapa[4] = new StatusKlasa('x', "Press", OperStatus.FAULT);

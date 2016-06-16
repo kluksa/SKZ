@@ -45,5 +45,10 @@ public class NulValidator implements Validator{
         l.add("Nema opisa");
         return l;
     }
-    
+
+    @Override
+    public int provjeraStatusa(String statusStr) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

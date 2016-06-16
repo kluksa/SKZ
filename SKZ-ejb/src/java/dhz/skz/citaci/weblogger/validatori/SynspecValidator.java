@@ -5,6 +5,7 @@
  */
 package dhz.skz.citaci.weblogger.validatori;
 
+import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.validatori.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,4 +58,5 @@ public class SynspecValidator extends ValidatorImpl {
         }
         return statusi;
     }
+
 }

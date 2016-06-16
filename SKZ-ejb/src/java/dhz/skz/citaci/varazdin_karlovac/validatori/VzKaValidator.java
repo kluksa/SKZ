@@ -50,4 +50,5 @@ public class VzKaValidator extends ValidatorImpl {
     public Collection<String> opisStatusa(String statusStr) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }
