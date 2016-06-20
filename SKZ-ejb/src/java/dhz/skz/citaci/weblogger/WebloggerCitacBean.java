@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
@@ -109,6 +110,7 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
+    @Asynchronous
     public void napraviSatne(IzvorPodataka izvor) {
 
 //        try {

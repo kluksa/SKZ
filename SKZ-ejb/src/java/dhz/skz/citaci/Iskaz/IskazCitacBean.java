@@ -54,6 +54,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
@@ -132,13 +133,12 @@ public class IskazCitacBean implements CitacIzvora {
     }
 
     @Override
+    @Asynchronous
     public void napraviSatne(IzvorPodataka izvor) {
-        log.log(Level.INFO, "POCETAK CITANJA");
+        log.log(Level.INFO, "POCETAK CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
 
         this.izvor = izvor;
-//        postaje = new HashSet<Postaja>();
         programKljucevi = new HashMap<>();
-//        valFac = new VzKaValidatorFactory(izvor.getProgramMjerenjaCollection());
         HashMap<Postaja, PostajaCitacIskaz> postajeSve = new HashMap<>();
 
         for (ProgramMjerenja programMjerenja : izvor.getProgramMjerenjaCollection()) {
@@ -155,17 +155,17 @@ public class IskazCitacBean implements CitacIzvora {
         }
 
         for (PostajaCitacIskaz pio : postajeSve.values()) {
-            log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
+            log.log(Level.INFO, "{0}::napraviSatne::CITAM POSTAJU: {1}", new Object[]{izvor.getNaziv(), pio.getPostaja().getNazivPostaje()});
             aktivnaPostaja = pio.getPostaja();
-            if ( aktivnaPostaja.getNacionalnaOznaka().equals("ZAG001")) {
-//            if (aktivnaPostaja.getNetAdresa()!=null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
+//            if ( aktivnaPostaja.getNacionalnaOznaka().equals("ZAG001")) {
+            if (aktivnaPostaja.getNetAdresa()!=null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
                 citajMjerenja(pio);
                 citajZeroSpan(pio);
             } else {
-                log.log(Level.SEVERE, "Postaja {0} nema definiranu adresu", aktivnaPostaja.getNazivPostaje());
+                log.log(Level.SEVERE, "{0}::napraviSatne::Postaja {1} nema definiranu adresu", new Object[]{izvor.getNaziv(), aktivnaPostaja.getNazivPostaje()});
             }
         }
-        log.log(Level.INFO, "KRAJ CITANJA");
+        log.log(Level.INFO, "KRAJ CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
     }
 
     private String napraviURL(String datum, String tablica) {

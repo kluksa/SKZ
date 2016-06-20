@@ -8,7 +8,6 @@ package dhz.skz.rest;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.KomponentaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
@@ -25,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,7 +39,7 @@ import javax.ws.rs.core.UriInfo;
  * @author kraljevic
  */
 @Path("drzavna_mreza")
-@Stateless
+@javax.enterprise.context.RequestScoped
 public class DrzavnaMrezaResource {
     @EJB
     private PostajaFacade postajaFacade;

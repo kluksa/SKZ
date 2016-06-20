@@ -21,6 +21,7 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,6 +49,7 @@ public class AqdbCitacBean implements CitacIzvora {
     @Inject @Config private TimeZone tzone;
 
     @Override
+    @Asynchronous
     public void napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         for (ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {

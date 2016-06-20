@@ -6,12 +6,8 @@
 package dhz.skz.rest;
 
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorProgramKljuceviMapFacade;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -24,8 +20,7 @@ import javax.ws.rs.Path;
  *
  * @author kraljevic
  */
-@Stateless
-@LocalBean
+@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.programmjerenja")
 public class ProgramMjerenjaPodaciResource {
 

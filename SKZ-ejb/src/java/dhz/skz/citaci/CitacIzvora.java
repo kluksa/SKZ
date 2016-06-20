@@ -8,12 +8,14 @@ package dhz.skz.citaci;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import java.util.Map;
+import javax.ejb.Asynchronous;
 
 /**
  *
  * @author kraljevic
  */
 public interface CitacIzvora {
+    @Asynchronous
     public void napraviSatne(IzvorPodataka izvor);
     public Map<String,String> opisiStatus(PodatakSirovi ps);
 }

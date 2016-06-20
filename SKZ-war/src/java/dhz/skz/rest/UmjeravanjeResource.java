@@ -16,7 +16,6 @@ import dhz.skz.aqdb.entity.Umjeravanje;
 import dhz.skz.aqdb.entity.UmjerneTocke;
 import java.util.Collection;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -31,8 +30,7 @@ import javax.ws.rs.PathParam;
  */
 @Path("umjeravanje")
 //@LocalBean
-@Stateless
-//@javax.enterprise.context.RequestScoped
+@javax.enterprise.context.RequestScoped
 public class UmjeravanjeResource {
     @EJB
     private UmjerneTockeFacade umjerneTockeFacade;

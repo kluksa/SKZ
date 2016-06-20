@@ -20,8 +20,6 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -37,8 +35,7 @@ import javax.ws.rs.QueryParam;
  * @author kraljevic
  */
 @Path("dhz.skz.rs.satnipodatak")
-@LocalBean
-@Stateless
+@javax.enterprise.context.RequestScoped
 //@javax.enterprise.context.RequestScoped
 public class SatniPodatakResource {
     private static final Logger log = Logger.getLogger(SatniPodatakResource.class.getName());

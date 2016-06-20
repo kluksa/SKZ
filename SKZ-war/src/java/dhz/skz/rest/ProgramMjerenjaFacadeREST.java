@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,8 +23,7 @@ import javax.ws.rs.Produces;
  *
  * @author kraljevic
  */
-@Stateless
-@LocalBean
+@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.programmjerenja")
 public class ProgramMjerenjaFacadeREST  {
     @EJB

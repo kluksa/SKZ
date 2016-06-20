@@ -27,7 +27,6 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.naming.NamingException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -47,8 +46,7 @@ import javax.ws.rs.core.SecurityContext;
  * @author kraljevic
  */
 //@LocalBean
-@Stateless
-//@javax.enterprise.context.RequestScoped
+@javax.enterprise.context.RequestScoped
 @Path("dhz.skz.rs.sirovipodaci")
 public class SiroviPodaci {
     @EJB

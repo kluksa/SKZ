@@ -43,9 +43,8 @@ import javax.ws.rs.core.MediaType;
  * @author kraljevic
  */
 //@LocalBean
-@Stateless
 @Path("dhz.skz.rs.zerospan")
-//@javax.enterprise.context.RequestScoped
+@javax.enterprise.context.RequestScoped
 public class ZeroSpanResource {
 
     @EJB

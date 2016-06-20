@@ -5,7 +5,6 @@
  */
 package dhz.skz.rest;
 
-import dhz.skz.aqdb.entity.AnalitickeMetode;
 import dhz.skz.aqdb.facades.KomponentaFacade;
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.UredjajFacade;
@@ -16,7 +15,6 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -32,8 +30,8 @@ import javax.ws.rs.Path;
  */
 @Path("uredjaj/")
 //@LocalBean
-@Stateless
-//@javax.enterprise.context.RequestScoped
+//@Stateless
+@javax.enterprise.context.RequestScoped
 public class UredjajResource {
 
     private static final Logger log = Logger.getLogger(UredjajResource.class.getName());

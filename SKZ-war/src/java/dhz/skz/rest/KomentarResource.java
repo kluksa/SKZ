@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -23,8 +22,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 /**
  * REST Web Service
@@ -32,7 +29,7 @@ import javax.ws.rs.core.MediaType;
  * @author kraljevic
  */
 @Path("dhz.skz.rs.komentar")
-@Stateless
+@javax.enterprise.context.RequestScoped
 public class KomentarResource {
 
     @Context
