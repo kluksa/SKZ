@@ -16,6 +16,7 @@
  */
 package dhz.skz.citaci;
 
+import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
@@ -95,7 +96,6 @@ public class MinutniUSatne {
         span = new AgPodatak();
     }
 
-    
     private void agregiraj(Collection<PodatakSirovi> podaci) throws MijesaniProgramiException {
         for (PodatakSirovi ps : podaci) {
             if (ps.getProgramMjerenjaId().equals(program)) {
@@ -115,7 +115,7 @@ public class MinutniUSatne {
                     }
                     mjerenje.status |= status;
                 } catch (NullPointerException ex) {
-                    log.log(Level.SEVERE,"{0},{1},{2}", new Object[]{ps.getProgramMjerenjaId(),ps.getStatus(), nivo});
+                    log.log(Level.SEVERE, "{0},{1},{2}", new Object[]{ps.getProgramMjerenjaId(), ps.getStatus(), nivo});
                     throw ex;
                 }
             } else {
@@ -164,22 +164,24 @@ public class MinutniUSatne {
         }
         return zs;
     }
-    
-    class Vjetar{
+
+    class Vjetar {
+
         ProgramMjerenja programWS;
         ProgramMjerenja programWD;
     }
-    
-    class VjetarKljuc{
+
+    class VjetarKljuc {
+
         Postaja po;
         int usporedno;
     }
-    
+
     public void napraviSatne(Integer nv) {
         Map<VjetarKljuc, Vjetar> vj = new HashMap<>();
-        for (ProgramMjerenja pm : programMjerenjaFacade.findAll()){
+        for (ProgramMjerenja pm : programMjerenjaFacade.findAll()) {
 //            if ( !(pm.getKomponentaId().getFormula().equals("WS") || pm.getKomponentaId().getFormula().equals("WD"))) {
-                spremiSatneIzSirovih(pm,nv);
+            spremiSatneIzSirovih(pm, nv);
 //            } else {
 //                VjetarKljuc kljuc = new VjetarKljuc();
 //                kljuc.po = pm.getPostajaId();
@@ -199,10 +201,10 @@ public class MinutniUSatne {
 //            }
         }
     }
-    
+
     public void spremiSatneIzSirovih(ProgramMjerenja program, Integer nv, Date pocetak, Date kraj) {
         this.program = program;
-        if ( program.getIzvorProgramKljuceviMap() == null || program.getIzvorProgramKljuceviMap().getBrojUSatu() == null) {
+        if (program.getIzvorProgramKljuceviMap() == null || program.getIzvorProgramKljuceviMap().getBrojUSatu() == null) {
             this.ocekivaniBroj = 60;
         } else {
             this.ocekivaniBroj = program.getIzvorProgramKljuceviMap().getBrojUSatu();
@@ -219,15 +221,18 @@ public class MinutniUSatne {
             int n = 1;
             while (sat.next()) {
                 zavrsnoVrijeme = sat.getVrijeme();
-                log.log(Level.INFO, "Vrijeme: {0}" , new Object[]{zavrsnoVrijeme});
+                log.log(Level.INFO, "Vrijeme: {0}", new Object[]{zavrsnoVrijeme});
                 reset();
                 Collection<PodatakSirovi> sirovi = podatakSiroviFacade.getPodaci(program, pocetnoVrijeme, zavrsnoVrijeme, false, true);
                 if (!sirovi.isEmpty()) {
                     try {
                         agregiraj(sirovi);
                         podatakFacade.spremi(izracunajPodatak());
-                        if (!program.getIzvorProgramKljuceviMap().getZasebniZS()){
-                            zeroSpanFacade.spremi(izracunajZeroSpan());
+                        IzvorProgramKljuceviMap ipkm = program.getIzvorProgramKljuceviMap();
+                        if (ipkm != null) {
+                            if (!ipkm.getZasebniZS()) {
+                                zeroSpanFacade.spremi(izracunajZeroSpan());
+                            }
                         }
                     } catch (MijesaniProgramiException ex) {
                         log.log(Level.SEVERE, null, ex);
@@ -254,23 +259,20 @@ public class MinutniUSatne {
 
     public void spremiSatneIzSirovih(ProgramMjerenja program, Integer nv) {
 
-
-        
-        
         PodatakSirovi zadnjiSirovi = podatakSiroviFacade.getZadnji(program);
-        
-        if ( zadnjiSirovi == null ) { 
+
+        if (zadnjiSirovi == null) {
             log.log(Level.INFO, "NEMA PODATAKA ZA AGREGACIJU ZA PROGRAM {0}", program.getId());
             return;
         }
-        
+
         Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, nv);
-        if ( zadnjiSatni == null) {
+        if (zadnjiSatni == null) {
             PodatakSirovi ps = podatakSiroviFacade.getPrvi(program);
             zadnjiSatni = ps.getVrijeme();
             log.log(Level.INFO, "NIJE BILO UPISANIH SATNIH PODATAKA ZA PROGRAM {0}", program.getId());
         }
-        
+
         log.log(Level.INFO, "ZADNJI SATNI: {0}; SIROVI: {1}", new Object[]{zadnjiSatni, zadnjiSirovi});
         spremiSatneIzSirovih(program, nv, zadnjiSatni, zadnjiSirovi.getVrijeme());
     }
