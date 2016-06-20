@@ -80,6 +80,15 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     @Timeout
     @Override
     public void pokreni() {
+//        try {
+//            InitialContext ctx = new InitialContext();
+//            IzvorPodataka ip = izvorPodatakaFacade.findByName("Iskaz");
+//            CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/IskazCitacBean");
+//            citac.napraviSatne(ip);
+//        } catch (Throwable ex) {
+//            log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");
+//            log.log(Level.SEVERE, null, ex);
+//        }
 
         if (!aktivan) {
             log.log(Level.INFO, "Pokrecem citace");

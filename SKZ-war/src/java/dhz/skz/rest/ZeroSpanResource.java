@@ -154,6 +154,7 @@ public class ZeroSpanResource {
         
         for (ZeroSpan zs : zeroSpan) {
             if ( zs.getVrsta().contains("Z")) {
+                if ( zs.getVrijednost() == -999.) continue;
                 zero.put(zs.getVrijeme(), zs);
             } 
         }

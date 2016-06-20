@@ -219,7 +219,12 @@ public class PostajaCitacIox {
                         status += csv.get("OpeStatus");
                         status += csv.get("IntStatus");
                         Validator v = validatori.get(pm);
-                        if ( v.provjeraStatusa(status) < (1 << OperStatus.FAULT.ordinal())){
+                        int provjeraStatusa = v.provjeraStatusa(status);
+                        provjeraStatusa &= ~(1 << OperStatus.SPAN.ordinal());
+                        provjeraStatusa &= ~(1 << OperStatus.ZERO.ordinal());
+                        provjeraStatusa &= ~(1 << OperStatus.KALIBRACIJA.ordinal());
+
+                        if ( provjeraStatusa < (1 << OperStatus.FAULT.ordinal())){
 //                        if (csv.get("ErrStatus").equals("________")) {
                             if (intstatus.charAt(11) == 'Z') {
                                 if (!csv.get("Zero").isEmpty()) {
