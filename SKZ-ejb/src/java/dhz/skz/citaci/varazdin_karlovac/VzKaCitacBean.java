@@ -34,12 +34,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -109,7 +111,7 @@ public class VzKaCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
 
 //        try {
         log.log(Level.INFO, "POCETAK CITANJA");
@@ -146,6 +148,7 @@ public class VzKaCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
+        return new AsyncResult<Boolean>(true);
     }
 
     private void pokupiPodatke(String path, WlFileParser citac) {

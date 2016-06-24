@@ -20,8 +20,10 @@ import dhz.skz.webservis.omotnica.CsvOmotnica;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -84,12 +86,13 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     @Override
     @Asynchronous
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 //        for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
 //            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
 //        }
         log.log(Level.INFO, "KRAJ CITANJA");
+        return new AsyncResult<Boolean>(true);
     }
 
     @Override

@@ -53,10 +53,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -137,7 +139,7 @@ public class IoxCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 
         this.izvor = izvor;
@@ -170,6 +172,7 @@ public class IoxCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
+        return new AsyncResult<Boolean>(true);
     }
 
     private String napraviURL(String period, String dbstr, String vrijemeStr) {

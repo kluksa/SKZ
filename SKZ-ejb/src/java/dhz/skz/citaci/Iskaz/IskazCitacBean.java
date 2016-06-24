@@ -50,10 +50,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -134,14 +136,14 @@ public class IskazCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
 
         this.izvor = izvor;
         programKljucevi = new HashMap<>();
         HashMap<Postaja, PostajaCitacIskaz> postajeSve = new HashMap<>();
 
-        for (ProgramMjerenja programMjerenja : izvor.getProgramMjerenjaCollection()) {
+        izvor.getProgramMjerenjaCollection().stream().forEach((programMjerenja) -> {
             IzvorProgramKljuceviMap ipm = programMjerenja.getIzvorProgramKljuceviMap();
             if (ipm != null) {
                 Postaja postajaId = programMjerenja.getPostajaId();
@@ -152,20 +154,25 @@ public class IskazCitacBean implements CitacIzvora {
 
                 piox.dodajProgram(programMjerenja, ipm.getUKljuc(), ipm.getKKljuc());
             }
-        }
+        });
 
-        for (PostajaCitacIskaz pio : postajeSve.values()) {
+        postajeSve.values().stream().map((pio) -> {
             log.log(Level.INFO, "{0}::napraviSatne::CITAM POSTAJU: {1}", new Object[]{izvor.getNaziv(), pio.getPostaja().getNazivPostaje()});
+            return pio;
+        }).map((pio) -> {
             aktivnaPostaja = pio.getPostaja();
-//            if ( aktivnaPostaja.getNacionalnaOznaka().equals("ZAG001")) {
+            return pio;
+        }).forEach((pio) -> {
+            //            if ( aktivnaPostaja.getNacionalnaOznaka().equals("ZAG001")) {
             if (aktivnaPostaja.getNetAdresa()!=null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
                 citajMjerenja(pio);
                 citajZeroSpan(pio);
             } else {
                 log.log(Level.SEVERE, "{0}::napraviSatne::Postaja {1} nema definiranu adresu", new Object[]{izvor.getNaziv(), aktivnaPostaja.getNazivPostaje()});
             }
-        }
+        });
         log.log(Level.INFO, "KRAJ CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
+        return new AsyncResult<>(true);
     }
 
     private String napraviURL(String datum, String tablica) {
@@ -231,8 +238,7 @@ public class IskazCitacBean implements CitacIzvora {
 
     private void spremi(Collection<PodatakSirovi> mjerenja) {
         UserTransaction utx = context.getUserTransaction();
-        for (PodatakSirovi ps : mjerenja) {
-
+        mjerenja.stream().forEach((ps) -> {
             try {
                 utx.begin();
                 log.log(Level.FINEST, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
@@ -243,17 +249,19 @@ public class IskazCitacBean implements CitacIzvora {
                 log.log(Level.SEVERE, "IZNIMKA VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
                 log.log(Level.SEVERE, null, ex);
             }
-        }
+        });
     }
 
     private void spremiZS(Collection<ZeroSpan> mjerenja) {
         UserTransaction utx = context.getUserTransaction();
         try {
             utx.begin();
-            for (ZeroSpan zs : mjerenja) {
+            mjerenja.stream().map((zs) -> {
                 log.log(Level.INFO, "SPREMAM ZS: t={0}::pm={1}::val={2}::std={3}::ref={4}::vrsta={5}", new Object[]{zs.getVrijeme(), zs.getProgramMjerenjaId().getId(), zs.getVrijednost(), zs.getStdev(), zs.getReferentnaVrijednost(), zs.getVrsta()});
+                return zs;
+            }).forEach((zs) -> {
                 zeroSpanFacade.create(zs);
-            }
+            });
             utx.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             log.log(Level.SEVERE, null, ex);

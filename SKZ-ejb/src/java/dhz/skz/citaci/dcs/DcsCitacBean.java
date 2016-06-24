@@ -28,9 +28,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -81,10 +83,10 @@ public class DcsCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
         UserTransaction utx = context.getUserTransaction();
 
-        for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
+        programMjerenjaFacade.find(izvor).stream().forEach((pm) -> {
             PodatakSirovi ps = podatakSiroviFacade.getZadnji(pm);
             Date vrijemeZadnjeg;
             if ( ps != null ) {
@@ -112,7 +114,8 @@ public class DcsCitacBean implements CitacIzvora {
                 log.log(Level.SEVERE, "GRESKA PROGRAM={0}, ZADNJI={1}, ZADNJIZS={2}",new Object[]{pm.getId(), vrijemeZadnjeg, vrijemeZadnjegZS});
                 log.log(Level.SEVERE, null, ex);
             }
-        }
+        });
+        return new AsyncResult<Boolean>(true);
     }
 
     private Collection<PodatakSirovi> getPodaci(Connection con, ProgramMjerenja pm, Date zadnji) throws SQLException {
@@ -257,5 +260,4 @@ public class DcsCitacBean implements CitacIzvora {
             return podaci;
         } 
     }
-
 }

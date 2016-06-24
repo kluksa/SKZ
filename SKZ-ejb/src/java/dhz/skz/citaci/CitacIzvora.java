@@ -8,6 +8,7 @@ package dhz.skz.citaci;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import java.util.Map;
+import java.util.concurrent.Future;
 import javax.ejb.Asynchronous;
 
 /**
@@ -16,6 +17,6 @@ import javax.ejb.Asynchronous;
  */
 public interface CitacIzvora {
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor);
+    public Future<Boolean> napraviSatne(IzvorPodataka izvor);
     public Map<String,String> opisiStatus(PodatakSirovi ps);
 }

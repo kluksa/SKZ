@@ -18,9 +18,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -50,7 +52,7 @@ public class AqdbCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public void napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         for (ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {
             Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, 0);
@@ -61,6 +63,7 @@ public class AqdbCitacBean implements CitacIzvora {
 //            }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
+        return new AsyncResult<Boolean>(true);
     }
 
     private void procitaj() {
