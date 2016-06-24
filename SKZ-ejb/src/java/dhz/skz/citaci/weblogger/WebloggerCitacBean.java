@@ -101,9 +101,8 @@ public class WebloggerCitacBean implements CitacIzvora {
     private EJBContext context;
 
     private IzvorPodataka izvor;
-    private Collection<ProgramMjerenja> programNaPostaji;
+//    private Collection<ProgramMjerenja> programNaPostaji;
     private Postaja aktivnaPostaja;
-    private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
     private ValidatorFactory valFac;
     private HashMap<String, Postaja> postaje;
     private UserTransaction utx;
@@ -123,18 +122,17 @@ public class WebloggerCitacBean implements CitacIzvora {
 
     @Override
     @Asynchronous
-    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
         valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
         utx = context.getUserTransaction();
         HashMap<String, WlPostajaDatoteke> mapa = popuniMapu();
 
-        mapa.keySet().stream().forEach((p) -> {
+        for (String p : mapa.keySet()) {
             try {
                 FtpKlijent ftp = new FtpKlijent();
                 ftp.connect(new URI(izvor.getUri()));
-                programNaPostaji = programMjerenjaFacade.find(mapa.get(p).getPostaja(), izvor);
                 try {
                     pokupiMjerenja(ftp, mapa.get(p));
                     pokupiZeroSpan(ftp, mapa.get(p));
@@ -148,24 +146,26 @@ public class WebloggerCitacBean implements CitacIzvora {
             } catch (FtpKlijentException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
-        });
-        return new AsyncResult<>(true);
+        }
+        log.log(Level.INFO, "KRAJ CITANJA");
+        return new AsyncResult<Boolean>(true);
+
     }
 
-    private void pokupiMjerenja(FtpKlijent ftp, WlPostajaDatoteke datoteke) throws IllegalStateException, SecurityException, SystemException {
+    private void pokupiMjerenja(FtpKlijent ftp, WlPostajaDatoteke datoteke) throws IllegalStateException, SecurityException, SystemException, FtpKlijentException {
         for (WlFileName file : datoteke.getMjerenjaFname()) {
             Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(datoteke.getPostaja(), izvor, file.getTermin());
             WlFileParser parser = new WlMjerenjaParser(aktivniProgram, timeZone, valFac, podatakSiroviFacade);
-            parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
+            parser.setZadnjiPodatak(datoteke.getVrjmemeZadnjegMjerenja());
             pokupi(parser, file, ftp);
         }
     }
 
-    private void pokupiZeroSpan(FtpKlijent ftp, WlPostajaDatoteke datoteke) throws IllegalStateException, SecurityException, SystemException {
+    private void pokupiZeroSpan(FtpKlijent ftp, WlPostajaDatoteke datoteke) throws IllegalStateException, SecurityException, SystemException, FtpKlijentException {
         for (WlFileName file : datoteke.getZsFname()) {
             Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(datoteke.getPostaja(), izvor, file.getTermin());
             WlFileParser parser = new WlZeroSpanParser(aktivniProgram, timeZone, zeroSpanFacade);
-            parser.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
+            parser.setZadnjiPodatak(datoteke.getVrijemeZadnjegZS());
             pokupi(parser, file, ftp);
         }
     }
@@ -173,99 +173,98 @@ public class WebloggerCitacBean implements CitacIzvora {
 //    @Override
 //    @Asynchronous
     public void napraviSatne2(IzvorPodataka izvor) {
-
+//
+////        try {
+//        log.log(Level.INFO, "POCETAK CITANJA");
+//        this.izvor = izvor;
+////            validatorFactory.init(izvor);
+//        valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
+//
+//        FtpKlijent ftp = new FtpKlijent();
 //        try {
-        log.log(Level.INFO, "POCETAK CITANJA");
-        this.izvor = izvor;
-//            validatorFactory.init(izvor);
-        valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
-
-        FtpKlijent ftp = new FtpKlijent();
-        try {
-            ftp.connect(new URI(izvor.getUri()));
-            FTPFile[] fileList = ftp.getFileList();
-
-            for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
-                aktivnaPostaja = it.next();
-//            if ( !aktivnaPostaja.getNacionalnaOznaka().equals("PLJ01")) continue;
-                try { // sto god da se desi, idemo na slijedecu postaju
-                    log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
-
-                    programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-
-                    PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
-                    if (zadnji == null) {
-                        Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-                        if (pocetakMjerenja == null) {
-                            continue;
-                        }
-                        vrijemeZadnjegMjerenja = pocetakMjerenja;
-                    } else {
-                        vrijemeZadnjegMjerenja = zadnji.getVrijeme();
-                    }
-
-                    vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
-
-                    pokupiMjerenja(ftp, fileList);
-
-                } catch (Throwable ex) {
-                    log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
-                    log.log(Level.SEVERE, "", ex);
-                }
-            }
-        } catch (URISyntaxException | FtpKlijentException ex) {
-            log.log(Level.SEVERE, null, ex);
-        } finally {
-            ftp.disconnect();
-        }
-        log.log(Level.INFO, "KRAJ CITANJA");
+//            ftp.connect(new URI(izvor.getUri()));
+//            FTPFile[] fileList = ftp.getFileList();
+//
+//            for (Iterator<Postaja> it = posajaFacade.getPostajeZaIzvor(izvor).iterator(); it.hasNext();) {
+//                aktivnaPostaja = it.next();
+////            if ( !aktivnaPostaja.getNacionalnaOznaka().equals("PLJ01")) continue;
+//                try { // sto god da se desi, idemo na slijedecu postaju
+//                    log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
+//
+//                    programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
+//
+//                    PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
+//                    if (zadnji == null) {
+//                        Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+//                        if (pocetakMjerenja == null) {
+//                            continue;
+//                        }
+//                        vrijemeZadnjegMjerenja = pocetakMjerenja;
+//                    } else {
+//                        vrijemeZadnjegMjerenja = zadnji.getVrijeme();
+//                    }
+//
+//                    vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
+//
+//                    pokupiMjerenja(ftp, fileList);
+//
+//                } catch (Throwable ex) {
+//                    log.log(Level.SEVERE, "GRESKA KOD POSTAJE {1}:{0}", new Object[]{aktivnaPostaja.getNazivPostaje(), aktivnaPostaja.getId()});
+//                    log.log(Level.SEVERE, "", ex);
+//                }
+//            }
+//        } catch (URISyntaxException | FtpKlijentException ex) {
+//            log.log(Level.SEVERE, null, ex);
+//        } finally {
+//            ftp.disconnect();
+//        }
+//        log.log(Level.INFO, "KRAJ CITANJA");
     }
 
-    private void pokupiMjerenja(FtpKlijent ftp, FTPFile[] listaDatoteka) throws IllegalStateException, SecurityException, SystemException {
-        UserTransaction utx = context.getUserTransaction();
-
-        String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)(\\.csv)";
-        Pattern pattern = Pattern.compile(ptStr);
-        for (FTPFile file : listaDatoteka) {
-            Matcher m = pattern.matcher(file.getName().toLowerCase());
-            if (m.matches()) {
-                try {
-                    Date terminDatoteke = formatter.parse(m.group(3));
-                    WlFileParser citac = napraviParser(m.group(2), terminDatoteke);
-                    citac.setNivoValidacije(0);
-                    if (citac.isDobarTermin()) {
-                        log.log(Level.INFO, "Datoteka : {0}", file.getName());
-                        try (InputStream ifs = ftp.getFileStream(file)) {
-                            utx.begin();
-                            citac.parse(ifs);
-                            utx.commit();
-                        } catch (NotSupportedException | SystemException | FtpKlijentException | WlFileException | IOException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                            log.log(Level.SEVERE, "Datoteka :{0}, {1}", new Object[]{file.getName(), ex});
-                            utx.rollback();
-                        }
-                    }
-                } catch (ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
-    private WlFileParser napraviParser(String group, Date terminDatoteke) {
-        WlFileParser parser;
-        Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
-
-        if (group == null || group.isEmpty()) {
-            parser = new WlMjerenjaParser(aktivniProgram, timeZone, valFac, podatakSiroviFacade);
-            parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
-        } else {
-            parser = new WlZeroSpanParser(aktivniProgram, timeZone, zeroSpanFacade);
-            parser.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
-        }
-        parser.setTerminDatoteke(terminDatoteke);
-        return parser;
-    }
-
+//    private void pokupiMjerenja(FtpKlijent ftp, FTPFile[] listaDatoteka) throws IllegalStateException, SecurityException, SystemException {
+//        UserTransaction utx = context.getUserTransaction();
+//
+//        String ptStr = "^(" + Pattern.quote(aktivnaPostaja.getNazivPostaje().toLowerCase()) + ")(_c)?-(\\d{8})(.?)(\\.csv)";
+//        Pattern pattern = Pattern.compile(ptStr);
+//        for (FTPFile file : listaDatoteka) {
+//            Matcher m = pattern.matcher(file.getName().toLowerCase());
+//            if (m.matches()) {
+//                try {
+//                    Date terminDatoteke = formatter.parse(m.group(3));
+//                    WlFileParser citac = napraviParser(m.group(2), terminDatoteke);
+//                    citac.setNivoValidacije(0);
+//                    if (citac.isDobarTermin()) {
+//                        log.log(Level.INFO, "Datoteka : {0}", file.getName());
+//                        try (InputStream ifs = ftp.getFileStream(file)) {
+//                            utx.begin();
+//                            citac.parse(ifs);
+//                            utx.commit();
+//                        } catch (NotSupportedException | SystemException | FtpKlijentException | WlFileException | IOException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+//                            log.log(Level.SEVERE, "Datoteka :{0}, {1}", new Object[]{file.getName(), ex});
+//                            utx.rollback();
+//                        }
+//                    }
+//                } catch (ParseException ex) {
+//                    log.log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+//    }
+//
+//    private WlFileParser napraviParser(String group, Date terminDatoteke) {
+//        WlFileParser parser;
+//        Collection<ProgramMjerenja> aktivniProgram = programMjerenjaFacade.findZaTermin(aktivnaPostaja, izvor, terminDatoteke);
+//
+//        if (group == null || group.isEmpty()) {
+//            parser = new WlMjerenjaParser(aktivniProgram, timeZone, valFac, podatakSiroviFacade);
+//            parser.setZadnjiPodatak(vrijemeZadnjegMjerenja);
+//        } else {
+//            parser = new WlZeroSpanParser(aktivniProgram, timeZone, zeroSpanFacade);
+//            parser.setZadnjiPodatak(vrijemeZadnjegZeroSpan);
+//        }
+//        parser.setTerminDatoteke(terminDatoteke);
+//        return parser;
+//    }
     @Override
     public Map<String, String> opisiStatus(PodatakSirovi ps) {
         Map<String, String> mapa = new HashMap<>();
@@ -288,6 +287,7 @@ public class WebloggerCitacBean implements CitacIzvora {
             WlPostajaDatoteke wpd = new WlPostajaDatoteke(p, timeZone);
             wpd.setVrijemeZadnjegZS(getVrijemeZadnjegZeroSpan(p));
             wpd.setVrjmemeZadnjegMjerenja(getVrijemeZadnjegMjerenja(p));
+            wpd.setImaZeroSpan(provjeriZS(p));
             mapa.put(p.getNazivPostaje().toLowerCase(), wpd);
         }
 
@@ -318,10 +318,10 @@ public class WebloggerCitacBean implements CitacIzvora {
         }
         return vrijemeZadnjeg;
     }
-    
+
     private Date getVrijemeZadnjegZeroSpan(Postaja p) {
         Date vrijemeZadnjeg = zeroSpanFacade.getVrijemeZadnjeg(izvor, p);
-        if ( vrijemeZadnjeg == null ) {
+        if (vrijemeZadnjeg == null) {
             vrijemeZadnjeg = programMjerenjaFacade.getPocetakMjerenja(izvor, p);
         }
         return vrijemeZadnjeg;
@@ -342,16 +342,28 @@ public class WebloggerCitacBean implements CitacIzvora {
         return listFiles;
     }
 
-    private void pokupi(WlFileParser parser, WlFileName file, FtpKlijent ftp) throws IllegalStateException, SecurityException, SystemException {
+    private void pokupi(WlFileParser parser, WlFileName file, FtpKlijent ftp) throws IllegalStateException, SecurityException, SystemException, FtpKlijentException {
         log.log(Level.INFO, "Datoteka : {0}", file.getFname());
         try (InputStream ifs = ftp.getFileStream(file.getFname())) {
             utx.begin();
             parser.parse(ifs);
             utx.commit();
-        } catch (NotSupportedException | SystemException | WlFileException | IOException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+        } catch (Exception ex) {
             log.log(Level.SEVERE, "Datoteka :{0}, {1}", new Object[]{file.getFname(), ex});
             utx.rollback();
-           
+        }  finally {
+            ftp.zavrsi();
         }
+    }
+
+    private boolean provjeriZS(Postaja p) {
+        boolean ima = false;
+        for (ProgramMjerenja pm : programMjerenjaFacade.find(p, izvor)) {
+            if ((pm.getIzvorProgramKljuceviMap() != null) && (pm.getIzvorProgramKljuceviMap().getUKljuc() != null) 
+                    && !pm.getIzvorProgramKljuceviMap().getUKljuc().isEmpty()){
+                ima |= true;
+            }
+       }
+        return ima;
     }
 }

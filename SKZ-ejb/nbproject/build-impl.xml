@@ -804,19 +804,23 @@ exists or setup the property manually. For example like this:
     <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
         <copyfiles files="${libs.JavaCSV.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${libs.Commons_NET_3.classpath}" todir="${build.classes.dir}"/>
+        <copyfiles files="${reference.SKZ-lib.jar}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
         <basename file="${libs.JavaCSV.classpath}" property="manifest.libs.JavaCSV.classpath"/>
         <basename file="${libs.Commons_NET_3.classpath}" property="manifest.libs.Commons_NET_3.classpath"/>
+        <basename file="${reference.SKZ-lib.jar}" property="manifest.reference.SKZ-lib.jar"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Extension-List" value="jar-1 jar-2 "/>
+            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 "/>
             <attribute name="jar-1-Extension-Name" value="${manifest.libs.JavaCSV.classpath}"/>
             <attribute name="jar-2-Extension-Name" value="${manifest.libs.Commons_NET_3.classpath}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.reference.SKZ-lib.jar}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
         <copyfiles files="${libs.JavaCSV.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Commons_NET_3.classpath}" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.SKZ-lib.jar}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">

@@ -143,7 +143,7 @@ public class IskazCitacBean implements CitacIzvora {
         programKljucevi = new HashMap<>();
         HashMap<Postaja, PostajaCitacIskaz> postajeSve = new HashMap<>();
 
-        izvor.getProgramMjerenjaCollection().stream().forEach((programMjerenja) -> {
+        for (ProgramMjerenja programMjerenja : izvor.getProgramMjerenjaCollection()) {
             IzvorProgramKljuceviMap ipm = programMjerenja.getIzvorProgramKljuceviMap();
             if (ipm != null) {
                 Postaja postajaId = programMjerenja.getPostajaId();
@@ -154,15 +154,11 @@ public class IskazCitacBean implements CitacIzvora {
 
                 piox.dodajProgram(programMjerenja, ipm.getUKljuc(), ipm.getKKljuc());
             }
-        });
+        }
 
-        postajeSve.values().stream().map((pio) -> {
+        for (PostajaCitacIskaz pio : postajeSve.values()) {
             log.log(Level.INFO, "{0}::napraviSatne::CITAM POSTAJU: {1}", new Object[]{izvor.getNaziv(), pio.getPostaja().getNazivPostaje()});
-            return pio;
-        }).map((pio) -> {
             aktivnaPostaja = pio.getPostaja();
-            return pio;
-        }).forEach((pio) -> {
             //            if ( aktivnaPostaja.getNacionalnaOznaka().equals("ZAG001")) {
             if (aktivnaPostaja.getNetAdresa()!=null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
                 citajMjerenja(pio);
@@ -170,7 +166,7 @@ public class IskazCitacBean implements CitacIzvora {
             } else {
                 log.log(Level.SEVERE, "{0}::napraviSatne::Postaja {1} nema definiranu adresu", new Object[]{izvor.getNaziv(), aktivnaPostaja.getNazivPostaje()});
             }
-        });
+        }
         log.log(Level.INFO, "KRAJ CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
         return new AsyncResult<>(true);
     }
@@ -238,7 +234,8 @@ public class IskazCitacBean implements CitacIzvora {
 
     private void spremi(Collection<PodatakSirovi> mjerenja) {
         UserTransaction utx = context.getUserTransaction();
-        mjerenja.stream().forEach((ps) -> {
+        for (PodatakSirovi ps : mjerenja) {
+
             try {
                 utx.begin();
                 log.log(Level.FINEST, "SPREMAM VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
@@ -249,19 +246,17 @@ public class IskazCitacBean implements CitacIzvora {
                 log.log(Level.SEVERE, "IZNIMKA VRIJEME: {0}, PROGRAM: {1}", new Object[]{ps.getVrijeme(), ps.getProgramMjerenjaId().getId()});
                 log.log(Level.SEVERE, null, ex);
             }
-        });
+    }
     }
 
     private void spremiZS(Collection<ZeroSpan> mjerenja) {
         UserTransaction utx = context.getUserTransaction();
         try {
             utx.begin();
-            mjerenja.stream().map((zs) -> {
+            for (ZeroSpan zs : mjerenja) {
                 log.log(Level.INFO, "SPREMAM ZS: t={0}::pm={1}::val={2}::std={3}::ref={4}::vrsta={5}", new Object[]{zs.getVrijeme(), zs.getProgramMjerenjaId().getId(), zs.getVrijednost(), zs.getStdev(), zs.getReferentnaVrijednost(), zs.getVrsta()});
-                return zs;
-            }).forEach((zs) -> {
                 zeroSpanFacade.create(zs);
-            });
+            }
             utx.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             log.log(Level.SEVERE, null, ex);

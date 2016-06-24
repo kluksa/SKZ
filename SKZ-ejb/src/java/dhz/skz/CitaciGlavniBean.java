@@ -16,12 +16,10 @@
  */
 package dhz.skz;
 
-import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
-import dhz.skz.aqdb.entity.NivoValidacije;
-import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
@@ -84,57 +82,58 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     @Timeout
     @Override
     public void pokreni() {
-        if (true) {
-            try {
+//        if (false) {
+//            try {
+//                InitialContext ctx = new InitialContext();
+//                IzvorPodataka ip = izvorPodatakaFacade.findByName("WebLogger");
+//                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/WebloggerCitacBean");
+//                citac.napraviSatne(ip);
+//            } catch (Throwable ex) {
+//                log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");
+//                log.log(Level.SEVERE, null, ex);
+//            }
+//        } else {
+        if (!aktivan) {
+            List<Future<Boolean>> citaciFuture = new ArrayList<>();
+            log.log(Level.INFO, "Pokrecem citace");
+            aktivan = true;
+            try { // sto god da se desi, idemo na slijedeci izvor
+
                 InitialContext ctx = new InitialContext();
-                IzvorPodataka ip = izvorPodatakaFacade.findByName("WebLogger");
-                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/WebloggerCitacBean");
-                citac.napraviSatne(ip);
-            } catch (Throwable ex) {
-                log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");
+                String str = "java:module/";
+                for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
+                    String naziv = str + ip.getBean().trim();
+                    log.log(Level.INFO, "JNDI: {0}", naziv);
+                    try {
+                        CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
+                        citaciFuture.add(citac.napraviSatne(ip));
+                    } catch (Throwable ex) {
+                        log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                }
+                while (!checkIsDone(citaciFuture)) {
+                    Thread.sleep(1000);
+                }
+                log.log(Level.SEVERE, "CITACI ZAVRSILI POCINJE AGREGACIJA");
+                minutniUSatne.napraviSatne(0);
+                log.log(Level.SEVERE, "KRAJ AGREGACIJE");
+            } catch (NamingException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
+            aktivan = false;
+            log.log(Level.INFO, "Kraj pokretanja citaca");
         } else {
-            if (!aktivan) {
-                List<Future<Boolean>> citaciFuture = new ArrayList<>(); 
-                log.log(Level.INFO, "Pokrecem citace");
-                aktivan = true;
-                try { // sto god da se desi, idemo na slijedeci izvor
-
-                    InitialContext ctx = new InitialContext();
-                    String str = "java:module/";
-                    for (IzvorPodataka ip : izvorPodatakaFacade.getAktivniIzvori()) {
-                        String naziv = str + ip.getBean().trim();
-                        log.log(Level.INFO, "JNDI: {0}", naziv);
-                        try {
-                            CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
-                            citaciFuture.add(citac.napraviSatne(ip));
-                        } catch (Throwable ex) {
-                            log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
-                            log.log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    while ( ! checkIsDone(citaciFuture) ) {
-                        Thread.sleep(1000);
-                    }
-                    log.log(Level.SEVERE, "CITACI ZAVRSILI POCINJE AGREGACIJA");
-                    minutniUSatne.napraviSatne(0);
-                } catch (NamingException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-                aktivan = false;
-                log.log(Level.INFO, "Kraj pokretanja citaca");
-            } else {
-                log.log(Level.INFO, "Prethodni citac jos nije zavrsio");
-            }
+            log.log(Level.INFO, "Prethodni citac jos nije zavrsio");
         }
+//        }
     }
-    
-    boolean checkIsDone(Collection<Future<Boolean>> citaciFuture){
+
+    boolean checkIsDone(Collection<Future<Boolean>> citaciFuture) {
         Boolean status = true;
-        for ( Future<Boolean> st : citaciFuture) {
+        for (Future<Boolean> st : citaciFuture) {
             status &= st.isDone();
         }
         return status;

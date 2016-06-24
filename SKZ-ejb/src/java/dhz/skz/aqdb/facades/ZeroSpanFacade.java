@@ -161,7 +161,6 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
                 )
         );
         cq.select(zsT).orderBy(cb.asc(vrijemeT));
-        log.log(Level.INFO, "ZERO SPAN PROGRAM: {1}, SADA: {3} POCETAK: {0}, KRAJ: {2}", new Object[]{pocetak.getTime(), programMjerenja.getId(), kraj.getTime(), new Date().getTime()});
         return em.createQuery(cq).getResultList();
     }
 

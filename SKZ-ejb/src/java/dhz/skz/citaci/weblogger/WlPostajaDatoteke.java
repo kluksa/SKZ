@@ -41,6 +41,7 @@ public class WlPostajaDatoteke {
     private final SortedSet<WlFileName> zsFname =  new TreeSet<>();
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     private final TimeZone timeZone;
+    private boolean imaZS = false;
 
     WlPostajaDatoteke(Postaja p, TimeZone timeZone) {
         this.postaja = p;
@@ -82,14 +83,11 @@ public class WlPostajaDatoteke {
         wfn.setFname(fname);
         Date termin = wfn.getTermin();
         if ( m.group(2) == null || m.group(2).isEmpty()) {
-            if ( termin.after(new Date(1466596800000L))) {
-                System.out.println("JE");
-            }
             if ( !termin.before(danZadnjegMjerenja)){
                 mjerenjaFname.add(wfn);
             }
         } else {
-            if ( !termin.before(danZadnjegZS)){
+            if ( imaZS & !termin.before(danZadnjegZS)){
                 zsFname.add(wfn);
             }
         }
@@ -98,4 +96,17 @@ public class WlPostajaDatoteke {
     public Postaja getPostaja() {
         return postaja;
     }
+
+    public Date getVrjmemeZadnjegMjerenja() {
+        return vrjmemeZadnjegMjerenja;
+    }
+
+    public Date getVrijemeZadnjegZS() {
+        return vrijemeZadnjegZS;
+    }
+
+    void setImaZeroSpan(boolean imaZS) {
+        this.imaZS=imaZS;
+    }
+    
 }

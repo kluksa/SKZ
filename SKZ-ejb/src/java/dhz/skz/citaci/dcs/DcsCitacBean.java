@@ -10,7 +10,6 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
-import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
@@ -41,11 +40,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.sql.DataSource;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -86,7 +80,7 @@ public class DcsCitacBean implements CitacIzvora {
     public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
         UserTransaction utx = context.getUserTransaction();
 
-        programMjerenjaFacade.find(izvor).stream().forEach((pm) -> {
+        for (ProgramMjerenja pm : programMjerenjaFacade.find(izvor)) {
             PodatakSirovi ps = podatakSiroviFacade.getZadnji(pm);
             Date vrijemeZadnjeg;
             if ( ps != null ) {
@@ -114,7 +108,7 @@ public class DcsCitacBean implements CitacIzvora {
                 log.log(Level.SEVERE, "GRESKA PROGRAM={0}, ZADNJI={1}, ZADNJIZS={2}",new Object[]{pm.getId(), vrijemeZadnjeg, vrijemeZadnjegZS});
                 log.log(Level.SEVERE, null, ex);
             }
-        });
+        }
         return new AsyncResult<Boolean>(true);
     }
 

@@ -63,17 +63,13 @@ public class WlValidatorFactory extends ValidatorFactory {
             case "EAS Envimet":
                 switch (u.getModelUredjajaId().getOznakaModela()) {
                     case "E100":
-                        log.log(Level.INFO, "Validator: API100Validator");
                         return new API100EValidator();
                     case "E200":
-                        log.log(Level.INFO, "Validator: API200Validator");
                         return new API200EValidator();
                     case "E300":
-                        log.log(Level.INFO, "Validator: API300Validator");
                         return new API300EValidator();
                     case "E400":
                     default:
-                        log.log(Level.INFO, "Validator: API400Validator");
                         return new API400EValidator();
                 }
             default:
