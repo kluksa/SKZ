@@ -46,17 +46,15 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     @EJB
     private PrimateljProgramKljuceviMapFacade ppmFac;
     @EJB
-    private PodatakFacade dao;
+    private PodatakFacade podatakFacade;
     @EJB
-    private ZeroSpanFacade zsDao;
+    private ZeroSpanFacade zeroSpanFacade;
 
 //    private Date pocetak, kraj;
 //    private PreparedStatement prepStmt, zsStmt;
 //    private final Properties connectionProps = new Properties();
     private final String podatakInsertSql = "INSERT INTO mjerenja (postaja_oznaka_azo, komponenta_iso, vrijeme, vrijednost, status, obuhvat) VALUES (?,?,?,?,?,?)";
     private final String zsInsertSql = "INSERT INTO zero_span (postaja_azo, komponenta_iso, vrijeme, vrijednost, vrsta) VALUES (?,?,?,?,?)";
-    private final String zadnjiPodatakSql = "SELECT MAX(vrijeme) from mjerenja WHERE postaja_oznaka_azo=? AND komponenta_iso=?";
-    private final String zadnjiZSSql = "SELECT MAX(vrijeme) from zero_span WHERE postaja_azo=? AND komponenta_iso=?";
 //    private PreparedStatement zadnjiMStmt;
 //    private PreparedStatement zadnjiZSStmt;
 
@@ -90,7 +88,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 
     private void prebaciMjerenja(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(podatakInsertSql)) {
-            for (Podatak p : dao.getPodaciOd(pm.getProgramMjerenja(), pocetak, 0)) {
+            for (Podatak p : podatakFacade.getPodaciOd(pm.getProgramMjerenja(), pocetak, 0)) {
                 log.log(Level.FINE, "Spremam {0}:::{1}::{2}", new Object[]{p.getVrijeme(),
                     p.getProgramMjerenjaId().getId(), p.getVrijednost()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
@@ -104,15 +102,16 @@ public class EkonergDiseminator implements DiseminatorPodataka {
                      stmt.setInt(5, p.getStatus());
                 }
                 stmt.setInt(6, p.getObuhvat());
-                stmt.addBatch();
+                stmt.execute();
+//                stmt.addBatch();
             }
-            stmt.executeBatch();
+//            stmt.executeBatch();
         }
     }
 
     private void prebaciZS(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(zsInsertSql)) {
-            for (ZeroSpan zs : zsDao.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
+            for (ZeroSpan zs : zeroSpanFacade.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
                 log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
                     pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
@@ -127,18 +126,22 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     }
 
     private Date getZadnjiZS(Connection con, PrimateljProgramKljuceviMap pm) throws SQLException {
+        final String zadnjiZSSql = "SELECT MAX(vrijeme) from zero_span WHERE postaja_azo=? AND komponenta_iso=?";
         return getZadnji(con, pm, zadnjiZSSql);
     }
 
     private Date getZadnjeMjerenje(Connection con, PrimateljProgramKljuceviMap pm) throws SQLException {
+        final String zadnjiPodatakSql = "SELECT MAX(vrijeme) from mjerenja WHERE postaja_oznaka_azo=? AND komponenta_iso=?";
         return getZadnji(con, pm, zadnjiPodatakSql);
     }
 
     private Date getZadnji(Connection con, PrimateljProgramKljuceviMap pm, String sql) throws SQLException {
         Date zadnji = new Date(1388534400000L);
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, pm.getPKljuc());
-            stmt.setString(2, pm.getKKljuc());
+            String nacionalnaOznaka = pm.getProgramMjerenja().getPostajaId().getOznakaPostaje();
+            String isoOznaka = pm.getProgramMjerenja().getKomponentaId().getIsoOznaka();
+            stmt.setString(1, nacionalnaOznaka);
+            stmt.setString(2, isoOznaka);
             stmt.execute();
             try (ResultSet rs = stmt.getResultSet()) {
                 if (rs.next() && rs.getTimestamp(1) != null) {

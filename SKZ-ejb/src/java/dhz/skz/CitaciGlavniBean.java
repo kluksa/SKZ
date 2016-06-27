@@ -29,6 +29,7 @@ import dhz.skz.config.Config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -94,7 +95,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
 //            }
 //        } else {
         if (!aktivan) {
-            List<Future<Boolean>> citaciFuture = new ArrayList<>();
+            HashMap<String, Future<Boolean>> citaciFuture = new HashMap<>();
             log.log(Level.INFO, "Pokrecem citace");
             aktivan = true;
             try { // sto god da se desi, idemo na slijedeci izvor
@@ -106,12 +107,13 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {
                         CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
-                        citaciFuture.add(citac.napraviSatne(ip));
+                        citaciFuture.put(naziv, citac.napraviSatne(ip));
                     } catch (Throwable ex) {
                         log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                         log.log(Level.SEVERE, null, ex);
                     }
                 }
+                log.log(Level.INFO, "PRIJE CEKANJA");
                 while (!checkIsDone(citaciFuture)) {
                     Thread.sleep(1000);
                 }
@@ -131,10 +133,10 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
 //        }
     }
 
-    boolean checkIsDone(Collection<Future<Boolean>> citaciFuture) {
+    boolean checkIsDone(Map<String, Future<Boolean>> citaciFuture) {
         Boolean status = true;
-        for (Future<Boolean> st : citaciFuture) {
-            status &= st.isDone();
+        for (String st : citaciFuture.keySet()) {
+            status &= citaciFuture.get(st).isDone();
         }
         return status;
     }
