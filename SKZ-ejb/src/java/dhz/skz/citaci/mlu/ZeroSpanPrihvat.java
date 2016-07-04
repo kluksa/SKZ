@@ -46,6 +46,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat {
     private final ProgramMjerenjaFacade programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
     private Map<Integer, String> modMapa;
+    private Map<ProgramMjerenja, Date> vrijemeZadnjeg;
 
     private CsvOmotnica omotnica;
     private Postaja postaja;
@@ -66,6 +67,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat {
         this.izvor = izvor;
         this.mapa = new HashMap<>();
         this.modMapa = new HashMap<>();
+        this.vrijemeZadnjeg = new HashMap<>();
 
         parseHeaders();
         parseLinije();
@@ -84,6 +86,7 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat {
                 String pocetak = str.substring(0, str.length() - 5);
                 ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, pocetak, datoteka);
                 if (pm != null) {
+                    vrijemeZadnjeg.put(pm, zeroSpanFacade.getVrijemeZadnjeg(pm));
                     mapa.put(i, pm);
                     if (kraj.compareToIgnoreCase("_Span") == 0) {
                         modMapa.put(i, "AS");
@@ -123,13 +126,15 @@ public class ZeroSpanPrihvat implements OmotnicaPrihvat {
                             } else {
                                 vrijednost = format.parse(linija[i]).doubleValue();
                             }
-                            ZeroSpan ps = new ZeroSpan();
-                            ps.setProgramMjerenjaId(pm);
-                            ps.setVrijeme(vrijeme);
-                            ps.setVrijednost(vrijednost);
-                            ps.setVrsta(modMapa.get(i));
-                            if ( ! zeroSpanFacade.postoji(ps)){
-                                zeroSpanFacade.create(ps);
+                            if (vrijemeZadnjeg.get(pm).before(vrijeme)) {
+                                ZeroSpan ps = new ZeroSpan();
+                                ps.setProgramMjerenjaId(pm);
+                                ps.setVrijeme(vrijeme);
+                                ps.setVrijednost(vrijednost);
+                                ps.setVrsta(modMapa.get(i));
+                                if (!zeroSpanFacade.postoji(ps)) {
+                                    zeroSpanFacade.create(ps);
+                                }
                             }
                         } catch (NumberFormatException | ParseException ex) {
                             log.log(Level.SEVERE, null, ex);

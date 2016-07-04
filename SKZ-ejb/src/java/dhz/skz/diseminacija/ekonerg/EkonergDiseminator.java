@@ -89,7 +89,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     private void prebaciMjerenja(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(podatakInsertSql)) {
             for (Podatak p : podatakFacade.getPodaciOd(pm.getProgramMjerenja(), pocetak, 0)) {
-                log.log(Level.FINE, "Spremam {0}:::{1}::{2}", new Object[]{p.getVrijeme(),
+                log.log(Level.FINE, "Spremam {0}:::{1}::{2}::{3}::{4}", new Object[]{p.getVrijeme(), pocetak, kraj,
                     p.getProgramMjerenjaId().getId(), p.getVrijednost()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
@@ -112,16 +112,18 @@ public class EkonergDiseminator implements DiseminatorPodataka {
     private void prebaciZS(Connection con, PrimateljProgramKljuceviMap pm, Date pocetak, Date kraj) throws SQLException {
         try (PreparedStatement stmt = con.prepareStatement(zsInsertSql)) {
             for (ZeroSpan zs : zeroSpanFacade.getZeroSpanOd(pm.getProgramMjerenja(), pocetak)) {
-                log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}", new Object[]{zs.getVrijeme(),
+                log.log(Level.FINE, "Spremam zs {0}:::{1}::{2}::{3}::{4}::{5}::{6}", new Object[]{zs.getVrijeme(), pocetak, kraj,
                     pm.getPKljuc(), pm.getKKljuc(), zs.getVrijednost(), zs.getVrsta()});
                 stmt.setString(1, pm.getProgramMjerenja().getPostajaId().getOznakaPostaje());
                 stmt.setString(2, pm.getProgramMjerenja().getKomponentaId().getIsoOznaka());
                 stmt.setTimestamp(3, new Timestamp(zs.getVrijeme().getTime()));
                 stmt.setDouble(4, zs.getVrijednost());
                 stmt.setString(5, zs.getVrsta());
-                stmt.addBatch();
+                stmt.execute();
+                
+                //stmt.addBatch();
             }
-            stmt.executeBatch();
+//            stmt.executeBatch();
         }
     }
 

@@ -46,6 +46,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
     private final PodatakSiroviFacade podatakSiroviFacade;
     private final ProgramMjerenjaFacade programMjerenjaFacade;
     private Map<Integer, ProgramMjerenja> mapa;
+    private Map<ProgramMjerenja, Date> vrijemeZadnjeg;
 
     private CsvOmotnica omotnica;
     private IzvorPodataka izvor;
@@ -65,6 +66,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
         this.postaja = postaja;
         this.izvor = izvor;
         this.mapa = new HashMap<>();
+        this.vrijemeZadnjeg = new HashMap<>();
         log.log(Level.INFO, "MLU omotnica od: {0}", omotnica.getLinije().get(0)[0]);
         parseHeaders();
         parseLinije();
@@ -79,6 +81,7 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
             ProgramMjerenja pm = programMjerenjaFacade.find(postaja, izvor, str, datoteka);
             if (pm != null) {
                 mapa.put(i, pm);
+                vrijemeZadnjeg.put(pm, (podatakSiroviFacade.getZadnji(pm) != null ? podatakSiroviFacade.getZadnji(pm).getVrijeme() : pm.getPocetakMjerenja()));
             }
         }
     }
@@ -104,22 +107,24 @@ public class MjerenjaPrihvat implements OmotnicaPrihvat {
                             format.setDecimalFormatSymbols(symbols);
                             Float vrijednost = format.parse(linija[i]).floatValue();
 
-                            PodatakSirovi ps = new PodatakSirovi();
-                            ps.setProgramMjerenjaId(pm);
-                            ps.setVrijeme(vrijeme);
-                            ps.setVrijednost(vrijednost);
-                            ps.setStatus(0);
-                            ps.setNivoValidacijeId(0);
+                            if (vrijeme.after(vrijemeZadnjeg.get(pm))) {
+                                PodatakSirovi ps = new PodatakSirovi();
+                                ps.setProgramMjerenjaId(pm);
+                                ps.setVrijeme(vrijeme);
+                                ps.setVrijednost(vrijednost);
+                                ps.setStatus(0);
+                                ps.setNivoValidacijeId(0);
 
-                            String ss = linija[i + 1];
-                            String ns = linija[i + 2];
-                            String cs = linija[i + 3];
-                            String vs = linija[i + 4];
-                            ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
+                                String ss = linija[i + 1];
+                                String ns = linija[i + 2];
+                                String cs = linija[i + 3];
+                                String vs = linija[i + 4];
+                                ps.setStatusString(ss + ";" + ns + ";" + cs + ";" + vs);
 
-                            v.validiraj(ps);
-                            if (!podatakSiroviFacade.postoji(ps)) {
-                                podatakSiroviFacade.create(ps);
+                                v.validiraj(ps);
+//                            if (!podatakSiroviFacade.postoji(ps)) {
+//                                podatakSiroviFacade.create(ps);
+//                            }
                             }
                         } catch (NumberFormatException | ParseException ex) {
                             log.log(Level.SEVERE, null, ex);
