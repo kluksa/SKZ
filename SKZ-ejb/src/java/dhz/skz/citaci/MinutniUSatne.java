@@ -230,7 +230,7 @@ public class MinutniUSatne {
                         podatakFacade.spremi(izracunajPodatak());
                         IzvorProgramKljuceviMap ipkm = program.getIzvorProgramKljuceviMap();
                         if (ipkm != null) {
-                            if (ipkm.getZasebniZS() != null & !ipkm.getZasebniZS()) {
+                            if ((ipkm.getZasebniZS() != null) && !ipkm.getZasebniZS()) {
                                 zeroSpanFacade.spremi(izracunajZeroSpan());
                             }
                         }
