@@ -51,8 +51,9 @@ public class AqdbCitacBean implements CitacIzvora {
     @Inject @Config private TimeZone tzone;
 
     @Override
-    @Asynchronous
-    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+//    @Asynchronous
+//    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+    public Boolean  napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         for (ProgramMjerenja program : izvor.getProgramMjerenjaCollection()) {
             Date zadnjiSatni = podatakFacade.getVrijemeZadnjeg(program, 0);
@@ -63,7 +64,8 @@ public class AqdbCitacBean implements CitacIzvora {
 //            }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return new AsyncResult<Boolean>(true);
+//        return new AsyncResult<Boolean>(true);
+        return true;
     }
 
     private void procitaj() {

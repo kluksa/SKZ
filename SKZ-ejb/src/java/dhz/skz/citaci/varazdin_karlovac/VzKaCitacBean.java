@@ -110,8 +110,9 @@ public class VzKaCitacBean implements CitacIzvora {
     }
 
     @Override
-    @Asynchronous
-    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+//    @Asynchronous
+//    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+    public Boolean  napraviSatne(IzvorPodataka izvor) {
 
 //        try {
         log.log(Level.INFO, "POCETAK CITANJA");
@@ -148,7 +149,8 @@ public class VzKaCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return new AsyncResult<Boolean>(true);
+//        return new AsyncResult<Boolean>(true);
+        return true;
     }
 
     private void pokupiPodatke(String path, WlFileParser citac) {

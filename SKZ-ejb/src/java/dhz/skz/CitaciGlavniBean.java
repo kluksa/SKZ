@@ -95,7 +95,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
 //            }
 //        } else {
         if (!aktivan) {
-            HashMap<String, Future<Boolean>> citaciFuture = new HashMap<>();
+//            HashMap<String, Future<Boolean>> citaciFuture = new HashMap<>();
             log.log(Level.INFO, "Pokrecem citace");
             aktivan = true;
             try { // sto god da se desi, idemo na slijedeci izvor
@@ -107,17 +107,18 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                     log.log(Level.INFO, "JNDI: {0}", naziv);
                     try {
                         CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
-                        citaciFuture.put(naziv, citac.napraviSatne(ip));
+                        citac.napraviSatne(ip);
+//                        citaciFuture.put(naziv, citac.napraviSatne(ip));
                     } catch (Throwable ex) {
                         log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                         log.log(Level.SEVERE, null, ex);
                     }
                 }
-                log.log(Level.INFO, "PRIJE CEKANJA");
-                while (!checkIsDone(citaciFuture)) {
-                    Thread.sleep(1000);
-                }
-                log.log(Level.SEVERE, "CITACI ZAVRSILI POCINJE AGREGACIJA");
+//                log.log(Level.INFO, "PRIJE CEKANJA");
+//                while (!checkIsDone(citaciFuture)) {
+//                    Thread.sleep(1000);
+//                }
+//                log.log(Level.SEVERE, "CITACI ZAVRSILI POCINJE AGREGACIJA");
                 minutniUSatne.napraviSatne(0);
                 log.log(Level.SEVERE, "KRAJ AGREGACIJE");
             } catch (NamingException ex) {

@@ -21,11 +21,9 @@ import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
-import dhz.skz.citaci.weblogger.exceptions.WlFileException;
 import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
 import dhz.skz.config.Config;
 import dhz.skz.validatori.Validator;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.Future;
@@ -53,10 +50,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.net.ftp.FTPFile;
@@ -121,8 +114,9 @@ public class WebloggerCitacBean implements CitacIzvora {
     }
 
     @Override
-    @Asynchronous
-    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
+//    @Asynchronous
+//    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
+    public Boolean napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
         this.izvor = izvor;
         valFac = new WlValidatorFactory(izvor.getProgramMjerenjaCollection());
@@ -148,8 +142,8 @@ public class WebloggerCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return new AsyncResult<Boolean>(true);
-
+//        return new AsyncResult<Boolean>(true);
+        return true;
     }
 
     private void pokupiMjerenja(FtpKlijent ftp, WlPostajaDatoteke datoteke) throws IllegalStateException, SecurityException, SystemException, FtpKlijentException {

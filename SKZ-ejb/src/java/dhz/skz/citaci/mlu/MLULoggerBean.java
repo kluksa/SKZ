@@ -84,15 +84,17 @@ public class MLULoggerBean implements CsvParser, CitacIzvora {
     }
 
     @Override
-    @Asynchronous
+//    @Asynchronous
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+//    public Future<Boolean>  napraviSatne(IzvorPodataka izvor) {
+    public Boolean  napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
 //        for (ProgramMjerenja program : programMjerenjaFacade.find(izvor)) {
 //            siroviUSatneBean.spremiSatneIzSirovih(program, 0);
 //        }
         log.log(Level.INFO, "KRAJ CITANJA");
-        return new AsyncResult<Boolean>(true);
+//        return new AsyncResult<Boolean>(true);
+        return true;
     }
 
     @Override

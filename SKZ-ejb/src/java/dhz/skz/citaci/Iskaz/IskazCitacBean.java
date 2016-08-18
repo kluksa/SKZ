@@ -135,8 +135,9 @@ public class IskazCitacBean implements CitacIzvora {
     }
 
     @Override
-    @Asynchronous
-    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
+//    @Asynchronous
+//    public Future<Boolean> napraviSatne(IzvorPodataka izvor) {
+    public Boolean napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
 
         this.izvor = izvor;
@@ -168,7 +169,8 @@ public class IskazCitacBean implements CitacIzvora {
             }
         }
         log.log(Level.INFO, "KRAJ CITANJA {0}:{1}" , new Object[]{izvor.getNaziv(), izvor.getBean()});
-        return new AsyncResult<>(true);
+//        return new AsyncResult<>(true);
+        return true;
     }
 
     private String napraviURL(String datum, String tablica) {

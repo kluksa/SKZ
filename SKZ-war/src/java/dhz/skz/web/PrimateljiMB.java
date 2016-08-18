@@ -11,6 +11,7 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.primefaces.model.menu.MenuModel;
  */
 @Named(value = "primateljiMB")
 @ViewScoped
-public class PrimateljiMB {
+public class PrimateljiMB implements Serializable{
     @EJB
     private ProgramMjerenjaFacade programMjerenjaFacade;
     @EJB

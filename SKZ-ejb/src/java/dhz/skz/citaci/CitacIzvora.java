@@ -16,7 +16,7 @@ import javax.ejb.Asynchronous;
  * @author kraljevic
  */
 public interface CitacIzvora {
-    @Asynchronous
-    public Future<Boolean> napraviSatne(IzvorPodataka izvor);
+//    public Future<Boolean> napraviSatne(IzvorPodataka izvor);
+    public Boolean napraviSatne(IzvorPodataka izvor);
     public Map<String,String> opisiStatus(PodatakSirovi ps);
 }

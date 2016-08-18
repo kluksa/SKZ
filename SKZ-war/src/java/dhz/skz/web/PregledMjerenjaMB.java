@@ -5,6 +5,7 @@
  */
 package dhz.skz.web;
 
+import java.io.Serializable;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -15,7 +16,7 @@ import javax.faces.view.ViewScoped;
  */
 @Named(value = "pregledMjerenjaMB")
 @RequestScoped
-public class PregledMjerenjaMB {
+public class PregledMjerenjaMB implements Serializable{
     /**
      * Ideja je imati stranicu sa svim mjerenjima (sa svim programima) na kojoj 
      * ce se vidjeti svi programi, stanje komunikacije, zero, span, status kao semafori

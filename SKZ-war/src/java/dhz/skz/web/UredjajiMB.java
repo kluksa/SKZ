@@ -5,6 +5,7 @@
  */
 package dhz.skz.web;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.enterprise.context.Dependent;
@@ -17,7 +18,7 @@ import javax.inject.Inject;
  */
 @Named(value = "uredjajiMB")
 @ViewScoped
-public class UredjajiMB {
+public class UredjajiMB implements Serializable{
     @Inject
     private transient Logger log;
 
