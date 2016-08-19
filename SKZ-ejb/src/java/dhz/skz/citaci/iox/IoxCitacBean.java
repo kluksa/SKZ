@@ -21,7 +21,6 @@ import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.ZeroSpan;
 import dhz.skz.aqdb.facades.IzvorProgramKljuceviMapFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
@@ -33,35 +32,24 @@ import dhz.skz.aqdb.facades.UredjajFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
-import dhz.skz.citaci.weblogger.validatori.WlValidatorFactory;
 import dhz.skz.validatori.Validator;
 import dhz.skz.validatori.ValidatorFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
@@ -120,7 +108,6 @@ public class IoxCitacBean implements CitacIzvora {
     private Date vrijemeZadnjegMjerenja, vrijemeZadnjegZeroSpan;
     private ValidatorFactory valFac;
 
-    
     private Set<Postaja> postaje;
     private HashMap<String, ProgramMjerenja> programKljucevi;
     private final IoxValidatorFactory ivf = new IoxValidatorFactory();
@@ -168,16 +155,8 @@ public class IoxCitacBean implements CitacIzvora {
             log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
             aktivnaPostaja = pio.getPostaja();
             if (aktivnaPostaja.getNetAdresa() != null && !aktivnaPostaja.getNetAdresa().isEmpty()) {
-                try {
-                    citajMjerenja(pio);
-                } catch (IOException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
-                try {
-                    citajZeroSpan(pio);
-                } catch (IOException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
+                spremi(pio, podatakFacade);
+                spremi(pio, zeroSpanFacade);
             } else {
                 log.log(Level.SEVERE, "Postaja {0} nema definiranu adresu", aktivnaPostaja.getNazivPostaje());
             }
@@ -186,8 +165,34 @@ public class IoxCitacBean implements CitacIzvora {
 //        return new AsyncResult<Boolean>(true);
         return true;
     }
+    
+    private void citaj(PostajaCitacIox pio, Date zadnji, String period, String baza) throws IOException {
+        Date sada = new Date();
+        Date vrijeme = zadnji;
+        IoxKonekcija konekcija = new IoxKonekcija(izvor.getUri(), aktivnaPostaja.getNetAdresa());
+        while (!vrijeme.after(sada)) {
+            try {
+                vrijeme = new Date(vrijeme.getTime() + 3600000);
+                try (InputStream is = konekcija.getInputStream(period, baza, vrijeme)) {
+                    try {
+                        Collection<PodatakSirovi> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
+                        spremi(mjerenja);
+                        
+                        Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));
+                        spremiZS(mjerenja);
 
-    private void citajMjerenja(PostajaCitacIox pio) throws IOException {
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (MalformedURLException ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+
+    private void citajMjerenja(IoxParser pio, IoxDAO dao) throws IOException {
 
         PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
         if (zadnji == null) {
@@ -206,20 +211,16 @@ public class IoxCitacBean implements CitacIzvora {
         IoxKonekcija konekcija = new IoxKonekcija(izvor.getUri(), aktivnaPostaja.getNetAdresa());
         while (!vrijeme.after(sada)) {
             try {
-                URL uri = napraviURL("1", "av1.txt", sdf.format(vrijeme));
                 vrijeme = new Date(vrijeme.getTime() + 3600000);
-                log.log(Level.FINE, "vrijeme={1} URL: {0}", new Object[]{uri.toString(), vrijeme});
-//                try (InputStream is = getInputStream(uri)) {
                 try (InputStream is = konekcija.getInputStream("1", "av1.txt", vrijeme)) {
                     try {
-                        Collection<PodatakSirovi> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
-                        spremi(mjerenja);
+                        dao.spremi(pio.parse(is));
+//                        Collection<PodatakSirovi> mjerenja = pio.parseMjerenja(new BufferedInputStream(is));
+//                        spremi(mjerenja);
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, null, ex);
                     }
-
                 }
-
             } catch (MalformedURLException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
@@ -227,33 +228,38 @@ public class IoxCitacBean implements CitacIzvora {
         }
     }
 
-    private URL napraviURL(String period, String dbstr, String vrijemeStr) throws MalformedURLException {
-        String uriStrT = izvor.getUri();
-        uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
-        uriStrT = uriStrT.replaceFirst("\\$\\{USERNAME\\}", "horiba");
-        uriStrT = uriStrT.replaceFirst("\\$\\{PASSWORD\\}", "password");
-        uriStrT = uriStrT.replaceFirst("\\$\\{PERIOD\\}", period);
-        uriStrT = uriStrT.replaceFirst("\\$\\{DB\\}", dbstr);
-        uriStrT = uriStrT.replaceFirst("\\$\\{POCETAK\\}", vrijemeStr);
-        return new URL(uriStrT);
-    }
+    private void citajZeroSpan(PostajaCitacIox pio) throws IOException {
+        log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
+        Postaja postaja = pio.getPostaja();
+        Date zadnji = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
 
-    private InputStream getInputStream(URL url) throws IOException {
+        if (zadnji == null) {
+            Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
+            if (pocetakMjerenja == null) {
+                return;
+            }
+            zadnji = pocetakMjerenja;
+        }
+        log.log(Level.INFO, "ZADNJI ZS: {0}", zadnji);
 
-        String userInfo = url.getUserInfo();
-        byte[] authEncBytes = Base64.getEncoder().encode(userInfo.getBytes());
-        String authStringEnc = new String(authEncBytes);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-
-        con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-        con.setConnectTimeout(20000);
-        con.setReadTimeout(30000);
-
-        int responseCode = con.getResponseCode();
-        log.log(Level.FINE, "Sending 'GET' request to URL : {0}", url.toString());
-        log.log(Level.FINE, "Response Code : {0}", responseCode);
-        return con.getInputStream();
+        Date sada = new Date();
+        Date vrijeme = zadnji;
+        IoxKonekcija konekcija = new IoxKonekcija(izvor.getUri(), aktivnaPostaja.getNetAdresa());
+        while (!vrijeme.after(sada)) {
+            try {
+                vrijeme = new Date(vrijeme.getTime() + 24 * 3600000);
+                try (InputStream is = konekcija.getInputStream("24", "cal.txt", vrijeme)) {
+                    try {
+                        Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));
+                        spremiZS(mjerenja);
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(IoxCitacBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     private void spremi(Collection<PodatakSirovi> mjerenja) {
@@ -304,39 +310,12 @@ public class IoxCitacBean implements CitacIzvora {
         return mapa;
     }
 
-    private void citajZeroSpan(PostajaCitacIox pio) throws IOException {
-        log.log(Level.INFO, "CITAM POSTAJU: {0}", pio.getPostaja().getNazivPostaje());
-        Postaja postaja = pio.getPostaja();
-        Date zadnji = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja);
+    private void spremi(PostajaCitacIox pio, PodatakFacade podatakFacade) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        if (zadnji == null) {
-            Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-            if (pocetakMjerenja == null) {
-                return;
-            }
-            zadnji = pocetakMjerenja;
-        }
-        log.log(Level.INFO, "ZADNJI ZS: {0}", zadnji);
-
-        Date sada = new Date();
-        Date vrijeme = zadnji;
-        while (!vrijeme.after(sada)) {
-            try {
-                URL url = napraviURL("24", "cal.txt", sdf.format(vrijeme));
-                vrijeme = new Date(vrijeme.getTime() + 24 * 3600000);
-                log.log(Level.FINE, "vrijeme={1} URL: {0}", new Object[]{url.toString(), vrijeme});
-                try (InputStream is = getInputStream(url)) {
-                    try {
-                        Collection<ZeroSpan> mjerenja = pio.parseZeroSpan(new BufferedInputStream(is));
-                        spremiZS(mjerenja);
-                    } catch (Exception ex) {
-                        log.log(Level.SEVERE, null, ex);
-                    }
-                }
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(IoxCitacBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    private void spremi(PostajaCitacIox pio, ZeroSpanFacade zeroSpanFacade) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
