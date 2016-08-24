@@ -18,27 +18,14 @@ package dhz.skz.citaci.iox;
 
 import com.csvreader.CsvReader;
 import dhz.skz.aqdb.entity.PodatakSirovi;
-import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
+import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.util.OperStatus;
 import dhz.skz.validatori.Validator;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,139 +33,100 @@ import java.util.logging.Logger;
  *
  * @author kraljevic
  */
-public class ZeroSpanIoxParser {
+public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
 
     private static final Logger log = Logger.getLogger(ZeroSpanIoxParser.class.getName());
 
-    private final Postaja postaja;
-    private final HashMap<String, ProgramMjerenja> mapa;
-    private final Map<ProgramMjerenja, Validator> validatori;
-//    private int i = 0;
-    private ProgramMjerenja tempIdx;
-    private ProgramMjerenja pm;
-
-    public Postaja getPostaja() {
-        return postaja;
+    public ZeroSpanIoxParser() {
+        super();
+        this.setPeriodStr("24");
+        this.setdBstr("cal.txt");
     }
 
-    public ZeroSpanIoxParser(Postaja postajaId) {
-        this.mapa = new HashMap<>();
-        this.validatori = new HashMap<>();
-        this.postaja = postajaId;
-    }
+    @Override
+    protected void parseLinija() throws IOException {
+        CsvReader csv = getCsv();
+        try {
 
-    public void dodajProgram(ProgramMjerenja pm, String uKljuc, String kKljuc) {
-//        program.put(pm, i);
-        String kljuc = uKljuc + "::" + kKljuc;
-        mapa.put(kljuc, pm);
-        if (pm.getKomponentaId().getFormula().equals("Tkont")) {
-            tempIdx = pm;
-        }
-//        i++;
-    }
-
-    public Collection<ZeroSpan> parseZeroSpan(InputStream is) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        List<ZeroSpan> zeroSpan = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
-            String line = null;
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            CsvReader csv = new CsvReader(in, '\t');
-            csv.readHeaders();
-            int n = csv.getHeaderCount();
-            log.log(Level.FINE, "HEAD::::{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}", csv.getHeaders());
-            while (csv.readRecord()) {
-                log.log(Level.FINEST, "RAW::::{0}", csv.getRawRecord());
-                try {
-                    Date vrijeme = sdf.parse(csv.get("Time"));
-                    String device = csv.get("Device");
-                    String component = csv.get("Component");
-                    pm = mapa.get(device + "::" + component);
-                    if (pm != null) {
-                        double conv = getKonverzijskaJedinica(csv.get("Unit"));
-                        
-
-                        String intstatus = csv.get("IntStatus");
-                        String vrsta = "";
-                        if (intstatus.charAt(12) == 'A') {
-                            vrsta = "A";
-                        } else {
-                            vrsta = "M";
-                        }
+            String intstatus = csv.get("IntStatus");
+            String vrsta;
+            if (intstatus.charAt(12) == 'A') {
+                vrsta = "A";
+            } else {
+                vrsta = "M";
+            }
 //                        Integer validity = Integer.parseInt(csv.get("Validity"));
-                        String status = csv.get("ErrStatus");
-                        status += csv.get("OpeStatus");
-                        status += csv.get("IntStatus");
-                        Validator v = validatori.get(pm);
-                        int provjeraStatusa = v.provjeraStatusa(status);
-                        provjeraStatusa &= ~(1 << OperStatus.SPAN.ordinal());
-                        provjeraStatusa &= ~(1 << OperStatus.ZERO.ordinal());
-                        provjeraStatusa &= ~(1 << OperStatus.KALIBRACIJA.ordinal());
+            String status = csv.get("ErrStatus");
+            status += csv.get("OpeStatus");
+            status += csv.get("IntStatus");
 
-                        if (provjeraStatusa < (1 << OperStatus.FAULT.ordinal())) {
-//                        if (csv.get("ErrStatus").equals("________")) {                                                                 
-                            if (intstatus.charAt(11) == 'Z') {
-                                if (!csv.get("Zero").isEmpty()) {
-                                    Double val = conv * Double.parseDouble(csv.get("Zero"));
-                                    Double std = Double.parseDouble(csv.get("Zero StdDev"));
-                                    Double ref = Double.parseDouble(csv.get("Zero Setp"));
-                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("Z"));
-                                }
-                            }
+            Validator v = this.getValidatori().get(getAktualniProgram());
+            int provjeraStatusa = v.provjeraStatusa(status);
 
-                            if (intstatus.charAt(10) == '1') {
-                                if (!csv.get("Span-1").isEmpty()) {
-                                    Double val = conv * Double.parseDouble(csv.get("Span-1"));
-                                    Double std = Double.parseDouble(csv.get("Span-1 StdDev"));
-                                    Double ref = Double.parseDouble(csv.get("Span-1 Setp"));
-                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("S"));
-                                }
-                            }
+            provjeraStatusa &= ~(1 << OperStatus.SPAN.ordinal());
+            provjeraStatusa &= ~(1 << OperStatus.ZERO.ordinal());
+            provjeraStatusa &= ~(1 << OperStatus.KALIBRACIJA.ordinal());
 
-                            if (intstatus.charAt(9) == '2') {
-                                if (!csv.get("Span-2").isEmpty()) {
-                                    Double val = conv * Double.parseDouble(csv.get("Span-2"));
-                                    Double std = Double.parseDouble(csv.get("Span-2 StdDev"));
-                                    Double ref = Double.parseDouble(csv.get("Span-2 Setp"));
-                                    dodajZeroSpan(zeroSpan, pm, vrijeme, val, std, ref, vrsta.concat("X"));
-                                }
-                            }
-                        }
-
-                    }
-                } catch (ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
+            if (provjeraStatusa < (1 << OperStatus.FAULT.ordinal())) {
+//                        if (csv.get("ErrStatus").equals("________")) {  
+                if (intstatus.charAt(11) == 'Z') {
+                    parseGrupa("Zero", vrsta.concat("Z"));
+                }
+                if (intstatus.charAt(10) == '1') {
+                    parseGrupa("Span-1", vrsta.concat("S"));
+                }
+                if (intstatus.charAt(9) == '2') {
+                    parseGrupa("Span-2", vrsta.concat("X"));
                 }
             }
-        } catch (IOException ex) {
+        } catch (NumberFormatException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-        return zeroSpan;
     }
 
-    private void dodajZeroSpan(List<ZeroSpan> zeroSpan, ProgramMjerenja pm, Date vrijeme, Double vrijednost, Double stdev, Double ref, String vrsta) {
-        ZeroSpan ps = new ZeroSpan();
-        ps.setVrijednost(vrijednost);
-        ps.setVrijeme(vrijeme);
-        ps.setProgramMjerenjaId(pm);
-        ps.setReferentnaVrijednost(ref);
-        ps.setStdev(stdev);
-        ps.setVrsta(vrsta);
-        zeroSpan.add(ps);
+    private void parseGrupa(String grupaStr, String vrsta) throws IOException {
+        CsvReader csv = getCsv();
+        if (!csv.get(grupaStr).isEmpty()) {
+            Double vrijednost = getVrijednost(csv.get(grupaStr), csv.get("Unit"), getAktualniProgram());
+            Double stdev = getVrijednost(csv.get(grupaStr + " StdDev"), csv.get("Unit"), getAktualniProgram());
+            Double ref = getVrijednost(csv.get(grupaStr + " Setp"), csv.get("Unit"), getAktualniProgram());
+            ZeroSpan ps = new ZeroSpan();
+            ps.setVrijednost(vrijednost);
+            ps.setVrijeme(getAktualnoVrijeme());
+            ps.setProgramMjerenjaId(getAktualniProgram());
+            ps.setReferentnaVrijednost(ref);
+            ps.setStdev(stdev);
+            ps.setVrsta(vrsta);
+            getPodaci().add(ps);
+        }
     }
 
-    private double getKonverzijskaJedinica(String unitStr) {
-        switch (unitStr) {
+    private Double getVrijednost(String vrijednostStr, String jedinica, ProgramMjerenja pm) {
+        Double val = Double.parseDouble(vrijednostStr);
+        double conv;
+        switch (jedinica) {
             case "ug/m3":
             case "mg/m3":
-                return 1. / pm.getKomponentaId().getKonvVUM();
+                conv = 1. / pm.getKomponentaId().getKonvVUM();
+                break;
             default:
-                return 1.;
+                conv = 1.;
+        }
+        return val * conv;
+    }
+
+    @Override
+    protected void validiraj() {
+    }
+    
+    @Override
+    protected void odrediVrijemeZadnjegPodatka() {
+        ZeroSpanFacade psf = (ZeroSpanFacade) this.getDao();
+        for ( ProgramMjerenja pm : this.getMapa().values()){
+            Date zps = psf.getVrijemeZadnjeg(pm);
+            if ( zps.after(this.getVrijemeZadnjeg())) {
+                this.setVrijemeZadnjeg(zps);
+            }
         }
     }
 }
