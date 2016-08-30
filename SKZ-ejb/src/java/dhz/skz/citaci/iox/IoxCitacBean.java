@@ -54,9 +54,7 @@ public class IoxCitacBean implements CitacIzvora {
     private PodatakSiroviFacade podatakSiroviFacade;
     @EJB
     private ZeroSpanFacade zeroSpanFacade;
-    @EJB
-    private IoxValidatorFactory ioxValidatorFactory;
-
+    
     @Override
     public Boolean napraviSatne(IzvorPodataka izvor) {
         log.log(Level.INFO, "POCETAK CITANJA");
@@ -91,7 +89,7 @@ public class IoxCitacBean implements CitacIzvora {
     
     CitacPostaje citacBuilder(Postaja postaja, IzvorPodataka izvor){
         IoxKonekcija iocon = new IoxKonekcija(izvor.getUri(), postaja.getNetAdresa());
-        CitacPostaje cp = new CitacPostaje(postaja, ioxValidatorFactory, iocon);
+        CitacPostaje cp = new CitacPostaje(postaja, new IoxValidatorFactory(), iocon);
         return cp;
     }
 

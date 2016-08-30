@@ -124,7 +124,7 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
         ZeroSpanFacade psf = (ZeroSpanFacade) this.getDao();
         for ( ProgramMjerenja pm : this.getMapa().values()){
             Date zps = psf.getVrijemeZadnjeg(pm);
-            if ( zps.after(this.getVrijemeZadnjeg())) {
+            if ( zps != null && zps.after(this.getVrijemeZadnjeg())) {
                 this.setVrijemeZadnjeg(zps);
             }
         }

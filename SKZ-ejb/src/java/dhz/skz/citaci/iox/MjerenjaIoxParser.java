@@ -56,7 +56,7 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
     @Override
     protected void parseLinija() throws IOException {
         CsvReader csv = getCsv();
-        log.log(Level.FINEST, "POD={0}", new Object[]{csv.getRawRecord()});
+        log.log(Level.INFO, "POD={0}", new Object[]{csv.getRawRecord()});
         try {
             if (!csv.get("Mean").isEmpty()) {
                 Double vrijednost = getVrijednost(csv.get("Mean"), csv.get("Unit"), getAktualniProgram());

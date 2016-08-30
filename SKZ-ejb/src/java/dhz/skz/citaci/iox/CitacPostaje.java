@@ -54,7 +54,7 @@ public class CitacPostaje {
     void spremiPodatke(PodatakSiroviFacade podatakSiroviFacade, ZeroSpanFacade zeroSpanFacade) {
         //"1", "av1.txt"
         spremi(new MjerenjaIoxParser(), podatakSiroviFacade);
-        spremi(new ZeroSpanIoxParser(), podatakSiroviFacade);
+        spremi(new ZeroSpanIoxParser(), zeroSpanFacade);
 
     }
     
