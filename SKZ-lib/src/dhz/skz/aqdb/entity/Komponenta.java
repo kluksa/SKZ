@@ -108,6 +108,8 @@ public class Komponenta implements Serializable {
     private Collection<KomponentaMetodaLink> komponentaMetodaLinkCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
     private Collection<UmjerneTocke> umjerneTockeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<KomponentaUpozorenja> upozorenja;
 
     public Komponenta() {
     }
@@ -308,6 +310,16 @@ public class Komponenta implements Serializable {
         this.umjerneTockeCollection = umjerneTockeCollection;
     }
 
+    @XmlTransient
+    public Collection<KomponentaUpozorenja> getUpozorenja() {
+        return upozorenja;
+    }
+
+    public void setUpozorenja(Collection<KomponentaUpozorenja> upozorenja) {
+        this.upozorenja = upozorenja;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 0;
