@@ -103,6 +103,13 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
         return em.createQuery(cq).getResultList();
     }
 
+    public Podatak getPodatak(ProgramMjerenja pm, Date termin, Integer nv ) {
+        CriteriaQuery<Podatak> cq = getQueryPodaci(pm, termin, termin, nv, true, true, null);
+        List<Podatak> resultList = em.createQuery(cq).getResultList();
+        if ( resultList == null || resultList.isEmpty()) return null;
+        return resultList.get(0);
+    }
+
     private CriteriaQuery<Podatak> getQueryPodaci(ProgramMjerenja pm, Date pocetak, Date kraj, Integer nv, boolean p, boolean k, Order orderBy) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Podatak> cq = cb.createQuery(Podatak.class);

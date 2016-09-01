@@ -77,4 +77,16 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
         return em.createQuery(cq).getResultList();
     }
 
+    // TODO prebaciti u named query
+    public Collection<PrimateljProgramKljuceviMap> findAktivni(final PrimateljiPodataka primatelj) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);
+
+        Root<PrimateljProgramKljuceviMap> from = cq.from(PrimateljProgramKljuceviMap.class);
+        Predicate prim = cb.equal(from.get(PrimateljProgramKljuceviMap_.primateljiPodataka), primatelj);
+        Predicate aktivan = cb.equal(from.get(PrimateljProgramKljuceviMap_.aktivan), 1);
+        cq.select(from).where(cb.and(prim,aktivan));
+        return em.createQuery(cq).getResultList();
+    }
+    
 }

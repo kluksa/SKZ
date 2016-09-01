@@ -9,8 +9,10 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Podatak;
+import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
@@ -44,15 +46,21 @@ public class DemDiseminator implements DiseminatorPodataka {
     private ProgramMjerenjaFacade ppf;
     @EJB
     private PodatakFacade podatakFacade;
-
+    @EJB
+    private PrimateljProgramKljuceviMapFacade ppkmf;
+    
     @Inject @Config private TimeZone tzone;
+    private PrimateljiPodataka primatelj;
     
     @Override
     public void salji(PrimateljiPodataka primatelj) {
+        this.primatelj = primatelj;
 //        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
 //                getProgramPoKomponentama(primatelj.getProgramMjerenjaCollection());
+        
+        
         Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama
-                = getProgramPoKomponentama(ppf.find(primatelj));
+                = getProgramPoKomponentama(ppkmf.findAktivni(primatelj));
 
         DEMTransformation demT = new DEMTransformation(primatelj, tzone);
         Integer nv = 0;
@@ -64,12 +72,13 @@ public class DemDiseminator implements DiseminatorPodataka {
             log.log(Level.INFO, "KOMPONENTA= {0}", k.getFormula());
             try {
                 DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
-                Collection<Podatak> podaci = podatakFacade.find(prvi, zadnji, k, nv, (short) 0);
+//                Collection<Podatak> podaci = podatakFacade.find(prvi, zadnji, k, nv, (short) 0);
                 demT.setKomponenta(k);
                 demT.setProgram(programPoKomponentama.get(k));
                 demT.setPocetak(prvi);
                 demT.setKraj(zadnji);
-                demT.setPodaci(podaci);
+                demT.setPodaciFasada(podatakFacade);
+//                demT.setPodaci(podaci);
                 demT.odradi(dto);
 
             } catch (ProtocolNotSupported ex) {
@@ -78,10 +87,11 @@ public class DemDiseminator implements DiseminatorPodataka {
         }
     }
 
-    public Map<Komponenta, Collection<ProgramMjerenja>> getProgramPoKomponentama(Collection<ProgramMjerenja> program) {
+    public Map<Komponenta, Collection<ProgramMjerenja>> getProgramPoKomponentama(Collection<PrimateljProgramKljuceviMap> program) {
         Map<Komponenta, Collection<ProgramMjerenja>> kpm = new HashMap<>();
         log.log(Level.INFO, "PROGRAM:::::");
-        for (ProgramMjerenja pm : program) {
+        for (PrimateljProgramKljuceviMap ppkm : program) {
+            ProgramMjerenja pm = ppkm.getProgramMjerenja();
             Komponenta k = pm.getKomponentaId();
             if (!kpm.containsKey(k)) {
                 kpm.put(k, new HashSet<ProgramMjerenja>());
