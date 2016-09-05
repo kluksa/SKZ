@@ -109,7 +109,7 @@ public abstract class IoxAbstractCitac<T> {
     
     public void procitaj() {
         odrediVrijemeZadnjegPodatka();
-        log.log(Level.INFO, "Zadnji podatak u: {0}", new Object[]{vrijemeZadnjeg});
+        log.log(Level.INFO, "PROCITAJ: {0}, {1}, {2}", new Object[]{periodStr, dBstr, vrijemeZadnjeg});
         podaci = new ArrayList<>();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(periodStr, dBstr, vrijemeZadnjeg)))) {
             String line = null;
@@ -157,6 +157,5 @@ public abstract class IoxAbstractCitac<T> {
     
     abstract protected void parseLinija()  throws IOException;
     abstract protected void validiraj();
-
     abstract protected void odrediVrijemeZadnjegPodatka();
 }

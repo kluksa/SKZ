@@ -82,8 +82,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
         if (false) {
             try {
                 InitialContext ctx = new InitialContext();
-                IzvorPodataka ip = izvorPodatakaFacade.findByName("WebLogger");
-                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/WebloggerCitacBean");
+                IzvorPodataka ip = izvorPodatakaFacade.findByName("Iox");
+                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/IoxCitacBean");
                 citac.napraviSatne(ip);
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");

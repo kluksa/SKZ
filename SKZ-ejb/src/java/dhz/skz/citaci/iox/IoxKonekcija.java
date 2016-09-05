@@ -34,13 +34,13 @@ import java.util.logging.Logger;
 public class IoxKonekcija {
     private static final Logger log = Logger.getLogger(IoxKonekcija.class.getName());
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd%20HH:mm");
-    private String urlString;
+    private String urlPredlozak;
     
     public IoxKonekcija(String urlPredlozak, String hostname, String username, String password){
-        urlString = urlPredlozak;
-        urlString = urlString.replaceFirst("\\$\\{USERNAME\\}", username);
-        urlString = urlString.replaceFirst("\\$\\{PASSWORD\\}", password);
-        urlString = urlString.replaceFirst("\\$\\{HOSTNAME\\}", hostname);
+        urlPredlozak = urlPredlozak.replaceFirst("\\$\\{USERNAME\\}", username);
+        urlPredlozak = urlPredlozak.replaceFirst("\\$\\{PASSWORD\\}", password);
+        urlPredlozak = urlPredlozak.replaceFirst("\\$\\{HOSTNAME\\}", hostname);
+        this.urlPredlozak = urlPredlozak;
     }
     
     public IoxKonekcija(String urlPredlozak, String hostname){
@@ -49,6 +49,7 @@ public class IoxKonekcija {
     
     public InputStream getInputStream(String period, String dbstr, Date vrijeme) throws IOException {
         URL url = napraviURL(period, dbstr, sdf.format(vrijeme));
+        log.log(Level.INFO, "IOCON URL: {0}", new Object[]{url});
         String userInfo = url.getUserInfo();
         byte[] authEncBytes = Base64.getEncoder().encode(userInfo.getBytes());
         String authStringEnc = new String(authEncBytes);
@@ -66,6 +67,7 @@ public class IoxKonekcija {
     }
     
     private URL napraviURL(String period, String dbstr, String vrijemeStr) throws MalformedURLException {
+        String urlString = urlPredlozak;
         urlString = urlString.replaceFirst("\\$\\{PERIOD\\}", period);
         urlString = urlString.replaceFirst("\\$\\{DB\\}", dbstr);
         urlString = urlString.replaceFirst("\\$\\{POCETAK\\}", vrijemeStr);

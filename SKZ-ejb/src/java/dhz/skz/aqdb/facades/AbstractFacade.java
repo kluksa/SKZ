@@ -17,6 +17,8 @@
 package dhz.skz.aqdb.facades;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 
 /**
@@ -25,6 +27,7 @@ import javax.persistence.EntityManager;
  * @param <T>
  */
 public abstract class AbstractFacade<T> {
+    private static final Logger log = Logger.getLogger(AbstractFacade.class.getName());
     private Class<T> entityClass;
 
     public AbstractFacade(Class<T> entityClass) {
@@ -34,6 +37,7 @@ public abstract class AbstractFacade<T> {
     protected abstract EntityManager getEntityManager();
 
     public void create(T entity) {
+        log.log(Level.FINEST, entity.toString());
         getEntityManager().persist(entity);
     }
 
