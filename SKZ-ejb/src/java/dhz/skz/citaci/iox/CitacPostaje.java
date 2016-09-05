@@ -25,6 +25,7 @@ import dhz.skz.citaci.iox.validatori.IoxValidatorFactory;
 import dhz.skz.validatori.Validator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -59,6 +60,7 @@ public class CitacPostaje {
     }
     
     void spremi(IoxAbstractCitac citac, AbstractFacade fac) {
+        log.log(Level.INFO, "SPREMAM: {0};{1}", new Object[]{citac.toString(), fac.toString()});
         citac.setProgramMapa(mapa);
         citac.setValidatoriMapa(validatori);
         citac.setDaoFacade(fac);
