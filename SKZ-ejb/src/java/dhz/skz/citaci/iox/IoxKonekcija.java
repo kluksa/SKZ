@@ -39,8 +39,7 @@ public class IoxKonekcija {
     public IoxKonekcija(String urlPredlozak, String hostname, String username, String password){
         urlPredlozak = urlPredlozak.replaceFirst("\\$\\{USERNAME\\}", username);
         urlPredlozak = urlPredlozak.replaceFirst("\\$\\{PASSWORD\\}", password);
-        urlPredlozak = urlPredlozak.replaceFirst("\\$\\{HOSTNAME\\}", hostname);
-        this.urlPredlozak = urlPredlozak;
+        this.urlPredlozak = urlPredlozak.replaceFirst("\\$\\{HOSTNAME\\}", hostname);
     }
     
     public IoxKonekcija(String urlPredlozak, String hostname){
@@ -67,8 +66,7 @@ public class IoxKonekcija {
     }
     
     private URL napraviURL(String period, String dbstr, String vrijemeStr) throws MalformedURLException {
-        String urlString = urlPredlozak;
-        urlString = urlString.replaceFirst("\\$\\{PERIOD\\}", period);
+        String urlString = urlPredlozak.replaceFirst("\\$\\{PERIOD\\}", period);
         urlString = urlString.replaceFirst("\\$\\{DB\\}", dbstr);
         urlString = urlString.replaceFirst("\\$\\{POCETAK\\}", vrijemeStr);
         return new URL(urlString);
