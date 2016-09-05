@@ -57,6 +57,7 @@ public class EmailSessionBean {
             message.setSubject(subject);
             message.setSentDate(new Date());
             message.setText(body);
+         
 //            Multipart multipart = new MimeMultipart("alternative");
 //            
 //            MimeBodyPart textPart = new MimeBodyPart();

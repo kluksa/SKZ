@@ -18,17 +18,27 @@ package dhz.skz.diseminacija.upozorenja;
 
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.KomponentaUpozorenja;
+import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.citaci.SatniIterator;
+import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.EmailSessionBean;
+import dhz.skz.util.OperStatus;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
+import javax.inject.Inject;
 
 /**
  *
@@ -37,22 +47,34 @@ import javax.ejb.LocalBean;
 @Stateless
 @LocalBean
 public class UpozorenjaBean implements DiseminatorPodataka {
+
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
 
     @EJB
     private EmailSessionBean esb;
+    @EJB                   
+    private PodatakFacade pf;
+
+    @Inject
+    @Config
+    private TimeZone tzone;
+
+    private Date sada;
     
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-//        for ( PrimateljProgramKljuceviMap ppkm : primatelj.getPrimateljProgramKljuceviMapCollection()){
-//            ProgramMjerenja pm = ppkm.getProgramMjerenja();
-//            Komponenta k = pm.getKomponentaId();
-//            for ( KomponentaUpozorenja u : k.getUpozorenja()){
-//                if (isPrekoracen(pm)) {
-//                    saljiMail(primatelj, u);
-//                }
-//            }
-//        }
+        sada = getPrvi(0).getTime();
+        for (PrimateljProgramKljuceviMap ppkm : primatelj.getPrimateljProgramKljuceviMapCollection()) {
+            ProgramMjerenja pm = ppkm.getProgramMjerenja();
+            Komponenta k = pm.getKomponentaId();
+            for (KomponentaUpozorenja u : k.getUpozorenja()) {
+                u.getBrojPojavljivanja();
+                if (isPrekoracen(pm, u)) {
+                    
+//                    saljiObavijest(primatelj, u);
+                }
+            }
+        }
     }
 
     @Override
@@ -60,11 +82,38 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
     private void saljiMail(PrimateljiPodataka primatelj, KomponentaUpozorenja u) {
         String tekst = u.getPredlozakTeksta();
-        String uri  = primatelj.getUrl();
+        String uri = primatelj.getUrl();
         String naziv = u.getNaziv();
-        
+
+    }
+
+    private Calendar getPrvi(int broj_prethodnih_sati) {
+        Calendar trenutni_termin = new GregorianCalendar(tzone);
+        trenutni_termin.setTime(new Date());
+        trenutni_termin.set(Calendar.MINUTE, 0);
+        trenutni_termin.set(Calendar.SECOND, 0);
+        trenutni_termin.set(Calendar.MILLISECOND, 0);
+        trenutni_termin.add(Calendar.HOUR, -broj_prethodnih_sati);
+        return trenutni_termin;
+    }
+
+    private boolean isPrekoracen(ProgramMjerenja pm, KomponentaUpozorenja u) {
+        Calendar pocetak = getPrvi(u.getBrojPojavljivanja());
+        List<Podatak> pod = pf.getPodatak(pm, pocetak.getTime(), sada, 0, true, true);
+        boolean test = false;
+        if (pod.size() == u.getBrojPojavljivanja()) {
+            for (int i = 0; i < u.getBrojPojavljivanja(); i++) {
+                Podatak podatak = pod.get(i);
+                if (OperStatus.isValid(podatak) && podatak.getVrijednost() > u.getGranicnaKoncentracija()) {
+                    test = true;
+                } else {
+                    test = false;
+                    break;
+                }
+            }
+        }
+        return test;
     }
 }

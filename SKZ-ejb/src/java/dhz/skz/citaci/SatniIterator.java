@@ -20,6 +20,7 @@ public class SatniIterator {
     private final Calendar zadnji_termin;
 
     public SatniIterator(final Date pocetak, final Date kraj, final TimeZone tz) {
+        
         trenutni_termin = new GregorianCalendar(tz);
         trenutni_termin.setTime(pocetak);
         trenutni_termin.set(Calendar.MINUTE, 0);
@@ -30,12 +31,17 @@ public class SatniIterator {
         zadnji_termin.setTime(kraj);
         zadnji_termin.set(Calendar.MINUTE, 0);
         zadnji_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
+        zadnji_termin.set(Calendar.MILLISECOND, 0);
     }
     
     public boolean next(){
         trenutni_termin.add(Calendar.HOUR, 1);
         return !trenutni_termin.after(zadnji_termin);
+    }
+    
+    public boolean previous(){
+        trenutni_termin.add(Calendar.HOUR, -1);
+        return !trenutni_termin.before(zadnji_termin);
     }
     
     public Date getVrijeme(){
