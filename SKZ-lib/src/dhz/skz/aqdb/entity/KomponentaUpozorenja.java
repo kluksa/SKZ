@@ -33,6 +33,7 @@ import javax.validation.constraints.Size;
  */
 public class KomponentaUpozorenja implements Serializable {
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -43,7 +44,11 @@ public class KomponentaUpozorenja implements Serializable {
     private Komponenta komponenta;
     
     @Size(max = 300)
-    @Column(name = "iso_oznaka")
+    @Column(name = "predlozak_naslov")
+    private String predlozakNaslova;
+
+    @Size(max = 300)
+    @Column(name = "predlozak_teksta")
     private String predlozakTeksta;
 
     @Basic(optional = false)
@@ -58,19 +63,6 @@ public class KomponentaUpozorenja implements Serializable {
     @Column(name = "broj_pojavljivanja")
     private int brojPojavljivanja;
     
-    @Size(max = 90)
-    private String formula;
-    
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 120)
-    private String naziv;
-    @Size(max = 90)
-    @Column(name = "izrazeno_kao")
-    private String izrazenoKao;
-    @Column(name = "vrsta_komponente")
-    private Character vrstaKomponente;
-
     public Integer getId() {
         return id;
     }
@@ -119,37 +111,12 @@ public class KomponentaUpozorenja implements Serializable {
         this.brojPojavljivanja = brojPojavljivanja;
     }
 
-    public String getFormula() {
-        return formula;
+    public String getPredlozakNaslova() {
+        return predlozakNaslova;
     }
 
-    public void setFormula(String formula) {
-        this.formula = formula;
+    public void setPredlozakNaslova(String predlozakNaslova) {
+        this.predlozakNaslova = predlozakNaslova;
     }
-
-    public String getNaziv() {
-        return naziv;
-    }
-
-    public void setNaziv(String naziv) {
-        this.naziv = naziv;
-    }
-
-    public String getIzrazenoKao() {
-        return izrazenoKao;
-    }
-
-    public void setIzrazenoKao(String izrazenoKao) {
-        this.izrazenoKao = izrazenoKao;
-    }
-
-    public Character getVrstaKomponente() {
-        return vrstaKomponente;
-    }
-
-    public void setVrstaKomponente(Character vrstaKomponente) {
-        this.vrstaKomponente = vrstaKomponente;
-    }
-
     
 }

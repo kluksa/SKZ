@@ -23,10 +23,11 @@ import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.citaci.SatniIterator;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.EmailSessionBean;
+import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
+import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
 import dhz.skz.util.OperStatus;
 import java.util.Calendar;
 import java.util.Collection;
@@ -70,7 +71,10 @@ public class UpozorenjaBean implements DiseminatorPodataka {
             for (KomponentaUpozorenja u : k.getUpozorenja()) {
                 u.getBrojPojavljivanja();
                 if (isPrekoracen(pm, u)) {
-                    
+                    SlanjeUpozorenja up = new MailUpozorenje();
+                    Collection<Podatak> podaci = pokupiPodatke(primatelj, k);
+                    up.saljiUpozorenje(primatelj, u, podaci);
+                   
 //                    saljiObavijest(primatelj, u);
                 }
             }
@@ -82,12 +86,6 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void saljiMail(PrimateljiPodataka primatelj, KomponentaUpozorenja u) {
-        String tekst = u.getPredlozakTeksta();
-        String uri = primatelj.getUrl();
-        String naziv = u.getNaziv();
-
-    }
 
     private Calendar getPrvi(int broj_prethodnih_sati) {
         Calendar trenutni_termin = new GregorianCalendar(tzone);
@@ -115,5 +113,9 @@ public class UpozorenjaBean implements DiseminatorPodataka {
             }
         }
         return test;
+    }
+
+    private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj, Komponenta k) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
