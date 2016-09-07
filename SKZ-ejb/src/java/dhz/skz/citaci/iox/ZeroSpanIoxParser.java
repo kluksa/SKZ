@@ -36,7 +36,7 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
     private static final Logger log = Logger.getLogger(ZeroSpanIoxParser.class.getName());
 
     public ZeroSpanIoxParser() {
-        this.setPeriodStr("24");
+        this.setPeriod(24);
         this.setdBstr("cal.txt");
     }
 

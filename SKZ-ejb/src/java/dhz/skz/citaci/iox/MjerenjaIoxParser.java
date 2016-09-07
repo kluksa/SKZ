@@ -39,7 +39,7 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
     private final NavigableMap<Date, Double> temperature = new TreeMap<>();
     
     public MjerenjaIoxParser(){
-        this.setPeriodStr("1");
+        this.setPeriod(1);
         this.setdBstr("av1.txt");
     }
 
