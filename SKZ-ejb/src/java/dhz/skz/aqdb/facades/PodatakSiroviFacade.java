@@ -117,55 +117,61 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         ZadnjiSirovi zadnji = getEntityManager().find(ZadnjiSirovi.class, program.getId());
         if ( zadnji == null ) return null;
         em.refresh(zadnji);
-        return zadnji.getPodatakSiroviId();
-    }
- 
-     // TODO prebaciti u named query
-    public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja){
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
-        Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);
-
-        Join<ZadnjiSirovi, ProgramMjerenja> programJ = from.join(ZadnjiSirovi_.programMjerenja);
-        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
-        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
-
-        Expression<Date> vrijemeE = from.get(ZadnjiSirovi_.vrijeme);
-        cq.select(from).where(cb.and(izvorP, postajaP)).orderBy(cb.desc(vrijemeE));
-        
-        TypedQuery<ZadnjiSirovi> createQuery = em.createQuery(cq);
-        TypedQuery<ZadnjiSirovi> setMaxResults = createQuery.setMaxResults(1);
-        List<ZadnjiSirovi> resultList = setMaxResults.getResultList();
-        List<ZadnjiSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl == null || rl.isEmpty()) {
-            return null;
-        }
-        em.refresh(rl.get(0));
-        return rl.get(0).getPodatakSiroviId();
+        return getPodatak(zadnji.getProgramMjerenja(), zadnji.getVrijeme());
     }
     
-        // TODO prebaciti u named query
-    public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja, String datoteka) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
-        Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);
-
-        Join<ZadnjiSirovi, ProgramMjerenja> programJ = from.join(ZadnjiSirovi_.programMjerenja);
-        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
-        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
-        Predicate datotekaP = cb.equal(programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
-
-        Expression<Date> vrijemeE = from.get(ZadnjiSirovi_.vrijeme);
-
-        CriteriaQuery<ZadnjiSirovi> select = cq.select(from)
-                .where(cb.and(izvorP, postajaP, datotekaP)).orderBy(cb.desc(vrijemeE));
-        List<ZadnjiSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
-        if (rl == null || rl.isEmpty()) {
-            return null;
-        }
-        em.refresh(rl.get(0));
-        return rl.get(0).getPodatakSiroviId();
+    public PodatakSirovi getPodatak(ProgramMjerenja pm, Date vrijeme) {
+        return em.createNamedQuery("PodatakSirovi.findByVrijemeProgram", PodatakSirovi.class)
+                 .setParameter("vrijeme", vrijeme).setParameter("programMjerenja", pm)
+                 .getSingleResult();
     }
+ 
+//     // TODO prebaciti u named query
+//    public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja){
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
+//        Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);
+//
+//        Join<ZadnjiSirovi, ProgramMjerenja> programJ = from.join(ZadnjiSirovi_.programMjerenja);
+//        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
+//        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
+//
+//        Expression<Date> vrijemeE = from.get(ZadnjiSirovi_.vrijeme);
+//        cq.select(from).where(cb.and(izvorP, postajaP)).orderBy(cb.desc(vrijemeE));
+//        
+//        TypedQuery<ZadnjiSirovi> createQuery = em.createQuery(cq);
+//        TypedQuery<ZadnjiSirovi> setMaxResults = createQuery.setMaxResults(1);
+//        List<ZadnjiSirovi> resultList = setMaxResults.getResultList();
+//        List<ZadnjiSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+//        if (rl == null || rl.isEmpty()) {
+//            return null;
+//        }
+//        em.refresh(rl.get(0));
+//        return rl.get(0).getPodatakSiroviId();
+//    }
+//    
+//        // TODO prebaciti u named query
+//    public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja, String datoteka) {
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<ZadnjiSirovi> cq = cb.createQuery(ZadnjiSirovi.class);
+//        Root<ZadnjiSirovi> from = cq.from(ZadnjiSirovi.class);
+//
+//        Join<ZadnjiSirovi, ProgramMjerenja> programJ = from.join(ZadnjiSirovi_.programMjerenja);
+//        Predicate postajaP = cb.equal(programJ.join(ProgramMjerenja_.postajaId), postaja);
+//        Predicate izvorP = cb.equal(programJ.join(ProgramMjerenja_.izvorPodatakaId), izvor);
+//        Predicate datotekaP = cb.equal(programJ.join(ProgramMjerenja_.izvorProgramKljuceviMap).get(IzvorProgramKljuceviMap_.nKljuc), datoteka);
+//
+//        Expression<Date> vrijemeE = from.get(ZadnjiSirovi_.vrijeme);
+//
+//        CriteriaQuery<ZadnjiSirovi> select = cq.select(from)
+//                .where(cb.and(izvorP, postajaP, datotekaP)).orderBy(cb.desc(vrijemeE));
+//        List<ZadnjiSirovi> rl = em.createQuery(cq).setMaxResults(1).getResultList();
+//        if (rl == null || rl.isEmpty()) {
+//            return null;
+//        }
+//        em.refresh(rl.get(0));
+//        return rl.get(0).getPodatakSiroviId();
+//    }
 
    
     

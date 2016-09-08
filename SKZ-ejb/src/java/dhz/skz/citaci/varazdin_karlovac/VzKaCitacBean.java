@@ -18,6 +18,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.facades.UredjajFacade;
+import dhz.skz.aqdb.facades.ZadnjiSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.varazdin_karlovac.validatori.VzKaValidatorFactory;
@@ -85,6 +86,8 @@ public class VzKaCitacBean implements CitacIzvora {
 //    private ValidatorFactory validatorFactory;
     @EJB
     private PodatakSiroviFacade podatakSiroviFacade;
+    @EJB
+    private ZadnjiSiroviFacade zadnjiSiroviFacade;
 
     @Resource
     private EJBContext context;
@@ -125,16 +128,8 @@ public class VzKaCitacBean implements CitacIzvora {
                 log.log(Level.INFO, "Citam: {0}", aktivnaPostaja.getNazivPostaje());
 
                 programNaPostaji = programMjerenjaFacade.find(aktivnaPostaja, izvor);
-                PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
-                if (zadnji == null) {
-                    Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-                    if (pocetakMjerenja == null) {
-                        continue;
-                    }
-                    vrijemeZadnjegMjerenja = pocetakMjerenja;
-                } else {
-                    vrijemeZadnjegMjerenja = zadnji.getVrijeme();
-                }
+                vrijemeZadnjegMjerenja = zadnjiSiroviFacade.getVrijeme(izvor, aktivnaPostaja);
+                
                 vrijemeZadnjegZeroSpan = zeroSpanFacade.getVrijemeZadnjeg(izvor, aktivnaPostaja);
                 WlFileParser p = new VzKaMjerenjaParser(aktivnaPostaja, programNaPostaji, timeZone, valFac, podatakSiroviFacade );
                 p.setZadnjiPodatak(vrijemeZadnjegMjerenja);

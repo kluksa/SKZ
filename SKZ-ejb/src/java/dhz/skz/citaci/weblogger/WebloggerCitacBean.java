@@ -18,6 +18,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.facades.UredjajFacade;
+import dhz.skz.aqdb.facades.ZadnjiSiroviFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.FtpKlijent;
 import dhz.skz.citaci.weblogger.exceptions.FtpKlijentException;
@@ -81,6 +82,8 @@ public class WebloggerCitacBean implements CitacIzvora {
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PostajaFacade posajaFacade;
+    @EJB
+    private ZadnjiSiroviFacade zadnjiSiroviFacade;
 
 //    @EJB
 //    private ValidatorFactory validatorFactory;
@@ -277,7 +280,7 @@ public class WebloggerCitacBean implements CitacIzvora {
         for (Postaja p : posajaFacade.getPostajeZaIzvor(izvor)) {
             WlPostajaDatoteke wpd = new WlPostajaDatoteke(p, timeZone);
             wpd.setVrijemeZadnjegZS(getVrijemeZadnjegZeroSpan(p));
-            wpd.setVrjmemeZadnjegMjerenja(getVrijemeZadnjegMjerenja(p));
+            wpd.setVrjmemeZadnjegMjerenja(zadnjiSiroviFacade.getVrijeme(izvor, p));
             wpd.setImaZeroSpan(provjeriZS(p));
             mapa.put(p.getNazivPostaje().toLowerCase(), wpd);
         }
@@ -297,17 +300,6 @@ public class WebloggerCitacBean implements CitacIzvora {
         }
 
         return mapa;
-    }
-
-    private Date getVrijemeZadnjegMjerenja(Postaja p) {
-        Date vrijemeZadnjeg;
-        PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, p);
-        if (zadnji == null) {
-            vrijemeZadnjeg = programMjerenjaFacade.getPocetakMjerenja(izvor, p);
-        } else {
-            vrijemeZadnjeg = zadnji.getVrijeme();
-        }
-        return vrijemeZadnjeg;
     }
 
     private Date getVrijemeZadnjegZeroSpan(Postaja p) {

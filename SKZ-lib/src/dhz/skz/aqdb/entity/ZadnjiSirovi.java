@@ -45,7 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ZadnjiSirovi.findAll", query = "SELECT z FROM ZadnjiSirovi z"),
     @NamedQuery(name = "ZadnjiSirovi.findByProgramMjerenja", query = "SELECT z FROM ZadnjiSirovi z WHERE z.programMjerenja = :programMjerenja"),
     @NamedQuery(name = "ZadnjiSirovi.findByVrijeme", query = "SELECT z FROM ZadnjiSirovi z WHERE z.vrijeme = :vrijeme"),
-    @NamedQuery(name = "ZadnjiSirovi.findByPodatakSiroviId", query = "SELECT z FROM ZadnjiSirovi z WHERE z.podatakSiroviId = :podatakSiroviId")})
+    @NamedQuery(name = "ZadnjiSirovi.findByIzvorPostaja", query = "SELECT z FROM ZadnjiSirovi z WHERE z.vrijeme = :vrijeme"),
+    @NamedQuery(name = "ZadnjiSirovi.findByIzvorPostajaDatoteka", query = "SELECT z FROM ZadnjiSirovi z WHERE z.vrijeme = :vrijeme")})
 public class ZadnjiSirovi implements Serializable {
     @Basic(optional = false)
     @NotNull
@@ -64,9 +65,9 @@ public class ZadnjiSirovi implements Serializable {
     
 
     
-    @JoinColumn(name = "podatak_sirovi_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private PodatakSirovi podatakSiroviId;
+//    @JoinColumn(name = "podatak_sirovi_id", referencedColumnName = "id")
+//    @ManyToOne(optional = false)
+//    private PodatakSirovi podatakSiroviId;
     
     public ZadnjiSirovi() {
     }
@@ -75,11 +76,11 @@ public class ZadnjiSirovi implements Serializable {
         this.programMjerenjaId = programMjerenjaId;
     }
 
-    public ZadnjiSirovi(Integer programMjerenjaId, Date vrijeme, PodatakSirovi podatakSiroviId) {
-        this.programMjerenjaId = programMjerenjaId;
-        this.vrijeme = vrijeme;
-        this.podatakSiroviId = podatakSiroviId;
-    }
+//    public ZadnjiSirovi(Integer programMjerenjaId, Date vrijeme, PodatakSirovi podatakSiroviId) {
+//        this.programMjerenjaId = programMjerenjaId;
+//        this.vrijeme = vrijeme;
+//        this.podatakSiroviId = podatakSiroviId;
+//    }
 
     public Integer getProgramMjerenjaId() {
         return programMjerenjaId;
@@ -97,13 +98,13 @@ public class ZadnjiSirovi implements Serializable {
         this.vrijeme = vrijeme;
     }
 
-    public PodatakSirovi getPodatakSiroviId() {
-        return podatakSiroviId;
-    }
-
-    public void setPodatakSiroviId(PodatakSirovi podatakSiroviId) {
-        this.podatakSiroviId = podatakSiroviId;
-    }
+//    public PodatakSirovi getPodatakSiroviId() {
+//        return podatakSiroviId;
+//    }
+//
+//    public void setPodatakSiroviId(PodatakSirovi podatakSiroviId) {
+//        this.podatakSiroviId = podatakSiroviId;
+//    }
 
     public ProgramMjerenja getProgramMjerenja() {
         return programMjerenja;
