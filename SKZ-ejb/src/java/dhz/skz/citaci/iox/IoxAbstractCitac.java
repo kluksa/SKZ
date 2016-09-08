@@ -123,12 +123,11 @@ public abstract class IoxAbstractCitac<T> {
         odrediVrijemeZadnjegPodatka();
 
         Date sada = new Date();
+        podaci = new ArrayList<>();
 
         while (vrijemeZadnjeg.before(sada)) {
-            log.log(Level.INFO, "PROCITAJ: {0}, {1}, {2}", new Object[]{period, dBstr, vrijemeZadnjeg});
-            String periodStr = period.toString();
-            podaci = new ArrayList<>();
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(periodStr, dBstr, vrijemeZadnjeg)))) {
+            
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(period.toString(), dBstr, vrijemeZadnjeg)))) {
                 String line = null;
                 line = in.readLine();
                 line = in.readLine();
@@ -171,9 +170,9 @@ public abstract class IoxAbstractCitac<T> {
     }
 
     private void spremi() {
-        podaci.stream().forEach((podatak) -> {
-            dao.create(podatak);
-        });
+        for ( T p : podaci) {
+            dao.create(p);
+        }
     }
 
     abstract protected void parseLinija() throws IOException;
