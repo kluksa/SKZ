@@ -16,18 +16,20 @@
  */
 package dhz.skz.diseminacija.upozorenja;
 
+import dhz.skz.aqdb.entity.Granice;
 import dhz.skz.aqdb.entity.Komponenta;
-import dhz.skz.aqdb.entity.KomponentaUpozorenja;
+import dhz.skz.aqdb.entity.Obavijesti;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.ObavijestiFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
-import dhz.skz.diseminacija.EmailSessionBean;
 import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
 import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
+import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.util.OperStatus;
 import java.util.Calendar;
 import java.util.Collection;
@@ -51,11 +53,12 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
 
-    @EJB
-    private EmailSessionBean esb;
     @EJB                   
     private PodatakFacade pf;
 
+    @EJB
+    private ObavijestiFacade obf;
+    
     @Inject
     @Config
     private TimeZone tzone;
@@ -65,17 +68,16 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     @Override
     public void salji(PrimateljiPodataka primatelj) {
         sada = getPrvi(0).getTime();
+        UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
+        
         for (PrimateljProgramKljuceviMap ppkm : primatelj.getPrimateljProgramKljuceviMapCollection()) {
             ProgramMjerenja pm = ppkm.getProgramMjerenja();
             Komponenta k = pm.getKomponentaId();
-            for (KomponentaUpozorenja u : k.getUpozorenja()) {
-                u.getBrojPojavljivanja();
-                if (isPrekoracen(pm, u)) {
-                    SlanjeUpozorenja up = new MailUpozorenje();
-                    Collection<Podatak> podaci = pokupiPodatke(primatelj, k);
-                    up.saljiUpozorenje(primatelj, u, podaci);
-                   
-//                    saljiObavijest(primatelj, u);
+            for (Obavijesti o : obf.findAll(k, primatelj)){
+                if (isPrekoracen(pm, o.getGranica())) {
+                    SlanjeUpozorenja up = suf.getSender(o);
+                    Collection<Podatak> podaci = pokupiPodatke(primatelj);
+                    up.saljiUpozorenje(o, pm, podaci);
                 }
             }
         }
@@ -85,7 +87,6 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 
     private Calendar getPrvi(int broj_prethodnih_sati) {
         Calendar trenutni_termin = new GregorianCalendar(tzone);
@@ -97,14 +98,14 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         return trenutni_termin;
     }
 
-    private boolean isPrekoracen(ProgramMjerenja pm, KomponentaUpozorenja u) {
-        Calendar pocetak = getPrvi(u.getBrojPojavljivanja());
+    private boolean isPrekoracen(ProgramMjerenja pm, Granice o) {
+        Calendar pocetak = getPrvi(o.getDozvoljeniBrojPrekoracenja());
         List<Podatak> pod = pf.getPodatak(pm, pocetak.getTime(), sada, 0, true, true);
         boolean test = false;
-        if (pod.size() == u.getBrojPojavljivanja()) {
-            for (int i = 0; i < u.getBrojPojavljivanja(); i++) {
+        if (pod.size() > o.getDozvoljeniBrojPrekoracenja()) {
+            for (int i = 0; i <= o.getDozvoljeniBrojPrekoracenja(); i++) {
                 Podatak podatak = pod.get(i);
-                if (OperStatus.isValid(podatak) && podatak.getVrijednost() > u.getGranicnaKoncentracija()) {
+                if (OperStatus.isValid(podatak) && podatak.getVrijednost() > o.getVrijednost()) {
                     test = true;
                 } else {
                     test = false;
@@ -115,7 +116,8 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         return test;
     }
 
-    private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj, Komponenta k) {
+    private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

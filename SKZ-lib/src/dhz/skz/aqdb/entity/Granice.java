@@ -6,8 +6,10 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -63,6 +66,9 @@ public class Granice implements Serializable {
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    private Collection<Obavijesti> obavijesti;
+
 
     public Granice() {
     }
@@ -141,6 +147,7 @@ public class Granice implements Serializable {
         this.komponentaId = komponentaId;
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -159,6 +166,14 @@ public class Granice implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public Collection<Obavijesti> getObavijesti() {
+        return obavijesti;
+    }
+
+    public void setObavijesti(Collection<Obavijesti> obavijesti) {
+        this.obavijesti = obavijesti;
     }
 
     @Override

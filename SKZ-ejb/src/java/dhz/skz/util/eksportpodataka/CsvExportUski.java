@@ -26,19 +26,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  *
  * @author kraljevic
  */
-public class CsvEksportUski implements PodatakEksport {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddTHH:mm");
-    private static final DecimalFormat df2 = new DecimalFormat(",##");
+public class CsvExportUski implements PodatakEksport {
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DecimalFormat df2 = new DecimalFormat(".##");
 
     @Override
     public void write(Writer writer, Collection<Podatak> pod) throws IOException {
-        
         CsvWriter csv = new CsvWriter(writer, ';');
         ArrayList<Podatak> podaci = new ArrayList<>(pod);
 

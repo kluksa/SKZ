@@ -16,17 +16,10 @@
  */
 package dhz.skz.diseminacija.upozorenja.slanje;
 
-import dhz.skz.aqdb.entity.Obavijesti;
-import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
-import java.util.Collection;
-
 /**
  *
  * @author kraljevic
  */
-public interface SlanjeUpozorenja {
-
-    public void saljiUpozorenje(Obavijesti object, ProgramMjerenja pm, Collection<Podatak> podaci);
+public class XmlObavijestException extends Exception {
     
 }

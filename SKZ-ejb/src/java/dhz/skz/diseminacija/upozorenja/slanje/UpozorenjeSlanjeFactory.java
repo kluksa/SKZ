@@ -17,16 +17,16 @@
 package dhz.skz.diseminacija.upozorenja.slanje;
 
 import dhz.skz.aqdb.entity.Obavijesti;
-import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.ProgramMjerenja;
-import java.util.Collection;
 
 /**
  *
  * @author kraljevic
  */
-public interface SlanjeUpozorenja {
+public class UpozorenjeSlanjeFactory {
 
-    public void saljiUpozorenje(Obavijesti object, ProgramMjerenja pm, Collection<Podatak> podaci);
+    public SlanjeUpozorenja getSender(Obavijesti o) {
+        SlanjeUpozorenja su = new MailUpozorenje();
+        return su;
+    }
     
 }

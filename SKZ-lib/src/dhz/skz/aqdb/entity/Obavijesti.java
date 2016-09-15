@@ -17,21 +17,35 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author kraljevic
  */
-public class KomponentaUpozorenja implements Serializable {
+@Entity
+@Table(name = "obavijesti")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Obavijesti.findAll", query = "SELECT o FROM Obavijesti o"),
+    @NamedQuery(name = "Obavijesti.findByPrimatelj", query = "SELECT o FROM Obavijesti o WHERE o.primatelj = :primatelj"),
+
+})
+
+public class Obavijesti implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
@@ -39,44 +53,29 @@ public class KomponentaUpozorenja implements Serializable {
     @Basic(optional = false)
     private Integer id;
     
-    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @JoinColumn(name = "granica_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Komponenta komponenta;
+    private Granice granica;
     
-    @Size(max = 300)
-    @Column(name = "predlozak_naslov")
-    private String predlozakNaslova;
-
+    @JoinColumn(name = "primatelj_podataka_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private PrimateljiPodataka primatelj;
+    
     @Size(max = 300)
     @Column(name = "predlozak_teksta")
     private String predlozakTeksta;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "granicna_koncentracija")
-    private double granicnaKoncentracija;
-    
-    @JoinColumn(name = "agregacije_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Agregacije agregacijeId;
+    public Obavijesti() {
+       
+    }
 
-    @Column(name = "broj_pojavljivanja")
-    private int brojPojavljivanja;
-    
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Komponenta getKomponenta() {
-        return komponenta;
-    }
-
-    public void setKomponenta(Komponenta komponenta) {
-        this.komponenta = komponenta;
     }
 
     public String getPredlozakTeksta() {
@@ -87,36 +86,46 @@ public class KomponentaUpozorenja implements Serializable {
         this.predlozakTeksta = predlozakTeksta;
     }
 
-    public double getGranicnaKoncentracija() {
-        return granicnaKoncentracija;
+    public Granice getGranica() {
+        return granica;
     }
 
-    public void setGranicnaKoncentracija(double granicnaKoncentracija) {
-        this.granicnaKoncentracija = granicnaKoncentracija;
+    public void setGranica(Granice granica) {
+        this.granica = granica;
     }
 
-    public Agregacije getAgregacijeId() {
-        return agregacijeId;
+    public PrimateljiPodataka getPrimatelj() {
+        return primatelj;
     }
 
-    public void setAgregacijeId(Agregacije agregacijeId) {
-        this.agregacijeId = agregacijeId;
+    public void setPrimatelj(PrimateljiPodataka primatelj) {
+        this.primatelj = primatelj;
     }
 
-    public int getBrojPojavljivanja() {
-        return brojPojavljivanja;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        return hash;
     }
 
-    public void setBrojPojavljivanja(int brojPojavljivanja) {
-        this.brojPojavljivanja = brojPojavljivanja;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Obavijesti other = (Obavijesti) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
     }
 
-    public String getPredlozakNaslova() {
-        return predlozakNaslova;
+    @Override
+    public String toString() {
+        return "Obavijesti{" + "id=" + id + '}';
     }
-
-    public void setPredlozakNaslova(String predlozakNaslova) {
-        this.predlozakNaslova = predlozakNaslova;
-    }
-    
 }
