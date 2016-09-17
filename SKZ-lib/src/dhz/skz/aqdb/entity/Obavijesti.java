@@ -53,11 +53,11 @@ public class Obavijesti implements Serializable {
     @Basic(optional = false)
     private Integer id;
     
-    @JoinColumn(name = "granica_id", referencedColumnName = "id")
+    @JoinColumn(name = "granice_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Granice granica;
     
-    @JoinColumn(name = "primatelj_podataka_id", referencedColumnName = "id")
+    @JoinColumn(name = "primatelji_podataka_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PrimateljiPodataka primatelj;
     

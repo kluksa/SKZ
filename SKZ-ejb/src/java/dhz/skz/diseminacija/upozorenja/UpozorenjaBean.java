@@ -20,11 +20,15 @@ import dhz.skz.aqdb.entity.Granice;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Obavijesti;
 import dhz.skz.aqdb.entity.Podatak;
+import dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult;
 import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.GraniceFacade;
 import dhz.skz.aqdb.facades.ObavijestiFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
+import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
+import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
@@ -53,32 +57,36 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
 
-    @EJB                   
+    @EJB
     private PodatakFacade pf;
 
     @EJB
     private ObavijestiFacade obf;
-    
+
+    @EJB
+    private GraniceFacade graniceFac;
+
+    @EJB
+    private PrekoracenjaUpozorenjaResultFacade prFac;
+
+    @EJB
+    private ProgramMjerenjaFacade pmfac;
     @Inject
     @Config
     private TimeZone tzone;
 
     private Date sada;
-    
+
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-        sada = getPrvi(0).getTime();
+        sada = new Date();
         UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
-        
-        for (PrimateljProgramKljuceviMap ppkm : primatelj.getPrimateljProgramKljuceviMapCollection()) {
-            ProgramMjerenja pm = ppkm.getProgramMjerenja();
-            Komponenta k = pm.getKomponentaId();
-            for (Obavijesti o : obf.findAll(k, primatelj)){
-                if (isPrekoracen(pm, o.getGranica())) {
-                    SlanjeUpozorenja up = suf.getSender(o);
-                    Collection<Podatak> podaci = pokupiPodatke(primatelj);
-                    up.saljiUpozorenje(o, pm, podaci);
-                }
+        for (Obavijesti o : obf.findAll(primatelj)) {
+            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, sada)) {
+                ProgramMjerenja pm = pmfac.find(pur.getProgramMjerenjaId());
+                SlanjeUpozorenja up = suf.getSender(o);
+                Collection<Podatak> podaci = pokupiPodatke(primatelj);
+                up.saljiUpozorenje(o, pm, podaci);
             }
         }
     }
@@ -86,34 +94,6 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private Calendar getPrvi(int broj_prethodnih_sati) {
-        Calendar trenutni_termin = new GregorianCalendar(tzone);
-        trenutni_termin.setTime(new Date());
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-        trenutni_termin.add(Calendar.HOUR, -broj_prethodnih_sati);
-        return trenutni_termin;
-    }
-
-    private boolean isPrekoracen(ProgramMjerenja pm, Granice o) {
-        Calendar pocetak = getPrvi(o.getDozvoljeniBrojPrekoracenja());
-        List<Podatak> pod = pf.getPodatak(pm, pocetak.getTime(), sada, 0, true, true);
-        boolean test = false;
-        if (pod.size() > o.getDozvoljeniBrojPrekoracenja()) {
-            for (int i = 0; i <= o.getDozvoljeniBrojPrekoracenja(); i++) {
-                Podatak podatak = pod.get(i);
-                if (OperStatus.isValid(podatak) && podatak.getVrijednost() > o.getVrijednost()) {
-                    test = true;
-                } else {
-                    test = false;
-                    break;
-                }
-            }
-        }
-        return test;
     }
 
     private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj) {
