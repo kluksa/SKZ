@@ -16,6 +16,7 @@
  */
 package dhz.skz.diseminacija.upozorenja.slanje;
 
+import dhz.skz.diseminacija.upozorenja.slanje.exceptions.XmlObavijestException;
 import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;

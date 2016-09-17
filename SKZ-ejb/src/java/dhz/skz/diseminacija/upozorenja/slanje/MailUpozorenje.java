@@ -16,15 +16,16 @@
  */
 package dhz.skz.diseminacija.upozorenja.slanje;
 
+import dhz.skz.diseminacija.upozorenja.slanje.exceptions.XmlObavijestException;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Obavijesti;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.util.eksportpodataka.CsvExportSiroki;
-import dhz.skz.util.eksportpodataka.CsvExportUski;
 import dhz.skz.util.eksportpodataka.PodatakEksport;
+import dhz.skz.util.eksportpodataka.PodatakEksportFactory;
+import dhz.skz.util.eksportpodataka.exceptions.InvalidPodatakExportException;
 import dhz.skz.util.mailer.EmailSessionBean;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -49,7 +50,11 @@ public class MailUpozorenje implements SlanjeUpozorenja{
             PrimateljiPodataka primatelj = ob.getPrimatelj();
             Komponenta komponentaId = pm.getKomponentaId();
             Postaja postajaId = pm.getPostajaId();
-            PodatakEksport pe = new CsvExportUski();
+            
+            // PodatkEksport treba odrediti iz xsd polja tablice primatelji_podataka, a ne ovako
+            // najbolje bi bilo napraviti factory i
+            PodatakEksportFactory pef = new PodatakEksportFactory();
+            PodatakEksport pe = pef.getPodatakEksport(ob.getPrimatelj());
             
             Writer wr = new StringWriter();
             pe.write(wr, podaci);
@@ -76,7 +81,9 @@ public class MailUpozorenje implements SlanjeUpozorenja{
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (InvalidPodatakExportException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } 
         
     }
 
