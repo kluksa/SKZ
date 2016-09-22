@@ -16,36 +16,23 @@
  */
 package dhz.skz.diseminacija.upozorenja;
 
-import dhz.skz.aqdb.entity.Granice;
-import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Obavijesti;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult;
-import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.GraniceFacade;
 import dhz.skz.aqdb.facades.ObavijestiFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
-import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
-import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
 import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
 import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
-import dhz.skz.util.OperStatus;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
-import javax.inject.Inject;
 
 /**
  *
@@ -64,29 +51,17 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     private ObavijestiFacade obf;
 
     @EJB
-    private GraniceFacade graniceFac;
-
-    @EJB
     private PrekoracenjaUpozorenjaResultFacade prFac;
-
-    @EJB
-    private ProgramMjerenjaFacade pmfac;
-    @Inject
-    @Config
-    private TimeZone tzone;
-
-    private Date sada;
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-        sada = new Date();
+        Date sada = new Date();
         UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
         for (Obavijesti o : obf.findAll(primatelj)) {
             for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, sada)) {
-                ProgramMjerenja pm = pmfac.find(pur.getProgramMjerenjaId());
                 SlanjeUpozorenja up = suf.getSender(o);
                 Collection<Podatak> podaci = pokupiPodatke(primatelj);
-                up.saljiUpozorenje(o, pm, podaci);
+                up.saljiUpozorenje(o, pur.getProgramMjerenja(), podaci);
             }
         }
     }

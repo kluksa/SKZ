@@ -22,6 +22,8 @@ import javax.persistence.Entity;
 import javax.persistence.EntityResult;
 import javax.persistence.FieldResult;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
 import javax.persistence.SqlResultSetMapping;
@@ -61,6 +63,18 @@ public class PrekoracenjaUpozorenjaResult implements Serializable {
     private Integer programMjerenjaId;
     private Integer brojPojavljivanja;
     private Double minimalnaVrijednost;
+    @ManyToOne
+    @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")    
+    private ProgramMjerenja programMjerenja;
+
+    public ProgramMjerenja getProgramMjerenja() {
+        return programMjerenja;
+    }
+
+    public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
+        this.programMjerenja = programMjerenja;
+    }
+
 
     public Integer getProgramMjerenjaId() {
         return programMjerenjaId;
