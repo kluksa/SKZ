@@ -4,6 +4,7 @@
  */
 package dhz.skz.diseminacija.datatransfer;
 
+import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -30,7 +31,7 @@ public class FtpTransfer implements DataTransfer {
     }
 
     @Override
-    public void pripremiTransfer(String filename) throws IOException {
+    public void pripremiTransfer(String filename) throws DataTransferException {
         this.filename = filename;
         String host = url.getHost();
         String userpass = url.getUserInfo();
@@ -64,17 +65,19 @@ public class FtpTransfer implements DataTransfer {
                     spojen = true;
                 }
                 ftp.changeWorkingDirectory(path);
+                this.stream = ftp.storeFileStream(filename);
+
             } else {
                 disconnect();
                 log.log(Level.SEVERE, "FTP server refused connection.");
+                throw new DataTransferException();
             }
 
         } catch (IOException e) {
             disconnect();
             log.log(Level.SEVERE, "Could not connect to server.");
+            throw new DataTransferException();
         }
-        this.stream = ftp.storeFileStream(filename);
-
     }
 
     @Override

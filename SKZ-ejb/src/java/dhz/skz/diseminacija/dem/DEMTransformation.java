@@ -11,6 +11,7 @@ import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.citaci.SatniIterator;
+import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import dhz.skz.util.OperStatus;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -50,6 +51,10 @@ public class DEMTransformation {
     }
 
     public void odradi(DataTransfer transferobj) {
+        if ( transferobj == null) {
+            log.log(Level.SEVERE, null, "transferobj == null");
+            throw new IllegalArgumentException("transferobj == null");
+        }
         try {
             transferobj.pripremiTransfer(getNazivDatoteke());
             try (PrintStream ps = new PrintStream(transferobj.getOutputStream())) {
@@ -85,7 +90,7 @@ public class DEMTransformation {
                 }
             }
             transferobj.zavrsiTransfer();
-        } catch (IOException ex) {
+        } catch (IOException | DataTransferException ex) {
             log.log(Level.SEVERE, null, ex);
         }
     }
