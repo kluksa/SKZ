@@ -105,7 +105,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                             CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
                             citac.napraviSatne(ip);
 //                        citaciFuture.put(naziv, citac.napraviSatne(ip));
-                        } catch (Throwable ex) {
+                        } catch (Exception ex) {
                             log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                             log.log(Level.SEVERE, null, ex);
                         }

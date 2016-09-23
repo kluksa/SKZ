@@ -63,40 +63,64 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @Timeout
     public void pokreni() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-        if (!aktivan) {
-            aktivan = true;
-            try {
-                InitialContext ctx = new InitialContext();
-                String str = "java:module/";
+        if (true) {
+            pokretniTest();
+        } else {
+            if (!aktivan) {
+                aktivan = true;
+                try {
+                    InitialContext ctx = new InitialContext();
+                    String str = "java:module/";
+                    for (PrimateljiPodataka pr : primateljPodatakaFacade.findAll()) {
+                        if (pr.getAktivan() < 1) {
+                            log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
 
-                for (PrimateljiPodataka pr : primateljPodatakaFacade.findAll()) {
-                    if (pr.getAktivan() < 1) {
-                        log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
-
-                    } else {
-                        if (pr.getTip() != null) {
-                            String naziv = str + pr.getTip().trim();
-                            log.log(Level.INFO, "JNDI: {0}", naziv);
-                            try {
-                                DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-                                diseminator.salji(pr);
-                            } catch (NamingException ex) {
-                                log.log(Level.SEVERE, null, ex);
-                            } catch (Exception ex) {
-                                log.log(Level.SEVERE, null, ex);
+                        } else {
+                            if (pr.getTip() != null) {
+                                String naziv = str + pr.getTip().trim();
+                                log.log(Level.INFO, "JNDI: {0}", naziv);
+                                try {
+                                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                                    diseminator.salji(pr);
+                                } catch (Exception ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                }
                             }
                         }
                     }
+                } catch (NamingException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, null, ex);
                 }
-            } catch (NamingException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                log.log(Level.SEVERE, null, ex);
+                aktivan = false;
+                log.log(Level.INFO, "Kraj pokretanja diseminacije");
+            } else {
+                log.log(Level.INFO, "Prethodna diseminacija jos nije zavrsila");
             }
-            aktivan = false;
-            log.log(Level.INFO, "Kraj pokretanja diseminacije");
-        } else {
-            log.log(Level.INFO, "Prethodna diseminacija jos nije zavrsila");
+        }
+    }
+
+    private void pokretniTest() {
+        try {
+            InitialContext ctx = new InitialContext();
+            String str = "java:module/";
+
+            PrimateljiPodataka pr = primateljPodatakaFacade.find(1);
+            if (pr.getTip() != null) {
+                String naziv = str + pr.getTip().trim();
+                log.log(Level.INFO, "JNDI: {0}", naziv);
+                try {
+                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                    diseminator.salji(pr);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+        } catch (NamingException ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -58,6 +58,7 @@ public class DEMTransformation {
         try {
             transferobj.pripremiTransfer(getNazivDatoteke());
             try (PrintStream ps = new PrintStream(transferobj.getOutputStream())) {
+                
                 ps.printf("COMPONENT %s, %s\n", komponenta.getNazivEng(), "hour");
                 for (ProgramMjerenja pr : program) {
                     Postaja postaja = pr.getPostajaId();

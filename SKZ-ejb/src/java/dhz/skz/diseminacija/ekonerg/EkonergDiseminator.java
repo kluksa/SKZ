@@ -66,7 +66,7 @@ public class EkonergDiseminator implements DiseminatorPodataka {
         log.log(Level.INFO, conStr);
         Date sada = new Date();
         try (Connection con = diseminacija.getConnection()) {
-            Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);
+            Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.findAll(primatelj);
             for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
                 if (pm.getAktivan()>0) {
                     log.log(Level.INFO, "Prebacujem: {0},{1},{2}", new Object[]{pm.getProgramMjerenja().getId(), pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), pm.getProgramMjerenja().getKomponentaId().getFormula()});

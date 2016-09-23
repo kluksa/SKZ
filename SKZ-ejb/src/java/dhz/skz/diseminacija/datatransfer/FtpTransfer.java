@@ -7,6 +7,7 @@ package dhz.skz.diseminacija.datatransfer;
 import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +67,7 @@ public class FtpTransfer implements DataTransfer {
                 }
                 ftp.changeWorkingDirectory(path);
                 this.stream = ftp.storeFileStream(filename);
-
+                
             } else {
                 disconnect();
                 log.log(Level.SEVERE, "FTP server {0} refused connection.", new Object[]{host});

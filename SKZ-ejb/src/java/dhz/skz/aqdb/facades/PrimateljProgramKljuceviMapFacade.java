@@ -67,7 +67,7 @@ public class PrimateljProgramKljuceviMapFacade extends AbstractFacade<PrimateljP
     }
 
     // TODO prebaciti u named query
-    public Collection<PrimateljProgramKljuceviMap> find(final PrimateljiPodataka primatelj) {
+    public Collection<PrimateljProgramKljuceviMap> findAll(final PrimateljiPodataka primatelj) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PrimateljProgramKljuceviMap> cq = cb.createQuery(PrimateljProgramKljuceviMap.class);
 

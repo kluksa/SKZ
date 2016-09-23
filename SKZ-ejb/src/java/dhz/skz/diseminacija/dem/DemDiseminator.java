@@ -9,20 +9,27 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Podatak;
+import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PrimateljProgramKljuceviMap;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.aqdb.facades.PrimateljProgramKljuceviMapFacade;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.datatransfer.DataTransfer;
 import dhz.skz.diseminacija.datatransfer.DataTransferFactory;
+import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import dhz.skz.diseminacija.datatransfer.exceptions.ProtocolNotSupported;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -39,82 +46,90 @@ import javax.inject.Inject;
 @Stateless
 @LocalBean
 public class DemDiseminator implements DiseminatorPodataka {
+
     private static final Logger log = Logger.getLogger(DemDiseminator.class.getName());
 
     @EJB
     private ProgramMjerenjaFacade ppf;
     @EJB
     private PodatakFacade podatakFacade;
+    @EJB
+    private PrimateljProgramKljuceviMapFacade ppkmf;
 
-    @Inject @Config private TimeZone tzone;
-    
+    @Inject
+    @Config
+    private TimeZone tzone;
+    private PrimateljiPodataka primatelj;
+
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-//        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama = 
-//                getProgramPoKomponentama(primatelj.getProgramMjerenjaCollection());
-        Map<Komponenta, Collection<ProgramMjerenja>> programPoKomponentama
-                = getProgramPoKomponentama(ppf.find(primatelj));
+        log.log(Level.INFO, "Pocetak diseminacije za {0}", new Object[]{primatelj.getNaziv()});
+        try {
+            Collection<PrimateljProgramKljuceviMap> aktivniProgrami = ppkmf.findAktivni(primatelj);
+            DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
+            Map<Komponenta, Map<Postaja, PrimateljProgramKljuceviMap>> mapa = getMapaPrograma(aktivniProgrami);
+            for (Komponenta k : mapa.keySet()) {
+                try {
+                    dto.pripremiTransfer(getNazivDatoteke(primatelj, k));
+                    try (DemWriter dw = new DemWriter(dto.getOutputStream())) {
+                        dw.print(k);
+                        for (Postaja p : mapa.get(k).keySet()) {
+                            PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
+                            ProgramMjerenja pm = ppkm.getProgramMjerenja();
+                            Date pocetak = ppkm.getZadnjiPoslani();
+                            List<Podatak> podaciOd = podatakFacade.getPodaciOd(pm, pocetak, 0);
+                            if ( !podaciOd.isEmpty()){
+                                dw.printPostajaPodaci(p, podaciOd);
+                                ppkm.setZadnjiPoslani(dw.getZadnjeVrijeme());
+                                ppkmf.edit(ppkm);
+                            }
+                        }
+                    }
+                    dto.zavrsiTransfer();
+                    
+                } catch (DataTransferException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
 
-        DEMTransformation demT = new DEMTransformation(primatelj, tzone);
-        Integer nv = 0;
-
-        Date zadnji = getZadnji();
-        Date prvi = getPrvi();
-
-        for (Komponenta k : programPoKomponentama.keySet()) {
-            log.log(Level.INFO, "KOMPONENTA= {0}", k.getFormula());
-            Collection<Podatak> podaci = podatakFacade.find(prvi, zadnji, k, nv, (short) 0);
-            try {
-                demT.setKomponenta(k);
-                demT.setProgram(programPoKomponentama.get(k));
-                demT.setPocetak(prvi);
-                demT.setKraj(zadnji);
-                demT.setPodaci(podaci);
-                demT.odradi(DataTransferFactory.getTransferObj(primatelj));
-
-            } catch (ProtocolNotSupported | URISyntaxException ex) {
-                log.log(Level.SEVERE, null, ex);
             }
+        } catch (ProtocolNotSupported ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            log.log(Level.SEVERE, null, ex);
         }
+        log.log(Level.INFO, "Kraj diseminacije za {0}", new Object[]{primatelj.getNaziv()});
+
     }
 
-    public Map<Komponenta, Collection<ProgramMjerenja>> getProgramPoKomponentama(Collection<ProgramMjerenja> program) {
-        Map<Komponenta, Collection<ProgramMjerenja>> kpm = new HashMap<>();
-        log.log(Level.INFO, "PROGRAM:::::");
-        for (ProgramMjerenja pm : program) {
-            Komponenta k = pm.getKomponentaId();
-            if (!kpm.containsKey(k)) {
-                kpm.put(k, new HashSet<ProgramMjerenja>());
+    private Map<Komponenta, Map<Postaja, PrimateljProgramKljuceviMap>> getMapaPrograma(Collection<PrimateljProgramKljuceviMap> aktivniProgrami) {
+        Map<Komponenta, Map<Postaja, PrimateljProgramKljuceviMap>> mapa = new HashMap<>();
+        for (PrimateljProgramKljuceviMap ppkm : aktivniProgrami) {
+            Komponenta k = ppkm.getProgramMjerenja().getKomponentaId();
+            if (!mapa.containsKey(k)) {
+                mapa.put(k, new HashMap<>());
             }
-            kpm.get(k).add(pm);
-            log.log(Level.INFO, "PROGRAM:::::{0}::{1}", new Object[]{pm.getPostajaId().getNazivPostaje(), pm.getKomponentaId().getFormula()});
+            Map<Postaja, PrimateljProgramKljuceviMap> komponentaMapa = mapa.get(k);
+            komponentaMapa.put(ppkm.getProgramMjerenja().getPostajaId(), ppkm);
         }
-        return kpm;
+        return mapa;
     }
 
-    private Date getZadnji() {
-        Calendar trenutni_termin = new GregorianCalendar(tzone);
-        trenutni_termin.setTime(new Date());
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-        trenutni_termin.getTime();
-        return trenutni_termin.getTime();
-    }
-
-    private Date getPrvi() {
-        Calendar trenutni_termin = new GregorianCalendar(tzone);
-        trenutni_termin.setTime(new Date());
-        trenutni_termin.set(Calendar.MINUTE, 0);
-        trenutni_termin.set(Calendar.SECOND, 0);
-        trenutni_termin.set(Calendar.MILLISECOND, 0);
-        trenutni_termin.add(Calendar.HOUR, -2);
-        trenutni_termin.getTime();
-        return trenutni_termin.getTime();
+    private String getNazivDatoteke(PrimateljiPodataka primatelj, Komponenta komponenta) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("TEST-");
+        sb.append(new SimpleDateFormat("YYMMddHHmmss").format(new Date()));
+        sb.append("_");
+        sb.append(primatelj.getMrezaId().getKratica().trim());
+        sb.append("_");
+        sb.append(komponenta.getIsoOznaka().trim()).append(".dem");
+        return sb.toString();
     }
 
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }
