@@ -72,4 +72,7 @@ public class IoxKonekcija {
         return new URL(urlString);
     }
 
+    public String getUrlPredlozak() {
+        return urlPredlozak;
+    }
 }

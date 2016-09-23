@@ -19,7 +19,7 @@ public class DataTransferFactory {
 
     private static final Logger log = Logger.getLogger(DataTransferFactory.class.getName());
 
-    public static DataTransfer getTransferObj(PrimateljiPodataka pp) throws ProtocolNotSupported {
+    public static DataTransfer getTransferObj(PrimateljiPodataka pp) throws ProtocolNotSupported, URISyntaxException {
         DataTransfer dto = null;
         try {
             URI url = new URI(pp.getUrl());
@@ -37,11 +37,11 @@ public class DataTransferFactory {
                 default:
                     throw new ProtocolNotSupported(protokol);
             }
-
+            return dto;
         } catch (URISyntaxException ex) {
-            log.log(Level.SEVERE, null, ex);
-            throw new ProtocolNotSupported("Los URL");
+            log.log(Level.SEVERE, "Los URL {0}", new Object[]{pp.getUrl()} );
+            throw ex;
         }
-        return dto;
+        
     }
 }

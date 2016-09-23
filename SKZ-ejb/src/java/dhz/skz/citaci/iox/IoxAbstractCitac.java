@@ -23,6 +23,7 @@ import dhz.skz.validatori.Validator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,12 +151,14 @@ public abstract class IoxAbstractCitac<T> {
                     }
 
                 }
+                vrijemeZadnjeg = new Date(vrijemeZadnjeg.getTime() + period*3600000);
+            } catch (SocketTimeoutException ex){
+                log.log(Level.SEVERE, "java.net.SocketTimeoutException: Read timed out at: {0} ", new Object[]{iocon.getUrlPredlozak()});
+                break;
             } catch (IOException ex) {
                 log.log(Level.SEVERE, null, ex);
                 break;
             }
-            vrijemeZadnjeg = new Date(vrijemeZadnjeg.getTime() + period*3600000);
-
         }
         validiraj();
         spremi();

@@ -47,15 +47,15 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     private boolean aktivan = false;
 
     @Inject
-    @Config(vrijednost="23")
+    @Config(vrijednost = "23")
     private Integer minuta;
-    
+
     public DiseminacijaGlavniBean() {
         super("DiseminacijaGlavniTimer");
     }
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         schedule(minuta);
     }
 
@@ -69,17 +69,22 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
                 InitialContext ctx = new InitialContext();
                 String str = "java:module/";
 
-                for (PrimateljiPodataka pr : primateljPodatakaFacade.getAktivniPrimatelji()) {
-                    if (pr.getTip() != null) {
-                        String naziv = str + pr.getTip().trim();
-                        log.log(Level.INFO, "JNDI: {0}", naziv);
-                        try {
-                            DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-                            diseminator.salji(pr);
-                        } catch (NamingException ex) {
-                            log.log(Level.SEVERE, null, ex);
-                        } catch (Exception ex) {
-                            log.log(Level.SEVERE, null, ex);
+                for (PrimateljiPodataka pr : primateljPodatakaFacade.findAll()) {
+                    if (pr.getAktivan() < 1) {
+                        log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
+
+                    } else {
+                        if (pr.getTip() != null) {
+                            String naziv = str + pr.getTip().trim();
+                            log.log(Level.INFO, "JNDI: {0}", naziv);
+                            try {
+                                DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                                diseminator.salji(pr);
+                            } catch (NamingException ex) {
+                                log.log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                log.log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                 }

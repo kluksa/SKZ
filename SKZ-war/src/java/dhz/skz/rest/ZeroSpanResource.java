@@ -140,8 +140,16 @@ public class ZeroSpanResource {
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refS = new TreeMap<>();
         NavigableMap<Date, ZeroSpan> zero = new TreeMap<>();
         
-        Double deltaz = pm.getMetodaId().getZeroDriftAbsolut();
-        Double deltas = pm.getMetodaId().getSpanDriftRelativ();
+        Double deltaz, deltas;
+        if ( pm.getMetodaId() == null ) {
+            deltaz = 1.;
+            deltas = 0.05;
+        } else  {
+            deltaz = pm.getMetodaId().getZeroDriftAbsolut();
+            deltas = pm.getMetodaId().getSpanDriftRelativ();
+        }
+        
+        
         
         for (ZeroSpanReferentneVrijednosti rzs : refZS){
             if (rzs.getVrsta().contains("Z")) {

@@ -10,17 +10,19 @@ import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
-import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.citaci.SatniIterator;
+import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import dhz.skz.util.OperStatus;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +42,6 @@ public class DEMTransformation {
     private Date pocetak;
     private Date kraj;
     private final TimeZone tzone;
-    private PodatakFacade podatakFacade;
 
     DEMTransformation(PrimateljiPodataka primatelj, TimeZone tzone) {
         this.primatelj = primatelj;
@@ -50,6 +51,10 @@ public class DEMTransformation {
     }
 
     public void odradi(DataTransfer transferobj) {
+        if ( transferobj == null) {
+            log.log(Level.SEVERE, null, "transferobj == null");
+            throw new IllegalArgumentException("transferobj == null");
+        }
         try {
             transferobj.pripremiTransfer(getNazivDatoteke());
             try (PrintStream ps = new PrintStream(transferobj.getOutputStream())) {
@@ -63,25 +68,33 @@ public class DEMTransformation {
                     SatniIterator sat = new SatniIterator(pocetak, kraj, tzone);
                     while (sat.next()) {
                         Integer status;
+                        Date vr = sat.getVrijeme();
                         Double vrijednost;
-                        Podatak pod = podatakFacade.getPodatak(pr, pocetak, 0);
-                        if (pod != null && OperStatus.isValid(pod)) {
-                            status = -1;
-                            vrijednost = pod.getVrijednost();
+                        if (podaciNaPostaji.containsKey(postaja)
+                                && podaciNaPostaji.get(postaja).containsKey(vr)) {
+                            Podatak pod = podaciNaPostaji.get(postaja).get(vr);
+                            if (OperStatus.isValid(pod)) {
+                                status = -1;
+                                vrijednost = pod.getVrijednost();
+                            } else {
+                                status = 0;
+                                vrijednost = -999.;
+                            }
+
                         } else {
                             status = 0;
                             vrijednost = -999.;
                         }
-                        ps.printf("%s, %8.1f, %d\n", sdf.format(sat.getVrijeme()), vrijednost, status);
+                        ps.printf("%s, %8.1f, %d\n", sdf.format(vr), vrijednost, status);
                     }
                 }
             }
             transferobj.zavrsiTransfer();
-        } catch (IOException ex) {
+        } catch (IOException | DataTransferException ex) {
             log.log(Level.SEVERE, null, ex);
         }
     }
-  
+
     void setKomponenta(Komponenta k) {
         this.komponenta = k;
     }
@@ -100,7 +113,16 @@ public class DEMTransformation {
         return sb.toString();
     }
 
- 
+    void setPodaci(Collection<Podatak> podaci) {
+        podaciNaPostaji = new HashMap<>();
+        for (Podatak podatak : podaci) {
+            Postaja postaja = podatak.getProgramMjerenjaId().getPostajaId();
+            if (!podaciNaPostaji.containsKey(postaja)) {
+                podaciNaPostaji.put(postaja, new TreeMap<Date, Podatak>());
+            }
+            podaciNaPostaji.get(postaja).put(podatak.getVrijeme(), podatak);
+        }
+    }
 
     void setPocetak(Date pocetak) {
         this.pocetak = pocetak;
@@ -108,9 +130,5 @@ public class DEMTransformation {
 
     void setKraj(Date kraj) {
         this.kraj = kraj;
-    }
-
-    void setPodaciFasada(PodatakFacade podatakFacade) {
-        this.podatakFacade = podatakFacade;
     }
 }

@@ -4,10 +4,14 @@
  */
 package dhz.skz.diseminacija.datatransfer;
 
+import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,9 +27,14 @@ public class LocalSaveFile implements DataTransfer {
     }
 
     @Override
-    public void pripremiTransfer(String ime) throws IOException {
-        String fname = path + "/" + ime.toLowerCase();
-        os = new FileOutputStream(new File(fname));
+    public void pripremiTransfer(String ime) throws DataTransferException {
+        try {
+            String fname = path + "/" + ime.toLowerCase();
+            os = new FileOutputStream(new File(fname));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(LocalSaveFile.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataTransferException();
+        }
     }
 
     @Override
