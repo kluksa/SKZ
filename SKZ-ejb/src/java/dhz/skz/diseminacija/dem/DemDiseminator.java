@@ -20,7 +20,9 @@ import dhz.skz.diseminacija.datatransfer.DataTransfer;
 import dhz.skz.diseminacija.datatransfer.DataTransferFactory;
 import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import dhz.skz.diseminacija.datatransfer.exceptions.ProtocolNotSupported;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -71,7 +73,7 @@ public class DemDiseminator implements DiseminatorPodataka {
             for (Komponenta k : mapa.keySet()) {
                 try {
                     dto.pripremiTransfer(getNazivDatoteke(primatelj, k));
-                    try (DemWriter dw = new DemWriter(dto.getOutputStream())) {
+                    try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(dto.getOutputStream())))) {
                         dw.print(k);
                         for (Postaja p : mapa.get(k).keySet()) {
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
@@ -97,6 +99,8 @@ public class DemDiseminator implements DiseminatorPodataka {
         } catch (ProtocolNotSupported ex) {
             log.log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (RuntimeException ex) {
             log.log(Level.SEVERE, null, ex);
         }
         log.log(Level.INFO, "Kraj diseminacije za {0}", new Object[]{primatelj.getNaziv()});

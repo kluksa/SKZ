@@ -39,38 +39,24 @@ import javax.inject.Inject;
  *
  * @author kraljevic
  */
-public class DemWriter extends Writer {
-    private static final Logger log = Logger.getLogger(DemWriter.class.getName());
+public class DemWriter1 implements PodatakWriter {
+    private static final Logger log = Logger.getLogger(DemWriter1.class.getName());
 
     private final PrintWriter pw;
     private final SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd HH:mm");
     private final TimeZone tzone;
     private Date zadnjeVrijeme;
 
-    public DemWriter(OutputStream os) {
+    public DemWriter1(OutputStream os) {
         pw = new PrintWriter(os);
         tzone = LokalnaZona.getZone();
     }
 
-    public DemWriter(Writer wr) {
+    public DemWriter1(Writer wr) {
         pw = new PrintWriter(wr);
         tzone = LokalnaZona.getZone();
     }
     
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        pw.write(cbuf, off, len);
-    }
-
-    @Override
-    public void flush() throws IOException {
-        pw.flush();
-    }
-
-    @Override
-    public void close() throws IOException {
-        pw.close();
-    }
 
     public void print(Komponenta k) {
         if ( k == null ) throw new IllegalArgumentException("k == null");
@@ -128,5 +114,10 @@ public class DemWriter extends Writer {
 
     public Date getZadnjeVrijeme() {
         return zadnjeVrijeme;
+    }
+
+    @Override
+    public void write(Collection<Podatak> podaci) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

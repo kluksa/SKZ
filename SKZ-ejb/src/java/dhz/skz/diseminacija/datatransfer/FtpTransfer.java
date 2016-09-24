@@ -59,7 +59,7 @@ public class FtpTransfer implements DataTransfer {
                 if (!ftp.login(username, password)) {
                     ftp.logout();
                     log.log(Level.SEVERE, "FTP error user password.");
-                    disconnect();
+                     disconnect();
                 } else {
                     ftp.enterLocalPassiveMode();
 //                   ftp.setFileType(FTP.BINARY_FILE_TYPE);
@@ -88,6 +88,7 @@ public class FtpTransfer implements DataTransfer {
 
     @Override
     public void zavrsiTransfer() throws IOException {
+        ftp.completePendingCommand();
         disconnect();
         log.log(Level.INFO, "Zatvorio konekciju {0}", url.getAuthority());
     }
