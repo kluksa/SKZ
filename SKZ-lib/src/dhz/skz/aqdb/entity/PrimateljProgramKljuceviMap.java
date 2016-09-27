@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -51,6 +53,7 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     @Column(name = "n_kljuc")
     private String nKljuc;
     private Integer aktivan;
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "zadnji_poslani")
     private Date zadnjiPoslani;
     @JoinColumn(name = "primatelj_id", referencedColumnName = "id", insertable = false, updatable = false)
