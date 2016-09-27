@@ -77,8 +77,8 @@ public class DemDiseminator implements DiseminatorPodataka {
             for (Komponenta k : mapa.keySet()) {
                 try {
                     URL url = new URL(primatelj.getUrl());
-                    
-                    OutputStream outputStream = dto.getOutputStream(url);
+                    URI u = url.toURI().resolve(getNazivDatoteke(primatelj, k));
+                    OutputStream outputStream = dto.getOutputStream(u.toURL());
                     try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(outputStream)),k)) {
                         for (Postaja p : mapa.get(k).keySet()) {
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
@@ -98,6 +98,8 @@ public class DemDiseminator implements DiseminatorPodataka {
                     
                 } catch (IOException ex) {
                     log.log(Level.SEVERE, null, ex);
+                } catch (URISyntaxException ex) {
+                    Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
                 } 
 
             }
@@ -131,8 +133,8 @@ public class DemDiseminator implements DiseminatorPodataka {
 
     private String getNazivDatoteke(PrimateljiPodataka primatelj, Komponenta komponenta) {
         StringBuilder sb = new StringBuilder();
-        sb.append("TEST-");
-        sb.append(new SimpleDateFormat("YYMMddHHmmss").format(new Date()));
+//        sb.append("TEST-");
+        sb.append(new SimpleDateFormat("YYMMddHH").format(new Date()));
         sb.append("_");
         sb.append(primatelj.getMrezaId().getKratica().trim());
         sb.append("_");

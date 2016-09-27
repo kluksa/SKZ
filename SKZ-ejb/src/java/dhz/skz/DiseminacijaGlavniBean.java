@@ -63,7 +63,7 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @Timeout
     public void pokreni() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-        if (true) {
+        if (false) {
             pokretniTest();
         } else {
             if (!aktivan) {
