@@ -22,8 +22,12 @@ import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import dhz.skz.diseminacija.datatransfer.exceptions.ProtocolNotSupported;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -72,37 +76,42 @@ public class DemDiseminator implements DiseminatorPodataka {
             Map<Komponenta, Map<Postaja, PrimateljProgramKljuceviMap>> mapa = getMapaPrograma(aktivniProgrami);
             for (Komponenta k : mapa.keySet()) {
                 try {
-                    dto.pripremiTransfer(getNazivDatoteke(primatelj, k));
-                    try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(dto.getOutputStream())))) {
-                        dw.print(k);
+                    URL url = new URL(primatelj.getUrl());
+                    
+                    OutputStream outputStream = dto.getOutputStream(url);
+                    try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(outputStream)),k)) {
                         for (Postaja p : mapa.get(k).keySet()) {
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
                             ProgramMjerenja pm = ppkm.getProgramMjerenja();
                             Date pocetak = ppkm.getZadnjiPoslani();
                             List<Podatak> podaciOd = podatakFacade.getPodaciOd(pm, pocetak, 0);
                             if ( !podaciOd.isEmpty()){
-                                dw.printPostajaPodaci(p, podaciOd);
-                                ppkm.setZadnjiPoslani(dw.getZadnjeVrijeme());
+                                dw.printPostajaPodaci(pm, podaciOd);
+                                ppkm.setZadnjiPoslani(dw.getZadnjiZapis().get(pm));
                                 ppkmf.edit(ppkm);
                             }
                         }
+                    } catch (PodatakWriterException ex) {
+                        log.log(Level.SEVERE, null, ex);
                     }
                     dto.zavrsiTransfer();
                     
-                } catch (DataTransferException ex) {
-                    log.log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
                     log.log(Level.SEVERE, null, ex);
-                }
+                } 
 
             }
         } catch (ProtocolNotSupported ex) {
             log.log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
+        } catch (MalformedURLException ex) {
             log.log(Level.SEVERE, null, ex);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, null, ex);
-        }
+        } catch (DataTransferException ex) {
+            Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
+        } 
         log.log(Level.INFO, "Kraj diseminacije za {0}", new Object[]{primatelj.getNaziv()});
 
     }

@@ -4,11 +4,9 @@
  */
 package dhz.skz.diseminacija.datatransfer;
 
-import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
@@ -21,22 +19,16 @@ import org.apache.commons.net.ftp.FTPReply;
 public class FtpTransfer implements DataTransfer {
 
     private static final Logger log = Logger.getLogger(FtpTransfer.class.getName());
-    private FTPClient ftp;
-    private final URI url;
-    private boolean spojen;
-    private String filename;
-    private OutputStream stream;
+    private final FTPClient ftp;
+    private URL url;
 
-    FtpTransfer(URI url) {
-        this.url = url;
+    public FtpTransfer(){
+        ftp = new FTPClient();
     }
-
-    @Override
-    public void pripremiTransfer(String filename) throws DataTransferException {
-        this.filename = filename;
-        String host = url.getHost();
+    
+    private void connect(URL url) throws IOException{
         String userpass = url.getUserInfo();
-        String username = null;
+        String username;
         String password = null;
         int i = userpass.indexOf(":");
         if (i > 0) {
@@ -45,45 +37,26 @@ public class FtpTransfer implements DataTransfer {
         } else {
             username = userpass;
         }
-
-        String path = url.getPath();
-        ftp = new FTPClient();
-//        //ftp.addProtocolCommandListener(new PrintCommandListener(
-        try {
-            int reply;
-            ftp.connect(host);
-            log.log(Level.INFO, "Connected to {0}.", host);
-            reply = ftp.getReplyCode();
-
-            if (FTPReply.isPositiveCompletion(reply)) {
-                if (!ftp.login(username, password)) {
-                    ftp.logout();
-                    log.log(Level.SEVERE, "FTP error user password.");
-                     disconnect();
-                } else {
-                    ftp.enterLocalPassiveMode();
-//                   ftp.setFileType(FTP.BINARY_FILE_TYPE);
-                    spojen = true;
-                }
-                ftp.changeWorkingDirectory(path);
-                this.stream = ftp.storeFileStream(filename);
-                
-            } else {
-                disconnect();
-                log.log(Level.SEVERE, "FTP server {0} refused connection.", new Object[]{host});
-                throw new DataTransferException();
-            }
-
-        } catch (IOException e) {
+        ftp.connect(url.getHost());
+        
+        log.log(Level.INFO, "Connected to {0}.", url.getHost());
+        if (FTPReply.isPositiveCompletion(ftp.getReplyCode()) && ftp.login(username, password)) {
+            ftp.enterLocalPassiveMode();
+        } else {
+            log.log(Level.SEVERE, "FTP server {0} refused connection with reply {1}.", new Object[]{url.getHost(), ftp.getReplyCode()});
             disconnect();
-            log.log(Level.SEVERE, "Could not connect to server.");
-            throw new DataTransferException();
+            throw new IOException();
         }
+        
     }
 
     @Override
-    public OutputStream getOutputStream() {
-        return stream;
+    public OutputStream getOutputStream(URL url) throws IOException {
+        this.url = url;
+        if ( ! ftp.isConnected()) {
+            connect(url);
+        }
+        return ftp.storeFileStream(url.getPath());
     }
 
     @Override
@@ -94,9 +67,9 @@ public class FtpTransfer implements DataTransfer {
     }
 
     private void disconnect() {
-        spojen = false;
         if (ftp.isConnected()) {
             try {
+                ftp.logout();
                 ftp.disconnect();
             } catch (IOException f) {
             }
