@@ -81,23 +81,19 @@ public class DemDiseminator implements DiseminatorPodataka {
                     URI u = url.toURI().resolve(getNazivDatoteke(primatelj, k));
                     OutputStream outputStream = dto.getOutputStream(u.toURL());
                     try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(outputStream)), k)) {
-                        log.log(Level.INFO, "AAA");
                         dw.write(podaci);
-                        log.log(Level.INFO, "BBB");
                         for (Postaja p : mapa.get(k).keySet()) {
-                            log.log(Level.INFO, "VVV {0}", p.getNazivPostaje());
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
                             ProgramMjerenja pm = ppkm.getProgramMjerenja();
                             updateZadnjiZapis(dw.getZadnjiZapis());
-
                         }
-                        dto.zavrsiTransfer();
-
                     } catch (IOException ex) {
                         log.log(Level.SEVERE, null, ex);
                     } catch (PodatakWriterException ex) {
                         log.log(Level.SEVERE, null, ex);
-                    } 
+                    }
+                    dto.zavrsiTransfer();
+
                 }
 
             }
