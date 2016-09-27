@@ -24,6 +24,6 @@ import java.util.Collection;
  * @author kraljevic
  */
 public interface PodatakWriter {
-    public void write(Collection<Podatak> podaci);
+    public void write(Collection<Podatak> podaci) throws PodatakWriterException;
     
 }

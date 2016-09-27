@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,43 +67,38 @@ public class DemDiseminator implements DiseminatorPodataka {
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
+        this.primatelj = primatelj;
         log.log(Level.INFO, "Pocetak diseminacije za {0}", new Object[]{primatelj.getNaziv()});
         try {
             Collection<PrimateljProgramKljuceviMap> aktivniProgrami = ppkmf.findAktivni(primatelj);
+
             DataTransfer dto = DataTransferFactory.getTransferObj(primatelj);
             Map<Komponenta, Map<Postaja, PrimateljProgramKljuceviMap>> mapa = getMapaPrograma(aktivniProgrami);
             for (Komponenta k : mapa.keySet()) {
-                try {
+                List<Podatak> podaci = getPodaci(mapa.get(k).values());
+                if (!podaci.isEmpty()) {
                     URL url = new URL(primatelj.getUrl());
                     URI u = url.toURI().resolve(getNazivDatoteke(primatelj, k));
                     OutputStream outputStream = dto.getOutputStream(u.toURL());
-                    try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(outputStream)),k)) {
+                    try (DemWriter dw = new DemWriter(new BufferedWriter(new OutputStreamWriter(outputStream)), k)) {
+                        log.log(Level.INFO, "AAA");
+                        dw.write(podaci);
+                        log.log(Level.INFO, "BBB");
                         for (Postaja p : mapa.get(k).keySet()) {
+                            log.log(Level.INFO, "VVV {0}", p.getNazivPostaje());
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
                             ProgramMjerenja pm = ppkm.getProgramMjerenja();
-                            Date pocetak = ppkm.getZadnjiPoslani();
-                            log.log(Level.INFO, "DemDiseminator:salji pm={0}, pocetak={1}", new Object[]{pm.getId(), pocetak});
-                            List<Podatak> podaciOd = podatakFacade.getPodaciOd(pm, pocetak, 0);
-                            if ( !podaciOd.isEmpty()){
-                                dw.printPostajaPodaci(pm, podaciOd);
-                                Date zadnji = dw.getZadnjiZapis().get(pm);
-                                
-                                if ( zadnji != null ) {
-                                    ppkm.setZadnjiPoslani(zadnji);
-                                    ppkmf.edit(ppkm);
-                                }
-                            }
+                            updateZadnjiZapis(dw.getZadnjiZapis());
+
                         }
+                        dto.zavrsiTransfer();
+
+                    } catch (IOException ex) {
+                        log.log(Level.SEVERE, null, ex);
                     } catch (PodatakWriterException ex) {
                         log.log(Level.SEVERE, null, ex);
-                    }
-                    dto.zavrsiTransfer();
-                    
-                } catch (IOException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                } catch (URISyntaxException ex) {
-                    Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
-                } 
+                    } 
+                }
 
             }
         } catch (ProtocolNotSupported ex) {
@@ -112,10 +108,12 @@ public class DemDiseminator implements DiseminatorPodataka {
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, null, ex);
         } catch (DataTransferException ex) {
-            Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
             Logger.getLogger(DemDiseminator.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         log.log(Level.INFO, "Kraj diseminacije za {0}", new Object[]{primatelj.getNaziv()});
 
     }
@@ -147,6 +145,27 @@ public class DemDiseminator implements DiseminatorPodataka {
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private List<Podatak> getPodaci(Collection<PrimateljProgramKljuceviMap> aktivniProgrami) {
+        List<Podatak> lista = new ArrayList<>();
+        for (PrimateljProgramKljuceviMap ppkm : aktivniProgrami) {
+            log.log(Level.INFO, "DemDiseminator:getPodaci pm={0}, pocetak={1}", new Object[]{ppkm.getProgramMjerenja().getId(), ppkm.getZadnjiPoslani()});
+            Date pocetak = ppkm.getZadnjiPoslani();
+            List<Podatak> podaciOd = podatakFacade.getPodaciOd(ppkm.getProgramMjerenja(), pocetak, 0);
+            lista.addAll(podaciOd);
+        }
+        return lista;
+    }
+
+    private void updateZadnjiZapis(Map<ProgramMjerenja, Date> zadnjiZapis) {
+        for (ProgramMjerenja pm : zadnjiZapis.keySet()) {
+            PrimateljProgramKljuceviMap ppkm = ppkmf.find(primatelj, pm);
+            if (zadnjiZapis.get(pm) != null) {
+                ppkm.setZadnjiPoslani(zadnjiZapis.get(pm));
+                ppkmf.edit(ppkm);
+            }
+        }
     }
 
 }

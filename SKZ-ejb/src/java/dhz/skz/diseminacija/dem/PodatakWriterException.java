@@ -21,8 +21,12 @@ package dhz.skz.diseminacija.dem;
  * @author kraljevic
  */
 class PodatakWriterException extends Exception {
+    public PodatakWriterException(){
+        super();
+    }
 
     public PodatakWriterException(String string) {
+        super(string);
     }
     
 }

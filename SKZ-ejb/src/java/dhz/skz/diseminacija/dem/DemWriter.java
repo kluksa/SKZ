@@ -43,102 +43,97 @@ import java.util.logging.Logger;
 public class DemWriter implements PodatakWriter, Closeable, Flushable {
 
     private static final Logger log = Logger.getLogger(DemWriter.class.getName());
-
-    private final PrintWriter pw;
     private final SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd HH:mm");
+
+    private final PrintWriter writer;
+    
     private final TimeZone tzone;
-    private Date zadnjeVrijeme;
     private final Komponenta komponenta;
-    private boolean prviPoziv = true;
     private final Map<ProgramMjerenja, Date> zadnjiZapis = new HashMap<>();
 
     public DemWriter(Writer wr, Komponenta k) {
         if (k == null) {
             throw new IllegalArgumentException("k == null");
         }
-        pw = new PrintWriter(wr);
+        writer = new PrintWriter(wr);
         tzone = LokalnaZona.getZone();
         sdf.setTimeZone(tzone);
 
         komponenta = k;
     }
 
-    public void printPostajaPodaci(ProgramMjerenja program, Collection<Podatak> podaci) throws PodatakWriterException {
-        if (program == null) {
-            throw new IllegalArgumentException("postaja == null");
-        }
-        if (!program.getKomponentaId().equals(komponenta)) {
-            throw new IllegalArgumentException("ProgramMjerenja.komponentaId != komponenta");
-        }
-        if (podaci == null) {
-            throw new IllegalArgumentException("podaci == null");
-        }
-        if (prviPoziv) {
-            pw.printf("COMPONENT %s, %s\n", komponenta.getNazivEng(), "hour");
-        }
-        prviPoziv = false;
-        SortedMap<Date, Podatak> podMap = transformirajPodatke(podaci).get(program);
-        if (podMap.keySet().isEmpty()) {
-            return;
-        }
-
-        pw.printf("STATION %s\n", program.getPostajaId().getOznakaPostaje());
-        log.info(program.getPostajaId().getNazivPostaje());
-
-        SatniIterator sat = new SatniIterator(podMap.firstKey(), podMap.lastKey(), tzone);
-
-        while (sat.next()) {
-            Date vr = sat.getVrijeme();
-            if (podMap.containsKey(vr)) {
-                Podatak pod = podMap.get(vr);
-                if (!program.equals(pod.getProgramMjerenjaId())) {
-                    throw new PodatakWriterException("Program: " + program.getId() + " != " + pod.getProgramMjerenjaId().getId());
-                }
-                if (OperStatus.isValid(pod)) {
-                    printLinija(vr, pod.getVrijednost(), -1);
-                } else {
-                    printLinija(vr, -999., 0);
-                }
-                zadnjiZapis.put(program, vr);
-            } else {
-                printLinija(vr, -999., 0);
-            }
-        }
-    }
-
-    private void printLinija(Date vrijeme, Double vrijednost, Integer status) {
-        pw.printf("%s, %8.1f, %d\n", sdf.format(vrijeme), vrijednost, status);
-    }
-
-    private Map<ProgramMjerenja, SortedMap<Date, Podatak>> transformirajPodatke(Collection<Podatak> podaci) {
+    private Map<ProgramMjerenja, SortedMap<Date, Podatak>> transformirajPodatke(Collection<Podatak> podaci) throws PodatakWriterException {
         Map<ProgramMjerenja, SortedMap<Date, Podatak>> mapa2 = new HashMap<>();
-        podaci.stream().forEach((p) -> {
-            if ( ! mapa2.containsKey(p.getProgramMjerenjaId())){
+        for (Podatak p : podaci) {
+            if (!p.getProgramMjerenjaId().getKomponentaId().equals(komponenta)) {
+                throw new PodatakWriterException();
+            }
+            if (!mapa2.containsKey(p.getProgramMjerenjaId())) {
                 mapa2.put(p.getProgramMjerenjaId(), new TreeMap<>());
             }
             SortedMap<Date, Podatak> mapa = mapa2.get(p.getProgramMjerenjaId());
             mapa.put(p.getVrijeme(), p);
-        });
+        }
         return mapa2;
     }
 
-    public Map<ProgramMjerenja,Date> getZadnjiZapis() {
+    public Map<ProgramMjerenja, Date> getZadnjiZapis() {
         return zadnjiZapis;
     }
 
     @Override
-    public void write(Collection<Podatak> podaci) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void write(Collection<Podatak> podaci) throws PodatakWriterException {
+        if (podaci == null || podaci.isEmpty()) {
+            return;
+        }
+        Map<ProgramMjerenja, SortedMap<Date, Podatak>> podatakMasterMap = transformirajPodatke(podaci);
+        if (podatakMasterMap.keySet().isEmpty()) {
+            return;
+        }
+        writer.printf("COMPONENT %s, %s\n", komponenta.getNazivEng(), "hour");
+        for (ProgramMjerenja program : podatakMasterMap.keySet()) {
+            SortedMap<Date, Podatak> podMap = podatakMasterMap.get(program);
+            if (!podMap.isEmpty()) {
+                writeStation(program, podMap);
+            }
+        }
+
+    }
+    
+    private void writeStation(ProgramMjerenja program, SortedMap<Date, Podatak> podMap) {
+
+        writer.printf("STATION %s\n", program.getPostajaId().getOznakaPostaje());
+        SatniIterator sat = new SatniIterator(podMap.firstKey(), podMap.lastKey(), tzone);
+        while (sat.next()) {
+            Date vr = sat.getVrijeme();
+            if (podMap.containsKey(vr)) {
+                Podatak pod = podMap.get(vr);
+                if (OperStatus.isValid(pod)) {
+                    writeLinija(vr, pod.getVrijednost(), -1);
+                } else {
+                    writeLinija(vr, -999., 0);
+                }
+                zadnjiZapis.put(program, vr);
+            } else {
+                writeLinija(vr, -999., 0);
+            }
+        }
+    }
+
+    private void writeLinija(Date vrijeme, Double vrijednost, Integer status) {
+        writer.printf("%s, %8.1f, %d\n", sdf.format(vrijeme), vrijednost, status);
     }
 
     @Override
     public void flush() throws IOException {
-        pw.flush();
+        writer.flush();
     }
 
     @Override
     public void close() throws IOException {
-        pw.close();
+        writer.close();
         zadnjiZapis.clear();
     }
+
+
 }
