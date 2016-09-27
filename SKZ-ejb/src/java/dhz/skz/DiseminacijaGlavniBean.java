@@ -74,7 +74,6 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
                     for (PrimateljiPodataka pr : primateljPodatakaFacade.findAll()) {
                         if (pr.getAktivan() < 1) {
                             log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
-
                         } else {
                             if (pr.getTip() != null) {
                                 String naziv = str + pr.getTip().trim();

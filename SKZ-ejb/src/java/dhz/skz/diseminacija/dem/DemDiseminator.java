@@ -29,12 +29,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -84,11 +81,16 @@ public class DemDiseminator implements DiseminatorPodataka {
                             PrimateljProgramKljuceviMap ppkm = mapa.get(k).get(p);
                             ProgramMjerenja pm = ppkm.getProgramMjerenja();
                             Date pocetak = ppkm.getZadnjiPoslani();
+                            log.log(Level.INFO, "DemDiseminator:salji pm={0}, pocetak={1}", new Object[]{pm.getId(), pocetak});
                             List<Podatak> podaciOd = podatakFacade.getPodaciOd(pm, pocetak, 0);
                             if ( !podaciOd.isEmpty()){
                                 dw.printPostajaPodaci(pm, podaciOd);
-                                ppkm.setZadnjiPoslani(dw.getZadnjiZapis().get(pm));
-                                ppkmf.edit(ppkm);
+                                Date zadnji = dw.getZadnjiZapis().get(pm);
+                                
+                                if ( zadnji != null ) {
+                                    ppkm.setZadnjiPoslani(zadnji);
+                                    ppkmf.edit(ppkm);
+                                }
                             }
                         }
                     } catch (PodatakWriterException ex) {
