@@ -104,7 +104,7 @@ public class DemWriter implements PodatakWriter, Closeable, Flushable {
 
         writer.printf("STATION %s\n", program.getPostajaId().getOznakaPostaje());
         SatniIterator sat = new SatniIterator(podMap.firstKey(), podMap.lastKey(), tzone);
-        while (sat.next()) {
+        do {
             Date vr = sat.getVrijeme();
             if (podMap.containsKey(vr)) {
                 Podatak pod = podMap.get(vr);
@@ -113,11 +113,11 @@ public class DemWriter implements PodatakWriter, Closeable, Flushable {
                 } else {
                     writeLinija(vr, -999., 0);
                 }
-                zadnjiZapis.put(program, vr);
+                zadnjiZapis.put(program, pod.getVrijeme());
             } else {
                 writeLinija(vr, -999., 0);
             }
-        }
+        } while ( sat.next());
     }
 
     private void writeLinija(Date vrijeme, Double vrijednost, Integer status) {
