@@ -27,6 +27,7 @@ import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
 import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
+import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -58,10 +59,11 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         Date sada = new Date();
         UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
         for (Obavijesti o : obf.findAll(primatelj)) {
+            Integer granicniBroj = o.getGranica().getDozvoljeniBrojPrekoracenja();
             for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, sada)) {
                 SlanjeUpozorenja up = suf.getSender(o);
                 Collection<Podatak> podaci = pokupiPodatke(primatelj);
-                up.saljiUpozorenje(o, pur.getProgramMjerenja(), podaci);
+                up.saljiUpozorenje(o, pur.getProgramMjerenja(), podaci, (pur.getBrojPojavljivanja() < granicniBroj) ? VrstaUpozorenja.OBAVIJEST : VrstaUpozorenja.UPOZORENJE);
             }
         }
     }

@@ -101,6 +101,7 @@ public class MailUpozorenjeTest {
         obavijest = new Obavijesti();
         PrimateljiPodataka primatelj = new PrimateljiPodataka();
         primatelj.setUrl("mailto:kraljevic@cirus.dhz.hr");
+        primatelj.setXsd("CsvUski");
         
         Granice g = new Granice();
         KategorijeGranica kp = new KategorijeGranica();
@@ -111,7 +112,7 @@ public class MailUpozorenjeTest {
         
         
         obavijest.setGranica(g);
-        obavijest.setPredlozakTeksta("<obavijest><subject>Upozorenje</subject><body>Na mjernoj postaji ${POSTAJA} prekoračena je ${OPIS} za koncentracije ${KOMPONENTA}</body></obavijest>");
+        obavijest.setPredlozakTeksta("<root><obavijest><subject>Obavijest</subject><body>1Na mjernoj postaji ${POSTAJA} prekoračena je ${OPIS} za koncentracije ${KOMPONENTA}</body></obavijest><upozorenje><subject>Upozorenje</subject><body>2Na mjernoj postaji ${POSTAJA} prekoračena je ${OPIS} za koncentracije ${KOMPONENTA}</body></upozorenje></root>");
         obavijest.setPrimatelj(primatelj);
         
     }
@@ -127,9 +128,13 @@ public class MailUpozorenjeTest {
     public void testSaljiUpozorenje() {
         System.out.println("saljiUpozorenje");
         MailUpozorenje instance = new MailUpozorenje();
-        instance.saljiUpozorenje(obavijest, program, podaci);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.saljiUpozorenje(obavijest, program, podaci, VrstaUpozorenja.UPOZORENJE);
+    }
+      @Test
+    public void testSaljiObavijest() {
+        System.out.println("saljiObavijest");
+        MailUpozorenje instance = new MailUpozorenje();
+        instance.saljiUpozorenje(obavijest, program, podaci, VrstaUpozorenja.OBAVIJEST);
     }
     
 }

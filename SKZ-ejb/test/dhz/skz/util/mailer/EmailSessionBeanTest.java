@@ -16,13 +16,13 @@
  */
 package dhz.skz.util.mailer;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -55,15 +55,26 @@ public class EmailSessionBeanTest {
     @Test
     public void testSendEmail() throws Exception {
         System.out.println("sendEmail");
-        String to = "mailto:kluksa@gmail.com";
+        String to = "mailto:kluksa@gmail.com|mailto:kraljevic@cirus.dhz.hr";
         String subject = "Subjekt";
         String body = "Body";
         String attStr = "a;b;c;d;\n1;2;3;4\n5;6;7;8;";
         byte[] attachment = attStr.getBytes();
         String attachemntMIMEType = "text/csv";
         EmailSessionBean instance = new EmailSessionBean();
-        URL url = new URL(to);
-        instance.sendEmail(url, subject, body, attachment, attachemntMIMEType);
+
+        instance.sendEmail(getURLs(to), subject, body, attachment, attachemntMIMEType);
+    }
+    
+    private URL[] getURLs(String url) throws MalformedURLException {
+        String[] split = url.split("\\|");
+        URL[] urlovi = new URL[split.length];
+        
+        for (int i = 0; i<split.length; i++ ) {
+            urlovi[i] = new URL(split[i]);
+        }
+        return urlovi;
+
     }
     
 }

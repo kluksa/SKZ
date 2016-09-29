@@ -30,8 +30,11 @@ import dhz.skz.util.mailer.EmailSessionBean;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,38 +44,39 @@ import org.xml.sax.SAXException;
  *
  * @author kraljevic
  */
-public class MailUpozorenje implements SlanjeUpozorenja{
-
+public class MailUpozorenje implements SlanjeUpozorenja {
 
     @Override
-    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Collection<Podatak> podaci) {
+    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
         try {
             PrimateljiPodataka primatelj = ob.getPrimatelj();
             Komponenta komponentaId = pm.getKomponentaId();
             Postaja postajaId = pm.getPostajaId();
-            
-            // PodatkEksport treba odrediti iz xsd polja tablice primatelji_podataka, a ne ovako
-            // najbolje bi bilo napraviti factory i
-            PodatakEksportFactory pef = new PodatakEksportFactory();
-            PodatakEksport pe = pef.getPodatakEksport(ob.getPrimatelj());
-            
-            Writer wr = new StringWriter();
-            pe.write(wr, podaci);
-            
+
             XmlParser xmlp = new XmlParser();
-            xmlp.parse(ob.getPredlozakTeksta());
+            xmlp.parse(ob.getPredlozakTeksta(), vrsta);
+
             String bodyTemplate = xmlp.getBody();
-            
+
             String body = obradiPredlozak(bodyTemplate, ob, pm);
             String subject = xmlp.getSubject();
-            
+
             EmailSessionBean esb = new EmailSessionBean();
-            URL url = new URL(primatelj.getUrl());
-            
-            
-            esb.sendEmail(url, subject, body, wr.toString().getBytes("UTF-8"), "text/csv");
-            
-            
+            URL[] urlovi = getURLs(primatelj.getUrl());
+
+            // PodatkEksport treba odrediti iz xsd polja tablice primatelji_podataka, a ne ovako
+            // najbolje bi bilo napraviti factory i
+            if (podaci != null && !podaci.isEmpty()) {
+                PodatakEksportFactory pef = new PodatakEksportFactory();
+                PodatakEksport pe = pef.getPodatakEksport(ob.getPrimatelj());
+                Writer wr = new StringWriter();
+                pe.write(wr, podaci);
+
+                esb.sendEmail(urlovi, subject, body, wr.toString().getBytes("UTF-8"), "text/csv");
+            } else {
+                esb.sendEmail(urlovi, subject, body);
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
         } catch (XmlObavijestException ex) {
@@ -83,20 +87,31 @@ public class MailUpozorenje implements SlanjeUpozorenja{
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidPodatakExportException ex) {
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
+        }
+
     }
 
     private String obradiPredlozak(String bodyTemplate, Obavijesti ob, ProgramMjerenja pm) {
         String opis = ob.getGranica().getKategorijeGranicaId().getOpis();
         String postaja = pm.getPostajaId().getNazivPostaje();
         String komponenta = pm.getKomponentaId().getFormula();
-        String body  = bodyTemplate;
+        String body = bodyTemplate;
         body = body.replaceFirst("\\$\\{OPIS\\}", opis);
         body = body.replaceFirst("\\$\\{POSTAJA\\}", postaja);
         body = body.replaceFirst("\\$\\{KOMPONENTA\\}", komponenta);
         return body;
-        
+
     }
-    
+
+    private URL[] getURLs(String url) throws MalformedURLException {
+        String[] split = url.split("\\|");
+        URL[] urlovi = new URL[split.length];
+        
+        for (int i = 0; i<split.length; i++ ) {
+            urlovi[i] = new URL(split[i]);
+        }
+        return urlovi;
+
+    }
+
 }

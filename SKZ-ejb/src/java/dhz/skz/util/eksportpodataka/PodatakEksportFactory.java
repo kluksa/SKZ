@@ -29,7 +29,7 @@ public class PodatakEksportFactory {
             case "CsvSiroki":
                 return new CsvExportSiroki();
             case "CsvUski":
-                return new CsvExportSiroki();
+                return new CsvExportUski();
             case "CsvSirokiKomponenta":
                 return new CsvExportSiroki();
             case "CsvSirokiPostaja":

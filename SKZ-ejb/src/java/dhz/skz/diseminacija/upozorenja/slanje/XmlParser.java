@@ -54,7 +54,7 @@ public class XmlParser {
         this.body = body;
     }
 
-    public void parse(String str) throws XmlObavijestException, ParserConfigurationException, SAXException, IOException {
+    public void parse(String str, VrstaUpozorenja vrsta) throws XmlObavijestException, ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory
                 = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -62,7 +62,8 @@ public class XmlParser {
         org.w3c.dom.Document doc = dBuilder.parse(new InputSource(new StringReader(str)));
         doc.getDocumentElement().normalize();
 
-        NodeList nList = doc.getElementsByTagName("obavijest");
+        
+        NodeList nList = doc.getElementsByTagName((vrsta == VrstaUpozorenja.OBAVIJEST)? "obavijest" : "upozorenje");
         if (nList.getLength() != 1) {
             throw new XmlObavijestException();
         }
