@@ -50,19 +50,9 @@ public class ObavijestiFacade extends AbstractFacade<Obavijesti> {
         super(Obavijesti.class);
     }
     
-    // TODO prebaciti u named query
     public Collection<Obavijesti> findAll(PrimateljiPodataka primatelj) {
-        TypedQuery<Obavijesti> query = em.createNamedQuery("Obavijest.findByPrimatelj", Obavijesti.class);
+        TypedQuery<Obavijesti> query = em.createNamedQuery("Obavijesti.findByPrimatelj", Obavijesti.class);
         query.setParameter("primatelj", primatelj);
         return query.getResultList();
     }
-    
-    public Collection<Obavijesti> findAll(Komponenta k, PrimateljiPodataka p){
-        TypedQuery<Obavijesti> query = em.createNamedQuery("Obavijest.findByPrimatelj", Obavijesti.class);
-        query.setParameter("primatelj", p);
-        query.setParameter("komponenta", k);
-        return query.getResultList();
-        
-    }
-    
 }

@@ -41,8 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Obavijesti.findAll", query = "SELECT o FROM Obavijesti o"),
-    @NamedQuery(name = "Obavijesti.findByPrimatelj", query = "SELECT o FROM Obavijesti o WHERE o.primatelj = :primatelj"),
-
+    @NamedQuery(name = "Obavijesti.findByPrimatelj", query = "SELECT o FROM Obavijesti o WHERE o.primatelj = :primatelj")
 })
 
 public class Obavijesti implements Serializable {

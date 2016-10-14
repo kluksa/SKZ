@@ -18,12 +18,11 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.Obavijesti;
 import dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
@@ -40,10 +39,12 @@ public class PrekoracenjaUpozorenjaResultFacade  {
         return em;
     }
     
-    public List<PrekoracenjaUpozorenjaResult> findAll(Obavijesti o, Date vrijeme){
+    public List<PrekoracenjaUpozorenjaResult> findAll(Obavijesti o, OffsetDateTime vrijeme, Integer broj_sati){
+        
         StoredProcedureQuery q = em.createNamedStoredProcedureQuery("PrekoracenjaUpozorenja");
         q.setParameter("obavijest_id", o.getId());
-        q.setParameter("vrijeme", vrijeme);
+        q.setParameter("vrijeme", new Date(1000*vrijeme.toEpochSecond()));
+        q.setParameter("broj_sati", broj_sati);
         q.execute();
         List resultList = q.getResultList();
         return resultList;

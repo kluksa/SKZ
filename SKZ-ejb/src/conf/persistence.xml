@@ -75,6 +75,7 @@
     <class>dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
+        <!--<property name="eclipselink.logging.level" value="FINE" />-->
       <!--            <property name="eclipselink.jdbc.batch-writing" value="JDBC" />
             <property name="eclipselink.jdbc.batch-writing.size" value="1000" />-->
     </properties>

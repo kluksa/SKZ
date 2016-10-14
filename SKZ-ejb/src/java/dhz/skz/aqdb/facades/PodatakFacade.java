@@ -20,7 +20,9 @@ import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Podatak_;
 import dhz.skz.aqdb.entity.Postaja;
+import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -225,8 +227,23 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
     }
 
     public void spremi(Collection<Podatak> ps) {
-        for (Podatak p : ps) {
-            spremi(ps);
-        }
+        ps.stream().forEach((p)->spremi(p));
+    }
+
+    public Podatak getPodatakZaSat(ProgramMjerenja programMjerenja, OffsetDateTime kraj) {
+        OffsetDateTime pocetak = kraj.minusHours(1);
+        Date p = new Date(pocetak.toEpochSecond()*1000);
+        Date k = new Date(kraj.toEpochSecond()*1000);
+        List<Podatak> rl = em.createNamedQuery("Podatak.findByProgramPocetakKraj", Podatak.class).setParameter("pocetak", p)
+                .setParameter("program", programMjerenja).setParameter("kraj", k).getResultList();
+        return (rl == null || rl.isEmpty()) ? null : rl.get(0);
+    }
+    
+    public List<Podatak> getVrijemePrimatelj(PrimateljiPodataka primatelj, OffsetDateTime pocetak, OffsetDateTime kraj){
+                Date p = new Date(pocetak.toEpochSecond()*1000);
+        Date k = new Date(kraj.toEpochSecond()*1000);
+        List<Podatak> rl = em.createNamedQuery("Podatak.findByPrimateljPocetakKraj", Podatak.class).setParameter("pocetak", p)
+                .setParameter("primatelj", primatelj).setParameter("kraj", k).getResultList();
+        return rl;
     }
 }

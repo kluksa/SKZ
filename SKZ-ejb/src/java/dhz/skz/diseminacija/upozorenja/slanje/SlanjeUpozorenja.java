@@ -27,6 +27,6 @@ import java.util.Collection;
  */
 public interface SlanjeUpozorenja {
 
-    public void saljiUpozorenje(Obavijesti object, ProgramMjerenja pm, Collection<Podatak> podaci, VrstaUpozorenja vrsta);
+    public void saljiUpozorenje(Obavijesti o, ProgramMjerenja programMjerenja, Double maksimalnaVrijednost, Collection<Podatak> podaci, VrstaUpozorenja vrstaUpozorenja);
     
 }

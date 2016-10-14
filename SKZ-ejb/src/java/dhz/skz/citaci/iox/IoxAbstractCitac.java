@@ -17,14 +17,12 @@
 package dhz.skz.citaci.iox;
 
 import com.csvreader.CsvReader;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.AbstractFacade;
 import dhz.skz.validatori.Validator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,63 +38,78 @@ import java.util.logging.Logger;
  * @param <T>
  */
 public abstract class IoxAbstractCitac<T> {
-    protected static Logger log = Logger.getLogger(IoxAbstractCitac.class.getName());
-    
+
+    protected static final Logger log = Logger.getLogger(IoxAbstractCitac.class.getName());
+
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    
+
     private Collection<T> podaci;
-    
+
     private CsvReader csv;
-    private Date aktualnoVrijeme, vrijemeZadnjeg = new Date(0L);
+    private Date aktualnoVrijeme, vrijemeZadnjeg = new Date(0L); //ruzno
     private ProgramMjerenja aktualniProgram;
     private Map<ProgramMjerenja, Validator> validatori;
     private Map<String, ProgramMjerenja> mapa;
     private AbstractFacade dao;
     private IoxKonekcija iocon;
     private String periodStr, dBstr;
-    
+
     public void setProgramMapa(Map<String, ProgramMjerenja> mapa) {
         this.mapa = mapa;
     }
+
     public void setValidatoriMapa(Map<ProgramMjerenja, Validator> validatori) {
         this.validatori = validatori;
     }
+
     public void setDaoFacade(AbstractFacade dao) {
         this.dao = dao;
     }
+
     public void setVrijemeZadnjeg(Date vrijemeZadnjeg) {
         this.vrijemeZadnjeg = vrijemeZadnjeg;
     }
+
     public void setKonekcija(IoxKonekcija iocon) {
         this.iocon = iocon;
     }
+
     public void setPeriodStr(String periodStr) {
         this.periodStr = periodStr;
     }
+
     public void setdBstr(String dBstr) {
         this.dBstr = dBstr;
     }
+
     public void dodajPodatak(T ps) {
         podaci.add(ps);
     }
+
     public Collection<T> getPodaci() {
         return podaci;
     }
+
     public ProgramMjerenja getAktualniProgram() {
         return aktualniProgram;
     }
+
     public Date getAktualnoVrijeme() {
         return aktualnoVrijeme;
     }
+
     public CsvReader getCsv() {
         return csv;
     }
+
     public Map<ProgramMjerenja, Validator> getValidatori() {
         return validatori;
     }
+
     public Map<String, ProgramMjerenja> getMapa() {
         return mapa;
     }
+
     public AbstractFacade getDao() {
         return dao;
     }
@@ -104,11 +117,10 @@ public abstract class IoxAbstractCitac<T> {
     public Date getVrijemeZadnjeg() {
         return vrijemeZadnjeg;
     }
-    
-    
-    
+
     public void procitaj() {
-        odrediVrijemeZadnjegPodatka();
+        odrediVrijemeZadnjegPodatka();  //ovo je ruzno
+// ljepse:        vrijemeZadnjeg = getVrijemeZadnjeg();
         log.log(Level.INFO, "Zadnji podatak u: {0}", new Object[]{vrijemeZadnjeg});
         podaci = new ArrayList<>();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(periodStr, dBstr, vrijemeZadnjeg)))) {
@@ -125,22 +137,24 @@ public abstract class IoxAbstractCitac<T> {
             while (csv.readRecord()) {
                 try {
                     aktualnoVrijeme = sdf.parse(csv.get("Time"));
-                    aktualniProgram = getProgram();
-                    if ( aktualniProgram != null) {
-                        parseLinija();
+                    if (aktualnoVrijeme.after(vrijemeZadnjeg)) {
+                        aktualniProgram = getProgram();
+                        if (aktualniProgram != null) {
+                            parseLinija();
+                        }
                     }
                 } catch (ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
-                
+
             }
-        } catch (IOException  ex) {
+        } catch (IOException ex) {
             log.log(Level.SEVERE, null, ex);
         }
         validiraj();
         spremi();
     }
-    
+
     protected ProgramMjerenja getProgram() throws IOException {
         ProgramMjerenja pm = mapa.get(csv.get("Device") + "::" + csv.get("Component"));
         if (pm == null) {
@@ -154,8 +168,9 @@ public abstract class IoxAbstractCitac<T> {
             dao.create(podatak);
         });
     }
-    
-    abstract protected void parseLinija()  throws IOException;
+
+    abstract protected void parseLinija() throws IOException;
+
     abstract protected void validiraj();
 
     abstract protected void odrediVrijemeZadnjegPodatka();

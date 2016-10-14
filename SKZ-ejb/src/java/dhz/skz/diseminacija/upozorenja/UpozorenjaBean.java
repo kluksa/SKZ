@@ -28,8 +28,11 @@ import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
 import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
+import dhz.skz.util.OperStatus;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -56,14 +59,24 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-        Date sada = new Date();
+        OffsetDateTime odt_sada = OffsetDateTime.now();
+                // OffsetDateTime.parse("2016-09-30T15:59:00+02:00");
         UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
+        
         for (Obavijesti o : obf.findAll(primatelj)) {
             Integer granicniBroj = o.getGranica().getDozvoljeniBrojPrekoracenja();
-            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, sada)) {
+            
+            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, odt_sada, granicniBroj)) {
                 SlanjeUpozorenja up = suf.getSender(o);
-                Collection<Podatak> podaci = pokupiPodatke(primatelj);
-                up.saljiUpozorenje(o, pur.getProgramMjerenja(), podaci, (pur.getBrojPojavljivanja() < granicniBroj) ? VrstaUpozorenja.OBAVIJEST : VrstaUpozorenja.UPOZORENJE);
+                Collection<Podatak> podaci = pokupiPodatke(primatelj, odt_sada);
+                if ( Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
+                    up.saljiUpozorenje(o, pur.getProgramMjerenja(), pur.getMaksimalnaVrijednost(), podaci, VrstaUpozorenja.UPOZORENJE);
+                } else {
+                    Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(),odt_sada);
+                    if ( pod != null && pod.getVrijednost() > o.getGranica().getVrijednost() && OperStatus.isValid(pod)){
+                        up.saljiUpozorenje(o, pur.getProgramMjerenja(), pod.getVrijednost(), podaci, VrstaUpozorenja.OBAVIJEST);
+                    }
+                }
             }
         }
     }
@@ -73,8 +86,8 @@ public class UpozorenjaBean implements DiseminatorPodataka {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj, OffsetDateTime sada) {
+        OffsetDateTime pocetak = sada.minusHours(6);
+        return pf.getVrijemePrimatelj(primatelj, pocetak, sada);
     }
-
 }

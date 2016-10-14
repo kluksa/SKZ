@@ -32,9 +32,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,7 +46,7 @@ import org.xml.sax.SAXException;
 public class MailUpozorenje implements SlanjeUpozorenja {
 
     @Override
-    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
+    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Double maksimalnaVrijednost,Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
         try {
             PrimateljiPodataka primatelj = ob.getPrimatelj();
             Komponenta komponentaId = pm.getKomponentaId();
@@ -58,7 +57,7 @@ public class MailUpozorenje implements SlanjeUpozorenja {
 
             String bodyTemplate = xmlp.getBody();
 
-            String body = obradiPredlozak(bodyTemplate, ob, pm);
+            String body = obradiPredlozak(bodyTemplate, ob, pm, maksimalnaVrijednost);
             String subject = xmlp.getSubject();
 
             EmailSessionBean esb = new EmailSessionBean();
@@ -91,14 +90,15 @@ public class MailUpozorenje implements SlanjeUpozorenja {
 
     }
 
-    private String obradiPredlozak(String bodyTemplate, Obavijesti ob, ProgramMjerenja pm) {
+    private String obradiPredlozak(String bodyTemplate, Obavijesti ob, ProgramMjerenja pm, Double maksimalnaVrijednost) {
         String opis = ob.getGranica().getKategorijeGranicaId().getOpis();
         String postaja = pm.getPostajaId().getNazivPostaje();
         String komponenta = pm.getKomponentaId().getFormula();
         String body = bodyTemplate;
-        body = body.replaceFirst("\\$\\{OPIS\\}", opis);
-        body = body.replaceFirst("\\$\\{POSTAJA\\}", postaja);
-        body = body.replaceFirst("\\$\\{KOMPONENTA\\}", komponenta);
+        body = body.replaceAll("\\$\\{OPIS\\}", opis);
+        body = body.replaceAll("\\$\\{POSTAJA\\}", postaja);
+        body = body.replaceAll("\\$\\{KOMPONENTA\\}", komponenta);
+        body = body.replaceAll("\\$\\{MAKSIMALNA_VRIJEDNOST\\}", maksimalnaVrijednost.toString());
         return body;
 
     }

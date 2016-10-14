@@ -24,6 +24,7 @@ import dhz.skz.validatori.Validator;
 import java.io.IOException;
 import java.util.Date;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,9 +103,27 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
         PodatakSiroviFacade psf = (PodatakSiroviFacade) this.getDao();
         for ( ProgramMjerenja pm : this.getMapa().values()){
             PodatakSirovi zps = psf.getZadnji(pm);
-            if ( zps != null && zps.getVrijeme().after(this.getVrijemeZadnjeg())) {
+            if ( Objects.nonNull(zps) && zps.getVrijeme().after(this.getVrijemeZadnjeg())) {
                 this.setVrijemeZadnjeg(zps.getVrijeme());
             }
         }
+        
+//        Date vrijemeZadnjeg = this.getMapa().values().stream()
+//                .filter(pm -> Objects.nonNull(psf.getZadnji(pm)))
+//                .map(pm -> psf.getZadnji(pm).getVrijeme())
+//                .filter(t -> t.after(this.getVrijemeZadnjeg()))
+//                .max(Date::compareTo)
+//                .get();
+//        this.setVrijemeZadnjeg(vrijemeZadnjeg);
+    }
+    
+    protected Date getVrijemeZadnjeg2(){
+        PodatakSiroviFacade psf = (PodatakSiroviFacade) this.getDao();
+        return this.getMapa().values().stream()
+                .filter(pm -> Objects.nonNull(psf.getZadnji(pm)))
+                .map(pm -> psf.getZadnji(pm).getVrijeme())
+                .max(Date::compareTo)
+                .get();
+        
     }
 }

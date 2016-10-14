@@ -119,6 +119,13 @@ public class PodatakSiroviFacade extends AbstractFacade<PodatakSirovi> {
         em.refresh(zadnji);
         return zadnji.getPodatakSiroviId();
     }
+    
+    public Date getVrijemeZadnjeg(ProgramMjerenja pm){
+        ZadnjiSirovi zadnji = getEntityManager().find(ZadnjiSirovi.class, pm.getId());
+        if ( zadnji == null ) return null;
+        em.refresh(zadnji);
+        return zadnji.getVrijeme();
+    }
  
      // TODO prebaciti u named query
     public PodatakSirovi getZadnji(IzvorPodataka izvor, Postaja postaja){

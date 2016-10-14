@@ -29,10 +29,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -298,7 +300,7 @@ public class WebloggerCitacBean implements CitacIzvora {
                 }
             }
         }
-
+        
         return mapa;
     }
 
@@ -357,7 +359,13 @@ public class WebloggerCitacBean implements CitacIzvora {
                     && !pm.getIzvorProgramKljuceviMap().getUKljuc().isEmpty()){
                 ima |= true;
             }
-       }
+        }
         return ima;
+        
+//        return  programMjerenjaFacade.find(p, izvor).stream()
+//                .filter(pm -> Objects.nonNull(pm.getIzvorProgramKljuceviMap()))
+//                .filter(pm -> Objects.nonNull(pm.getIzvorProgramKljuceviMap().getKKljuc()))
+//                .map(pm -> pm.getIzvorProgramKljuceviMap().getKKljuc())
+//                .anyMatch(ukljuc -> !ukljuc.isEmpty());
     }
 }

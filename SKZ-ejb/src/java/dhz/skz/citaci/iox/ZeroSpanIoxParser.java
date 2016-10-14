@@ -17,10 +17,8 @@
 package dhz.skz.citaci.iox;
 
 import com.csvreader.CsvReader;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.ZeroSpan;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.util.OperStatus;
 import dhz.skz.validatori.Validator;
@@ -128,5 +126,6 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
                 this.setVrijemeZadnjeg(zps);
             }
         }
+        
     }
 }

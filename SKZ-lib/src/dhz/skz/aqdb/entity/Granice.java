@@ -66,7 +66,7 @@ public class Granice implements Serializable {
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Komponenta komponentaId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "granica")
     private Collection<Obavijesti> obavijesti;
 
 

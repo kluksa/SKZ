@@ -54,7 +54,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Podatak.getVrijemeZadnjegProgramNivo", query = "SELECT p.vrijeme FROM Podatak p WHERE p.programMjerenjaId = :program AND p.nivoValidacijeId = :nivo ORDER BY p.vrijeme DESC"),
     @NamedQuery(name = "Podatak.getVrijemeZadnjegPostaja", query = "SELECT p.vrijeme FROM Podatak p JOIN p.programMjerenjaId pm  WHERE pm.postajaId = :postaja ORDER BY p.vrijeme DESC"),
     @NamedQuery(name = "Podatak.findByProgramAsc", query = "SELECT p FROM Podatak p WHERE p.programMjerenjaId = :program ORDER BY p.vrijeme ASC"),
-    @NamedQuery(name = "Podatak.findByProgramDesc", query = "SELECT p FROM Podatak p WHERE p.programMjerenjaId = :program ORDER BY p.vrijeme DESC")
+    @NamedQuery(name = "Podatak.findByProgramDesc", query = "SELECT p FROM Podatak p WHERE p.programMjerenjaId = :program ORDER BY p.vrijeme DESC"),
+    @NamedQuery(name = "Podatak.findByProgramPocetakKraj", query = "SELECT p FROM Podatak p WHERE p.programMjerenjaId= :program AND p.vrijeme > :pocetak AND p.vrijeme <= :kraj ORDER BY p.vrijeme"),
+    @NamedQuery(name = "Podatak.findByPrimateljPocetakKraj", query = "SELECT p FROM Podatak p JOIN p.programMjerenjaId pm JOIN pm.primateljProgramKljuceviMapCollection ppkm WHERE ppkm.primateljiPodataka = :primatelj AND  p.vrijeme > :pocetak AND p.vrijeme <= :kraj ORDER BY p.vrijeme")
 })
 public class Podatak implements Serializable {
 

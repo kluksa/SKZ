@@ -41,7 +41,7 @@ import javax.persistence.StoredProcedureParameter;
                         fields={
                             @FieldResult(name = "programMjerenjaId", column = "program_mjerenja_id"),
                             @FieldResult(name = "brojPojavljivanja", column = "broj_pojavljivanja"),
-                            @FieldResult(name = "minimalnaVrijednost", column = "minimalna_vrijednost")
+                            @FieldResult(name = "maksimalnaVrijednost", column = "maksimalna_vrijednost")
                                 
                         }
                 )
@@ -51,10 +51,11 @@ import javax.persistence.StoredProcedureParameter;
         resultSetMappings = {
             "PrekoracenjaUpozorenjaMapping"
         },
-        procedureName = "prekoracenja_upozorenja",
+        procedureName = "likz_prekoracenja_upozorenja",
         parameters = {
             @StoredProcedureParameter(mode = ParameterMode.IN, name = "obavijest_id", type = Integer.class),
-            @StoredProcedureParameter(mode = ParameterMode.IN, name = "vrijeme", type = Date.class)
+            @StoredProcedureParameter(mode = ParameterMode.IN, name = "vrijeme", type = Date.class),
+            @StoredProcedureParameter(mode = ParameterMode.IN, name = "broj_sati", type = Integer.class),
         }
 )
 @Entity
@@ -62,7 +63,7 @@ public class PrekoracenjaUpozorenjaResult implements Serializable {
     @Id
     private Integer programMjerenjaId;
     private Integer brojPojavljivanja;
-    private Double minimalnaVrijednost;
+    private Double maksimalnaVrijednost;
     @ManyToOne
     @JoinColumn(name = "program_mjerenja_id", referencedColumnName = "id")    
     private ProgramMjerenja programMjerenja;
@@ -92,12 +93,12 @@ public class PrekoracenjaUpozorenjaResult implements Serializable {
         this.brojPojavljivanja = brojPojavljivanja;
     }
 
-    public Double getMinimalnaVrijednost() {
-        return minimalnaVrijednost;
+    public Double getMaksimalnaVrijednost() {
+        return maksimalnaVrijednost;
     }
 
-    public void setMinimalnaVrijednost(Double minimalnaVrijednost) {
-        this.minimalnaVrijednost = minimalnaVrijednost;
+    public void setMaksimalnaVrijednost(Double maksimalnaVrijednost) {
+        this.maksimalnaVrijednost = maksimalnaVrijednost;
     }
     
 }

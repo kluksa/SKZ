@@ -128,13 +128,13 @@ public class MailUpozorenjeTest {
     public void testSaljiUpozorenje() {
         System.out.println("saljiUpozorenje");
         MailUpozorenje instance = new MailUpozorenje();
-        instance.saljiUpozorenje(obavijest, program, podaci, VrstaUpozorenja.UPOZORENJE);
+        instance.saljiUpozorenje(obavijest, program, 1.23, podaci, VrstaUpozorenja.UPOZORENJE);
     }
       @Test
     public void testSaljiObavijest() {
         System.out.println("saljiObavijest");
         MailUpozorenje instance = new MailUpozorenje();
-        instance.saljiUpozorenje(obavijest, program, podaci, VrstaUpozorenja.OBAVIJEST);
+        instance.saljiUpozorenje(obavijest, program, 2.34, podaci, VrstaUpozorenja.OBAVIJEST);
     }
     
 }

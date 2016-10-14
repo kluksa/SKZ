@@ -1,9 +1,7 @@
 package dhz.skz.util.mailer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 import javax.activation.DataHandler;
@@ -24,7 +22,7 @@ public class EmailSessionBean {
     private final String username = "kraljevic@cirus.dhz.hr";
     private final String password = "cbm@MaIl";
     private final Protocol protocol = Protocol.SMTP;
-    private boolean debug = false;
+    private final boolean debug = false;
 
     public void sendEmail(URL[] urlovi, String subject, String body, byte[] attachment, String attachemntMIMEType) throws IOException {
         Properties props = new Properties();
