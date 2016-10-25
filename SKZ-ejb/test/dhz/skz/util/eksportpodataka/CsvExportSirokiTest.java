@@ -36,10 +36,10 @@ import static org.junit.Assert.*;
  *
  * @author kraljevic
  */
-public class CsvExportUskiTest {
+public class CsvExportSirokiTest {
     Collection<Podatak> podaci; 
     
-    public CsvExportUskiTest() {
+    public CsvExportSirokiTest() {
     }
     
     @BeforeClass
@@ -51,8 +51,7 @@ public class CsvExportUskiTest {
     }
     
     @Before
-    public void setUp() {
-        podaci = new ArrayList<>();
+    public void setUp() {        podaci = new ArrayList<>();
         Date sada = new Date();
         int npostaja = 3;
         Postaja[] postaje = new Postaja[npostaja];
@@ -77,6 +76,8 @@ public class CsvExportUskiTest {
         for ( int p = 0; p<npostaja; p++){
             for (int k = 0; k<nkomponenta; k++){
                 ProgramMjerenja pm = new ProgramMjerenja();
+                pm.setId(p*1000+10*k);
+                pm.setUsporednoMjerenje(0);
                 pm.setPostajaId(postaje[p]);
                 pm.setKomponentaId(komponente[k]);
                 for ( int v = 0; v<nvremena; v++) {
@@ -90,6 +91,7 @@ public class CsvExportUskiTest {
                 }
             }
         }
+        
     }
     
     @After
@@ -97,13 +99,13 @@ public class CsvExportUskiTest {
     }
 
     /**
-     * Test of write method, of class CsvExportUski.
+     * Test of write method, of class CsvExportSiroki.
      */
     @Test
     public void testWrite() throws Exception {
         System.out.println("write");
         Writer writer = new StringWriter();
-        PodatakEksport instance = new CsvExportUski();
+        PodatakEksport instance = new CsvExportSiroki();
         instance.write(writer, podaci);
         System.out.print(writer.toString());
     }

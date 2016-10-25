@@ -96,9 +96,6 @@ public class Komponenta implements Serializable {
     private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "komponenta")
     private Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection;
-    @JoinColumn(name = "agregacije_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Agregacije agregacijeId;
     @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private MjerneJedinice mjerneJediniceId;
@@ -263,14 +260,6 @@ public class Komponenta implements Serializable {
 
     public void setEtalonCistiZrakKvalitetaCollection(Collection<EtalonCistiZrakKvaliteta> etalonCistiZrakKvalitetaCollection) {
         this.etalonCistiZrakKvalitetaCollection = etalonCistiZrakKvalitetaCollection;
-    }
-
-    public Agregacije getAgregacijeId() {
-        return agregacijeId;
-    }
-
-    public void setAgregacijeId(Agregacije agregacijeId) {
-        this.agregacijeId = agregacijeId;
     }
 
     public MjerneJedinice getMjerneJediniceId() {
