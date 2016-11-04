@@ -52,7 +52,7 @@ public class IspitneVelicine implements Serializable {
     private Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ispitneVelicine")
     private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
-
+    
     public IspitneVelicine() {
     }
 

@@ -43,6 +43,9 @@ public class MetodaUmjerneTocke implements Serializable {
     @JoinColumn(name = "metoda_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private AnalitickeMetode analitickeMetode;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Komponenta komponentaId;
 
     public MetodaUmjerneTocke() {
     }
@@ -95,6 +98,15 @@ public class MetodaUmjerneTocke implements Serializable {
         this.analitickeMetode = analitickeMetode;
     }
 
+    public Komponenta getKomponentaId() {
+        return komponentaId;
+    }
+
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 0;

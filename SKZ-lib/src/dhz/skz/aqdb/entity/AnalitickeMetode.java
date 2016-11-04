@@ -57,8 +57,8 @@ public class AnalitickeMetode implements Serializable {
     private Double zeroDriftAbsolut;
     @Column(name = "span_drift_relativ")
     private Double spanDriftRelativ;
-    @JoinTable(name = "metoda_komponenta_link", joinColumns = {
-        @JoinColumn(name = "analiticke_metode_id", referencedColumnName = "id")}, inverseJoinColumns = {
+    @JoinTable(name = "komponenta_metoda_link", joinColumns = {
+        @JoinColumn(name = "metoda_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "komponenta_id", referencedColumnName = "id")})
     @ManyToMany
     private Collection<Komponenta> komponentaCollection;

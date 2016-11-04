@@ -60,6 +60,7 @@ public class UmjerneTocke implements Serializable {
     @JoinColumn(name = "umjeravanje_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Umjeravanje umjeravanjeId;
+    
 
     public UmjerneTocke() {
     }
@@ -134,6 +135,8 @@ public class UmjerneTocke implements Serializable {
     public void setUmjeravanjeId(Umjeravanje umjeravanjeId) {
         this.umjeravanjeId = umjeravanjeId;
     }
+    
+    
 
     @Override
     public int hashCode() {

@@ -18,7 +18,6 @@ package dhz.skz.aqdb.facades;
 
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
-import dhz.skz.aqdb.entity.PostajaUredjajLink;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.entity.Uredjaj;
 import dhz.skz.aqdb.entity.Uredjaj_;
