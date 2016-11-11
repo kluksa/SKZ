@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AnalitickeMetode.findBySpanDriftRelativ", query = "SELECT a FROM AnalitickeMetode a WHERE a.spanDriftRelativ = :spanDriftRelativ")})
 public class AnalitickeMetode implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -214,5 +215,5 @@ public class AnalitickeMetode implements Serializable {
     public String toString() {
         return "dhz.skz.aqdb.entity.AnalitickeMetode[ id=" + id + " ]";
     }
-    
+
 }

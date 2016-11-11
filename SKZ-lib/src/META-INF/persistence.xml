@@ -93,6 +93,12 @@
     <class>dhz.skz.newpackage.Dijelovi</class>
     <class>dhz.skz.newpackage.Komentar</class>
     <class>dhz.skz.newpackage.Uredjaj</class>
+    <class>dhz.skz.aqdb.entity.novo.Uredjaj</class>
+    <class>dhz.skz.aqdb.entity.novo.Umjeravanje</class>
+    <class>dhz.skz.aqdb.entity.novo.Proizvodjac</class>
+    <class>dhz.skz.aqdb.entity.novo.Komponenta</class>
+    <class>dhz.skz.aqdb.entity.novo.Korisnik</class>
+    <class>dhz.skz.aqdb.entity.UmjeravanjeHasOkolisniUvjeti</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aqdb_likz?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.password" value="C6bm7@MySqL"/>

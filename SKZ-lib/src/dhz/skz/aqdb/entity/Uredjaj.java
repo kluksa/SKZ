@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "uredjaj")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Uredjaj.findAll", query = "SELECT u FROM Uredjaj u"),
@@ -48,6 +50,7 @@ public class Uredjaj implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
@@ -62,6 +65,13 @@ public class Uredjaj implements Serializable {
     @Column(name = "datum_otpisa")
     @Temporal(TemporalType.DATE)
     private Date datumOtpisa;
+    @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")
+    @ManyToOne
+    private ModelUredjaja modelUredjajaId;
+    @JoinColumn(name = "vrsta_opreme_id", referencedColumnName = "id")
+    @ManyToOne
+    private VrstaOpreme vrstaOpremeId;
+
     @OneToMany (cascade = CascadeType.ALL, mappedBy = "uredjajId")//(mappedBy = "uredjajCollection")
     private Collection<Umjeravanje> umjeravanjeCollection;
     @OneToMany(mappedBy = "uredjajId")
@@ -82,12 +92,6 @@ public class Uredjaj implements Serializable {
     private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uredjaj")
     private Collection<PlanOdrzavanja> planOdrzavanjaCollection;
-    @JoinColumn(name = "model_uredjaja_id", referencedColumnName = "id")
-    @ManyToOne
-    private ModelUredjaja modelUredjajaId;
-    @JoinColumn(name = "vrsta_opreme_id", referencedColumnName = "id")
-    @ManyToOne
-    private VrstaOpreme vrstaOpremeId;
 
     public Uredjaj() {
     }

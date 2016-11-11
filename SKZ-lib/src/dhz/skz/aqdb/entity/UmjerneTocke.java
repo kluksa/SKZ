@@ -42,15 +42,15 @@ public class UmjerneTocke implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "referentna_vrijednost")
-    private long referentnaVrijednost;
+    private Double referentnaVrijednost;
     @Basic(optional = false)
     @NotNull
     @Column(name = "mjerena_vrijednost")
-    private long mjerenaVrijednost;
+    private Double mjerenaVrijednost;
     @Basic(optional = false)
     @NotNull
     @Column(name = "mjerna_nesigurnost")
-    private long mjernaNesigurnost;
+    private Double mjernaNesigurnost;
     @JoinColumn(name = "komponenta_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Komponenta komponenta;
@@ -69,7 +69,7 @@ public class UmjerneTocke implements Serializable {
         this.umjerneTockePK = umjerneTockePK;
     }
 
-    public UmjerneTocke(UmjerneTockePK umjerneTockePK, long referentnaVrijednost, long mjerenaVrijednost, long mjernaNesigurnost) {
+    public UmjerneTocke(UmjerneTockePK umjerneTockePK, Double referentnaVrijednost, Double mjerenaVrijednost, Double mjernaNesigurnost) {
         this.umjerneTockePK = umjerneTockePK;
         this.referentnaVrijednost = referentnaVrijednost;
         this.mjerenaVrijednost = mjerenaVrijednost;
@@ -88,27 +88,27 @@ public class UmjerneTocke implements Serializable {
         this.umjerneTockePK = umjerneTockePK;
     }
 
-    public long getReferentnaVrijednost() {
+    public Double getReferentnaVrijednost() {
         return referentnaVrijednost;
     }
 
-    public void setReferentnaVrijednost(long referentnaVrijednost) {
+    public void setReferentnaVrijednost(Double referentnaVrijednost) {
         this.referentnaVrijednost = referentnaVrijednost;
     }
 
-    public long getMjerenaVrijednost() {
+    public Double getMjerenaVrijednost() {
         return mjerenaVrijednost;
     }
 
-    public void setMjerenaVrijednost(long mjerenaVrijednost) {
+    public void setMjerenaVrijednost(Double mjerenaVrijednost) {
         this.mjerenaVrijednost = mjerenaVrijednost;
     }
 
-    public long getMjernaNesigurnost() {
+    public Double getMjernaNesigurnost() {
         return mjernaNesigurnost;
     }
 
-    public void setMjernaNesigurnost(long mjernaNesigurnost) {
+    public void setMjernaNesigurnost(Double mjernaNesigurnost) {
         this.mjernaNesigurnost = mjernaNesigurnost;
     }
 
