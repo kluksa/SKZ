@@ -3,12 +3,67 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/Auth.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/PrimateljiMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/DiseminacijaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/ProgramMjerenjaPodaciResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/MjerneJediniceKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/DrzavnaMrezaResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/PostajaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/TestDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/app/zerospan.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/admin/postaje.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/KomentarResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/UmjeravanjeResource.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/conf/persistence.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/WEB-INF/beans.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/WEB-INF/web.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/index.xhtml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/nbproject/build-impl.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/KategorijeGranicaKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/ProgramKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/UredjajResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/UredjajiMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/CitanjeMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/ZeroSpanDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/SiroviPodaci.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/conf/MANIFEST.MF</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/mjeritelj/umjeravanje.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/UmjeravanjeDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/KomponentaDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/UmjeravanjeMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/mjeritelj/mjeritelj.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/util/LoggerProducer.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/OdgovornoTijeloKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/GenericConverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/templates/layout.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/GZIPWriterInterceptor.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/WEB-INF/jax-ws-catalog.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/SirovaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/PregledMjerenjaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/ProgramMjerenjaFacadeREST.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/KomponentaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/Compress.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/WEB-INF/beans.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/DohvatPodatakaMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/WEB-INF/web.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/PodrucjeKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/PostajaKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/index.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/PfTest.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/IndexMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/PostajaDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/ZeroSpanResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/KomentarDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/app/dohvat_podataka.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/admin/upravljacka_ploca.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/util/DateTimeParam.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/PodatakSiroviDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/converters/AgregacijeKonverter.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/zeroSpanMB.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/app/minutna.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/dto/SatniDTO.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/ApplicationConfig.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/web/app/mjerenja.xhtml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/SatniPodatakResource.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/web/NewClass.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-war/src/java/dhz/skz/rest/util/DateParam.java</file>
         </group>
     </open-files>
 </project-private>

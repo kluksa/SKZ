@@ -10,10 +10,4 @@
       <context-root>/SKZ-war</context-root>
     </web>
   </module>
-  <module>
-    <web>
-      <web-uri>UmjeravanjeREST.war</web-uri>
-      <context-root>/UmjeravanjeREST</context-root>
-    </web>
-  </module>
 </application>
