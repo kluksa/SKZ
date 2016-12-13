@@ -64,14 +64,14 @@
                             <f:selectItem itemValue="S" itemLabel="S"/>
                         </p:selectOneMenu>
                     </p:inplace>
-
+<!--
                     <h:outputLabel for="agregacija" value="Prosjek tijekom:" />
                     <p:inplace id="agregacija" editor="true" emptyLabel="&lt;prazno&gt; ">
                         <p:selectOneMenu value="#{komponentaMB.komponenta.agregacijeId}" required="true" converter="#{agregacijeKonverter}" >
                             <f:selectItems value="#{komponentaMB.vrsteAgregacije}"  var="ag" itemLabel="#{ag.oznaka}" itemValue="#{ag}"/>
                         </p:selectOneMenu>
                     </p:inplace>
-
+-->
                     <h:outputLabel for="vrsta" value="Jedinice:" />
                     <p:inplace id="jedinice" editor="true" emptyLabel="&lt;prazno&gt;"> 
                         <p:selectOneMenu value="#{komponentaMB.komponenta.mjerneJediniceId}" label="#{komponentaMB.komponenta.mjerneJediniceId.oznaka}" converter="#{mjerneJediniceKonverter}">
@@ -93,9 +93,11 @@
                     <p:column headerText="Kategorija opis">
                         <h:outputText value="#{granica.kategorijeGranicaId.opis}" />
                     </p:column>
+                    <!--
                     <p:column headerText="Agregacija">
                         <h:outputText value="#{granica.agregacijeId.oznaka}" />
                     </p:column>
+                    -->
                     <p:column headerText="Iznos">
                         <h:outputText value="#{granica.vrijednost}" />
                     </p:column>
@@ -133,14 +135,14 @@
                             <f:selectItems value="#{komponentaMB.kategorijeGranica}"  var="jd" itemLabel="#{jd.opis}" itemValue="#{jd}"/>
                         </p:selectOneMenu>
                     </p:inplace>
-
+<!--
                     <h:outputText value="Agregacija" />
                     <p:inplace editor="true" emptyLabel="&lt;prazno&gt;"> 
                         <p:selectOneMenu value="#{komponentaMB.granica.agregacijeId}" label="#{komponentaMB.granica.agregacijeId.oznaka}" converter="#{agregacijeKonverter}">
                             <f:selectItems value="#{komponentaMB.vrsteAgregacije}"  var="jd" itemLabel="#{jd.oznaka}" itemValue="#{jd}"/>
                         </p:selectOneMenu>
                     </p:inplace>
-
+-->
                     <h:outputText value="Vrijednost" />
                     <p:inplace  editor="true" emptyLabel="&lt;prazno&gt;">
                         <p:inputText value="#{komponentaMB.granica.vrijednost}" required="true" label="text" />

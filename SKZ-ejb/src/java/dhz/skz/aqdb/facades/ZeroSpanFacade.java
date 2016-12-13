@@ -69,7 +69,6 @@ public class ZeroSpanFacade extends AbstractFacade<ZeroSpan> {
 
         Join<ZeroSpan, ProgramMjerenja> programJ = from.join(ZeroSpan_.programMjerenjaId);
         Join<ProgramMjerenja, Postaja> postajaJ = programJ.join(ProgramMjerenja_.postajaId);
-
         cq.select(programJ).where(cb.equal(postajaJ, postaja)).groupBy(programJ).distinct(true);
         return em.createQuery(cq).getResultList();
 
