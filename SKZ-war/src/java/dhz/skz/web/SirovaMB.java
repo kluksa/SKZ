@@ -255,7 +255,7 @@ public class SirovaMB implements Serializable{
 
                     ncol++;
                 } catch (IOException ex) {
-                    Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             csvWriter.endRecord();
@@ -283,13 +283,13 @@ public class SirovaMB implements Serializable{
                     }
                     csvWriter.endRecord();
                 } catch (IOException ex) {
-                    Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             }
             csvWriter.flush();
         } catch (IOException ex) {
-            Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
