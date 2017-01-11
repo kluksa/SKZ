@@ -3,46 +3,120 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/test/dhz/skz/citaci/SatniIteratorTest.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/build.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/FtpTransfer.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/conf/beans.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlFileParser.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WebloggerCitacBean.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlZeroSpanParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/CitacPostaje.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/poruka/Poruka.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/validatori/VzKaValidatorFactory.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PostajaFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/DiseminatorPodataka.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ProgramMjerenjaFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ValidatorModelIzvorFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/DiseminatorPodataka.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/ws/PrihvatPodatakaWS.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/DataTransferFactory.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/config/Config.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/conf/persistence.xml</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/SynspecValidator.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/DemDiseminator.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlMjerenjaParser.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/LokalnaZona.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/validatori/NepoznatValidatorException.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/AgregacijeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/validatori/MLUValidatorFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/SatniIterator.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/FtpKlijent.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/CitacIzvora.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/DEMTransformation.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodatakSiroviFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PrekoracenjaUpozorenjaResultFacade.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/config/ConfigProducer.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/UredjajFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/API100EValidator.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/MainTimerBean.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/MLULoggerBean.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ZeroSpanReferentneVrijednostiFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ZeroSpanFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/AbstractFacade.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodatakFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/GrimmValidator.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PrimateljiPodatakaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/slanje/XmlParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/META-INF/wsit-dhz.skz.ws.PrihvatPodatakaWS.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/IskazCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IzvorProgramKljuceviMapFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/validatori/VzKaValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/nbproject/project.properties</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/dcs/DcsCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/slanje/VrstaUpozorenja.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/FtpTransfer.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlFileParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IspitneVelicineFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/CitaciGlavniBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/APSA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/API300EValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/WlFileParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/DataTransferFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KomentarFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/APNA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlMjerenjaParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/VzKaZeroSpanParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/IoxAbstractCitac.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/poruka/EmailPoruka.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KategorijeGranicaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/slanje/UpozorenjeSlanjeFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/CitacIzvora.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/VzKaMjerenjaParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/APMA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ZeroSpanFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/UmjeravanjeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/AbstractFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/IoxValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/WlValidatorFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/APOA360Validator.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/IzvorPodatakaFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/aqdb/AqdbCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/IoxCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/PostajaCitacIskaz.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/KomponentaFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ProgramUredjajLinkFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/poruka/SlanjePoruka.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/APOA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/slanje/SlanjeUpozorenja.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/MinutniUSatne.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/OmotnicaPrihvat.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/exceptions/DataTransferException.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/IskazValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PostajaUredjajLinkFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/ZeroSpanIoxParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlZeroSpanParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/IoxKonekcija.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/OdgovornoTijeloFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/config/Config.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/SynspecValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/conf/persistence.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/LokalnaZona.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodatakSiroviFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/IoxValidatorFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/API100EValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/slanje/MailUpozorenje.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PodrucjeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/validatori/NulValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/GrimmValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/DataTransfer.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/validatori/MLUValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/IskazValidatorFactory.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/ekonerg/EkonergDiseminator.java</file>
             <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/PrimateljProgramKljuceviMapFacade.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/dcs/DcsCitacBean.java</file>
-            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/MinutniUSatne.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/UpozorenjaBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/UmjerneTockeFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/API400EValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/conf/beans.xml</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/datatransfer/LocalSaveFile.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WebloggerCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/upozorenja/poruka/SmsPoruka.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/Scheduler.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/diseminacija/dem/DemDiseminator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/APSA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/util/mailer/EmailSessionBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlPostajaDatoteke.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/DiseminacijaGlavniBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/MjerenjaIoxParser.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/varazdin_karlovac/VzKaCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/APMA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/API200EValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/UredjajFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/config/skz.properties</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/APNA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/ZeroSpanReferentneVrijednostiFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/Iskaz/validatori/APOA370Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/validatori/ValidatorImpl.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/validatori/Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/WlFileName.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/aqdb/AqdbCitacBean.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/MjerenjaPrihvat.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/validatori/ValidatorFactory.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/aqdb/facades/GraniceFacade.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/iox/validatori/APOA360Validator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/weblogger/validatori/APIValidator.java</file>
+            <file>file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/dhz/skz/citaci/mlu/ZeroSpanPrihvat.java</file>
         </group>
     </open-files>
 </project-private>

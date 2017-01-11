@@ -25,6 +25,7 @@ import dhz.skz.aqdb.facades.ObavijestiFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
+import dhz.skz.diseminacija.upozorenja.poruka.SlanjePoruka;
 import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
 import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
@@ -60,25 +61,25 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     @Override
     public void salji(PrimateljiPodataka primatelj) {
         OffsetDateTime odt_sada = OffsetDateTime.now();
-                // OffsetDateTime.parse("2016-09-30T15:59:00+02:00");
-        UpozorenjeSlanjeFactory suf = new UpozorenjeSlanjeFactory();
-        
-        for (Obavijesti o : obf.findAll(primatelj)) {
-            Integer granicniBroj = o.getGranica().getDozvoljeniBrojPrekoracenja();
-            
-            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(o, odt_sada, granicniBroj)) {
-                SlanjeUpozorenja up = suf.getSender(o);
+        SlanjePoruka suf = new SlanjePoruka();
+
+        for (Obavijesti obavijest : obf.findAll(primatelj)) {
+            Integer granicniBroj = obavijest.getGranica().getDozvoljeniBrojPrekoracenja();
+            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(obavijest, odt_sada, granicniBroj)) {
                 Collection<Podatak> podaci = pokupiPodatke(primatelj, odt_sada);
-                if ( Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
-                    up.saljiUpozorenje(o, pur.getProgramMjerenja(), pur.getMaksimalnaVrijednost(), podaci, VrstaUpozorenja.UPOZORENJE);
-                } else {
-                    Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(),odt_sada);
-                    if ( pod != null && pod.getVrijednost() > o.getGranica().getVrijednost() && OperStatus.isValid(pod)){
-                        up.saljiUpozorenje(o, pur.getProgramMjerenja(), pod.getVrijednost(), podaci, VrstaUpozorenja.OBAVIJEST);
-                    }
+                Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(), odt_sada);
+                VrstaUpozorenja vrsta = null;
+                if (Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
+                    vrsta = VrstaUpozorenja.UPOZORENJE;
+                } else if (pod != null && (pod.getVrijednost() > obavijest.getGranica().getVrijednost()) && OperStatus.isValid(pod)) {
+                    vrsta = VrstaUpozorenja.OBAVIJEST;
+                }
+                if (vrsta != null) {
+                    suf.salji(obavijest, pur, pod, podaci, vrsta);
                 }
             }
         }
+
     }
 
     @Override

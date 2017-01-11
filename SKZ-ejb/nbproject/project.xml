@@ -11,6 +11,7 @@
             <included-library dirs="200">libs.JavaCSV.classpath</included-library>
             <included-library dirs="200">libs.Commons_NET_3.classpath</included-library>
             <included-library dirs="200">reference.SKZ-lib.jar</included-library>
+            <included-library dirs="200">libs.Velocity_1.7.classpath</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
