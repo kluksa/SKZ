@@ -119,6 +119,7 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
     
     @Override
     protected void odrediVrijemeZadnjegPodatka() {
+        // TODO ovdje nesto ne stima. Iz nekog razloga za Varazdin i Karlovac upisuje zero/span dvostruko
         ZeroSpanFacade psf = (ZeroSpanFacade) this.getDao();
         for ( ProgramMjerenja pm : this.getMapa().values()){
             Date zps = psf.getVrijemeZadnjeg(pm);

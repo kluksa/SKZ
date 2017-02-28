@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2017 kraljevic
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<poruka
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xmlns='http://meteo.hr'
+    xsi:schemaLocation='http://meteo.hr file:/home/kraljevic/razvoj/NetBeansProjects/SKZ/SKZ-ejb/src/java/obavijestXmlSchema.xsd'>
+    <email>
+        <to>pero@djetlic.org</to>
+        <to>miki@maus.us</to>
+        <cc>siljo@dizni.com</cc>
+        <cc>vlatka@siljo.org</cc>
+        <cc>jo@mo.jo</cc>
+        <bcc>hura@haha.com</bcc>
+        <bcc>mu@be.hr</bcc>
+        <bcc>jhuhu@htv.hr</bcc>
+        <subject>$vrsta: Prekoračenje $vrsta_prekoračenja koncentracija $komponenta na mjernoj postaji $postaja</subject>
+        <body>
+            Poštovani,
+            
+            na mjernoj postaji $postaja u.
+        </body>
+    </email>
+    <sms>
+        <number>+385911234567</number>
+        <body>$vrsta: Na postaji $postaja u proteklih zabilježeno je prekoračenje $vrsta_prekoracenja koncentracija $komponenta.</body>
+    </sms>
+
+</poruka>

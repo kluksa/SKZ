@@ -26,25 +26,24 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.poruka.SlanjePoruka;
-import dhz.skz.diseminacija.upozorenja.slanje.SlanjeUpozorenja;
-import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import dhz.skz.util.OperStatus;
+import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.LocalBean;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 
 /**
  *
  * @author kraljevic
  */
-@Stateless
-@LocalBean
+//@Stateless
+//@LocalBean
 public class UpozorenjaBean implements DiseminatorPodataka {
 
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
@@ -82,6 +81,19 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
     }
 
+    public String popuniPredlozak(String template){
+        VelocityContext context = new VelocityContext();
+        context.put("mailto", "World");
+        context.put("opis", "op");
+        context.put("komponenta", "ko");
+        context.put("postaja", "po");
+        context.put("maksimalna_vrijednost", "mv");
+        
+        /* now render the template into a StringWriter */
+        StringWriter writer = new StringWriter();
+        Velocity.evaluate(context, writer,"VEL:", template); 
+        return writer.toString();
+    }
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
