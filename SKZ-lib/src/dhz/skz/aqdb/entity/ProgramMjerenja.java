@@ -60,8 +60,8 @@ public class ProgramMjerenja implements Serializable {
     @Column(name = "zavrsetak_mjerenja", columnDefinition="TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date zavrsetakMjerenja;
-    @Column(name = "prikaz_web")
-    private Boolean prikazWeb;
+    @Column(name = "aktivan")
+    private Boolean aktivan;
     @ManyToMany(mappedBy = "programMjerenjaCollection")
     private Collection<PrimateljiPodataka> primateljiPodatakaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "programMjerenjaId")
@@ -137,12 +137,12 @@ public class ProgramMjerenja implements Serializable {
         this.zavrsetakMjerenja = zavrsetakMjerenja;
     }
 
-    public Boolean getPrikazWeb() {
-        return prikazWeb;
+    public Boolean getAktivan() {
+        return aktivan;
     }
 
-    public void setPrikazWeb(Boolean prikazWeb) {
-        this.prikazWeb = prikazWeb;
+    public void setAktivan(Boolean aktivan) {
+        this.aktivan = aktivan;
     }
 
     @XmlTransient
