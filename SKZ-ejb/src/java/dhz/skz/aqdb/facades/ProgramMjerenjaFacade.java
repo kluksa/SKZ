@@ -140,7 +140,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         cq.select(from).where(and);
         return em.createQuery(cq).getResultList();
     }
-
+    
     // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
