@@ -49,6 +49,8 @@ public class Granice implements Serializable {
     private double vrijednost;
     @Column(name = "dozvoljeni_broj_prekoracenja")
     private Integer dozvoljeniBrojPrekoracenja;
+    @Column(name = "interval_procjene")
+    private Integer intervalProcjene;
     @Basic(optional = false)
     @NotNull
     @Column(name = "pocetak_primjene")
@@ -147,7 +149,14 @@ public class Granice implements Serializable {
         this.komponentaId = komponentaId;
     }
 
-    
+    public Integer getIntervalProcjene() {
+        return intervalProcjene;
+    }
+
+    public void setIntervalProcjene(Integer intervalProcjene) {
+        this.intervalProcjene = intervalProcjene;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
