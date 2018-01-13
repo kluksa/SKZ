@@ -4,7 +4,6 @@
  */
 package dhz.skz.diseminacija.datatransfer;
 
-import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;

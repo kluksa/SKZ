@@ -4,7 +4,6 @@
  */
 package dhz.skz.diseminacija.datatransfer;
 
-import dhz.skz.diseminacija.datatransfer.exceptions.DataTransferException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
