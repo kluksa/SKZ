@@ -26,6 +26,7 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.poruka.SlanjePoruka;
+import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import dhz.skz.util.OperStatus;
 import java.io.StringWriter;
@@ -67,14 +68,10 @@ public class UpozorenjaBean implements DiseminatorPodataka {
             for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(obavijest, odt_sada, granicniBroj)) {
                 Collection<Podatak> podaci = pokupiPodatke(primatelj, odt_sada);
                 Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(), odt_sada);
-                VrstaUpozorenja vrsta = null;
                 if (Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
-                    vrsta = VrstaUpozorenja.UPOZORENJE;
+                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.UPOZORENJE);
                 } else if (pod != null && (pod.getVrijednost() > obavijest.getGranica().getVrijednost()) && OperStatus.isValid(pod)) {
-                    vrsta = VrstaUpozorenja.OBAVIJEST;
-                }
-                if (vrsta != null) {
-                    suf.salji(obavijest, pur, pod, podaci, vrsta);
+                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.OBAVIJEST);
                 }
             }
         }

@@ -78,6 +78,10 @@ public class Postaja implements Serializable {
     @Size(max = 90)
     @Column(name = "nuts_oznaka")
     private String nutsOznaka;
+    @Size(min = 1, max = 90)
+    @Column(name = "radna_oznaka")
+    private String radnaOznaka;
+
     
     
     private Integer stanovnistvo;
@@ -220,6 +224,14 @@ public class Postaja implements Serializable {
         this.kratkaOznaka = kratkaOznaka;
     }
 
+    public String getRadnaOznaka() {
+        return radnaOznaka;
+    }
+
+    public void setRadnaOznaka(String radnaOznaka) {
+        this.radnaOznaka = radnaOznaka;
+    }
+    
     @XmlTransient
     public Collection<ZemljopisneKarakteristike> getZemljopisneKarakteristikeCollection() {
         return zemljopisneKarakteristikeCollection;
