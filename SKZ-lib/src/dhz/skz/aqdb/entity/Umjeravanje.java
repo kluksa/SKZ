@@ -23,6 +23,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -35,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "umjeravanje")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Umjeravanje.findAll", query = "SELECT u FROM Umjeravanje u"),
@@ -46,11 +48,12 @@ public class Umjeravanje implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition="TIMESTAMP WITH TIME ZONE")
+    @Column(name = "datum", columnDefinition="TIMESTAMP WITH TIME ZONE")
     private Date datum;
     @Basic(optional = false)
     @NotNull
@@ -82,6 +85,8 @@ public class Umjeravanje implements Serializable {
     private Collection<PlanUmjeravanja> planUmjeravanjaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanjeId")
     private Collection<UmjerneTocke> umjerneTockeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "umjeravanje")
+    private Collection<UmjeravanjeHasOkolisniUvjeti> umjeravanjeHasOkolisniUvjetiCollection;
 
     public Umjeravanje() {
     }
@@ -121,11 +126,11 @@ public class Umjeravanje implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Uredjaj> getUredjajCollection() {
+    public Collection<Uredjaj> getEtalonCollection() {
         return etalonCollection;
     }
 
-    public void setUredjajCollection(Collection<Uredjaj> uredjajCollection) {
+    public void setEtalonCollection(Collection<Uredjaj> uredjajCollection) {
         this.etalonCollection = uredjajCollection;
     }
 
@@ -168,6 +173,15 @@ public class Umjeravanje implements Serializable {
 
     public void setUmjeravanjeHasIspitneVelicineCollection(Collection<UmjeravanjeHasIspitneVelicine> umjeravanjeHasIspitneVelicineCollection) {
         this.umjeravanjeHasIspitneVelicineCollection = umjeravanjeHasIspitneVelicineCollection;
+    }
+    
+    @XmlTransient
+    public Collection<UmjeravanjeHasOkolisniUvjeti> getUmjeravanjeHasOkolisniUvjetiCollection() {
+        return umjeravanjeHasOkolisniUvjetiCollection;
+    }
+
+    public void setUmjeravanjeHasOkolisniUvjetiCollection(Collection<UmjeravanjeHasOkolisniUvjeti> umjeravanjeHasOkolisniUvjetiList) {
+        this.umjeravanjeHasOkolisniUvjetiCollection = umjeravanjeHasOkolisniUvjetiList;
     }
 
     public UmjeravanjeKomentar getUmjeravanjeKomentar() {

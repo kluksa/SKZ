@@ -82,8 +82,8 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
         if (false) {
             try {
                 InitialContext ctx = new InitialContext();
-                IzvorPodataka ip = izvorPodatakaFacade.findByName("WebLogger");
-                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/WebloggerCitacBean");
+                IzvorPodataka ip = izvorPodatakaFacade.findByName("Iox");
+                CitacIzvora citac = (CitacIzvora) ctx.lookup("java:module/IoxCitacBean");
                 citac.napraviSatne(ip);
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");
@@ -105,7 +105,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
                             CitacIzvora citac = (CitacIzvora) ctx.lookup(naziv);
                             citac.napraviSatne(ip);
 //                        citaciFuture.put(naziv, citac.napraviSatne(ip));
-                        } catch (Throwable ex) {
+                        } catch (Exception ex) {
                             log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA {0}:{1}", new Object[]{ip.getId(), ip.getNaziv()});
                             log.log(Level.SEVERE, null, ex);
                         }

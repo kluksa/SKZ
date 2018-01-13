@@ -73,6 +73,7 @@
     <class>dhz.skz.aqdb.entity.ZadnjiSirovi</class>
     <class>dhz.skz.aqdb.entity.Obavijesti</class>
     <class>dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult</class>
+    <class>dhz.skz.aqdb.entity.UmjeravanjeHasOkolisniUvjeti</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
         <!--<property name="eclipselink.logging.level" value="FINE" />-->

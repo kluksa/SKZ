@@ -7,7 +7,9 @@ package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,18 +36,20 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UmjerniLaboratorij.findByNaziv", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.naziv = :naziv"),
     @NamedQuery(name = "UmjerniLaboratorij.findByAdresa", query = "SELECT u FROM UmjerniLaboratorij u WHERE u.adresa = :adresa")})
 public class UmjerniLaboratorij implements Serializable {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 2147483647)
+    @Column(name = "naziv")
     private String naziv;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 400)
+    @Column(name = "adresa")
     private String adresa;
     @OneToMany(mappedBy = "umjerniLaboratorijId")
     private Collection<Umjeravanje> umjeravanjeCollection;

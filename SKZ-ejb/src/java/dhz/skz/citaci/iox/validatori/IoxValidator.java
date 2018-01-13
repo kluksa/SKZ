@@ -66,8 +66,8 @@ public class IoxValidator extends ValidatorImpl{
         statusMapa[19] = new StatusKlasa('1', "Span 1 invalid", OperStatus.W2);
         statusMapa[20] = new StatusKlasa('z', "Zero invalid", OperStatus.W2);
         statusMapa[21] = new StatusKlasa('c', "Calibration invalid", OperStatus.W2);
-        statusMapa[22] = new StatusKlasa('o', "Over range", OperStatus.OPSEG);
-        statusMapa[23] = new StatusKlasa('u', "Below range", OperStatus.OPSEG);
+        statusMapa[22] = new StatusKlasa('o', "Over range", OperStatus.W2);
+        statusMapa[23] = new StatusKlasa('u', "Below range", OperStatus.W2);
         statusMapa[24] = new StatusKlasa('S', "Settling to sample",OperStatus.W2);
         statusMapa[25] = new StatusKlasa('2', "Span 2",OperStatus.SPAN);
         statusMapa[26] = new StatusKlasa('1', "Span 1",OperStatus.SPAN);

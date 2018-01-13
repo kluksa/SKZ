@@ -18,9 +18,9 @@
         <h:form id="forma">
 
             <p:outputLabel for="kal1" value="Pocetak:" />
-            <p:calendar id="kal1" value="#{pfTest.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
-                <p:ajax event="dateSelect" listener="#{pfTest.onProgramChange}"/>
-                <p:ajax event="change" listener="#{pfTest.onProgramChange}"/>
+            <p:calendar id="kal1" value="#{satniPodaciMB.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
+                <p:ajax event="dateSelect" listener="#{satniPodaciMB.onProgramChange}"/>
+                <p:ajax event="change" listener="#{satniPodaciMB.onProgramChange}"/>
             </p:calendar>
 
             Uredjaj combo:
@@ -32,9 +32,9 @@
             Lab combo:
             <p:outputLabel for="postaja" value="Postaja: " />
 
-            <p:selectOneMenu id="postaja" value="#{pfTest.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
-                <p:ajax listener="#{pfTest.onPostajaChange}" update="program"/>
-                <f:selectItems value="#{pfTest.postaje}" var="postaja" itemLabel="#{postaja.nazivPostaje}"  itemValue="#{postaja}" />
+            <p:selectOneMenu id="postaja" value="#{satniPodaciMB.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
+                <p:ajax listener="#{satniPodaciMB.onPostajaChange}" update="program"/>
+                <f:selectItems value="#{satniPodaciMB.postaje}" var="postaja" itemLabel="#{postaja.nazivPostaje}"  itemValue="#{postaja}" />
             </p:selectOneMenu>
 
             Mjeritelj kombo:

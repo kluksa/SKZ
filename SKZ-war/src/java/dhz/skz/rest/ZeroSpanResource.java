@@ -62,21 +62,20 @@ public class ZeroSpanResource {
      */
     public ZeroSpanResource() {
     }
-    
+
     @GET
     @Path("referentne_vrijednosti/{program}/zero")
     @Produces({"application/xml", "application/json"})
-    public List<ZeroSpanReferentneVrijednosti> getZeroRefLista(@PathParam("program") Integer programId){
+    public List<ZeroSpanReferentneVrijednosti> getZeroRefLista(@PathParam("program") Integer programId) {
         return zeroSpanReferentneVrijednostiFacade.findByProgramVrsta(programMjerenjaFacade.find(programId), "%Z%");
     }
 
     @GET
     @Path("referentne_vrijednosti/{program}/span")
     @Produces({"application/xml", "application/json"})
-    public List<ZeroSpanReferentneVrijednosti> getSpanRefLista(@PathParam("program") Integer programId){
+    public List<ZeroSpanReferentneVrijednosti> getSpanRefLista(@PathParam("program") Integer programId) {
         return zeroSpanReferentneVrijednostiFacade.findByProgramVrsta(programMjerenjaFacade.find(programId), "%S%");
     }
-    
 
     /**
      * Retrieves representation of an instance of dhz.skz.rs.GenericResource
@@ -123,67 +122,80 @@ public class ZeroSpanResource {
         if (program != null) {
             ZeroSpanReferentneVrijednosti zsr = new ZeroSpanReferentneVrijednosti();
             zsr.setProgramMjerenjaId(program);
-            zsr.setPocetakPrimjene(new Date(1000*zs.getVrijeme()));
+            zsr.setPocetakPrimjene(new Date(1000 * zs.getVrijeme()));
             zsr.setVrsta(zs.getVrsta().toString());
             zsr.setVrijednost(zs.getVrijednost());
             zeroSpanReferentneVrijednostiFacade.create(zsr);
         }
-        
+
     }
-    
+
     private List<ZeroSpanDTO> getZeroSpan(ProgramMjerenja pm, Date vrijemeOd, Date vrijemeDo) {
-            
+
         List<ZeroSpan> zeroSpan = zeroSpanFacade.getZeroSpan(pm, vrijemeOd, vrijemeDo);
         List<ZeroSpanReferentneVrijednosti> refZS = zeroSpanReferentneVrijednostiFacade.findZadnjiPrije(pm, vrijemeDo);
-        
+
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refZ = new TreeMap<>();
         NavigableMap<Date, ZeroSpanReferentneVrijednosti> refS = new TreeMap<>();
         NavigableMap<Date, ZeroSpan> zero = new TreeMap<>();
-        
-        Double deltaz = pm.getMetodaId().getZeroDriftAbsolut();
-        Double deltas = pm.getMetodaId().getSpanDriftRelativ();
-        
-        for (ZeroSpanReferentneVrijednosti rzs : refZS){
+
+        Double deltaz, deltas;
+        if (pm.getMetodaId() == null) {
+            deltaz = 1.;
+            deltas = 0.05;
+        } else {
+            deltaz = pm.getMetodaId().getZeroDriftAbsolut();
+            deltas = pm.getMetodaId().getSpanDriftRelativ();
+        }
+
+        for (ZeroSpanReferentneVrijednosti rzs : refZS) {
             if (rzs.getVrsta().contains("Z")) {
                 refZ.put(rzs.getPocetakPrimjene(), rzs);
-            } else if ( rzs.getVrsta().contains("S")) {
+            } else if (rzs.getVrsta().contains("S")) {
                 refS.put(rzs.getPocetakPrimjene(), rzs);
-            } 
+            }
         }
-        
+
         for (ZeroSpan zs : zeroSpan) {
-            if ( zs.getVrsta().contains("Z")) {
-                if ( zs.getVrijednost() == -999.) continue;
+            if (zs.getVrsta().contains("Z")) {
+                if (zs.getVrijednost() == -999.) {
+                    continue;
+                }
                 zero.put(zs.getVrijeme(), zs);
-            } 
+            }
         }
-        
+
         List<ZeroSpanDTO> zsl = new ArrayList<>();
-        
+
         for (ZeroSpan zs : zeroSpan) {
-            if ( zs.getVrijednost() == -999.) continue;
-            ZeroSpanDTO  zz = new ZeroSpanDTO();
+            if (zs.getVrijednost() == -999.) {
+                continue;
+            }
+            ZeroSpanDTO zz = new ZeroSpanDTO();
             zz.setVrijeme(zs.getVrijeme().getTime());
             zz.setVrijednost(zs.getVrijednost());
+            Double dmin = 0., dmax = 0.;
             
-            if ( zs.getVrsta().contains("Z")) {
+            if (zs.getVrsta().contains("Z")) {
                 zz.setVrsta('Z');
-                if ( refZ.floorEntry(zs.getVrijeme()) != null ) {
-                    zz.setMinDozvoljeno(refZ.floorEntry(zs.getVrijeme()).getValue().getVrijednost()-deltaz);
-                    zz.setMaxDozvoljeno(refZ.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+deltaz);
+                if (refZ.floorEntry(zs.getVrijeme()) != null) {
+                    dmin = refZ.floorEntry(zs.getVrijeme()).getValue().getVrijednost() - deltaz;
+                    dmax = refZ.floorEntry(zs.getVrijeme()).getValue().getVrijednost() + deltaz;
                 }
-            } else if ( zs.getVrsta().contains("S")){
+            } else if (zs.getVrsta().contains("S")) {
                 zz.setVrsta('S');
-                
-                Map.Entry<Date, ZeroSpan> najbliziZero = zero.floorEntry(new Date(zs.getVrijeme().getTime()+3600*1000));
-                
-                if ( najbliziZero!=null && refZ.floorEntry(najbliziZero.getKey())!= null && refS.floorEntry(zs.getVrijeme())!=null){
-                    Double dz =  najbliziZero.getValue().getVrijednost() - refZ.floorEntry(najbliziZero.getKey()).getValue().getVrijednost();
-                    zz.setMinDozvoljeno((1-deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
-                    zz.setMaxDozvoljeno((1+deltas)*refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost()+dz);
+                Map.Entry<Date, ZeroSpan> najbliziZero = zero.floorEntry(new Date(zs.getVrijeme().getTime() + 3600 * 1000));
+                if (refS.floorEntry(zs.getVrijeme()) != null) {
+                    Double dz = 0.;
+                    if (najbliziZero != null && refZ.floorEntry(najbliziZero.getKey()) != null) {
+                        dz = najbliziZero.getValue().getVrijednost() - refZ.floorEntry(najbliziZero.getKey()).getValue().getVrijednost();
+                    }
+                    dmin = (1 - deltas) * refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost() + dz;
+                    dmax = (1 + deltas) * refS.floorEntry(zs.getVrijeme()).getValue().getVrijednost() + dz;
                 }
             }
-            
+            zz.setMinDozvoljeno(dmin);
+            zz.setMaxDozvoljeno(dmax);
             zsl.add(zz);
         }
         return zsl;

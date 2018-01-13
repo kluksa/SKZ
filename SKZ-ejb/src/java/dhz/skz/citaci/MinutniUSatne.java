@@ -16,6 +16,7 @@
  */
 package dhz.skz.citaci;
 
+import dhz.skz.aqdb.entity.Granice;
 import dhz.skz.aqdb.entity.IzvorProgramKljuceviMap;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
@@ -80,6 +81,21 @@ public class MinutniUSatne {
     private ProgramMjerenja program;
 
     private void spremiVjetarIzSirovih(Vjetar get, Integer nv) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void napraviViseProsjeke(ProgramMjerenja pm, Integer nv) {
+        for (Granice granica : pm.getKomponentaId().getGraniceCollection()){
+            String agregacija = granica.getAgregacijeId().getOznaka();
+            switch(agregacija){
+                case "1day":
+                    break;
+                case "8hour":
+                    break;
+                default:
+                    break;
+            }
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -182,6 +198,7 @@ public class MinutniUSatne {
         for (ProgramMjerenja pm : programMjerenjaFacade.findAll()) {
 //            if ( !(pm.getKomponentaId().getFormula().equals("WS") || pm.getKomponentaId().getFormula().equals("WD"))) {
             spremiSatneIzSirovih(pm, nv);
+//            napraviViseProsjeke(pm, nv);
 //            } else {
 //                VjetarKljuc kljuc = new VjetarKljuc();
 //                kljuc.po = pm.getPostajaId();

@@ -45,6 +45,9 @@ public class DozvoljeneGranice implements Serializable {
     @JoinColumn(name = "mjerne_jedinice_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private MjerneJedinice mjerneJediniceId;
+    @JoinColumn(name = "komponenta_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Komponenta komponentaId;
 
     public DozvoljeneGranice() {
     }
@@ -104,6 +107,14 @@ public class DozvoljeneGranice implements Serializable {
 
     public void setMjerneJediniceId(MjerneJedinice mjerneJediniceId) {
         this.mjerneJediniceId = mjerneJediniceId;
+    }
+
+    public Komponenta getKomponentaId() {
+        return komponentaId;
+    }
+
+    public void setKomponentaId(Komponenta komponentaId) {
+        this.komponentaId = komponentaId;
     }
 
     @Override

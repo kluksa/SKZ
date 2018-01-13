@@ -7,6 +7,7 @@ package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,6 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class ModelUredjaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;

@@ -14,10 +14,13 @@ import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 /**
  *
@@ -39,16 +42,29 @@ public class ProgramMjerenjaFacadeREST  {
 
     @GET
     @Produces({"application/xml", "application/json"})
-    public List<ProgramMjerenja> findAll() {
-        return programMjerenjaFacade.findAll();
+    public List<ProgramMjerenja> findAll(@DefaultValue("0") @QueryParam("neaktivni_ukljuceni") Integer neaktivni) {
+        List<ProgramMjerenja> lista = programMjerenjaFacade.findAll();
+        List<ProgramMjerenja> tmp = new ArrayList<ProgramMjerenja>(lista.size());
+        for ( ProgramMjerenja pm : lista) {
+            if ( pm.getAktivan() || (neaktivni > 0))
+                tmp.add(pm);
+        }
+        return tmp;
     }
     
     @GET
     @Path("zakljucani")
     @Produces({"application/xml", "application/json"})
-    public List<ProgramMjerenja> findAllTajni() {
-        return programMjerenjaFacade.findAll();
+    public List<ProgramMjerenja> findAllTajni(@DefaultValue("0") @QueryParam("neaktivni_ukljuceni") Integer neaktivni) {
+        List<ProgramMjerenja> lista = programMjerenjaFacade.findAll();
+        List<ProgramMjerenja> tmp = new ArrayList<ProgramMjerenja>(lista.size());
+        for ( ProgramMjerenja pm : lista) {
+            if ( pm.getAktivan() || (neaktivni > 0))
+                tmp.add(pm);
+        }
+        return tmp;
     }
+
     
     @GET
     @Path("zadnji")

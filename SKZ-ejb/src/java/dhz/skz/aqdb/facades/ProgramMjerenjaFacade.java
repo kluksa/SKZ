@@ -140,7 +140,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         cq.select(from).where(and);
         return em.createQuery(cq).getResultList();
     }
-
+    
     // TODO prebaciti u named query
     public Collection<ProgramMjerenja> find(IzvorPodataka i) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -221,7 +221,7 @@ public class ProgramMjerenjaFacade extends AbstractFacade<ProgramMjerenja> {
         Path<ProgramMjerenja> programP = from.get(PodatakSirovi_.programMjerenjaId);
         Join<ProgramMjerenja, Postaja> postajaJ = from.join(PodatakSirovi_.programMjerenjaId).join(ProgramMjerenja_.postajaId);
 
-        cq.select(programP).where(cb.equal(postajaJ, postaja)).groupBy(programP);
+        cq.select(programP).where(cb.equal(postajaJ, postaja));
         cq.distinct(true);
         return em.createQuery(cq).getResultList();
     }

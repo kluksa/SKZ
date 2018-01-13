@@ -23,13 +23,23 @@ import dhz.skz.diseminacija.DiseminatorPodataka;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 /**
  *
@@ -37,6 +47,7 @@ import javax.naming.NamingException;
  */
 @Singleton
 @Startup
+@TransactionManagement(TransactionManagementType.BEAN)
 public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGlavniBeanRemote {
 
     private static final Logger log = Logger.getLogger(DiseminacijaGlavniBean.class.getName());
@@ -50,6 +61,10 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @Config(vrijednost = "23")
     private Integer minuta;
 
+    @Resource
+    private EJBContext context;
+
+    
     public DiseminacijaGlavniBean() {
         super("DiseminacijaGlavniTimer");
     }
@@ -63,47 +78,84 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @Timeout
     public void pokreni() {
         log.log(Level.INFO, "Pokrecem diseminaciju");
-        if (true) {
-            try {
-                InitialContext ctx = new InitialContext();
-                PrimateljiPodataka ip = primateljPodatakaFacade.find(4);
-                DiseminatorPodataka citac = (DiseminatorPodataka) ctx.lookup("java:module/UpozorenjaBean");
-                citac.salji(ip);
-            } catch (Throwable ex) {
-                log.log(Level.SEVERE, "POGRESKA KOD CITANJA IZVORA");
-                log.log(Level.SEVERE, null, ex);
-            }
+        if (false) {
+            pokretniTest();
         } else {
             if (!aktivan) {
-                aktivan = true;
                 try {
+                    aktivan = true;
                     InitialContext ctx = new InitialContext();
                     String str = "java:module/";
+                    UserTransaction utx = context.getUserTransaction();
 
-                    for (PrimateljiPodataka pr : primateljPodatakaFacade.getAktivniPrimatelji()) {
-                        if (pr.getTip() != null) {
-                            String naziv = str + pr.getTip().trim();
-                            log.log(Level.INFO, "JNDI: {0}", naziv);
-                            try {
-                                DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-                                diseminator.salji(pr);
-                            } catch (NamingException ex) {
-                                log.log(Level.SEVERE, null, ex);
-                            } catch (Exception ex) {
-                                log.log(Level.SEVERE, null, ex);
+                    for (PrimateljiPodataka pr : primateljPodatakaFacade.findAll()) {
+                        if (pr.getAktivan() < 1) {
+                            log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
+                        } else {
+                            if (pr.getTip() != null) {
+                                String naziv = str + pr.getTip().trim();
+                                log.log(Level.INFO, "JNDI: {0}", naziv);
+                                try {
+                                    utx.begin();
+                                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                                    diseminator.salji(pr);
+                                    utx.commit();
+                                } catch (NotSupportedException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (SystemException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (NamingException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (RollbackException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (HeuristicMixedException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (HeuristicRollbackException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (SecurityException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (IllegalStateException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (RuntimeException ex) {
+                                    log.log(Level.SEVERE, null, ex);
+                                } catch (Exception ex){
+                                    log.log(Level.SEVERE, null, ex);
+                                }
                             }
                         }
                     }
+                    
+                    aktivan = false;
+                    log.log(Level.INFO, "Kraj pokretanja diseminacije");
                 } catch (NamingException ex) {
                     log.log(Level.SEVERE, null, ex);
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, null, ex);
                 }
-                aktivan = false;
-                log.log(Level.INFO, "Kraj pokretanja diseminacije");
             } else {
                 log.log(Level.INFO, "Prethodna diseminacija jos nije zavrsila");
             }
+        }
+    }
+
+    private void pokretniTest() {
+        try {
+            InitialContext ctx = new InitialContext();
+            String str = "java:module/";
+
+            PrimateljiPodataka pr = primateljPodatakaFacade.find(1);
+            if (pr.getTip() != null) {
+                String naziv = str + pr.getTip().trim();
+                log.log(Level.INFO, "JNDI: {0}", naziv);
+                try {
+                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                    diseminator.salji(pr);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+        } catch (NamingException ex) {
+            log.log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, null, ex);
         }
     }
 }

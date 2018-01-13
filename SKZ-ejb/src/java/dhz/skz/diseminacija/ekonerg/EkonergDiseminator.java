@@ -60,20 +60,22 @@ public class EkonergDiseminator implements DiseminatorPodataka {
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
+        log.log(Level.INFO,"EkonergDiseminator:salji(primatelj_id = {0})", new Object[]{primatelj.getId()});
 
         this.primatelj = primatelj;
         String conStr = "jdbc:" + primatelj.getUrl();
         log.log(Level.INFO, conStr);
         Date sada = new Date();
         try (Connection con = diseminacija.getConnection()) {
-            Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.find(primatelj);
+            Collection<PrimateljProgramKljuceviMap> kljuceviZaPrimatelja = ppmFac.findAll(primatelj);
             for (PrimateljProgramKljuceviMap pm : kljuceviZaPrimatelja) {
                 if (pm.getAktivan()>0) {
-                    log.log(Level.INFO, "Prebacujem: {0},{1},{2}", new Object[]{pm.getProgramMjerenja().getId(), pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), pm.getProgramMjerenja().getKomponentaId().getFormula()});
+                    log.log(Level.INFO, "EkonergDiseminator:salji  pm={0}, postaja={1}, komponenta={2}", new Object[]{pm.getProgramMjerenja().getId(), pm.getProgramMjerenja().getPostajaId().getNazivPostaje(), pm.getProgramMjerenja().getKomponentaId().getFormula()});
                     prebaciMjerenja(con, pm, getZadnjeMjerenje(con, pm), sada);
                     prebaciZS(con, pm, getZadnjiZS(con, pm), sada);
                 }
             }
+            log.log(Level.INFO,"EkonergDiseminator:salji:: Prije zatvaranja konekcije");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "", ex);
         }

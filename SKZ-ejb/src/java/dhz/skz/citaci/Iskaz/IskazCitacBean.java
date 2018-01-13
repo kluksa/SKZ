@@ -29,6 +29,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
 import dhz.skz.aqdb.facades.ProgramUredjajLinkFacade;
 import dhz.skz.aqdb.facades.UredjajFacade;
+import dhz.skz.aqdb.facades.ZadnjiSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.Iskaz.validatori.IskazValidatorFactory;
@@ -99,6 +100,8 @@ public class IskazCitacBean implements CitacIzvora {
     private ZeroSpanFacade zeroSpanFacade;
     @EJB
     private PostajaFacade posajaFacade;
+    @EJB
+    private ZadnjiSiroviFacade zadnjiSiroviFacade;
 
 //    @EJB
 //    private ValidatorFactory validatorFactory;
@@ -183,17 +186,10 @@ public class IskazCitacBean implements CitacIzvora {
     }
 
     private void citajMjerenja(PostajaCitacIskaz pio) {
+        
 
-        PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, aktivnaPostaja);
-        if (zadnji == null) {
-            Date pocetakMjerenja = programMjerenjaFacade.getPocetakMjerenja(izvor, aktivnaPostaja);
-            if (pocetakMjerenja == null) {
-                return;
-            }
-            vrijemeZadnjegMjerenja = pocetakMjerenja;
-        } else {
-            vrijemeZadnjegMjerenja = zadnji.getVrijeme();
-        }
+        vrijemeZadnjegMjerenja = zadnjiSiroviFacade.getVrijeme(izvor, aktivnaPostaja);
+        
         log.log(Level.INFO, "ZADNJI: {0}", vrijemeZadnjegMjerenja);
 
         Date sada = new Date();

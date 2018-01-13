@@ -40,8 +40,7 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
     private final NavigableMap<Date, Double> temperature = new TreeMap<>();
     
     public MjerenjaIoxParser(){
-        super();
-        this.setPeriodStr("1");
+        this.setPeriod(1);
         this.setdBstr("av1.txt");
     }
 
@@ -57,7 +56,7 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
     @Override
     protected void parseLinija() throws IOException {
         CsvReader csv = getCsv();
-        log.log(Level.INFO, "POD={0}", new Object[]{csv.getRawRecord()});
+        log.log(Level.FINE, "POD={0}", new Object[]{csv.getRawRecord()});
         try {
             if (!csv.get("Mean").isEmpty()) {
                 Double vrijednost = getVrijednost(csv.get("Mean"), csv.get("Unit"), getAktualniProgram());
@@ -107,23 +106,6 @@ public class MjerenjaIoxParser extends IoxAbstractCitac<PodatakSirovi> {
                 this.setVrijemeZadnjeg(zps.getVrijeme());
             }
         }
-        
-//        Date vrijemeZadnjeg = this.getMapa().values().stream()
-//                .filter(pm -> Objects.nonNull(psf.getZadnji(pm)))
-//                .map(pm -> psf.getZadnji(pm).getVrijeme())
-//                .filter(t -> t.after(this.getVrijemeZadnjeg()))
-//                .max(Date::compareTo)
-//                .get();
-//        this.setVrijemeZadnjeg(vrijemeZadnjeg);
-    }
-    
-    protected Date getVrijemeZadnjeg2(){
-        PodatakSiroviFacade psf = (PodatakSiroviFacade) this.getDao();
-        return this.getMapa().values().stream()
-                .filter(pm -> Objects.nonNull(psf.getZadnji(pm)))
-                .map(pm -> psf.getZadnji(pm).getVrijeme())
-                .max(Date::compareTo)
-                .get();
-        
+        log.log(Level.INFO, "Zadnji podatak u: {0}", new Object[]{getVrijemeZadnjeg()});
     }
 }

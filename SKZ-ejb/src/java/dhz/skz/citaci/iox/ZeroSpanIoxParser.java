@@ -36,14 +36,14 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
     private static final Logger log = Logger.getLogger(ZeroSpanIoxParser.class.getName());
 
     public ZeroSpanIoxParser() {
-        super();
-        this.setPeriodStr("24");
+        this.setPeriod(24);
         this.setdBstr("cal.txt");
     }
 
     @Override
     protected void parseLinija() throws IOException {
         CsvReader csv = getCsv();
+        log.log(Level.FINE, "ZEROSPAN={0}", new Object[]{csv.getRawRecord()});
         try {
 
             String intstatus = csv.get("IntStatus");
@@ -64,7 +64,6 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
             provjeraStatusa &= ~(1 << OperStatus.SPAN.ordinal());
             provjeraStatusa &= ~(1 << OperStatus.ZERO.ordinal());
             provjeraStatusa &= ~(1 << OperStatus.KALIBRACIJA.ordinal());
-
             if (provjeraStatusa < (1 << OperStatus.FAULT.ordinal())) {
 //                        if (csv.get("ErrStatus").equals("________")) {  
                 if (intstatus.charAt(11) == 'Z') {
@@ -127,6 +126,6 @@ public class ZeroSpanIoxParser extends IoxAbstractCitac<ZeroSpan> {
                 this.setVrijemeZadnjeg(zps);
             }
         }
-        
+        log.log(Level.INFO, "Zadnji ZS u: {0}", new Object[]{getVrijemeZadnjeg()});
     }
 }

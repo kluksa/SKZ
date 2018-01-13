@@ -11,6 +11,7 @@ import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.Podatak;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
+import dhz.skz.util.OperStatus;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,18 +49,18 @@ import org.primefaces.model.chart.LineChartSeries;
  *
  * @author kraljevic
  */
-@Named(value = "pfTest")
+@Named(value = "satniPodaciMB")
 @ViewScoped
-public class PfTest implements Serializable {
+public class SatniPodaciMB implements Serializable {
 
     @Inject
     private  transient Logger log;
     private boolean novi = false;
 
     /**
-     * Creates a new instance of PfTest
+     * Creates a new instance of SatniPodaciMB
      */
-    public PfTest() {
+    public SatniPodaciMB() {
     }
 
     @EJB
@@ -253,10 +254,9 @@ public class PfTest implements Serializable {
                     csvWriter.write(pm.getKomponentaId().getFormula());
                     csvWriter.write("obuhvat");
                     csvWriter.write("status");
-
                     ncol++;
                 } catch (IOException ex) {
-                    Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             csvWriter.endRecord();
@@ -280,18 +280,20 @@ public class PfTest implements Serializable {
                             csvWriter.write(p.getObuhvat().toString());
                             csvWriter.write(Integer.toString(p.getStatus()));
                         } else {
-
+                            csvWriter.write("-999");
+                            csvWriter.write("0");
+                            csvWriter.write(Integer.toString((1 << OperStatus.NEDOSTAJE.ordinal())));
                         }
                     }
                     csvWriter.endRecord();
                 } catch (IOException ex) {
-                    Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             }
             csvWriter.flush();
         } catch (IOException ex) {
-            Logger.getLogger(PfTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SatniPodaciMB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

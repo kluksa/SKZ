@@ -13,31 +13,31 @@
                 <h:panelGrid columns="1" cellpadding="5">
                     <p:outputLabel for="postaja" value="Postaja: " />
 
-                    <p:selectOneMenu id="postaja" value="#{pfTest.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
-                        <p:ajax listener="#{pfTest.onPostajaChange}" update="program"/>
-                        <f:selectItems value="#{pfTest.postaje}" var="postaja" itemLabel="#{postaja.nazivPostaje}"  itemValue="#{postaja}" />
+                    <p:selectOneMenu id="postaja" value="#{satniPodaciMB.postaja}" styleClass="inputField" converter="#{postajaKonverter}">
+                        <p:ajax listener="#{satniPodaciMB.onPostajaChange}" update="program"/>
+                        <f:selectItems value="#{satniPodaciMB.postaje}" var="postaja" itemLabel="#{postaja.nazivPostaje}"  itemValue="#{postaja}" />
                     </p:selectOneMenu>
                     <p:outputLabel  styleClass="test" for="program" value="Komponenta: " />
-                    <p:selectManyMenu id="program" value="#{pfTest.selektiraniProgram}"   style="width:200px"  showCheckbox="true" converter="#{programKonverter}">
-                        <p:ajax listener="#{pfTest.onProgramChange}" update="program"/>
-                        <f:selectItems value="#{pfTest.programiSvi}" var="program" itemLabel="#{program.usporednoMjerenje}:  #{program.komponentaId.naziv}" itemValue="#{program}" />
+                    <p:selectManyMenu id="program" value="#{satniPodaciMB.selektiraniProgram}"   style="width:200px"  showCheckbox="true" converter="#{programKonverter}">
+                        <p:ajax listener="#{satniPodaciMB.onProgramChange}" update="program"/>
+                        <f:selectItems value="#{satniPodaciMB.programiSvi}" var="program" itemLabel="#{program.usporednoMjerenje}:  #{program.komponentaId.naziv}" itemValue="#{program}" />
                     </p:selectManyMenu>
                     <p:outputLabel for="kal1" value="Pocetak:" />
-                    <p:calendar id="kal1" value="#{pfTest.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
-                        <p:ajax event="dateSelect" listener="#{pfTest.onProgramChange}"/>
-                        <p:ajax event="change" listener="#{pfTest.onProgramChange}"/>
+                    <p:calendar id="kal1" value="#{satniPodaciMB.d1}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true" >
+                        <p:ajax event="dateSelect" listener="#{satniPodaciMB.onProgramChange}"/>
+                        <p:ajax event="change" listener="#{satniPodaciMB.onProgramChange}"/>
                     </p:calendar>
                     <p:outputLabel for="kal2" value="Kraj:" />
 
-                    <p:calendar id="kal2" value="#{pfTest.d2}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true">
-                        <p:ajax event="dateSelect" listener="#{pfTest.onProgramChange}"/>
-                        <p:ajax event="change" listener="#{pfTest.onProgramChange}"/>
+                    <p:calendar id="kal2" value="#{satniPodaciMB.d2}" styleClass="dateTimeField" pattern="dd-MM-yyyy HH" mask="true" navigator="true">
+                        <p:ajax event="dateSelect" listener="#{satniPodaciMB.onProgramChange}"/>
+                        <p:ajax event="change" listener="#{satniPodaciMB.onProgramChange}"/>
                     </p:calendar>
                 </h:panelGrid>
                 <p:separator />
-                <p:commandButton value="Submit" update=":slika" actionListener="#{pfTest.displayLocation}"  icon="ui-icon-check" />
+                <p:commandButton value="Submit" update=":slika" actionListener="#{satniPodaciMB.displayLocation}"  icon="ui-icon-check" />
                 <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
-                    <p:fileDownload value="#{pfTest.download()}" />
+                    <p:fileDownload value="#{satniPodaciMB.download()}" />
                 </p:commandButton>
             </h:form>
         </p:panel>
@@ -45,8 +45,8 @@
     <ui:define name="slika">
         <p:panel header="Slika" style="margin-bottom:10px;">
             <h:outputScript name="test.js" />
-            <p:chart id="slika"  type="line" model="#{pfTest.dateModel}"  >
-                <p:ajax event="itemSelect" listener="#{pfTest.itemSelect}" update="forma:growl" />
+            <p:chart id="slika"  type="line" model="#{satniPodaciMB.dateModel}"  >
+                <p:ajax event="itemSelect" listener="#{satniPodaciMB.itemSelect}" update="forma:growl" />
             </p:chart>
         </p:panel>      
     </ui:define>

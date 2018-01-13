@@ -23,6 +23,7 @@ import dhz.skz.validatori.Validator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,7 +53,8 @@ public abstract class IoxAbstractCitac<T> {
     private Map<String, ProgramMjerenja> mapa;
     private AbstractFacade dao;
     private IoxKonekcija iocon;
-    private String periodStr, dBstr;
+    private Integer period;
+    private String dBstr;
 
     public void setProgramMapa(Map<String, ProgramMjerenja> mapa) {
         this.mapa = mapa;
@@ -74,8 +76,8 @@ public abstract class IoxAbstractCitac<T> {
         this.iocon = iocon;
     }
 
-    public void setPeriodStr(String periodStr) {
-        this.periodStr = periodStr;
+    public void setPeriod(Integer period) {
+        this.period = period;
     }
 
     public void setdBstr(String dBstr) {
@@ -119,37 +121,44 @@ public abstract class IoxAbstractCitac<T> {
     }
 
     public void procitaj() {
-        odrediVrijemeZadnjegPodatka();  //ovo je ruzno
-// ljepse:        vrijemeZadnjeg = getVrijemeZadnjeg();
-        log.log(Level.INFO, "Zadnji podatak u: {0}", new Object[]{vrijemeZadnjeg});
+        odrediVrijemeZadnjegPodatka();
+
+        Date sada = new Date();
         podaci = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(periodStr, dBstr, vrijemeZadnjeg)))) {
-            String line = null;
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            line = in.readLine();
-            csv = new CsvReader(in, '\t');
-            csv.readHeaders();
-            int n = csv.getHeaderCount();
-            while (csv.readRecord()) {
-                try {
-                    aktualnoVrijeme = sdf.parse(csv.get("Time"));
-                    if (aktualnoVrijeme.after(vrijemeZadnjeg)) {
+
+        while (vrijemeZadnjeg.before(sada)) {
+            
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(iocon.getInputStream(period.toString(), dBstr, vrijemeZadnjeg)))) {
+                String line = null;
+                line = in.readLine();
+                line = in.readLine();
+                line = in.readLine();
+                line = in.readLine();
+                line = in.readLine();
+                line = in.readLine();
+                csv = new CsvReader(in, '\t');
+                csv.readHeaders();
+                int n = csv.getHeaderCount();
+                while (csv.readRecord()) {
+                    try {
+                        aktualnoVrijeme = sdf.parse(csv.get("Time"));
                         aktualniProgram = getProgram();
                         if (aktualniProgram != null) {
                             parseLinija();
                         }
+                    } catch (ParseException ex) {
+                        log.log(Level.SEVERE, null, ex);
                     }
-                } catch (ParseException ex) {
-                    log.log(Level.SEVERE, null, ex);
-                }
 
+                }
+                vrijemeZadnjeg = new Date(vrijemeZadnjeg.getTime() + period*3600000);
+            } catch (SocketTimeoutException ex){
+                log.log(Level.SEVERE, "java.net.SocketTimeoutException: Read timed out at: {0} ", new Object[]{iocon.getUrlPredlozak()});
+                break;
+            } catch (IOException ex) {
+                log.log(Level.SEVERE, null, ex);
+                break;
             }
-        } catch (IOException ex) {
-            log.log(Level.SEVERE, null, ex);
         }
         validiraj();
         spremi();
@@ -164,9 +173,9 @@ public abstract class IoxAbstractCitac<T> {
     }
 
     private void spremi() {
-        podaci.stream().forEach((podatak) -> {
-            dao.create(podatak);
-        });
+        for ( T p : podaci) {
+            dao.create(p);
+        }
     }
 
     abstract protected void parseLinija() throws IOException;

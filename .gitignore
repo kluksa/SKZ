@@ -28,5 +28,4 @@ nb-configuration.xml
 *.war
 *.ear
 
-/PrihvatPodataka/nbproject/private/
 /UmjeravanjeREST/nbproject/private/

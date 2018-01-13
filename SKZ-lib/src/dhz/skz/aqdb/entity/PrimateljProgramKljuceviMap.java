@@ -6,6 +6,7 @@
 package dhz.skz.aqdb.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -14,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -50,6 +53,9 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     @Column(name = "n_kljuc")
     private String nKljuc;
     private Integer aktivan;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "zadnji_poslani")
+    private Date zadnjiPoslani;
     @JoinColumn(name = "primatelj_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private PrimateljiPodataka primateljiPodataka;
@@ -131,6 +137,15 @@ public class PrimateljProgramKljuceviMap implements Serializable {
     public void setProgramMjerenja(ProgramMjerenja programMjerenja) {
         this.programMjerenja = programMjerenja;
     }
+
+    public Date getZadnjiPoslani() {
+        return zadnjiPoslani;
+    }
+
+    public void setZadnjiPoslani(Date zadnjiPoslani) {
+        this.zadnjiPoslani = zadnjiPoslani;
+    }
+    
 
     @Override
     public int hashCode() {

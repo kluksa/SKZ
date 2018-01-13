@@ -74,4 +74,10 @@ public class KomponentaFacade extends AbstractFacade<Komponenta> {
         return query.getResultList();
     }
     
+    public Komponenta findByFormula(String pId) {
+        TypedQuery<Komponenta> query = em.createNamedQuery("Komponenta.findByFormula", Komponenta.class);
+        query.setParameter("postaja_id", pId);
+        return query.getSingleResult();
+    }
+    
 }

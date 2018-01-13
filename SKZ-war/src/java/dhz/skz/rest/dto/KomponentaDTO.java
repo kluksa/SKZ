@@ -21,7 +21,8 @@ public class KomponentaDTO implements Serializable{
     private String formula;
     private String naziv;
     private String nazivEng;
-    
+    private String mjerneJedinice;
+
     public KomponentaDTO(){}
 
     public KomponentaDTO(Komponenta k) {
@@ -31,6 +32,15 @@ public class KomponentaDTO implements Serializable{
         this.formula = k.getFormula();
         this.naziv = k.getNaziv();
         this.nazivEng = k.getNazivEng();
+        this.mjerneJedinice = k.getMjerneJediniceId().getOznaka();
+    }
+
+    public String getMjerneJedinice() {
+        return mjerneJedinice;
+    }
+
+    public void setMjerneJedinice(String mjerneJedinice) {
+        this.mjerneJedinice = mjerneJedinice;
     }
 
     public Integer getId() {

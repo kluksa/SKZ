@@ -43,8 +43,6 @@ public class Agregacije implements Serializable {
     private String oznaka;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "agregacijeId")
     private Collection<Granice> graniceCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agregacijeId")
-    private Collection<Komponenta> komponentaCollection;
 
     public Agregacije() {
     }
@@ -81,15 +79,6 @@ public class Agregacije implements Serializable {
 
     public void setGraniceCollection(Collection<Granice> graniceCollection) {
         this.graniceCollection = graniceCollection;
-    }
-
-    @XmlTransient
-    public Collection<Komponenta> getKomponentaCollection() {
-        return komponentaCollection;
-    }
-
-    public void setKomponentaCollection(Collection<Komponenta> komponentaCollection) {
-        this.komponentaCollection = komponentaCollection;
     }
 
     @Override

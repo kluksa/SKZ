@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "korisnik")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Korisnik.findAll", query = "SELECT k FROM Korisnik k"),
@@ -42,6 +44,7 @@ public class Korisnik implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
@@ -51,12 +54,17 @@ public class Korisnik implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
+    @Column(name = "lozinka")
     private String lozinka;
     @Size(max = 100)
+    @Column(name = "ime")
     private String ime;
     @Size(max = 100)
+    @Column(name = "prezime")
     private String prezime;
+    @Column(name = "enabled")
     private Boolean enabled;
+    @Column(name = "version")
     private Integer version;
     @OneToMany(mappedBy = "mjeriteljId")
     private Collection<Umjeravanje> umjeravanjeCollection;

@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author kraljevic
  */
 @Entity
+@Table(name = "komponenta")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Komponenta.findAll", query = "SELECT k FROM Komponenta k"),
@@ -52,6 +54,7 @@ public class Komponenta implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Column(name = "eol_oznaka")
     private Short eolOznaka;
@@ -59,10 +62,12 @@ public class Komponenta implements Serializable {
     @Column(name = "iso_oznaka")
     private String isoOznaka;
     @Size(max = 90)
+    @Column(name = "formula")
     private String formula;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 120)
+    @Column(name = "naziv")
     private String naziv;
     @Size(max = 90)
     @Column(name = "izrazeno_kao")

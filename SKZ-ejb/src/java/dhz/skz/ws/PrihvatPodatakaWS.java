@@ -11,6 +11,7 @@ import dhz.skz.aqdb.entity.IzvorPodataka;
 import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.facades.PodatakSiroviFacade;
+import dhz.skz.aqdb.facades.ZadnjiSiroviFacade;
 import dhz.skz.aqdb.facades.ZeroSpanFacade;
 import dhz.skz.citaci.CsvParser;
 import dhz.skz.sirovi.exceptions.CsvPrihvatException;
@@ -45,6 +46,8 @@ public class PrihvatPodatakaWS {
     private IzvorPodatakaFacade izvorPodatakaFacade;
     @EJB
     private PostajaFacade postajaFacade;
+    @EJB
+    private ZadnjiSiroviFacade zadnjiSiroviFacade;
 
     @WebMethod(operationName = "prihvatiOmotnicu")
     @Oneway
@@ -82,13 +85,13 @@ public class PrihvatPodatakaWS {
         IzvorPodataka izvor = izvorPodatakaFacade.findByName(omotnica.getIzvor());
         Postaja postaja = postajaFacade.findByNacionalnaOznaka(omotnica.getPostaja());
 
-        Date vrijemeZadnjegPodatka = new Date(0L);
+        Date vrijemeZadnjegPodatka;
         if (omotnica.getVrsta().compareToIgnoreCase("zero-span") == 0) {
             vrijemeZadnjegPodatka = zeroSpanFacade.getVrijemeZadnjeg(izvor, postaja, omotnica.getDatoteka());
         } else {
-            PodatakSirovi zadnji = podatakSiroviFacade.getZadnji(izvor, postaja, omotnica.getDatoteka());
-            if (zadnji != null) vrijemeZadnjegPodatka=zadnji.getVrijeme();
+            vrijemeZadnjegPodatka = zadnjiSiroviFacade.getVrijeme(izvor, postaja, omotnica.getDatoteka());
         }
+        
         log.log(Level.INFO, "Zadnji podatak: {0},{1},{2}", new Object[]{izvor.getNaziv(), postaja.getNazivPostaje(),vrijemeZadnjegPodatka});
 
         return vrijemeZadnjegPodatka.getTime();
