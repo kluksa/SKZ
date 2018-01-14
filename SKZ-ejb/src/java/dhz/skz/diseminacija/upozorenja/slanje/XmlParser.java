@@ -82,4 +82,34 @@ public class XmlParser {
             throw new XmlObavijestException();
         }
     }
+    
+    public void parse(String str) throws XmlObavijestException, ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbFactory
+                = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
+        org.w3c.dom.Document doc = dBuilder.parse(new InputSource(new StringReader(str)));
+        doc.getDocumentElement().normalize();
+
+        
+        NodeList nList = doc.getElementsByTagName("root");
+        if (nList.getLength() != 1) {
+            throw new XmlObavijestException();
+        }
+        Node nNode = nList.item(0);
+        if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) nNode;
+            subject = eElement
+                    .getElementsByTagName("subject")
+                    .item(0)
+                    .getTextContent();
+            body = eElement
+                    .getElementsByTagName("body")
+                    .item(0)
+                    .getTextContent();
+        } else {
+            throw new XmlObavijestException();
+        }
+    }
+
 }

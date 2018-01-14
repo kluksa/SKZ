@@ -60,6 +60,13 @@
                     <p:commandButton value="Submit" actionListener="#{citanjeMB.agregirajPonovno()}"  icon="ui-icon-check" />
                 </h:form>
             </p:panel>
+            <p:panel header="Ispitivanje dojava" style="margin-bottom:10px;">
+                <h:form id="upozorenje_ispitivanje">
+                    <p:growl id="growl" showDetail="true" />
+                    <p:commandButton value="TEST" actionListener="#{upozorenjaMB.testDojava()}"  icon="ui-icon-check" />
+                </h:form>
+            </p:panel>
+
         </h:panelGrid>
         <p:panel header="Primatelj podataka" style="margin-bottom:10px;" id="primatelj-panel">
             #{primateljiMB.primatelj.naziv}

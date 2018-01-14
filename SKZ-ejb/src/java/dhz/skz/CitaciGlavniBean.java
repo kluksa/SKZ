@@ -21,8 +21,7 @@ import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.IzvorPodatakaFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
-import dhz.skz.aqdb.facades.ProgramMjerenjaFacade;
+import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.citaci.CitacIzvora;
 import dhz.skz.citaci.MinutniUSatne;
 import dhz.skz.config.Config;
@@ -55,11 +54,7 @@ public class CitaciGlavniBean extends Scheduler implements CitaciGlavniBeanRemot
     @EJB
     private MinutniUSatne minutniUSatne;
     @EJB
-    private ProgramMjerenjaFacade pmf;
-    @EJB
     private PodatakFacade pf;
-    @EJB
-    private PodatakSiroviFacade psf;
 
     private boolean aktivan = false;
 

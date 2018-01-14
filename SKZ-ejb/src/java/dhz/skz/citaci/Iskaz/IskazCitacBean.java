@@ -181,7 +181,7 @@ public class IskazCitacBean implements CitacIzvora {
         uriStrT = uriStrT.replaceFirst("\\$\\{HOSTNAME\\}", aktivnaPostaja.getNetAdresa());
         uriStrT = uriStrT.replaceFirst("\\$\\{DATUM\\}", datum);
         uriStrT = uriStrT.replaceFirst("\\$\\{TABLICA\\}", tablica);
-        uriStrT = uriStrT.replaceFirst("\\$\\{ID\\}", aktivnaPostaja.getNazivPostaje());
+        uriStrT = uriStrT.replaceFirst("\\$\\{ID\\}", aktivnaPostaja.getRadnaOznaka());
         return uriStrT;
     }
 

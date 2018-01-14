@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kraljevic
+ * Copyright (C) 2018 kraljevic
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,7 +234,9 @@ public class PodatakFacade extends AbstractFacade<Podatak> {
     }
 
     public void spremi(Collection<Podatak> ps) {
-        ps.stream().forEach((p)->spremi(p));
+        for (Podatak p : ps) {
+            spremi(ps);
+        }
     }
 
     public Podatak getPodatakZaSat(ProgramMjerenja programMjerenja, OffsetDateTime kraj) {

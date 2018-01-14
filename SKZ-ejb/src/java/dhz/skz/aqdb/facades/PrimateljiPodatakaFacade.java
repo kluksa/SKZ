@@ -19,6 +19,7 @@ package dhz.skz.aqdb.facades;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.PrimateljiPodataka_;
 import javax.ejb.LocalBean;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -75,6 +76,19 @@ public class PrimateljiPodatakaFacade extends AbstractFacade<PrimateljiPodataka>
         cq.where(cb.equal(from.get(PrimateljiPodataka_.aktivan), true));
         cq.select(from);
         return em.createQuery(cq).getResultList();
+    }
+    
+    public Iterable<PrimateljiPodataka> getAktivniPrimateljiUpozorenja(){
+        em.flush();
+        em.clear();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PrimateljiPodataka> cq = cb.createQuery(PrimateljiPodataka.class);
+        Root<PrimateljiPodataka> from = cq.from(PrimateljiPodataka.class);
+        cq.where(cb.and(cb.equal(from.get(PrimateljiPodataka_.aktivan), true)),
+                 cb.equal(from.get(PrimateljiPodataka_.tip), "UpozorenjaBean"));
+        cq.select(from);
+        return em.createQuery(cq).getResultList();
+        
     }
 
 //    @Override

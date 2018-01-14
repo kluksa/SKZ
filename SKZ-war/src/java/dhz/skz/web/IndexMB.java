@@ -8,10 +8,8 @@ package dhz.skz.web;
 
 import dhz.skz.aqdb.facades.PostajaFacade;
 import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.PodatakSirovi;
 import dhz.skz.aqdb.entity.Postaja;
 import dhz.skz.aqdb.facades.PodatakFacade;
-import dhz.skz.aqdb.facades.PodatakSiroviFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,8 +29,8 @@ import javax.inject.Named;
  *
  * @author kraljevic
  */
-@ManagedBean
 @Named(value = "indexMB")
+@ManagedBean
 @ViewScoped
 public class IndexMB implements Serializable {
     @Inject

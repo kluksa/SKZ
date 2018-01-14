@@ -45,6 +45,47 @@ import org.xml.sax.SAXException;
  */
 public class MailUpozorenje implements SlanjeUpozorenja {
 
+    public void testirajSustav(PrimateljiPodataka primatelj, Podatak pod){
+        String tekst = "<root><subject>Ispitivanje sustava za dojavu prekoracenja pragova upozorenja</subject>"
+                     + "<body>Poštovani,\n"
+                     + "Ovo je ispitivanje sustava za dojavu prekoračenja pragova upozorenja. "
+                     +  "U ${VRIJEME} je na postaji ${POSTAJA} zabilježena koncentracija "
+                     + "od ${KONCENTRACIJA} ug/m3 ${KOMPONENTA}.\n"
+                     + " Molimo da na ovu poruku odgovorite kako bi znali da ste uspiješno primili poruku.\n\n"
+                     + " Hvala!\nDržavni hidrometeorolški zavod.</body></root>";
+        try {
+            Komponenta komponentaId = pod.getProgramMjerenjaId().getKomponentaId();
+            Postaja postajaId = pod.getProgramMjerenjaId().getPostajaId();
+
+            XmlParser xmlp = new XmlParser();
+            xmlp.parse(tekst);
+
+            String body = xmlp.getBody();
+
+            body = body.replaceAll("\\$\\{VRIJEME\\}", pod.getVrijeme().toString());
+            body = body.replaceAll("\\$\\{POSTAJA\\}", postajaId.getNazivPostaje());
+            body = body.replaceAll("\\$\\{KOMPONENTA\\}", komponentaId.getFormula());
+            body = body.replaceAll("\\$\\{KONCENTRACIJA\\}", pod.getVrijednost().toString());
+            String subject = xmlp.getSubject();
+
+            EmailSessionBean esb = new EmailSessionBean();
+            URL[] urlovi = getURLs(primatelj.getUrl());
+ //           System.out.println(urlovi.toString());
+            esb.sendEmail(urlovi, subject, body);
+
+
+        } catch (IOException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (XmlObavijestException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     @Override
     public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Double maksimalnaVrijednost,Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
         try {

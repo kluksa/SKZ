@@ -284,7 +284,7 @@ public class WebloggerCitacBean implements CitacIzvora {
             wpd.setVrijemeZadnjegZS(getVrijemeZadnjegZeroSpan(p));
             wpd.setVrjmemeZadnjegMjerenja(zadnjiSiroviFacade.getVrijeme(izvor, p));
             wpd.setImaZeroSpan(provjeriZS(p));
-            mapa.put(p.getNazivPostaje().toLowerCase(), wpd);
+            mapa.put(p.getRadnaOznaka().toLowerCase(), wpd);
         }
 
         Pattern pattern = Pattern.compile("^(\\w.+?)(_c)?-(\\d{8})([a-z]?)(\\.csv)$");

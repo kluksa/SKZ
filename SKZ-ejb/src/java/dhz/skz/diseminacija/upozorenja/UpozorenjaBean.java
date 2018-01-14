@@ -24,8 +24,10 @@ import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ObavijestiFacade;
 import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
+import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.poruka.SlanjePoruka;
+import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
 import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import dhz.skz.util.OperStatus;
@@ -36,6 +38,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -43,9 +46,9 @@ import org.apache.velocity.app.Velocity;
  *
  * @author kraljevic
  */
-//@Stateless
+@Stateless
 //@LocalBean
-public class UpozorenjaBean implements DiseminatorPodataka {
+public class UpozorenjaBean implements DiseminatorPodataka, UpozorenjaBeanRemote {
 
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
 
@@ -58,39 +61,43 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     @EJB
     private PrekoracenjaUpozorenjaResultFacade prFac;
 
+    @EJB
+    private PrimateljiPodatakaFacade primF;
+
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-        OffsetDateTime odt_sada = OffsetDateTime.now();
-        SlanjePoruka suf = new SlanjePoruka();
-
-        for (Obavijesti obavijest : obf.findAll(primatelj)) {
-            Integer granicniBroj = obavijest.getGranica().getDozvoljeniBrojPrekoracenja();
-            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(obavijest, odt_sada, granicniBroj)) {
-                Collection<Podatak> podaci = pokupiPodatke(primatelj, odt_sada);
-                Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(), odt_sada);
-                if (Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
-                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.UPOZORENJE);
-                } else if (pod != null && (pod.getVrijednost() > obavijest.getGranica().getVrijednost()) && OperStatus.isValid(pod)) {
-                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.OBAVIJEST);
-                }
-            }
-        }
-
+        return;
+//        OffsetDateTime odt_sada = OffsetDateTime.now();
+//        SlanjePoruka suf = new SlanjePoruka();
+//
+//        for (Obavijesti obavijest : obf.findAll(primatelj)) {
+//            Integer granicniBroj = obavijest.getGranica().getDozvoljeniBrojPrekoracenja();
+//            for (PrekoracenjaUpozorenjaResult pur : prFac.findAll(obavijest, odt_sada, granicniBroj)) {
+//                Collection<Podatak> podaci = pokupiPodatke(primatelj, odt_sada);
+//                Podatak pod = pf.getPodatakZaSat(pur.getProgramMjerenja(), odt_sada);
+//                if (Objects.equals(pur.getBrojPojavljivanja(), granicniBroj)) {
+//                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.UPOZORENJE);
+//                } else if (pod != null && (pod.getVrijednost() > obavijest.getGranica().getVrijednost()) && OperStatus.isValid(pod)) {
+//                    suf.salji(obavijest, pur, pod, podaci, VrstaUpozorenja.OBAVIJEST);
+//                }
+//            }
+//        }
     }
 
-    public String popuniPredlozak(String template){
+    public String popuniPredlozak(String template) {
         VelocityContext context = new VelocityContext();
         context.put("mailto", "World");
         context.put("opis", "op");
         context.put("komponenta", "ko");
         context.put("postaja", "po");
         context.put("maksimalna_vrijednost", "mv");
-        
+
         /* now render the template into a StringWriter */
         StringWriter writer = new StringWriter();
-        Velocity.evaluate(context, writer,"VEL:", template); 
+        Velocity.evaluate(context, writer, "VEL:", template);
         return writer.toString();
     }
+
     @Override
     public void nadoknadi(PrimateljiPodataka primatelj, Collection<ProgramMjerenja> program, Date pocetak, Date kraj) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -99,5 +106,25 @@ public class UpozorenjaBean implements DiseminatorPodataka {
     private Collection<Podatak> pokupiPodatke(PrimateljiPodataka primatelj, OffsetDateTime sada) {
         OffsetDateTime pocetak = sada.minusHours(6);
         return pf.getVrijemePrimatelj(primatelj, pocetak, sada);
+    }
+
+    @Override
+    public void testirajSlanje() {
+        OffsetDateTime odt_sada = OffsetDateTime.now();
+        MailUpozorenje suf = new MailUpozorenje();
+        for (PrimateljiPodataka pp : primF.getAktivniPrimateljiUpozorenja()) {
+            System.out.println(pp.getNaziv());
+        }
+        
+        for (PrimateljiPodataka pp : primF.getAktivniPrimateljiUpozorenja()) {
+            for (ProgramMjerenja pm : pp.getProgramMjerenjaCollection()) {
+                Podatak pod = pf.getPodatakZaSat(pm, odt_sada);
+                if ( pod != null) {
+                    suf.testirajSustav(pp, pod);
+                } else {
+                    System.out.println("NULL:" + pm.getKomponentaId().getFormula() + ":" + pm.getPostajaId().getNazivPostaje() );
+                }
+            }
+        }
     }
 }

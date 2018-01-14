@@ -17,10 +17,10 @@ public class EmailSessionBean {
 
     private final int port = 25;
     private final String host = "cirus.dhz.hr";
-    private final String from = "kraljevic@cirus.dhz.hr";
+    private final String from = "kakvoca_zraka@cirus.dhz.hr";
     private final boolean auth = true;
-    private final String username = "kraljevic@cirus.dhz.hr";
-    private final String password = "cbm@MaIl";
+    private final String username = "kakvoca_zraka@cirus.dhz.hr";
+    private final String password = "1q23a4";
     private final Protocol protocol = Protocol.SMTP;
     private final boolean debug = false;
 

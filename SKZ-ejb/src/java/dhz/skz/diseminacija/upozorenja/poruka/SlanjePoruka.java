@@ -30,10 +30,6 @@ public class SlanjePoruka {
 
     public void salji(Obavijesti obavijest, PrekoracenjaUpozorenjaResult pur, Podatak pod, Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
         String xml = parseObavijest(obavijest.getPredlozakTeksta());
-        
-        
-        
-        
     }
 
     private String parseObavijest(String predlozakTeksta) {
@@ -50,5 +46,14 @@ public class SlanjePoruka {
     
     private void salji(SmsPoruka sms) {
         
+    }
+
+    public void testiraj(Podatak pod) {
+//        body = body.replaceAll("\\$\\{VRIJEME\\}", pod.getVrijeme().toString());
+//        body = body.replaceAll("\\$\\{POSTAJA\\}", pod.getProgramMjerenja().getPostaja().getNazivPostaje());
+//        body = body.replaceAll("\\$\\{KOMPONENTA\\}", pod.getProgramMjerenja().getKomponenta().getFormula());
+//        body = body.replaceAll("\\$\\{KONCENTRACIJE\\}", pod.getVrijednost().toString());
+
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
