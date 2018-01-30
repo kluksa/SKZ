@@ -97,8 +97,10 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
                                 String naziv = str + pr.getTip().trim();
                                 log.log(Level.INFO, "JNDI: {0}", naziv);
                                 try {
-                                    utx.begin();
+                                    // ovo nije dobro jer u slucaju da lookup ne uspije ispada exception iz transakcije i 
+                                    // sve se raspada
                                     DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                                    utx.begin();
                                     diseminator.salji(pr);
                                     utx.commit();
                                 } catch (NotSupportedException ex) {
