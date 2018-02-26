@@ -16,6 +16,7 @@
  */
 package dhz.skz.diseminacija.upozorenja.slanje;
 
+import dhz.skz.aqdb.entity.Granice;
 import dhz.skz.diseminacija.upozorenja.slanje.exceptions.XmlObavijestException;
 import dhz.skz.aqdb.entity.Komponenta;
 import dhz.skz.aqdb.entity.Obavijesti;
@@ -32,8 +33,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,14 +50,14 @@ import org.xml.sax.SAXException;
  */
 public class MailUpozorenje implements SlanjeUpozorenja {
 
-    public void testirajSustav(PrimateljiPodataka primatelj, Podatak pod){
+    public void testirajSustav(PrimateljiPodataka primatelj, Podatak pod) {
         String tekst = "<root><subject>Ispitivanje sustava za dojavu prekoracenja pragova upozorenja</subject>"
-                     + "<body>Poštovani,\n"
-                     + "Ovo je ispitivanje sustava za dojavu prekoračenja pragova upozorenja. "
-                     +  "U ${VRIJEME} je na postaji ${POSTAJA} zabilježena koncentracija "
-                     + "od ${KONCENTRACIJA} ug/m3 ${KOMPONENTA}.\n"
-                     + " Molimo da na ovu poruku odgovorite kako bi znali da ste uspiješno primili poruku.\n\n"
-                     + " Hvala!\nDržavni hidrometeorolški zavod.</body></root>";
+                + "<body>Poštovani,\n"
+                + "Ovo je ispitivanje sustava za dojavu prekoračenja pragova upozorenja. "
+                + "U ${VRIJEME} je na postaji ${POSTAJA} zabilježena koncentracija "
+                + "od ${KONCENTRACIJA} ug/m3 ${KOMPONENTA}.\n"
+                + " Molimo da na ovu poruku odgovorite kako bi znali da ste uspiješno primili poruku.\n\n"
+                + " Hvala!\nDržavni hidrometeorolški zavod.</body></root>";
         try {
             Komponenta komponentaId = pod.getProgramMjerenjaId().getKomponentaId();
             Postaja postajaId = pod.getProgramMjerenjaId().getPostajaId();
@@ -70,9 +75,8 @@ public class MailUpozorenje implements SlanjeUpozorenja {
 
             EmailSessionBean esb = new EmailSessionBean();
             URL[] urlovi = getURLs(primatelj.getUrl());
- //           System.out.println(urlovi.toString());
+            //           System.out.println(urlovi.toString());
             esb.sendEmail(urlovi, subject, body);
-
 
         } catch (IOException ex) {
             Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,7 +91,7 @@ public class MailUpozorenje implements SlanjeUpozorenja {
     }
 
     @Override
-    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Double maksimalnaVrijednost,Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
+    public void saljiUpozorenje(Obavijesti ob, ProgramMjerenja pm, Double maksimalnaVrijednost, Collection<Podatak> podaci, VrstaUpozorenja vrsta) {
         try {
             PrimateljiPodataka primatelj = ob.getPrimatelj();
             Komponenta komponentaId = pm.getKomponentaId();
@@ -147,12 +151,79 @@ public class MailUpozorenje implements SlanjeUpozorenja {
     private URL[] getURLs(String url) throws MalformedURLException {
         String[] split = url.split("\\|");
         URL[] urlovi = new URL[split.length];
-        
-        for (int i = 0; i<split.length; i++ ) {
+
+        for (int i = 0; i < split.length; i++) {
             urlovi[i] = new URL(split[i]);
         }
         return urlovi;
 
+    }
+
+    public void saljiUpozorenje(PrimateljiPodataka primatelj, List<Podatak> podaci, Granice g, VrstaUpozorenja vrstaUpozorenja) {
+        String tekstPrekoracenja = "<root><subject>UPOZORENJE: Prekoracenje ${VRSTA} ${KOMPONENTA} na postaji ${POSTAJA}</subject>"
+                + "<body>Poštovani,\n"
+                + "U protekla ${INTERVAL} sata prekoračena je ${VRSTA} za ${KOMPONENTA} od ${GRANICA} ug/m3 na "
+                + "postaji ${POSTAJA}. U promatranom vremenskom intervalu zabilježene su slijedeće koncentracije:\n"
+                + "${KONCENTRACIJE}"
+                + "\nMolimo da postupite u skladu sa Vašim ovlastima.\n"
+                + " \nDržavni hidrometeorolški zavod.</body></root>";
+
+        String tekst = "<root><subject>OBAVIJEST: Dosizanje ${VRSTA} ${KOMPONENTA} na postaji ${POSTAJA}</subject>"
+                + "<body>Poštovani,\n"
+                + "U protekla ${INTERVAL} sata dosegnuta je ${VRSTA} za ${KOMPONENTA} od ${GRANICA} ug/m3 na "
+                + "postaji ${POSTAJA}. U promatranom vremenskom intervalu zabilježene su slijedeće koncentracije:\n"
+                + "${KONCENTRACIJE}"
+                + "\nDržavni hidrometeorolški zavod.</body></root>";
+
+        if ( vrstaUpozorenja == VrstaUpozorenja.UPOZORENJE) {
+            tekst = tekstPrekoracenja;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        NumberFormat nf = new DecimalFormat("#0.0");
+        try {
+            Komponenta komponentaId = podaci.get(0).getProgramMjerenjaId().getKomponentaId();
+            Postaja postajaId = podaci.get(0).getProgramMjerenjaId().getPostajaId();
+
+            Podatak pod = podaci.get(podaci.size()-1);
+            XmlParser xmlp = new XmlParser();
+            xmlp.parse(tekst);
+
+            String str = "";
+            for ( Podatak p : podaci) {
+                str += sdf.format(p.getVrijeme());
+                str += "  " + nf.format(p.getVrijednost()) +"\n";
+            }
+
+            String body = xmlp.getBody();
+            body = body.replaceAll("\\$\\{VRIJEME\\}", pod.getVrijeme().toString());
+            body = body.replaceAll("\\$\\{POSTAJA\\}", postajaId.getNazivPostaje());
+            body = body.replaceAll("\\$\\{KOMPONENTA\\}", komponentaId.getFormula());
+            body = body.replaceAll("\\$\\{VRSTA\\}", g.getKategorijeGranicaId().getOpis());
+            body = body.replaceAll("\\$\\{KONCENTRACIJA\\}", pod.getVrijednost().toString());
+            body = body.replaceAll("\\$\\{INTERVAL\\}", g.getIntervalProcjene().toString());
+            body = body.replaceAll("\\$\\{GRANICA\\}", nf.format(g.getVrijednost()));
+            body = body.replaceAll("\\$\\{KONCENTRACIJE\\}", str);
+
+            String subject = xmlp.getSubject();
+            subject = subject.replaceAll("\\$\\{POSTAJA\\}", postajaId.getNazivPostaje());
+            subject = subject.replaceAll("\\$\\{KOMPONENTA\\}", komponentaId.getFormula());
+            subject = subject.replaceAll("\\$\\{VRSTA\\}", g.getKategorijeGranicaId().getOpis());
+
+            EmailSessionBean esb = new EmailSessionBean();
+            URL[] urlovi = getURLs(primatelj.getUrl());
+            //           System.out.println(urlovi.toString());
+            esb.sendEmail(urlovi, subject, body);
+
+        } catch (IOException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (XmlObavijestException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(MailUpozorenje.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

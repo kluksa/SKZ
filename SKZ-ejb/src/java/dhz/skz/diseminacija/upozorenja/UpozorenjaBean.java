@@ -16,9 +16,9 @@
  */
 package dhz.skz.diseminacija.upozorenja;
 
-import dhz.skz.aqdb.entity.Obavijesti;
+import dhz.skz.aqdb.entity.Granice;
+import dhz.skz.aqdb.entity.KategorijeGranica;
 import dhz.skz.aqdb.entity.Podatak;
-import dhz.skz.aqdb.entity.PrekoracenjaUpozorenjaResult;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.aqdb.entity.ProgramMjerenja;
 import dhz.skz.aqdb.facades.ObavijestiFacade;
@@ -26,18 +26,17 @@ import dhz.skz.aqdb.facades.PodatakFacade;
 import dhz.skz.aqdb.facades.PrekoracenjaUpozorenjaResultFacade;
 import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.diseminacija.DiseminatorPodataka;
-import dhz.skz.diseminacija.upozorenja.poruka.SlanjePoruka;
 import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
-import dhz.skz.diseminacija.upozorenja.slanje.UpozorenjeSlanjeFactory;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import dhz.skz.util.OperStatus;
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -47,8 +46,8 @@ import org.apache.velocity.app.Velocity;
  * @author kraljevic
  */
 @Stateless
-//@LocalBean
-public class UpozorenjaBean implements DiseminatorPodataka, UpozorenjaBeanRemote {
+@LocalBean
+public class UpozorenjaBean implements DiseminatorPodataka {
 
     private static final Logger log = Logger.getLogger(UpozorenjaBean.class.getName());
 
@@ -66,7 +65,38 @@ public class UpozorenjaBean implements DiseminatorPodataka, UpozorenjaBeanRemote
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
-        return;
+        MailUpozorenje suf = new MailUpozorenje();
+        for (ProgramMjerenja pm : primatelj.getProgramMjerenjaCollection()) {
+            for (Granice g : pm.getKomponentaId().getGraniceCollection()) {
+                Integer intervalProcjene = g.getIntervalProcjene();
+                double vrijednost = g.getVrijednost();
+                String oznaka = g.getKategorijeGranicaId().getOznaka();
+                if (oznaka.equals("GO") || oznaka.equals("GU")) {
+                    Date kraj = new Date();
+                    Date pocetak = new Date(new Date().getTime() - 3600 * 1000);
+//                    Date pocetak = new Date(new Date().getTime() - (1 + intervalProcjene) * 3600 * 1000);
+                    List<Podatak> podaci = pf.getPodaciOd(pm, pocetak, 0);
+                    if (podaci != null && !podaci.isEmpty()
+                            && podaci.get(0).getStatus() < (1 << OperStatus.FAULT.ordinal())
+                            && podaci.get(0).getVrijednost() > g.getVrijednost()) {
+                        pocetak = new Date(new Date().getTime() - (1 + intervalProcjene) * 3600 * 1000);
+                        podaci = pf.getPodaciOd(pm, pocetak, 0);
+
+                        int brojPrekoracenja = 0;
+                        for (Podatak p : podaci) {
+                            if ((p.getVrijednost() > g.getVrijednost()) && (p.getStatus() < 16)) {
+                                brojPrekoracenja++;
+                            }
+                        }
+                        if (brojPrekoracenja == intervalProcjene) {
+                            suf.saljiUpozorenje(primatelj, podaci, g, VrstaUpozorenja.UPOZORENJE);
+                        } else {
+                            suf.saljiUpozorenje(primatelj, podaci, g, VrstaUpozorenja.OBAVIJEST);
+                        }
+                    }
+                }
+            }
+
 //        OffsetDateTime odt_sada = OffsetDateTime.now();
 //        SlanjePoruka suf = new SlanjePoruka();
 //
@@ -82,9 +112,10 @@ public class UpozorenjaBean implements DiseminatorPodataka, UpozorenjaBeanRemote
 //                }
 //            }
 //        }
+        }
     }
 
-    public String popuniPredlozak(String template) {
+    private String popuniPredlozak(String template) {
         VelocityContext context = new VelocityContext();
         context.put("mailto", "World");
         context.put("opis", "op");
@@ -108,21 +139,20 @@ public class UpozorenjaBean implements DiseminatorPodataka, UpozorenjaBeanRemote
         return pf.getVrijemePrimatelj(primatelj, pocetak, sada);
     }
 
-    @Override
     public void testirajSlanje() {
         OffsetDateTime odt_sada = OffsetDateTime.now();
         MailUpozorenje suf = new MailUpozorenje();
         for (PrimateljiPodataka pp : primF.getAktivniPrimateljiUpozorenja()) {
             System.out.println(pp.getNaziv());
         }
-        
+
         for (PrimateljiPodataka pp : primF.getAktivniPrimateljiUpozorenja()) {
             for (ProgramMjerenja pm : pp.getProgramMjerenjaCollection()) {
                 Podatak pod = pf.getPodatakZaSat(pm, odt_sada);
-                if ( pod != null) {
+                if (pod != null) {
                     suf.testirajSustav(pp, pod);
                 } else {
-                    System.out.println("NULL:" + pm.getKomponentaId().getFormula() + ":" + pm.getPostajaId().getNazivPostaje() );
+                    System.out.println("NULL:" + pm.getKomponentaId().getFormula() + ":" + pm.getPostajaId().getNazivPostaje());
                 }
             }
         }

@@ -294,10 +294,12 @@ public class WebloggerCitacBean implements CitacIzvora {
             if (m.matches()) {
                 try {
                     WlPostajaDatoteke wpd = mapa.get(m.group(1));
-                    wpd.dodajFajl(f.getName(), m);
+                    if (wpd != null) {
+                        wpd.dodajFajl(f.getName(), m);
+                    }
                 } catch (ParseException ex) {
                     log.log(Level.SEVERE, null, ex);
-                }
+                } 
             }
         }
         

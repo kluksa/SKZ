@@ -20,6 +20,7 @@ import dhz.skz.aqdb.facades.PrimateljiPodatakaFacade;
 import dhz.skz.aqdb.entity.PrimateljiPodataka;
 import dhz.skz.config.Config;
 import dhz.skz.diseminacija.DiseminatorPodataka;
+import dhz.skz.diseminacija.upozorenja.UpozorenjaBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -55,6 +56,9 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @EJB
     private PrimateljiPodatakaFacade primateljPodatakaFacade;
 
+    @EJB
+    private UpozorenjaBean upozorenjeB;
+
     private boolean aktivan = false;
 
     @Inject
@@ -64,7 +68,6 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
     @Resource
     private EJBContext context;
 
-    
     public DiseminacijaGlavniBean() {
         super("DiseminacijaGlavniTimer");
     }
@@ -93,41 +96,46 @@ public class DiseminacijaGlavniBean extends Scheduler implements DiseminacijaGla
                             log.log(Level.INFO, "Primatelj: {0} nije aktivan", new Object[]{pr.getNaziv()});
                         } else {
                             String tip = pr.getTip();
-                            if (pr.getTip() != null && !(pr.getTip().equals("UpozorenjaBean"))) {
-                                String naziv = str + pr.getTip().trim();
-                                log.log(Level.INFO, "JNDI: {0}", naziv);
-                                try {
-                                    // ovo nije dobro jer u slucaju da lookup ne uspije ispada exception iz transakcije i 
-                                    // sve se raspada
-                                    DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
-                                    utx.begin();
-                                    diseminator.salji(pr);
-                                    utx.commit();
-                                } catch (NotSupportedException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (SystemException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (NamingException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (RollbackException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (HeuristicMixedException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (HeuristicRollbackException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (SecurityException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (IllegalStateException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (RuntimeException ex) {
-                                    log.log(Level.SEVERE, null, ex);
-                                } catch (Exception ex){
-                                    log.log(Level.SEVERE, null, ex);
+                            if (pr.getTip() != null || !pr.getTip().isEmpty()) {
+//                            if (pr.getTip() != null && !(pr.getTip().equals("UpozorenjaBean"))) {
+                                if (pr.getTip().equals("UpozorenjaBean")) {
+                                    upozorenjeB.salji(pr);
+                                } else {
+                                    String naziv = str + pr.getTip().trim();
+                                    log.log(Level.INFO, "JNDI: {0}", naziv);
+                                    try {
+                                        // ovo nije dobro jer u slucaju da lookup ne uspije ispada exception iz transakcije i 
+                                        // sve se raspada
+                                        DiseminatorPodataka diseminator = (DiseminatorPodataka) ctx.lookup(naziv);
+                                        utx.begin();
+                                        diseminator.salji(pr);
+                                        utx.commit();
+                                    } catch (NotSupportedException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (SystemException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (NamingException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (RollbackException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (HeuristicMixedException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (HeuristicRollbackException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (SecurityException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (IllegalStateException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (RuntimeException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    } catch (Exception ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    }
                                 }
                             }
                         }
                     }
-                    
+
                     aktivan = false;
                     log.log(Level.INFO, "Kraj pokretanja diseminacije");
                 } catch (NamingException ex) {
