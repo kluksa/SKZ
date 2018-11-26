@@ -29,7 +29,4 @@ nb-configuration.xml
 *.ear
 *.log
 
-<<<<<<< HEAD
 /UmjeravanjeREST/nbproject/private/
-=======
->>>>>>> origin/master
