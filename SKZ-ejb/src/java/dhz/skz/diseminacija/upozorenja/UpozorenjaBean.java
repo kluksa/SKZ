@@ -29,17 +29,22 @@ import dhz.skz.diseminacija.DiseminatorPodataka;
 import dhz.skz.diseminacija.upozorenja.slanje.MailUpozorenje;
 import dhz.skz.diseminacija.upozorenja.slanje.VrstaUpozorenja;
 import dhz.skz.util.OperStatus;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.exception.MethodInvocationException;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
 
 /**
  *
@@ -65,8 +70,10 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
     @Override
     public void salji(PrimateljiPodataka primatelj) {
+        log.log(Level.INFO, "UPOZORENJA za {0}:{1}", new Object[]{primatelj.getId(), primatelj.getNaziv()});
         MailUpozorenje suf = new MailUpozorenje();
         for (ProgramMjerenja pm : primatelj.getProgramMjerenjaCollection()) {
+            log.log(Level.INFO, "{0}:{1}:{2}", new Object[]{primatelj.getId(), primatelj.getNaziv(), pm.getId()});
             for (Granice g : pm.getKomponentaId().getGraniceCollection()) {
                 Integer intervalProcjene = g.getIntervalProcjene();
                 double vrijednost = g.getVrijednost();
@@ -76,9 +83,11 @@ public class UpozorenjaBean implements DiseminatorPodataka {
                     Date pocetak = new Date(new Date().getTime() - 3600 * 1000);
 //                    Date pocetak = new Date(new Date().getTime() - (1 + intervalProcjene) * 3600 * 1000);
                     List<Podatak> podaci = pf.getPodaciOd(pm, pocetak, 0);
+                    
                     if (podaci != null && !podaci.isEmpty()
                             && podaci.get(0).getStatus() < (1 << OperStatus.FAULT.ordinal())
                             && podaci.get(0).getVrijednost() > g.getVrijednost()) {
+                        log.log(Level.INFO,"POD: {0},{1}", new Object[]{podaci.get(0).getProgramMjerenjaId(), podaci.get(0).getPodatakId()});
                         pocetak = new Date(new Date().getTime() - (1 + intervalProcjene) * 3600 * 1000);
                         podaci = pf.getPodaciOd(pm, pocetak, 0);
 
@@ -125,7 +134,17 @@ public class UpozorenjaBean implements DiseminatorPodataka {
 
         /* now render the template into a StringWriter */
         StringWriter writer = new StringWriter();
-        Velocity.evaluate(context, writer, "VEL:", template);
+        try {
+            Velocity.evaluate(context, writer, "VEL:", template);
+        } catch (ParseErrorException ex) {
+            Logger.getLogger(UpozorenjaBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MethodInvocationException ex) {
+            Logger.getLogger(UpozorenjaBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ResourceNotFoundException ex) {
+            Logger.getLogger(UpozorenjaBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UpozorenjaBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return writer.toString();
     }
 

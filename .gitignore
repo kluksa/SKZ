@@ -27,5 +27,9 @@ nb-configuration.xml
 *.jar
 *.war
 *.ear
+*.log
 
+<<<<<<< HEAD
 /UmjeravanjeREST/nbproject/private/
+=======
+>>>>>>> origin/master
